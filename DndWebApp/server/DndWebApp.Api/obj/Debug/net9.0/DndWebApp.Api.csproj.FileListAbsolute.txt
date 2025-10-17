@@ -1,0 +1,8 @@
+C:\Users\Antho\Documents\GitHub\DndWebApp\DndWebApp\server\DndWebApp.Api\obj\Debug\net9.0\DndWebApp.Api.csproj.AssemblyReference.cache
+C:\Users\Antho\Documents\GitHub\DndWebApp\DndWebApp\server\DndWebApp.Api\obj\Debug\net9.0\DndWebApp.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Antho\Documents\GitHub\DndWebApp\DndWebApp\server\DndWebApp.Api\obj\Debug\net9.0\DndWebApp.Api.AssemblyInfoInputs.cache
+C:\Users\Antho\Documents\GitHub\DndWebApp\DndWebApp\server\DndWebApp.Api\obj\Debug\net9.0\DndWebApp.Api.AssemblyInfo.cs
+C:\Users\Antho\Documents\GitHub\DndWebApp\DndWebApp\server\DndWebApp.Api\obj\Debug\net9.0\DndWebApp.Api.csproj.CoreCompileInputs.cache
+C:\Users\Antho\Documents\GitHub\DndWebApp\DndWebApp\server\DndWebApp.Api\obj\Debug\net9.0\DndWebApp.Api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Antho\Documents\GitHub\DndWebApp\DndWebApp\server\DndWebApp.Api\obj\Debug\net9.0\DndWebApp.Api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Antho\Documents\GitHub\DndWebApp\DndWebApp\server\DndWebApp.Api\obj\Debug\net9.0\DndWebApp.Api.sourcelink.json

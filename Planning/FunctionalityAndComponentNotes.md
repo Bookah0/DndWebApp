@@ -39,7 +39,6 @@ D&D tool (EF core + javascript)
 - Race
 - Background
 - CharacterSheet (pdf)
-- User
 - Inventory
 - Profile/Identity (Contains information such as appearance, age, personality, alignment, etc.)
 

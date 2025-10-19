@@ -1,0 +1,56 @@
+
+using DndWebApp.Api.Models.Items.Enums;
+
+namespace DndWebApp.Api.Models.Items;
+
+// Based on:
+// https://www.dnd5eapi.co/api/2014/equipment
+// https://www.dnd5eapi.co/api/2014/magic-items/
+// https://api.open5e.com/v1/magicitems/
+// https://api.open5e.com/v1/weapons/
+// https://api.open5e.com/v1/armor/
+
+public class Item
+{
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public required string Description { get; set; }
+    public required ItemCategory ItemType { get; set; }
+    public ItemRarity? Rarity { get; set; }
+    public bool RequiresAttunement { get; set; } = false;
+    public int Weight { get; set; }
+    public int Value { get; set; }
+    public int Quantity { get; set; } = 1;
+    public bool IsHomebrew { get; set; } = false;
+}
+
+public class Armor : Item
+{
+    public required ArmorCategory Category { get; set; }
+    public int? StrengthScoreRequired { get; set; }
+    public required int BaseArmorClass { get; set; }
+    public required bool PlusDexMod { get; set; }
+    public int ModCap { get; set; } = 0;
+    public required string ArmorClassString { get; set; }
+    public bool StealthDisadvantage { get; set; } = false;
+}
+
+public class Weapon : Item
+{
+    public required WeaponCategory WeaponCategory { get; set; }
+    public required WeaponSlot WeaponSlot { get; set; }
+    public List<string> Properties { get; set; } = [];
+    public required string DamageType { get; set; }
+    public required string DamageDice { get; set; }
+    public string VersitileDamageDice { get; set; } = "";
+    public string DistanceUnit { get; set; } = "feet";
+    public required int Range { get; set; }
+    public int? LongRange { get; set; }
+}
+
+public class Tool : Item
+{
+    public List<string> Properties { get; set; } = [];
+    public List<string> Activities { get; set; } = [];
+}
+

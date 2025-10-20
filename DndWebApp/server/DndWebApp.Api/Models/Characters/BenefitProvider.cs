@@ -8,13 +8,13 @@ namespace DndWebApp.Api.Models.Characters;
 
 public abstract class BenefitProvider
 {
-    public int Id { get; set; }
     public List<Spell> SpellsGained { get; set; } = [];
     public List<AbilityValue> AbilityIncreases { get; set; } = [];
     public List<DamageType> DamageResistance { get; set; } = [];
     public List<DamageType> DamageImmunity { get; set; } = [];
 
-    public List<string> SkillProficiencies { get; set; } = [];
+    // Proficiencies
+    public List<Skill> SkillProficiencies { get; set; } = [];
     public List<Tool> ToolProficiencies { get; set; } = [];
     public List<Language> Languages { get; set; } = [];
 

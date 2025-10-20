@@ -9,12 +9,12 @@ namespace DndWebApp.Api.Models.Characters;
 
 public class Race
 {
-    public int Id { get; set; }
+    public required string Id { get; set; }
     public required string Name { get; set; }
     public bool IsHomebrew { get; set; } = false;
     public required int Speed { get; set; }
     public List<AbilityValue> AbilityBonuses { get; set; } = [];
-    public List<SkillProficiency> SkillProficiencies { get; set; } = [];
+    public List<Skill> SkillProficiencies { get; set; } = [];
     public string AgingDescription { get; set; } = "";
     public string CommonAlignmentDescription { get; set; } = "";
     public required CreatureSize Size { get; set; }

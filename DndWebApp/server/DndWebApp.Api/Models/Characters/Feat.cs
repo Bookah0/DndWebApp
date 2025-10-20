@@ -10,6 +10,7 @@ namespace DndWebApp.Api.Models.Characters;
 // Based on https://api.open5e.com/v2/feats/
 public class Feat : BenefitProvider
 {
+    public required string Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public string Prerequisite { get; set; } = "";

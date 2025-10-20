@@ -1,3 +1,4 @@
+using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World;
@@ -13,6 +14,7 @@ public class Character
     public required Class Class { get; set; }
     public required Class SubClass { get; set; }
     public required Background Background { get; set; }
+    public Inventory Inventory { get; set; } = new();
     public required int Level { get; set; }
     public int? Experience { get; set; }
     public string PlayerName { get; set; } = "";
@@ -62,5 +64,5 @@ public class CharacterBuilding
     public string AlliesAndOrganizations { get; set; } = "";
     public string Backstory { get; set; } = "";
 
-    // public string? CharacterPictureUrl { get; set; }
+    // public string CharacterPictureUrl { get; set; } = "";
 }

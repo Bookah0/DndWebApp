@@ -9,6 +9,7 @@ namespace DndWebApp.Api.Models.Characters;
 // Based on https://www.dnd5eapi.co/api/2014/features/
 public class Feature : BenefitProvider
 {
+    public required string Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;

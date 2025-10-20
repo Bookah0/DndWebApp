@@ -11,8 +11,11 @@ public class Background : BenefitProvider
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
-
+    public List<Feature> BackgroundFeatures { get; set; } = [];
+    
+    // Starting items
     public List<Item> StartingItems { get; set; } = [];
     public List<ChoiceOption<Item>> StartingItemsOptions { get; set; } = [];
-    public List<Feature> BackgroundFeatures { get; set; } = [];
+    public List<Currency> StartingCurrency { get; set; } = [];
+    
 }

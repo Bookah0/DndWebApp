@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
 
-public class CharacterFeature
+public class PassiveEffect
 {
     public required int Id { get; set; }
     public required string Name { get; set; }

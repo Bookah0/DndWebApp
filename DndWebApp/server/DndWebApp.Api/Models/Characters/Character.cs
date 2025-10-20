@@ -30,7 +30,7 @@ public class Character
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
     public required CharacterProficiencies CharacterProficiencies { get; set; }
-    public ICollection<CharacterFeature> Features { get; set; } = [];
+    public ICollection<PassiveEffect> Features { get; set; } = [];
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public CurrentSpellSlots? CurrentSpellSlots { get; set; }
     public CharacterBuilding CharacterBuildData { get; set; } = new();

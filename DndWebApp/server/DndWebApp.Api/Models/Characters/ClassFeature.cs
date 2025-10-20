@@ -7,7 +7,7 @@ using DndWebApp.Api.Utils;
 namespace DndWebApp.Api.Models.Characters;
 
 // Based on https://www.dnd5eapi.co/api/2014/features/
-public class ClassFeature : CharacterFeature
+public class ClassFeature : PassiveEffect
 {
     public required Class Class { get; set; }
     public required int ClassId { get; set; }

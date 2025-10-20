@@ -1,12 +1,8 @@
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
-using Microsoft.EntityFrameworkCore;
+using DndWebApp.Api.Models.Items;
 
 namespace DndWebApp.Api.Repositories;
 
-public class ItemRepository : EfRepository<Item>
+public class ItemRepository(AppDbContext context) : EfRepository<Item>(context)
 {
-    public ItemRepository(AppDbContext context) : base(context)
-    {
-    }
 }

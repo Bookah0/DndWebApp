@@ -3,9 +3,6 @@ using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Api.Repositories;
 
-public class ClassRepository : EfRepository<Class>
+public class ClassRepository(AppDbContext context) : EfRepository<Class>(context)
 {
-    public ClassRepository(AppDbContext context) : base(context)
-    {
-    }
 }

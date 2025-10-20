@@ -3,9 +3,6 @@ using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Api.Repositories;
 
-public class FeatRepository : EfRepository<Feat>
+public class PassiveEffectRepository(AppDbContext context) : EfRepository<PassiveEffect>(context)
 {
-    public FeatRepository(AppDbContext context) : base(context)
-    {
-    }
 }

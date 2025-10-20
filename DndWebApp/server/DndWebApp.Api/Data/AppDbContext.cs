@@ -11,12 +11,8 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<Character> Characters { get; set; }
-    public DbSet<Trait> Traits { get; set; }
-    public DbSet<ClassFeature> ClassFeatures { get; set; }
-    public DbSet<Feat> Feats { get; set; }
-    public DbSet<PassiveEffect> CharacterFeatures { get; set; }
+    public DbSet<PassiveEffect> PassiveEffects { get; set; }
     public DbSet<Ability> AbilityScores { get; set; }
-    public DbSet<Background> Backgrounds { get; set; }
     public DbSet<Class> Classes { get; set; }
     public DbSet<Race> Races { get; set; }
     public DbSet<Skill> Skills { get; set; }

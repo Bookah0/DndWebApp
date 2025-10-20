@@ -26,16 +26,17 @@ public class Character
 
     public int? Experience { get; set; }
     public string PlayerName { get; set; } = "";
-    
+
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
     public required CharacterProficiencies CharacterProficiencies { get; set; }
-    public ICollection<PassiveEffect> Features { get; set; } = [];
+    public ICollection<PassiveEffect> PassiveEffects { get; set; } = [];
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public CurrentSpellSlots? CurrentSpellSlots { get; set; }
     public CharacterBuilding CharacterBuildData { get; set; } = new();
 
 }
+
 [Owned]
 public class CombatStats
 {

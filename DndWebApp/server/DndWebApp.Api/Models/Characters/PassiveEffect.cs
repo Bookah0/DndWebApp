@@ -3,7 +3,6 @@ using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Utils;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
 

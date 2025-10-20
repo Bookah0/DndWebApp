@@ -5,7 +5,7 @@ namespace DndWebApp.Api.Models.Characters;
 // From https://www.dnd5eapi.co/api/2014/skills
 public class Skill
 {
-    public required string Id { get; set; }
+    public required int Id { get; set; }
     public required string Name { get; set; }
     public required string Ability { get; set; }
     public bool IsHomebrew { get; set; } = false;
@@ -14,7 +14,7 @@ public class Skill
 [Owned]
 public class SkillProficiency
 {
-    public required Skill Skill { get; set; }
+    public required int SkillId { get; set; }
     public required bool HasExpertise { get; set; }
-    public required CharacterFeature From { get; set; }
+    public required int CharacterFeatureId { get; set; }
 }

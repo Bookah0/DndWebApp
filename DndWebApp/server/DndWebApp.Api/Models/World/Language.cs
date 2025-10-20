@@ -16,6 +16,6 @@ public class Language
 [Owned]
 public class LanguageProficiency
 {
-    public required Language Language { get; set; }
-    public required CharacterFeature From { get; set; }
+    public required int LanguageId { get; set; }
+    public required int CharacterFeatureId { get; set; }
 }

@@ -1,4 +1,5 @@
 using DndWebApp.Api.Models.Items;
+using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World;
 using Microsoft.EntityFrameworkCore;
@@ -12,13 +13,17 @@ public class Character
     public required int Level { get; set; }
 
     public required Race Race { get; set; }
+    public int RaceId { get; set; }
     public ICollection<Race> OtherRaces { get; set; } = [];
 
     public required Class Class { get; set; }
+    public required int ClassId { get; set; }
     public Class? SubClass { get; set; }
+    public int? SubClassId { get; set; }
 
     public required Background Background { get; set; }
-    
+    public int? BackgroundId { get; set; }
+
     public int? Experience { get; set; }
     public string PlayerName { get; set; } = "";
     
@@ -42,7 +47,6 @@ public class CombatStats
     public required int Speed { get; set; }
     public required int MaxHitDice { get; set; }
     public required int CurrentHitDice { get; set; }
-
     public ICollection<DamageAffinity> DamageAffinities { get; set; } = [];
 }
 
@@ -61,7 +65,7 @@ public class CharacterProficiencies
 [Owned]
 public class CharacterBuilding
 {
-    public Alignment? Alignment { get; set; }
+    public int? AlignmentId { get; set; }
     public string PersonalityTraits { get; set; } = "";
     public string Ideals { get; set; } = "";
     public string Bonds { get; set; } = "";

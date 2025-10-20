@@ -20,5 +20,5 @@ public class Weapon : Item
 public class WeaponProficiency
 {
     public required WeaponCategory WeaponTypes { get; set; }
-    public required CharacterFeature From { get; set; }
+    public required int CharacterFeatureId { get; set; }
 }

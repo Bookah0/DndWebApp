@@ -9,5 +9,5 @@ public class DamageAffinity
 {
     public required AffinityType AffinityType { get; set; }
     public required DamageType DamageType { get; set; }
-    public required CharacterFeature From { get; set; }
+    public required int CharacterFeatureId { get; set; }
 }

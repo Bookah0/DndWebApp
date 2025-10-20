@@ -13,7 +13,7 @@ public class Tool : Item
 public class ToolProficiency
 {
     public required ToolCategory ToolType { get; set; }
-    public required CharacterFeature From { get; set; }
+    public required int CharacterFeatureId { get; set; }
 }
 
 [Owned]
@@ -27,8 +27,8 @@ public class ToolProperty
 public class ToolActivity
 {
     public required string ActivityDescription { get; set; }
-    public Skill? SkillToCheck { get; set; }
-    public Ability? AbilityToCheck { get; set; }
+    public int? SkillId { get; set; }
+    public int? AbilityId { get; set; }
     public required int DC { get; set; }
 
 }

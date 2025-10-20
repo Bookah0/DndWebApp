@@ -8,7 +8,6 @@ public class Inventory
     public StoredItems StoredItems { get; set; } = new();
     public Currency Currency { get; set; } = new();
     public EquippedItems EquippedItems { get; set; } = new();
-
     public int TotalWeight { get; set; }
     public int MaxWeight { get; set; }
 }
@@ -16,36 +15,36 @@ public class Inventory
 [Owned]
 public class StoredItems
 {
-    public ICollection<Item> Treasure { get; set; } = [];      // Categories: Gem, Jewelry, WondrousItem, TradeGood
-    public ICollection<Item> Equipment { get; set; } = [];     // Categories: Ammunition, Armor, Ring, Rod, Shield, SpellcastingFocus, Staff, Wand, Weapon
-    public ICollection<Item> Consumables { get; set; } = [];   // Categories: Poison, Potion, Scroll
-    public ICollection<Item> Gear { get; set; } = [];          // Categories: AdventuringGear, EquipmentPack, Tools
-    public ICollection<Item> Misc { get; set; } = [];          // Categories: LandVehicle, Mount, WaterborneVehicle, null ItemCategory
+    public ICollection<int> TreasureIds { get; set; } = [];      // Categories: Gem, Jewelry, WondrousItem, TradeGood
+    public ICollection<int> EquipmentIds { get; set; } = [];     // Categories: Ammunition, Armor, Ring, Rod, Shield, SpellcastingFocus, Staff, Wand, Weapon
+    public ICollection<int> ConsumablesIds { get; set; } = [];   // Categories: Poison, Potion, Scroll
+    public ICollection<int> GearIds { get; set; } = [];          // Categories: AdventuringGear, EquipmentPack, Tools
+    public ICollection<int> MiscIds { get; set; } = [];          // Categories: LandVehicle, Mount, WaterborneVehicle, null ItemCategory
 }
 
 [Owned]
 public class EquippedItems
 {
-    public Weapon? EquippedMainHand { get; set; }
-    public Item? EquippedOffHand { get; set; }
-    public Item? EquippedRanged { get; set; }
-    public Armor? EquippedArmor { get; set; }
-    public Item? EquippedOnHead { get; set; }
-    public Item? EquippedOnWaist { get; set; }
-    public Item? EquippedOnHands { get; set; }
-    public Item? EquippedOnFeet { get; set; }
+    public int? EquippedMainHandId { get; set; }
+    public int? EquippedOffHandId { get; set; }
+    public int? EquippedRangedId { get; set; }
+    public int? EquippedArmorId { get; set; }
+    public int? EquippedHeadId { get; set; }
+    public int? EquippedWaistId { get; set; }
+    public int? EquippedHandsId { get; set; }
+    public int? EquippedFeetId { get; set; }
 
-    public ICollection<Item> EquippedRings { get; set; } = [];
+    public ICollection<int> EquippedRingIds { get; set; } = [];
     public int RingCap { get; set; } = 2;
 
-    public ICollection<Item> EquippedNecklace { get; set; } = [];
+    public ICollection<int> EquippedNecklaceIds { get; set; } = [];
     public int NecklaceCap { get; set; } = 1;
 
-    public ICollection<Item> EquippedOnBack { get; set; } = [];
+    public ICollection<int> EquippedOnBackIds { get; set; } = [];
     public int BackEquipmentCap { get; set; } = 1;
 
-    public Item? EquippedArcaneFocus { get; set; }
-    public Item? EquippedHolySymbol { get; set; }
+    public int? EquippedArcaneFocusId { get; set; }
+    public int? EquippedHolySymbolId { get; set; }
     public int AttunedItems { get; set; } = 0;
 }
 

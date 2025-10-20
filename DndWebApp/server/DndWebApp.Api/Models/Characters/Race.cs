@@ -17,6 +17,7 @@ public class Race
     public required ICollection<Trait> Traits { get; set; }
     public ICollection<Race> SubRaces { get; set; } = [];
     public Race? ParentRace { get; set; }
+    public int? ParentRaceId { get; set; }
 }
 
 [Owned]

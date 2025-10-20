@@ -18,5 +18,5 @@ public class Armor : Item
 public class ArmorProficiency
 {
     public required ArmorCategory ArmorType { get; set; }
-    public required CharacterFeature From { get; set; }
+    public required int CharacterFeatureId { get; set; }
 }

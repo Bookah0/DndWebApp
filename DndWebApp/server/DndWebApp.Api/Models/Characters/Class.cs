@@ -20,15 +20,17 @@ public class Class
     public ICollection<Item> StartingEquipmentOptions { get; set; } = [];
 }
 
-[Owned]
 public class ClassLevel
 {
+    public required int Id { get; set; }
     public required int Level { get; set; }
     public required int AbilityScoreBonus { get; set; }
     public required int ProficiencyBonus { get; set; }
     public ICollection<ClassFeature> NewFeatures { get; set; } = [];
     public SpellSlotsAtLevel? SpellSlotsAtLevel { get; set; }
     public ICollection<ClassSpecificSlot> ClassSpecificSlotsAtLevel { get; set; } = [];
+    public required Class Class { get; set; }
+    public required int ClassId { get; set; }
 }
 
 [Owned]

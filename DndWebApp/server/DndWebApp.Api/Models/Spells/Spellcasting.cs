@@ -8,7 +8,7 @@ public class Spellcasting
 {
     public required int SpellLevel { get; set; }
     public required ICollection<SpellcastingInfo> Info { get; set; }
-    public required Ability SpellcastingAbility { get; set; }
+    public required int SpellcastingAbilityId { get; set; }
 }
 
 [Owned]
@@ -21,7 +21,7 @@ public class SpellcastingInfo
 [Owned]
 public class SpellSlotsAtLevel
 {
-    public required Class Parent { get; set; }
+    public required int ClassId { get; set; }
     public required int ClassLevel { get; set; }
     public required int CantripsKnown { get; set; }
     public required int SpellsKnown { get; set; }
@@ -39,7 +39,7 @@ public class SpellSlotsAtLevel
 [Owned]
 public class CurrentSpellSlots
 {
-    public required Character Parent { get; set; }
+    public required int CharacterId { get; set; }
     public required int Lvl1 { get; set; }
     public int Lvl2 { get; set; } = 0;
     public int Lvl3 { get; set; } = 0;

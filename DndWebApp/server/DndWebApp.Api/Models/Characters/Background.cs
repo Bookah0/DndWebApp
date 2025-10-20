@@ -6,13 +6,15 @@ namespace DndWebApp.Api.Models.Characters;
 
 
 // Based on https://api.open5e.com/v2/backgrounds/
-public class Background : BenefitProvider
+public class Background
 {
+    public required string Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
 
-    public List<Item> StartingItems { get; set; } = [];
-    public List<ChoiceOption<Item>> StartingItemsOptions { get; set; } = [];
-    public List<Feature> BackgroundFeatures { get; set; } = [];
+    public ICollection<CharacterFeature> BackgroundFeatures { get; set; } = [];
+    public ICollection<Item> StartingItems { get; set; } = [];
+    public ICollection<ItemChoice> StartingItemsOptions { get; set; } = [];
+    public required Currency StartingCurrency { get; set; }
 }

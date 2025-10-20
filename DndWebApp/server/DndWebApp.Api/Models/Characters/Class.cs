@@ -1,6 +1,7 @@
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
 
@@ -11,28 +12,26 @@ public class Class
 {
     public required int Id { get; set; }
     public required string Name { get; set; }
+    public required string Description { get; set; }
     public required string HitDie { get; set; }
-    public required int CurrentClassLevel { get; set; }
     public Spellcasting? Spellcasting { get; set; }
-    public required List<ClassLevel> ClassLevels { get; set; }
-    public List<Item> StartingEquipment { get; set; } = [];
-    public List<ChoiceOption<Item>> StartingEquipmentOptions { get; set; } = [];
-
-    // Proficiencies
-    public List<ChoiceOption<string>> SkillProficiencyChoices { get; set; } = [];
-    public List<AbilityValue> SavingThrows { get; set; } = [];
+    public required ICollection<ClassLevel> ClassLevels { get; set; }
+    public ICollection<Item> StartingEquipment { get; set; } = [];
+    public ICollection<Item> StartingEquipmentOptions { get; set; } = [];
 }
 
+[Owned]
 public class ClassLevel
 {
     public required int Level { get; set; }
     public required int AbilityScoreBonus { get; set; }
     public required int ProficiencyBonus { get; set; }
-    public List<Feature> NewFeatures { get; set; } = [];
+    public ICollection<ClassFeature> NewFeatures { get; set; } = [];
     public SpellSlotsAtLevel? SpellSlotsAtLevel { get; set; }
-    public List<ClassSpecificSlot> ClassSpecificSlotsAtLevel { get; set; } = [];
+    public ICollection<ClassSpecificSlot> ClassSpecificSlotsAtLevel { get; set; } = [];
 }
 
+[Owned]
 public class ClassSpecificSlot
 {
     public required string Name { get; set; }

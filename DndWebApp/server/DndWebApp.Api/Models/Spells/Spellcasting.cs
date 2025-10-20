@@ -1,25 +1,26 @@
 using DndWebApp.Api.Models.Characters;
+using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Spells;
 
+[Owned]
 public class Spellcasting
 {
-    public int Id { get; set; }
-    public required int Level { get; set; }
-    public List<SpellcastingInfo> Info { get; set; } = [];
-    public required AbilityValue SpellcastingAbility { get; set; }
+    public required int SpellLevel { get; set; }
+    public required ICollection<SpellcastingInfo> Info { get; set; }
+    public required Ability SpellcastingAbility { get; set; }
 }
 
+[Owned]
 public class SpellcastingInfo
 {
-    public int Id { get; set; }
     public required string Title { get; set; }
     public required string Description { get; set; }
 }
 
+[Owned]
 public class SpellSlotsAtLevel
 {
-    public int Id { get; set; }
     public required Class Parent { get; set; }
     public required int ClassLevel { get; set; }
     public required int CantripsKnown { get; set; }
@@ -35,9 +36,9 @@ public class SpellSlotsAtLevel
     public required int Lvl9 { get; set; }
 }
 
+[Owned]
 public class CurrentSpellSlots
 {
-    public int Id { get; set; }
     public required Character Parent { get; set; }
     public required int Lvl1 { get; set; }
     public int Lvl2 { get; set; } = 0;

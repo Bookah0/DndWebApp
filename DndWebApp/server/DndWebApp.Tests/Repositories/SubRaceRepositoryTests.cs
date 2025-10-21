@@ -108,6 +108,7 @@ namespace YourNamespace.Tests
                 var repo = new SubraceRepository(context);
                 await repo.CreateAsync(highElf);
                 await repo.CreateAsync(woodElf);
+                await context.SaveChangesAsync();
             }
 
             // Act & Assert
@@ -138,6 +139,7 @@ namespace YourNamespace.Tests
 
                 var repo = new SubraceRepository(context);
                 await repo.CreateAsync(subrace);
+                await context.SaveChangesAsync();
             }
 
             // Act
@@ -146,6 +148,7 @@ namespace YourNamespace.Tests
                 var repo = new SubraceRepository(context);
                 subrace.Name = "Updated Elf";
                 await repo.UpdateAsync(subrace);
+                await context.SaveChangesAsync();
             }
 
             // Assert
@@ -174,6 +177,7 @@ namespace YourNamespace.Tests
 
                 var repo = new SubraceRepository(context);
                 await repo.CreateAsync(subrace);
+                await context.SaveChangesAsync();
             }
 
             // Act
@@ -181,6 +185,7 @@ namespace YourNamespace.Tests
             {
                 var repo = new SubraceRepository(context);
                 await repo.DeleteAsync(subrace);
+                await context.SaveChangesAsync();
             }
 
             // Assert

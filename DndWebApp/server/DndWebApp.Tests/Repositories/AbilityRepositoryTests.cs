@@ -127,6 +127,7 @@ public class AbilityRepositoryTests
             var repo = new AbilityRepository(context);
             ability.FullName = "Updated Strength";
             await repo.UpdateAsync(ability);
+            await context.SaveChangesAsync();
         }
 
         // Assert
@@ -144,7 +145,7 @@ public class AbilityRepositoryTests
     {
         // Arrange
         var options = GetInMemoryOptions("Ability_DeleteDB");
-        
+
         var ability = CreateAbility(1, "Strength", "Str", "Measures bodily power and force.");
 
         await using (var context = new AppDbContext(options))
@@ -159,6 +160,7 @@ public class AbilityRepositoryTests
         {
             var repo = new AbilityRepository(context);
             await repo.DeleteAsync(ability);
+            await context.SaveChangesAsync();
         }
 
         // Assert

@@ -72,6 +72,7 @@ public class RaceRepositoryTests
             var repo = new RaceRepository(context);
             await repo.CreateAsync(elfRace);
             await repo.CreateAsync(dwarfRace);
+            await context.SaveChangesAsync();
         }
 
         // Act & Assert
@@ -98,6 +99,7 @@ public class RaceRepositoryTests
         {
             var repo = new RaceRepository(context);
             await repo.CreateAsync(race);
+            await context.SaveChangesAsync();
         }
 
         // Act
@@ -106,6 +108,7 @@ public class RaceRepositoryTests
             var repo = new RaceRepository(context);
             race.Name = "Updated Elf";
             await repo.UpdateAsync(race);
+            await context.SaveChangesAsync();
         }
 
         // Assert
@@ -130,6 +133,7 @@ public class RaceRepositoryTests
         {
             var repo = new RaceRepository(context);
             await repo.CreateAsync(race);
+            await context.SaveChangesAsync();
         }
 
         // Act
@@ -137,6 +141,7 @@ public class RaceRepositoryTests
         {
             var repo = new RaceRepository(context);
             await repo.DeleteAsync(race);
+            await context.SaveChangesAsync();
         }
 
         // Assert

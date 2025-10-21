@@ -120,6 +120,7 @@ public class SpellRepositoryTests
             var repo = new SpellRepository(context);
             spell.Name = "Updated Spell";
             await repo.UpdateAsync(spell);
+            await context.SaveChangesAsync();
         }
 
         // Assert
@@ -152,6 +153,7 @@ public class SpellRepositoryTests
         {
             var repo = new SpellRepository(context);
             await repo.DeleteAsync(spell);
+            await context.SaveChangesAsync();
         }
 
         // Assert

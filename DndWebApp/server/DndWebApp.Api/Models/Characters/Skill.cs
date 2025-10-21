@@ -7,7 +7,6 @@ public class Skill
 {
     public required int Id { get; set; }
     public required string Name { get; set; }
-    public required Ability Ability { get; set; }
     public required int AbilityId { get; set; }
     public bool IsHomebrew { get; set; } = false;
 }

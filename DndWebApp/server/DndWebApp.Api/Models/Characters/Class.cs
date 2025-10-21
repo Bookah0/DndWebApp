@@ -14,28 +14,19 @@ public class Class
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required string HitDie { get; set; }
-    public Spellcasting? Spellcasting { get; set; }
     public required ICollection<ClassLevel> ClassLevels { get; set; }
     public ICollection<Item> StartingEquipment { get; set; } = [];
-    public ICollection<Item> StartingEquipmentOptions { get; set; } = [];
-}
+    public ICollection<ItemChoice> StartingEquipmentOptions { get; set; } = [];
 
-public class ClassLevel
-{
-    public required int Id { get; set; }
-    public required int Level { get; set; }
-    public required int AbilityScoreBonus { get; set; }
-    public required int ProficiencyBonus { get; set; }
-    public ICollection<ClassFeature> NewFeatures { get; set; } = [];
-    public SpellSlotsAtLevel? SpellSlotsAtLevel { get; set; }
-    public ICollection<ClassSpecificSlot> ClassSpecificSlotsAtLevel { get; set; } = [];
-    public required Class Class { get; set; }
-    public required int ClassId { get; set; }
+    // Spellcasting
+    public required int SpellLevel { get; set; }
+    public required ICollection<SpellcastingInfo> Info { get; set; }
+    public required int SpellcastingAbilityId { get; set; }
 }
 
 [Owned]
-public class ClassSpecificSlot
+public class SpellcastingInfo
 {
-    public required string Name { get; set; }
-    public required int Quantity { get; set; }
+    public required string Title { get; set; }
+    public required string Description { get; set; }
 }

@@ -29,11 +29,20 @@ public class Character
 
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
-    public required CharacterProficiencies CharacterProficiencies { get; set; }
     public ICollection<PassiveEffect> PassiveEffects { get; set; } = [];
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public CurrentSpellSlots? CurrentSpellSlots { get; set; }
     public CharacterBuilding CharacterBuildData { get; set; } = new();
+
+    // Proficiencies
+    public ICollection<SaveThrowProficiency> SavingThrows { get; set; } = [];
+    public ICollection<DamageAffinity> DamageAffinities { get; set; } = [];
+    public ICollection<SkillProficiency> SkillProficiencies { get; set; } = [];
+    public ICollection<WeaponProficiency> WeaponProficiencies { get; set; } = [];
+    public ICollection<ArmorProficiency> ArmorProficiencies { get; set; } = [];
+    public ICollection<ToolProficiency> ToolProficiencies { get; set; } = [];
+    public ICollection<LanguageProficiency> Languages { get; set; } = [];
+    public int ProficiencyBonus { get; set; } = 2;
 
 }
 
@@ -48,19 +57,21 @@ public class CombatStats
     public required int Speed { get; set; }
     public required int MaxHitDice { get; set; }
     public required int CurrentHitDice { get; set; }
-    public ICollection<DamageAffinity> DamageAffinities { get; set; } = [];
 }
 
 [Owned]
-public class CharacterProficiencies
+public class CurrentSpellSlots
 {
-    public ICollection<SaveThrowProficiency> SavingThrows { get; set; } = [];
-    public ICollection<SkillProficiency> SkillProficiencies { get; set; } = [];
-    public ICollection<WeaponProficiency> WeaponProficiencies { get; set; } = [];
-    public ICollection<ArmorProficiency> ArmorProficiencies { get; set; } = [];
-    public ICollection<ToolProficiency> ToolProficiencies { get; set; } = [];
-    public ICollection<LanguageProficiency> Languages { get; set; } = [];
-    public int ProficiencyBonus { get; set; } = 2;
+    public required int CharacterId { get; set; }
+    public required int Lvl1 { get; set; }
+    public int Lvl2 { get; set; } = 0;
+    public int Lvl3 { get; set; } = 0;
+    public int Lvl4 { get; set; } = 0;
+    public int Lvl5 { get; set; } = 0;
+    public int Lvl6 { get; set; } = 0;
+    public int Lvl7 { get; set; } = 0;
+    public int Lvl8 { get; set; } = 0;
+    public int Lvl9 { get; set; } = 0;
 }
 
 [Owned]

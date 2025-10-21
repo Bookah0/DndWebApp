@@ -1,0 +1,42 @@
+using DndWebApp.Api.Models.Spells;
+using Microsoft.EntityFrameworkCore;
+
+namespace DndWebApp.Api.Models.Characters;
+
+public class ClassLevel
+{
+    public required int Id { get; set; }
+    public required int Level { get; set; }
+    public required int AbilityScoreBonus { get; set; }
+    public required int ProficiencyBonus { get; set; }
+    public ICollection<ClassFeature> NewFeatures { get; set; } = [];
+    public SpellSlotsAtLevel? SpellSlotsAtLevel { get; set; }
+    public ICollection<ClassSpecificSlot> ClassSpecificSlotsAtLevel { get; set; } = [];
+    public required Class Class { get; set; }
+    public required int ClassId { get; set; }
+}
+
+[Owned]
+public class SpellSlotsAtLevel
+{
+    public required int ClassId { get; set; }
+    public required int ClassLevel { get; set; }
+    public required int CantripsKnown { get; set; }
+    public required int SpellsKnown { get; set; }
+    public required int Lvl1 { get; set; }
+    public required int Lvl2 { get; set; }
+    public required int Lvl3 { get; set; }
+    public required int Lvl4 { get; set; }
+    public required int Lvl5 { get; set; }
+    public required int Lvl6 { get; set; }
+    public required int Lvl7 { get; set; }
+    public required int Lvl8 { get; set; }
+    public required int Lvl9 { get; set; }
+}
+
+[Owned]
+public class ClassSpecificSlot
+{
+    public required string Name { get; set; }
+    public required int Quantity { get; set; }
+}

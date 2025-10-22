@@ -22,10 +22,7 @@ public class SpellRepositoryTests
             Level = id,
             Duration = "Instantaneous",
             CastingTime = "1 action",
-            Targeting = new Targeting
-            {
-                TargetType = ""
-            },
+            TargetType = "",
             Damage = damage,
             MagicSchool = MagicSchool.Evocation,
             Range = 100,
@@ -47,12 +44,14 @@ public class SpellRepositoryTests
 
         var damage = new Damage { DamageRoll = "1d4+1" };
         var magicMissile = CreateSpell(1, "Magic Missile", damage: damage);
+        var fireball = CreateSpell(2, "Fireball");
 
         // Act
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
             await repo.CreateAsync(magicMissile);
+            await repo.CreateAsync(fireball);
             await context.SaveChangesAsync();
         }
 
@@ -67,6 +66,11 @@ public class SpellRepositoryTests
             Assert.Equal("Magic Missile", savedMagicMissile!.Name);
             Assert.NotNull(savedMagicMissile.Damage);
             Assert.Equal("1d4+1", savedMagicMissile.Damage.DamageRoll);
+
+            var allSpells = await repo.GetAllAsync();
+            Assert.Equal(2, allSpells.Count);
+            Assert.Contains(allSpells, s => s.Name == "Magic Missile");
+            Assert.Contains(allSpells, s => s.Name == "Fireball");
         }
     }
 
@@ -91,11 +95,7 @@ public class SpellRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            var allSpells = await repo.GetAllAsync();
 
-            Assert.Equal(2, allSpells.Count);
-            Assert.Contains(allSpells, s => s.Name == "Magic Missile");
-            Assert.Contains(allSpells, s => s.Name == "Fireball");
         }
     }
 

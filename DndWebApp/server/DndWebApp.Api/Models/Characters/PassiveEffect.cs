@@ -14,6 +14,7 @@ public class PassiveEffect
     public bool IsHomebrew { get; set; } = false;
 
     public ICollection<AbilityValue> AbilityIncreases { get; set; } = [];
+    public ICollection<Ability> SavingThrows { get; set; } = [];
     public ICollection<Spell> SpellsGained { get; set; } = [];
 
     // Damage affinity
@@ -22,11 +23,10 @@ public class PassiveEffect
     public ICollection<DamageType> DamageWeaknessGained { get; set; } = [];
 
     // Proficiencies
-    public ICollection<Ability> SavingThrows { get; set; } = [];
     public ICollection<Skill> SkillProficiencies { get; set; } = [];
     public ICollection<WeaponCategory> WeaponProficiencies { get; set; } = [];
     public ICollection<ArmorCategory> ArmorProficiencies { get; set; } = [];
-    public ICollection<Tool> ToolProficiencies { get; set; } = [];
+    public ICollection<ToolCategory> ToolProficiencies { get; set; } = [];
     public ICollection<Language> Languages { get; set; } = [];
 
     // Proficiency choices

@@ -14,19 +14,20 @@ public class Spell
     public bool IsHomebrew { get; set; } = false;
     public required int Level { get; set; }
     public string EffectsAtHigherLevels { get; set; } = "";
+    
     public ICollection<Class> Classes { get; set; } = [];
 
     public required string Duration { get; set; }
     public required string CastingTime { get; set; }
     public string ReactionCondition { get; set; } = "";
 
-    public SpellType Types { get; set; } = SpellType.Normal;
-    public required Targeting Targeting { get; set; }
+    public required string TargetType { get; set; }
     public required MagicSchool MagicSchool { get; set; }
     public required double Range { get; set; }
-    public Damage? Damage { get; set; }
-    public CastingRequirements? CastingRequirements { get; set; }
-    
+    public SpellType Types { get; set; } = SpellType.Normal;
+    public SpellShape SpellShape { get; set; } = new();
+    public Damage Damage { get; set; } = new();
+    public CastingRequirements CastingRequirements { get; set; } = new();  
 }
 
 [Owned]
@@ -37,12 +38,12 @@ public class Damage
 }
 
 [Owned]
-public class Targeting
+public class SpellShape
 {
-    public required string TargetType { get; set; }
-    public string? AoeShape { get; set; }
-    public string? AoeWidth { get; set; }
-    public string? AoeLength { get; set; }
+    
+    public string? ShapeType { get; set; }
+    public string? ShapeWidth { get; set; }
+    public string? ShapeLength { get; set; }
 }
 
 [Owned]

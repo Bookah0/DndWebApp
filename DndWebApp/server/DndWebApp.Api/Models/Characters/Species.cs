@@ -8,11 +8,12 @@ public class Species
 {
     public required int Id { get; set; }
     public required string Name { get; set; }
-    public RaceDescription? RaceDescription { get; set; }
+    public RaceDescription RaceDescription { get; set; } = new();
     public bool IsHomebrew { get; set; } = false;
 
     public required int Speed { get; set; }
-    public required ICollection<Trait> Traits { get; set; }
+    public CreatureSize Size { get; set; } = CreatureSize.Medium;
+    public ICollection<Trait> Traits { get; set; } = [];
 }
 
 public class Race : Species
@@ -29,9 +30,9 @@ public class Subrace : Species
 [Owned]
 public class RaceDescription
 {
+    public string GeneralDescription { get; set; } = "";
     public string AgingDescription { get; set; } = "";
     public string CommonAlignmentDescription { get; set; } = "";
-    public CreatureSize Size { get; set; } = CreatureSize.Medium;
     public string SizeDescription { get; set; } = "";
     public string LanguageDescription { get; set; } = "";
 }

@@ -6,7 +6,7 @@ namespace DndWebApp.Api.Models.Characters;
 // Based on https://api.open5e.com/v1/races/ & https://www.dnd5eapi.co/api/2014/races/
 public class Species
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string Name { get; set; }
     public RaceDescription RaceDescription { get; set; } = new();
     public bool IsHomebrew { get; set; } = false;
@@ -23,7 +23,7 @@ public class Race : Species
 
 public class Subrace : Species
 {
-    public Race? ParentRace { get; set; }
+    public required Race ParentRace { get; set; }
     public required int ParentRaceId { get; set; }
 }
 

@@ -8,7 +8,7 @@ namespace DndWebApp.Api.Models.DTOs;
 /// </summary>
 public class RacePrimitiveDto
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string Name { get; set; }
     public required string GeneralDescription { get; set; }
 }

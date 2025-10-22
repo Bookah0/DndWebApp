@@ -5,7 +5,7 @@ namespace DndWebApp.Api.Models.Characters;
 
 public class ClassLevel
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required int Level { get; set; }
     public required int AbilityScoreBonus { get; set; }
     public required int ProficiencyBonus { get; set; }

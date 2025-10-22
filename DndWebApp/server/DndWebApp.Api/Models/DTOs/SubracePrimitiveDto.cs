@@ -7,7 +7,7 @@ namespace DndWebApp.Api.Models.DTOs;
 /// </summary>
 public class SubracePrimitiveDto
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string Name { get; set; }
     public required string GeneralDescription { get; set; }
     public required int ParentRaceId { get; set; }

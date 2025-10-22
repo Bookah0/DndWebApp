@@ -8,12 +8,12 @@ namespace DndWebApp.Api.Models.Characters;
 // Based on https://api.open5e.com/v2/backgrounds/
 public class Background
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
 
-    public ICollection<PassiveEffect> BackgroundFeatures { get; set; } = [];
+    public ICollection<PassiveEffect> Features { get; set; } = [];
     public ICollection<Item> StartingItems { get; set; } = [];
     public ICollection<ItemChoice> StartingItemsOptions { get; set; } = [];
     public required Currency StartingCurrency { get; set; }

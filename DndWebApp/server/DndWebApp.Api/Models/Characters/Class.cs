@@ -10,7 +10,7 @@ namespace DndWebApp.Api.Models.Characters;
 // Class levels based on https://www.dnd5eapi.co/api/2014/classes/{class}/levels and https://www.dnd5eapi.co/api/2014/subclasses/{subclass}/levels 
 public class Class
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required string HitDie { get; set; }

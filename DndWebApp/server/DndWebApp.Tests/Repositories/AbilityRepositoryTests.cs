@@ -7,112 +7,56 @@ namespace DndWebApp.Tests.Repositories;
 
 public class AbilityRepositoryTests
 {
-    private Skill CreateSkill(int id, string name, int abilityId)
+    private Skill CreateSkill(string name, int abilityId)
     {
-        return new Skill
-        {
-            Id = id,
-            Name = name,
-            AbilityId = abilityId
-        };
+        return new() { Name = name, AbilityId = abilityId };
     }
 
-    private Ability CreateAbility(int id, string fullName, string shortName, string description, List<Skill>? skills = null)
+    private Ability CreateAbility(string fullName, string shortName, string description, List<Skill>? skills = null)
     {
-        return new Ability
-        {
-            Id = id,
-            FullName = fullName,
-            ShortName = shortName,
-            Description = description,
-            Skills = skills ?? []
-        };
+        return new() { FullName = fullName, ShortName = shortName, Description = description, Skills = skills ?? [] };
     }
 
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
+    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) =>
+        new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: dbName)
             .Options;
-    }
 
     [Fact]
     public async Task AddAndRetrieveAbility_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Ability_AddRetrieveDB");
+        var str = CreateAbility("Strength", "Str", "Measures bodily power and force.");
+        var dex = CreateAbility("Dexterity", "Dex", "Measures agility, reflexes, and balance.");
 
-        var athletics = CreateSkill(1, "Athletics", 1);
-        var ability = CreateAbility(1, "Strength", "Str", "Measures bodily power and force.", [athletics]);
-
-        // Act
         await using (var context = new AppDbContext(options))
         {
             var repo = new AbilityRepository(context);
-            await repo.CreateAsync(ability);
+            await repo.CreateAsync(str);
+            await repo.CreateAsync(dex);
             await context.SaveChangesAsync();
         }
 
-        // Assert
         await using (var context = new AppDbContext(options))
         {
             var repo = new AbilityRepository(context);
-            var savedAbility = await repo.GetByIdAsync(1);
+            var savedStr = await repo.GetByIdAsync(str.Id);
+            Assert.NotNull(savedStr);
+            Assert.Equal("Strength", savedStr!.FullName);
+            Assert.Equal("Str", savedStr.ShortName);
 
-            Assert.NotNull(savedAbility);
-            Assert.Equal("Strength", savedAbility!.FullName);
-            Assert.Equal("Str", savedAbility.ShortName);
-            Assert.Single(savedAbility.Skills);
-            Assert.Equal("Athletics", savedAbility.Skills.First().Name);
-            Assert.Equal(savedAbility.Id, savedAbility.Skills.First().AbilityId);
-        }
-    }
-
-    [Fact]
-    public async Task GetAllAbilities_ReturnsAllAbilities()
-    {
-        // Arrange
-        var options = GetInMemoryOptions("Ability_GetAllDB");
-
-        var abilities = new List<Ability>
-            {
-                CreateAbility(1, "Strength", "Str", "Measures bodily power and force."),
-                CreateAbility(2, "Dexterity", "Dex", "Measures agility, reflexes, and balance."),
-                CreateAbility(3, "Constitution", "Con", "Measures health, stamina, and vital force."),
-                CreateAbility(4, "Intelligence", "Int", "Measures reasoning and memory."),
-                CreateAbility(5, "Wisdom", "Wis", "Measures perception and insight."),
-                CreateAbility(6, "Charisma", "Cha", "Measures force of personality, persuasiveness, and leadership.")
-            };
-
-        // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new AbilityRepository(context);
-            foreach (var ability in abilities)
-            {
-                await repo.CreateAsync(ability);
-            }
-            await context.SaveChangesAsync();
-        }
-
-        // Assert
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new AbilityRepository(context);
-            var savedAbilities = await repo.GetAllAsync();
-
-            Assert.NotNull(savedAbilities);
-            Assert.Equal(6, savedAbilities.Count);
+            var allAbilities = await repo.GetAllAsync();
+            Assert.Equal(2, allAbilities.Count);
+            Assert.Contains(allAbilities, a => a.FullName == "Strength");
+            Assert.Contains(allAbilities, a => a.FullName == "Dexterity");
         }
     }
 
     [Fact]
     public async Task UpdateAbility_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Ability_UpdateDB");
-
-        var ability = CreateAbility(1, "Strength", "Str", "Measures bodily power and force.");
+        var ability = CreateAbility("Strength", "Str", "Measures bodily power and force.");
 
         await using (var context = new AppDbContext(options))
         {
@@ -121,7 +65,6 @@ public class AbilityRepositoryTests
             await context.SaveChangesAsync();
         }
 
-        // Act
         await using (var context = new AppDbContext(options))
         {
             var repo = new AbilityRepository(context);
@@ -130,12 +73,10 @@ public class AbilityRepositoryTests
             await context.SaveChangesAsync();
         }
 
-        // Assert
         await using (var context = new AppDbContext(options))
         {
             var repo = new AbilityRepository(context);
-            var updated = await repo.GetByIdAsync(1);
-
+            var updated = await repo.GetByIdAsync(ability.Id);
             Assert.Equal("Updated Strength", updated!.FullName);
         }
     }
@@ -143,10 +84,8 @@ public class AbilityRepositoryTests
     [Fact]
     public async Task DeleteAbility_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Ability_DeleteDB");
-
-        var ability = CreateAbility(1, "Strength", "Str", "Measures bodily power and force.");
+        var ability = CreateAbility("Strength", "Str", "Measures bodily power and force.");
 
         await using (var context = new AppDbContext(options))
         {
@@ -155,7 +94,6 @@ public class AbilityRepositoryTests
             await context.SaveChangesAsync();
         }
 
-        // Act
         await using (var context = new AppDbContext(options))
         {
             var repo = new AbilityRepository(context);
@@ -163,12 +101,91 @@ public class AbilityRepositoryTests
             await context.SaveChangesAsync();
         }
 
-        // Assert
         await using (var context = new AppDbContext(options))
         {
             var repo = new AbilityRepository(context);
             var deleted = await repo.GetByIdAsync(ability.Id);
             Assert.Null(deleted);
+        }
+    }
+
+    [Fact]
+    public async Task RetrieveAbilitiesAsPrimitiveDtos_ShouldHaveCorrectFieldValues()
+    {
+        var options = GetInMemoryOptions("PrimitiveAbility_AddRetrieveDB");
+        var dex = CreateAbility("Dexterity", "Dex", "Measures agility, reflexes, and balance.");
+        var con = CreateAbility("Constitution", "Con", "Measures health, stamina, and vital force.");
+
+        await using (var context = new AppDbContext(options))
+        {
+            var repo = new AbilityRepository(context);
+            await repo.CreateAsync(dex);
+            await repo.CreateAsync(con);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = new AppDbContext(options))
+        {
+            var repo = new AbilityRepository(context);
+            var savedDex = await repo.GetPrimitiveDataAsync(dex.Id);
+            var savedCon = await repo.GetPrimitiveDataAsync(con.Id);
+
+            Assert.NotNull(savedDex);
+            Assert.Equal("Dexterity", savedDex!.FullName);
+            Assert.Equal("Dex", savedDex.ShortName);
+
+            Assert.NotNull(savedCon);
+            Assert.Equal("Constitution", savedCon!.FullName);
+            Assert.Equal("Con", savedCon.ShortName);
+
+            var allAbilities = await repo.GetAllPrimitiveDataAsync();
+            Assert.Equal(2, allAbilities.Count);
+            Assert.Contains(allAbilities, a => a.FullName == "Dexterity");
+            Assert.Contains(allAbilities, a => a.FullName == "Constitution");
+        }
+    }
+
+    [Fact]
+    public async Task RetrieveWithSkills_ShouldHaveCorrectSkills()
+    {
+        var options = GetInMemoryOptions("AbilityWithSkill_GetAllDB");
+
+        var sleightOfHand = CreateSkill("Sleight of Hand", 0);
+        var stealth = CreateSkill("Stealth", 0);
+
+        var dex = CreateAbility("Dexterity", "Dex", "Measures agility, reflexes, and balance.", [sleightOfHand, stealth]);
+        var con = CreateAbility("Constitution", "Con", "Measures health, stamina, and vital force.");
+
+        await using (var context = new AppDbContext(options))
+        {
+            var repo = new AbilityRepository(context);
+            await repo.CreateAsync(dex);
+            await repo.CreateAsync(con);
+            await context.SaveChangesAsync();
+        }
+
+        await using (var context = new AppDbContext(options))
+        {
+            var repo = new AbilityRepository(context);
+            var fetchedDex = await repo.GetWithSkillsAsync(dex.Id);
+            var fetchedCon = await repo.GetWithSkillsAsync(con.Id);
+
+            Assert.NotNull(fetchedDex);
+            Assert.NotNull(fetchedDex.Skills);
+            Assert.Equal(2, fetchedDex.Skills.Count);
+            Assert.Contains(fetchedDex.Skills, s => s.Name == "Sleight of Hand");
+            Assert.Contains(fetchedDex.Skills, s => s.Name == "Stealth");
+            Assert.All(fetchedDex.Skills, s => Assert.Equal(fetchedDex.Id, s.AbilityId));
+
+            Assert.NotNull(fetchedCon);
+            Assert.NotNull(fetchedCon.Skills);
+            Assert.Empty(fetchedCon.Skills);
+
+            var allAbilities = await repo.GetAllWithSkillsAsync();
+            Assert.NotNull(allAbilities);
+            Assert.NotEmpty(allAbilities);
+            Assert.NotNull(allAbilities.First().Skills);
+            Assert.True(allAbilities.First().Skills.Count == 0 || allAbilities.First().Skills.Count == 2);
         }
     }
 }

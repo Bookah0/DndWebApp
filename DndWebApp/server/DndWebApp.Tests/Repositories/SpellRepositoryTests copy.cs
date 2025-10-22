@@ -12,23 +12,18 @@ namespace DndWebApp.Tests.Repositories;
 
 public class SpellRepositoryTests
 {
-    private Spell CreateSpell(int id, string name, Damage? damage = null)
+    private Spell CreateSpell(string name, Damage? damage = null)
     {
-        return new Spell
-        {
-            Id = id,
+        return new () {
             Name = name,
             Description = $"Description of {name}",
-            Level = id,
-            Duration = "Instantaneous",
-            CastingTime = "1 action",
-            Targeting = new Targeting
-            {
-                TargetType = ""
-            },
+            Level = 1,
+            Duration = "",
+            CastingTime = "",
+            TargetType = "",
             Damage = damage,
             MagicSchool = MagicSchool.Evocation,
-            Range = 100,
+            Range = 1,
         };
     }
 
@@ -46,14 +41,19 @@ public class SpellRepositoryTests
         var options = GetInMemoryOptions("Spell_AddRetrieveDB");
 
         var damage = new Damage { DamageRoll = "1d4+1" };
-        var magicMissile = CreateSpell(1, "Magic Missile", damage: damage);
+        var magicMissile = CreateSpell("Magic Missile", damage);
+        var fireball = CreateSpell("Fireball");
+        int magicMissileId;
 
         // Act
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
             await repo.CreateAsync(magicMissile);
+            await repo.CreateAsync(fireball);
             await context.SaveChangesAsync();
+
+            magicMissileId = magicMissile.Id;
         }
 
         // Assert
@@ -61,12 +61,16 @@ public class SpellRepositoryTests
         {
             var repo = new SpellRepository(context);
 
-            var savedMagicMissile = await repo.GetByIdAsync(1);
-
+            var savedMagicMissile = await repo.GetByIdAsync(magicMissileId);
             Assert.NotNull(savedMagicMissile);
             Assert.Equal("Magic Missile", savedMagicMissile!.Name);
             Assert.NotNull(savedMagicMissile.Damage);
             Assert.Equal("1d4+1", savedMagicMissile.Damage.DamageRoll);
+
+            var allSpells = await repo.GetAllAsync();
+            Assert.Equal(2, allSpells.Count);
+            Assert.Contains(allSpells, s => s.Name == "Magic Missile");
+            Assert.Contains(allSpells, s => s.Name == "Fireball");
         }
     }
 
@@ -76,14 +80,11 @@ public class SpellRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("Spell_GetAllDB");
 
-        var spell1 = CreateSpell(1, "Magic Missile");
-        var spell2 = CreateSpell(2, "Fireball");
-
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            await repo.CreateAsync(spell1);
-            await repo.CreateAsync(spell2);
+            await repo.CreateAsync(CreateSpell("Magic Missile"));
+            await repo.CreateAsync(CreateSpell("Fireball"));
             await context.SaveChangesAsync();
         }
 
@@ -91,11 +92,11 @@ public class SpellRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            var allSpells = await repo.GetAllAsync();
+            var all = await repo.GetAllAsync();
 
-            Assert.Equal(2, allSpells.Count);
-            Assert.Contains(allSpells, s => s.Name == "Magic Missile");
-            Assert.Contains(allSpells, s => s.Name == "Fireball");
+            Assert.Equal(2, all.Count);
+            Assert.Contains(all, s => s.Name == "Magic Missile");
+            Assert.Contains(all, s => s.Name == "Fireball");
         }
     }
 
@@ -104,21 +105,23 @@ public class SpellRepositoryTests
     {
         // Arrange
         var options = GetInMemoryOptions("Spell_UpdateDB");
-
-        var spell = CreateSpell(1, "Magic Missile");
+        int spellId;
 
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
+            var spell = CreateSpell("Magic Missile");
             await repo.CreateAsync(spell);
             await context.SaveChangesAsync();
+            spellId = spell.Id;
         }
 
         // Act
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            spell.Name = "Updated Spell";
+            var spell = await repo.GetByIdAsync(spellId);
+            spell!.Name = "Updated Spell";
             await repo.UpdateAsync(spell);
             await context.SaveChangesAsync();
         }
@@ -127,8 +130,7 @@ public class SpellRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            var updated = await repo.GetByIdAsync(1);
-
+            var updated = await repo.GetByIdAsync(spellId);
             Assert.Equal("Updated Spell", updated!.Name);
         }
     }
@@ -138,21 +140,23 @@ public class SpellRepositoryTests
     {
         // Arrange
         var options = GetInMemoryOptions("Spell_DeleteDB");
-
-        var spell = CreateSpell(1, "Magic Missile");
+        int spellId;
 
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
+            var spell = CreateSpell("Magic Missile");
             await repo.CreateAsync(spell);
             await context.SaveChangesAsync();
+            spellId = spell.Id;
         }
 
         // Act
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            await repo.DeleteAsync(spell);
+            var spell = await repo.GetByIdAsync(spellId);
+            await repo.DeleteAsync(spell!);
             await context.SaveChangesAsync();
         }
 
@@ -160,8 +164,7 @@ public class SpellRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            var deleted = await repo.GetByIdAsync(spell.Id);
-
+            var deleted = await repo.GetByIdAsync(spellId);
             Assert.Null(deleted);
         }
     }

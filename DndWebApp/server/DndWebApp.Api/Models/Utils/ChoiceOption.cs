@@ -7,7 +7,7 @@ namespace DndWebApp.Api.Utils;
 
 public abstract class Choice
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string Description { get; set; }
     public required int NumberOfChoices { get; set; }
 }

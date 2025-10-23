@@ -12,10 +12,7 @@ namespace DndWebApp.Tests.Repositories;
 
 public class RaceRepositoryTests
 {
-    private Race CreateTestRace(string name)
-    {
-        return new() { Name = name, Speed = 30 };
-    }
+    private Race CreateTestRace(string name) => new() { Name = name, Speed = 30 };
 
     private Subrace CreateTestSubrace(string name, Race parentRace, int parentRaceId)
     {

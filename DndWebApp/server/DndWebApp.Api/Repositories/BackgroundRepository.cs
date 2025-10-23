@@ -16,7 +16,7 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Background"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="RacePrimitiveDto"/> containing primitive data (Id, Name, Speed, and description strings),
+    /// A read-only <see cref="BackgroundPrimitiveDto"/> containing primitive data (Id, Name, Speed, and description strings),
     /// or <c>null</c> if no <see cref="Background"/> with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>

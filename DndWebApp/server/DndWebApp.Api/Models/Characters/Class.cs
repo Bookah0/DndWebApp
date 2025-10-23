@@ -1,6 +1,6 @@
+using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
@@ -17,11 +17,12 @@ public class Class
     public required ICollection<ClassLevel> ClassLevels { get; set; }
     public ICollection<Item> StartingEquipment { get; set; } = [];
     public ICollection<ItemChoice> StartingEquipmentOptions { get; set; } = [];
+    public bool IsHomebrew { get; set; } = false;
 
     // Spellcasting
-    public required int SpellLevel { get; set; }
-    public required ICollection<SpellcastingInfo> Info { get; set; }
-    public required int SpellcastingAbilityId { get; set; }
+    public int? SpellLevel { get; set; }
+    public ICollection<SpellcastingInfo> Info { get; set; } = [];
+    public int? SpellcastingAbilityId { get; set; }
 }
 
 [Owned]

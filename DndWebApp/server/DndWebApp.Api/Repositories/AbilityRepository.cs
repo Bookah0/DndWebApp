@@ -1,5 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 

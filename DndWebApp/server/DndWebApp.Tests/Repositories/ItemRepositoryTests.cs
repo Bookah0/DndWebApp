@@ -9,63 +9,48 @@ namespace DndWebApp.Tests.Repositories;
 
 public class ItemRepositoryTests
 {
-    private Item CreateTestItem()
+    private Item CreateTestItem() => new Item
     {
-        return new Item
-        {
-            Name = "Spoon",
-            Description = "A simple metal spoon, useful for eating or mixing potions.",
-            Catagories = ItemCategory.AdventuringGear
-        };
-    }
+        Name = "Spoon",
+        Description = "A simple metal spoon, useful for eating or mixing potions.",
+        Catagories = ItemCategory.AdventuringGear
+    };
 
-    private Armor CreateTestArmor()
+    private Armor CreateTestArmor() => new Armor
     {
-        return new Armor
-        {
-            Name = "Leather Armor",
-            Description = "Light armor made from tanned leather, provides basic protection.",
-            Catagories = ItemCategory.Armor,
-            Category = ArmorCategory.Light,
-            BaseArmorClass = 11,
-            PlusDexMod = true
-        };
-    }
+        Name = "Leather Armor",
+        Description = "Light armor made from tanned leather, provides basic protection.",
+        Catagories = ItemCategory.Armor,
+        Category = ArmorCategory.Light,
+        BaseArmorClass = 11,
+        PlusDexMod = true
+    };
 
-    private Weapon CreateTestWeapon()
+    private Weapon CreateTestWeapon() => new Weapon
     {
-        return new Weapon
-        {
-            Name = "Shortbow",
-            Description = "A small bow ideal for ranged attacks.",
-            Catagories = ItemCategory.Weapon,
-            WeaponCategories = WeaponCategory.SimpleRanged | WeaponCategory.Shortbow,
-            Properties = WeaponProperty.TwoHanded,
-            DamageTypes = DamageType.Piercing,
-            DamageDice = "1d6",
-            Range = 80
-        };
-    }
+        Name = "Shortbow",
+        Description = "A small bow ideal for ranged attacks.",
+        Catagories = ItemCategory.Weapon,
+        WeaponCategories = WeaponCategory.SimpleRanged | WeaponCategory.Shortbow,
+        Properties = WeaponProperty.TwoHanded,
+        DamageTypes = DamageType.Piercing,
+        DamageDice = "1d6",
+        Range = 80
+    };
 
-    private Tool CreateTestTool()
+    private Tool CreateTestTool() => new Tool
     {
-        return new Tool
-        {
-            Name = "Thieves' Kit",
-            Description = "A set of lockpicks and other tools for stealthy operations.",
-            Catagories = ItemCategory.Tools,
-            Activities = [],
-            Properties = []
-        };
-    }
+        Name = "Thieves' Kit",
+        Description = "A set of lockpicks and other tools for stealthy operations.",
+        Catagories = ItemCategory.Tools,
+        Activities = [],
+        Properties = []
+    };
 
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
+    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) => new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: dbName)
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
-    }
 
     [Fact]
     public async Task AddAndRetrieveItems_WorksCorrectly()

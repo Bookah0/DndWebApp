@@ -1,6 +1,5 @@
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Utils;
 
 namespace DndWebApp.Api.Models.Characters;
 

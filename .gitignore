@@ -1,10 +1,6 @@
-DndWebApp/server/DndWebApp.Api/obj/Debug/net9.0/DndWebApp.Api.AssemblyInfoInputs.cache
-DndWebApp/server/DndWebApp.Api/obj/Debug/net9.0/DndWebApp.Api.AssemblyInfo.cs
-DndWebApp/server/DndWebApp.Api/obj/Debug/net9.0/DndWebApp.Api.AssemblyInfo.cs
-DndWebApp/server/DndWebApp.Api/obj/Debug/net9.0/DndWebApp.Api.AssemblyInfoInputs.cache
-*.cache
+/DndWebApp/server/DndWebApp.Api/bin
 /DndWebApp/server/DndWebApp.Api/obj
 /DndWebApp/server/DndWebApp.Tests/bin
-/DndWebApp/server/DndWebApp.Api/obj
 /DndWebApp/server/DndWebApp.Tests/obj
-/DndWebApp/server/DndWebApp.Api/bin
+
+*.cache

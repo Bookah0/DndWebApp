@@ -11,7 +11,7 @@ namespace DndWebApp.Api.Models.Items;
 // https://api.open5e.com/v1/armor/
 public class Item
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required ItemCategory Catagories { get; set; }

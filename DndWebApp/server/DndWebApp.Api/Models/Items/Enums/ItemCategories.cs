@@ -28,7 +28,8 @@ public enum ItemCategory
     Wand = 1 << 21,
     WaterborneVehicle = 1 << 22,
     Weapon = 1 << 23,
-    WondrousItem = 1 << 24
+    WondrousItem = 1 << 24,
+    Utility = 1 << 25
 }
 
 public enum ArmorCategory

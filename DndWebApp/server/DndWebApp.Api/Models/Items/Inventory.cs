@@ -40,7 +40,7 @@ public class Inventory
 
 public class Currency
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
     public int Brass { get; set; }
     public int Copper { get; set; }
     public int Silver { get; set; }

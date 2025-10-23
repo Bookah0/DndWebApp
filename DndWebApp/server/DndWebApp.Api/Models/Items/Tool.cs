@@ -20,15 +20,15 @@ public class ToolProficiency
 public class ToolProperty
 {
     public required string Title { get; set; }
-    public required string PropertyDescription { get; set; }
+    public required string Description { get; set; }
 }
 
 [Owned]
 public class ToolActivity
 {
-    public required string ActivityDescription { get; set; }
+    public required string Title { get; set; }
     public int? SkillId { get; set; }
     public int? AbilityId { get; set; }
-    public required int DC { get; set; }
+    public required string DC { get; set; }
 
 }

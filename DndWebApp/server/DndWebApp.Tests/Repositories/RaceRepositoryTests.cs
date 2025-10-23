@@ -12,17 +12,17 @@ namespace DndWebApp.Tests.Repositories;
 
 public class RaceRepositoryTests
 {
-    private Race CreateRace(string name)
+    private Race CreateTestRace(string name)
     {
         return new() { Name = name, Speed = 30 };
     }
 
-    private Subrace CreateSubrace(string name, Race parentRace, int parentRaceId)
+    private Subrace CreateTestSubrace(string name, Race parentRace, int parentRaceId)
     {
         return new() { Name = name, Speed = 30, ParentRace = parentRace, ParentRaceId = parentRaceId };
     }
 
-    private Trait CreateTrait(string name, string description, Species fromRace, int raceId )
+    private Trait CreateTestTrait(string name, string description, Species fromRace, int raceId )
     {
         return new() { Name = name, Description = description, FromRace = fromRace, RaceId = raceId };
     }
@@ -41,8 +41,8 @@ public class RaceRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("Race_AddRetrieveDB");
 
-        var elfRace = CreateRace("Elf");
-        var dwarfRace = CreateRace("Dwarf");
+        var elfRace = CreateTestRace("Elf");
+        var dwarfRace = CreateTestRace("Dwarf");
 
         // Act
         await using (var context = new AppDbContext(options))
@@ -76,7 +76,7 @@ public class RaceRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("Race_UpdateDB");
 
-        var race = CreateRace("Elf");
+        var race = CreateTestRace("Elf");
 
         await using (var context = new AppDbContext(options))
         {
@@ -110,7 +110,7 @@ public class RaceRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("Race_DeleteDB");
 
-        var race = CreateRace("Elf");
+        var race = CreateTestRace("Elf");
 
         await using (var context = new AppDbContext(options))
         {
@@ -143,8 +143,8 @@ public class RaceRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("PrimitiveRace_AddRetrieveDB");
 
-        var elfRace = CreateRace("Elf");
-        var dwarfRace = CreateRace("Dwarf");
+        var elfRace = CreateTestRace("Elf");
+        var dwarfRace = CreateTestRace("Dwarf");
         int elfId;
         int dwarfId;
 
@@ -194,16 +194,16 @@ public class RaceRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("GetAllWithCollections_AddRetrieveDB");
 
-        var elfRace = CreateRace("Elf");
-        var dwarfRace = CreateRace("Dwarf");
+        var elfRace = CreateTestRace("Elf");
+        var dwarfRace = CreateTestRace("Dwarf");
 
-        var highElf = CreateSubrace("High Elf", elfRace, elfRace.Id);
-        var woodElf = CreateSubrace("Wood Elf", elfRace, elfRace.Id);
+        var highElf = CreateTestSubrace("High Elf", elfRace, elfRace.Id);
+        var woodElf = CreateTestSubrace("Wood Elf", elfRace, elfRace.Id);
         elfRace.SubRaces.Add(highElf);
         elfRace.SubRaces.Add(woodElf);
 
-        var trait1 = CreateTrait("Trait 1", "Desc 1", elfRace, elfRace.Id);
-        var trait2 = CreateTrait("Trait 2", "Desc 2", elfRace, elfRace.Id);
+        var trait1 = CreateTestTrait("Trait 1", "Desc 1", elfRace, elfRace.Id);
+        var trait2 = CreateTestTrait("Trait 2", "Desc 2", elfRace, elfRace.Id);
         elfRace.Traits.Add(trait1);
         elfRace.Traits.Add(trait2);
 

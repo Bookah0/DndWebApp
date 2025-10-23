@@ -149,10 +149,8 @@ public class AbilityRepositoryTests
     public async Task RetrieveWithSkills_ShouldHaveCorrectSkills()
     {
         var options = GetInMemoryOptions("AbilityWithSkill_GetAllDB");
-
         var sleightOfHand = CreateSkill("Sleight of Hand", 0);
         var stealth = CreateSkill("Stealth", 0);
-
         var dex = CreateAbility("Dexterity", "Dex", "Measures agility, reflexes, and balance.", [sleightOfHand, stealth]);
         var con = CreateAbility("Constitution", "Con", "Measures health, stamina, and vital force.");
 

@@ -23,9 +23,9 @@ public class AppDbContext : DbContext
     public DbSet<ClassFeature> Features { get; set; }
         
     public DbSet<Item> Items { get; set; }
-    public DbSet<Item> Weapons { get; set; }
-    public DbSet<Item> Armor { get; set; }
-    public DbSet<Item> Tools { get; set; }
+    public DbSet<Weapon> Weapons { get; set; }
+    public DbSet<Armor> Armor { get; set; }
+    public DbSet<Tool> Tools { get; set; }
     
     public DbSet<Spell> Spells { get; set; }
     public DbSet<Alignment> Alignments { get; set; }

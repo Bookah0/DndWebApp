@@ -12,7 +12,7 @@ namespace DndWebApp.Tests.Repositories;
 
 public class SpellRepositoryTests
 {
-    private Spell CreateSpell(string name, Damage? damage = null)
+    private Spell CreateTestSpell(string name, Damage? damage = null)
     {
         return new () {
             Name = name,
@@ -21,7 +21,7 @@ public class SpellRepositoryTests
             Duration = "",
             CastingTime = "",
             TargetType = "",
-            Damage = damage,
+            Damage = damage!,
             MagicSchool = MagicSchool.Evocation,
             Range = 1,
         };
@@ -41,8 +41,8 @@ public class SpellRepositoryTests
         var options = GetInMemoryOptions("Spell_AddRetrieveDB");
 
         var damage = new Damage { DamageRoll = "1d4+1" };
-        var magicMissile = CreateSpell("Magic Missile", damage);
-        var fireball = CreateSpell("Fireball");
+        var magicMissile = CreateTestSpell("Magic Missile", damage);
+        var fireball = CreateTestSpell("Fireball");
         int magicMissileId;
 
         // Act
@@ -83,8 +83,8 @@ public class SpellRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            await repo.CreateAsync(CreateSpell("Magic Missile"));
-            await repo.CreateAsync(CreateSpell("Fireball"));
+            await repo.CreateAsync(CreateTestSpell("Magic Missile"));
+            await repo.CreateAsync(CreateTestSpell("Fireball"));
             await context.SaveChangesAsync();
         }
 
@@ -110,7 +110,7 @@ public class SpellRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            var spell = CreateSpell("Magic Missile");
+            var spell = CreateTestSpell("Magic Missile");
             await repo.CreateAsync(spell);
             await context.SaveChangesAsync();
             spellId = spell.Id;
@@ -145,7 +145,7 @@ public class SpellRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new SpellRepository(context);
-            var spell = CreateSpell("Magic Missile");
+            var spell = CreateTestSpell("Magic Missile");
             await repo.CreateAsync(spell);
             await context.SaveChangesAsync();
             spellId = spell.Id;

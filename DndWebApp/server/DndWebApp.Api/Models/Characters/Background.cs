@@ -13,7 +13,7 @@ public class Background
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
 
-    public ICollection<PassiveEffect> Features { get; set; } = [];
+    public ICollection<Feature> Features { get; set; } = [];
     public ICollection<Item> StartingItems { get; set; } = [];
     public ICollection<ItemChoice> StartingItemsOptions { get; set; } = [];
     public required Currency StartingCurrency { get; set; }

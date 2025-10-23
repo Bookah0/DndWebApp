@@ -59,10 +59,13 @@ public class ItemRepositoryTests
         };
     }
 
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) =>
-        new DbContextOptionsBuilder<AppDbContext>()
+    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
+    {
+        return new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: dbName)
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
+    }
 
     [Fact]
     public async Task AddAndRetrieveItems_WorksCorrectly()

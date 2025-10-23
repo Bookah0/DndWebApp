@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
 
+// TODO:
+// The Character class is too crowded, needs remodeling in the future
 public class Character
 {
     public int Id { get; set; }
@@ -29,7 +31,7 @@ public class Character
 
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
-    public ICollection<PassiveEffect> PassiveEffects { get; set; } = [];
+    public ICollection<Feature> PassiveEffects { get; set; } = [];
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public CurrentSpellSlots? CurrentSpellSlots { get; set; }
     public CharacterBuilding CharacterBuildData { get; set; } = new();
@@ -45,6 +47,7 @@ public class Character
     public int ProficiencyBonus { get; set; } = 2;
 
 }
+
 
 [Owned]
 public class CombatStats
@@ -91,4 +94,54 @@ public class CharacterBuilding
     public string AlliesAndOrganizations { get; set; } = "";
     public string Backstory { get; set; } = "";
     public string? CharacterPictureUrl { get; set; }
+}
+[Owned]
+public class SaveThrowProficiency
+{
+    public required int AbilityId { get; set; }
+    public required int CharacterFeatureId { get; set; }
+}
+
+[Owned]
+public class DamageAffinity
+{
+    public required AffinityType AffinityType { get; set; }
+    public required DamageType DamageType { get; set; }
+    public required int CharacterFeatureId { get; set; }
+}
+
+[Owned]
+public class SkillProficiency
+{
+    public required int SkillId { get; set; }
+    public required bool HasExpertise { get; set; }
+    public required int CharacterFeatureId { get; set; }
+}
+
+[Owned]
+public class WeaponProficiency
+{
+    public required WeaponCategory WeaponTypes { get; set; }
+    public required int CharacterFeatureId { get; set; }
+}
+
+[Owned]
+public class ArmorProficiency
+{
+    public required ArmorCategory ArmorType { get; set; }
+    public required int CharacterFeatureId { get; set; }
+}
+
+[Owned]
+public class ToolProficiency
+{
+    public required ToolCategory ToolType { get; set; }
+    public required int CharacterFeatureId { get; set; }
+}
+
+[Owned]
+public class LanguageProficiency
+{
+    public required int LanguageId { get; set; }
+    public required int CharacterFeatureId { get; set; }
 }

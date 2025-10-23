@@ -12,27 +12,22 @@ namespace DndWebApp.Tests.Repositories;
 
 public class SpellRepositoryTests
 {
-    private Spell CreateTestSpell(string name, Damage? damage = null)
+    private Spell CreateTestSpell(string name, Damage? damage = null) => new()
     {
-        return new () {
-            Name = name,
-            Description = $"Description of {name}",
-            Level = 1,
-            Duration = "",
-            CastingTime = "",
-            TargetType = "",
-            Damage = damage!,
-            MagicSchool = MagicSchool.Evocation,
-            Range = 1,
-        };
-    }
+        Name = name,
+        Description = $"Description of {name}",
+        Level = 1,
+        Duration = "",
+        CastingTime = "",
+        TargetType = "",
+        Damage = damage!,
+        MagicSchool = MagicSchool.Evocation,
+        Range = 1,
+    };
 
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
+    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) => new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: dbName)
             .Options;
-    }
 
     [Fact]
     public async Task AddAndRetrieveSpells_WorksCorrectly()

@@ -22,8 +22,7 @@ public class BackgroundRepositoryTests
 
     private Item CreateTestStartingItem(string name = "Holy Symbol", ItemCategory categories = ItemCategory.Utility, int quantity = 1)
     {
-        var description = $"{name} description";
-        return CreateTestItem(name, description, categories, quantity);
+        return CreateTestItem(name, $"{name} description", categories, quantity);
     }
 
     private ItemChoice CreateTestStartingItemChoice()

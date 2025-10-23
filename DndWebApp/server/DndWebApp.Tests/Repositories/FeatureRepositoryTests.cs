@@ -5,86 +5,58 @@ using DndWebApp.Api.Repositories.Features;
 
 public class FeatureRepositoryTests
 {
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
-    }
 
-    private Feature CreateTestFeature()
+    private Feature CreateTestFeature() => new Feature
     {
-        return new Feature
-        {
-            Name = "Power Strike",
-            Description = "Increases melee damage.",
-            IsHomebrew = false
-        };
-    }
+        Name = "Power Strike",
+        Description = "Increases melee damage.",
+        IsHomebrew = false
+    };
 
-    private Trait CreateTestTrait(Species species)
+    private Trait CreateTestTrait(Species species) => new Trait
     {
-        return new Trait
-        {
-            Name = "Darkvision",
-            Description = "See in the dark.",
-            FromRace = species,
-            RaceId = species.Id
-        };
-    }
+        Name = "Darkvision",
+        Description = "See in the dark.",
+        FromRace = species,
+        RaceId = species.Id
+    };
 
-    private ClassFeature CreateTestClassFeature(Class cls)
+    private ClassFeature CreateTestClassFeature(Class cls) => new ClassFeature
     {
-        return new ClassFeature
-        {
-            Name = "Spellcasting",
-            Description = "Gain spellcasting abilities.",
-            Class = cls,
-            ClassId = cls.Id,
-            LevelWhenGained = 1
-        };
-    }
+        Name = "Spellcasting",
+        Description = "Gain spellcasting abilities.",
+        Class = cls,
+        ClassId = cls.Id,
+        LevelWhenGained = 1
+    };
 
-    private Feat CreateTestFeat()
+    private Feat CreateTestFeat() => new Feat
     {
-        return new Feat
-        {
-            Name = "Sharpshooter",
-            Description = "Improve ranged attacks.",
-            Prerequisite = "Dex 13"
-        };
-    }
+        Name = "Sharpshooter",
+        Description = "Improve ranged attacks.",
+        Prerequisite = "Dex 13"
+    };
 
-    private BackgroundFeature CreateTestBackgroundFeature(Background bg)
+    private BackgroundFeature CreateTestBackgroundFeature(Background bg) => new BackgroundFeature
     {
-        return new BackgroundFeature
-        {
-            Name = "Shelter of the Faithful",
-            Description = "Command respect in your community.",
-            Background = bg,
-            BackgroundId = bg.Id
-        };
-    }
+        Name = "Shelter of the Faithful",
+        Description = "Command respect in your community.",
+        Background = bg,
+        BackgroundId = bg.Id
+    };
 
-    private Class CreateTestClass()
+    private Class CreateTestClass() => new Class
     {
-        return new Class
-        {
-            Name = "Shelter of the Faithful",
-            Description = "Command respect in your community.",
-            HitDie = "",
-            ClassLevels = [],
-            SpellLevel = 2,
-            Info = [],
-            SpellcastingAbilityId = -1
-        };
-    }
+        Name = "Shelter of the Faithful",
+        Description = "Command respect in your community.",
+        HitDie = "",
+        ClassLevels = [],
+        SpellLevel = 2,
+        Info = [],
+        SpellcastingAbilityId = -1
+    };
 
-    private Race CreateTestRace(string name = "Elf")
-    {
-        return new() { Name = name, Speed = 30 };
-    }
+    private Race CreateTestRace(string name = "Elf") => new() { Name = name, Speed = 30 };
 
     private Background CreateTestBackground()
     {
@@ -96,6 +68,11 @@ public class FeatureRepositoryTests
         };
         return background;
     }
+    
+    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) => new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: dbName)
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+            .Options;
 
     [Fact]
     public async Task AddAndRetrieveFeatures_WorksCorrectly()

@@ -10,13 +10,6 @@ public class Tool : Item
 }
 
 [Owned]
-public class ToolProficiency
-{
-    public required ToolCategory ToolType { get; set; }
-    public required int CharacterFeatureId { get; set; }
-}
-
-[Owned]
 public class ToolProperty
 {
     public required string Title { get; set; }

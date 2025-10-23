@@ -12,10 +12,3 @@ public class Language
     public required string Script { get; set; }
     public bool IsHomebrew { get; set; } = false;
 }
-
-[Owned]
-public class LanguageProficiency
-{
-    public required int LanguageId { get; set; }
-    public required int CharacterFeatureId { get; set; }
-}

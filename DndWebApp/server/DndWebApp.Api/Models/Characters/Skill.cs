@@ -12,10 +12,3 @@ public class Skill
     public bool IsHomebrew { get; set; } = false;
 }
 
-[Owned]
-public class SkillProficiency
-{
-    public required int SkillId { get; set; }
-    public required bool HasExpertise { get; set; }
-    public required int CharacterFeatureId { get; set; }
-}

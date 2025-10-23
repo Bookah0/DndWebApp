@@ -19,10 +19,3 @@ public class AbilityValue
     public required int AbilityId { get; set; }
     public required int Value { get; set; }
 }
-
-[Owned]
-public class SaveThrowProficiency
-{
-    public required int AbilityId { get; set; }
-    public required int CharacterFeatureId { get; set; }
-}

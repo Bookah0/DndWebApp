@@ -27,7 +27,7 @@ namespace YourNamespace.Tests
         {
             return new() { Name = name, Description = description, FromRace = fromRace, RaceId = raceId };
         }
-        
+
         private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
         {
             return new DbContextOptionsBuilder<AppDbContext>()

@@ -81,10 +81,11 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
     public async Task<Background?> GetWithAllDataAsync(int id)
     {
         return await dbSet
+            .AsSplitQuery()
             .Include(b => b.Features)
             .Include(b => b.StartingItems)
             .Include(b => b.StartingItemsOptions)
-                .ThenInclude(o => o.Choices)
+                .ThenInclude(o => o.Options)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
@@ -102,13 +103,14 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
     /// <remarks>
     /// Typically used when displaying a complete list of <see cref="Background"/>s.
     /// </remarks>
-    public override async Task<ICollection<Background>> GetAllAsync()
+    public async Task<ICollection<Background>> GetAllWithAllDataAsync()
     {
         return await dbSet
+            .AsSplitQuery()
             .Include(b => b.Features)
             .Include(b => b.StartingItems)
             .Include(b => b.StartingItemsOptions)
-                .ThenInclude(o => o.Choices)
+                .ThenInclude(o => o.Options)
             .ToListAsync();
     }
 }

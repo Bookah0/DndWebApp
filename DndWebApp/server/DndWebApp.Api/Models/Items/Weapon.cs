@@ -15,10 +15,3 @@ public class Weapon : Item
     public string VersitileDamageDice { get; set; } = "";
     public int? LongRange { get; set; }
 }
-
-[Owned]
-public class WeaponProficiency
-{
-    public required WeaponCategory WeaponTypes { get; set; }
-    public required int CharacterFeatureId { get; set; }
-}

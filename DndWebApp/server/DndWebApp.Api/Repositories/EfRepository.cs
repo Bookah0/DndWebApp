@@ -21,7 +21,7 @@ public class EfRepository<T> : IRepository<T> where T : class
 
     public virtual async Task DeleteAsync(T entity)
     {
-        dbSet.Remove(entity);
+        await Task.Run(() => dbSet.Remove(entity));
     }
 
     public virtual async Task<ICollection<T>> GetAllAsync()
@@ -36,6 +36,6 @@ public class EfRepository<T> : IRepository<T> where T : class
 
     public virtual async Task UpdateAsync(T updatedEntity)
     {
-        dbSet.Update(updatedEntity);
+        await Task.Run(() => dbSet.Update(updatedEntity));
     }
 }

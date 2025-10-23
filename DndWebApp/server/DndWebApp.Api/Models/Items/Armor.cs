@@ -14,9 +14,3 @@ public class Armor : Item
     public bool StealthDisadvantage { get; set; } = false;
 }
 
-[Owned]
-public class ArmorProficiency
-{
-    public required ArmorCategory ArmorType { get; set; }
-    public required int CharacterFeatureId { get; set; }
-}

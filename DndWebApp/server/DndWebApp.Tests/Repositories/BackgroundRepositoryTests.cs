@@ -4,36 +4,20 @@ using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class BackgroundRepositoryTests
 {
-    private Skill CreateTestSkill(string name, int abilityId)
-    {
-        return new Skill { Name = name, AbilityId = abilityId };
-    }
-
-    private Language CreateTestLanguage(string name, string family, string script)
-    {
-        return new Language { Name = name, Family = family, Script = script };
-    }
-
-    private Ability CreateAbility(string fullName, string shortName, string description, List<Skill>? skills = null)
-    {
-        return new Ability { FullName = fullName, ShortName = shortName, Description = description, Skills = skills ?? [] };
-    }
-
     private Item CreateTestItem(string name, string description, ItemCategory category, int quantity)
     {
         return new Item { Name = name, Description = description, Catagories = category, Quantity = quantity };
     }
 
-    private PassiveEffect CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.")
+    private Feature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.")
     {
-        return new PassiveEffect { Name = name, Description = description };
+        return new Feature { Name = name, Description = description };
     }
 
     private Item CreateTestStartingItem(string name = "Holy Symbol", ItemCategory categories = ItemCategory.Utility, int quantity = 1)
@@ -48,11 +32,11 @@ public class BackgroundRepositoryTests
         {
             Description = "a prayer book or prayer wheel",
             NumberOfChoices = 2,
-            Choices = []
+            Options = []
         };
 
-        option.Choices.Add(CreateTestStartingItem("Prayer Book", ItemCategory.None));
-        option.Choices.Add(CreateTestStartingItem("Prayer Wheel", ItemCategory.None));
+        option.Options.Add(CreateTestStartingItem("Prayer Book", ItemCategory.None));
+        option.Options.Add(CreateTestStartingItem("Prayer Wheel", ItemCategory.None));
 
         return option;
     }
@@ -64,7 +48,7 @@ public class BackgroundRepositoryTests
         {
             Name = name,
             Description = description,
-            StartingCurrency = new() {Gold = 15}
+            StartingCurrency = new() { Gold = 15 }
         };
 
         background.StartingItems.Add(CreateTestStartingItem("Holy Symbol", ItemCategory.Utility));
@@ -86,7 +70,7 @@ public class BackgroundRepositoryTests
             .Options;
     }
 
-  [Fact]
+    [Fact]
     public async Task AddAndRetrieveBackground_WorksCorrectly()
     {
         // Arrange
@@ -193,33 +177,33 @@ public class BackgroundRepositoryTests
             var repo = new BackgroundRepository(context);
             var fullBackground = await repo.GetWithAllDataAsync(background.Id);
 
-        // Assert
-        Assert.NotNull(fullBackground);
+            // Assert
+            Assert.NotNull(fullBackground);
 
-        // Starting Items
-        Assert.NotEmpty(fullBackground!.StartingItems);
-        var holySymbol = fullBackground.StartingItems.FirstOrDefault(i => i.Name == "Holy Symbol");
-        Assert.NotNull(holySymbol);
-        Assert.Equal(1, holySymbol!.Quantity);
+            // Starting Items
+            Assert.NotEmpty(fullBackground!.StartingItems);
+            var holySymbol = fullBackground.StartingItems.FirstOrDefault(i => i.Name == "Holy Symbol");
+            Assert.NotNull(holySymbol);
+            Assert.Equal(1, holySymbol!.Quantity);
 
-        var incense = fullBackground.StartingItems.FirstOrDefault(i => i.Name == "Incense Sticks");
-        Assert.NotNull(incense);
-        Assert.Equal(5, incense!.Quantity);
+            var incense = fullBackground.StartingItems.FirstOrDefault(i => i.Name == "Incense Sticks");
+            Assert.NotNull(incense);
+            Assert.Equal(5, incense!.Quantity);
 
-        // Starting Item Choices
-        Assert.NotEmpty(fullBackground.StartingItemsOptions);
-        var prayerChoice = fullBackground.StartingItemsOptions
-            .FirstOrDefault(o => o.Description.Contains("prayer book or prayer wheel"));
-        Assert.NotNull(prayerChoice);
-        Assert.Equal(2, prayerChoice!.Choices.Count);
-        Assert.Contains(prayerChoice.Choices, c => c.Name == "Prayer Book");
-        Assert.Contains(prayerChoice.Choices, c => c.Name == "Prayer Wheel");
+            // Starting Item Choices
+            Assert.NotEmpty(fullBackground.StartingItemsOptions);
+            var prayerChoice = fullBackground.StartingItemsOptions
+                .FirstOrDefault(o => o.Description.Contains("prayer book or prayer wheel"));
+            Assert.NotNull(prayerChoice);
+            Assert.Equal(2, prayerChoice!.Options.Count);
+            Assert.Contains(prayerChoice.Options, c => c.Name == "Prayer Book");
+            Assert.Contains(prayerChoice.Options, c => c.Name == "Prayer Wheel");
 
-        // Features
-        Assert.NotEmpty(fullBackground.Features);
-        var shelter = fullBackground.Features.FirstOrDefault(f => f.Name == "Shelter of the Faithful");
-        Assert.NotNull(shelter);
-        Assert.Equal("As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.", shelter!.Description);
+            // Features
+            Assert.NotEmpty(fullBackground.Features);
+            var shelter = fullBackground.Features.FirstOrDefault(f => f.Name == "Shelter of the Faithful");
+            Assert.NotNull(shelter);
+            Assert.Equal("As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.", shelter!.Description);
         }
     }
 }

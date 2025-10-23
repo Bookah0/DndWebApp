@@ -17,11 +17,14 @@ public class AppDbContext : DbContext
     public DbSet<Subrace> SubRaces { get; set; }
     public DbSet<Skill> Skills { get; set; }
 
-    public DbSet<PassiveEffect> PassiveEffects { get; set; }
+    // Feature sets
+    public DbSet<Feature> Features { get; set; }
     public DbSet<Trait> Traits { get; set; }
     public DbSet<Feat> Feats { get; set; }
-    public DbSet<ClassFeature> Features { get; set; }
+    public DbSet<ClassFeature> ClassFeatures { get; set; }
+    public DbSet<BackgroundFeature> BackgroundFeatures { get; set; }
         
+    // Item sets
     public DbSet<Item> Items { get; set; }
     public DbSet<Weapon> Weapons { get; set; }
     public DbSet<Armor> Armor { get; set; }

@@ -8,7 +8,7 @@ using DndWebApp.Api.Utils;
 namespace DndWebApp.Api.Models.Characters;
 
 // Based on https://api.open5e.com/v2/feats/
-public class Feat : PassiveEffect
+public class Feat : Feature
 {
     public string Prerequisite { get; set; } = "";
     

@@ -56,10 +56,67 @@ public class ClassLevelRepositoryTests
     }
 
     [Fact]
+    public async Task UpdateClassLevel_WorksCorrectly()
+    {
+        // Arrange
+        var options = GetInMemoryOptions("ClassLevel_UpdateDB");
+        var cls = CreateTestClass();
+
+        await using var context = new AppDbContext(options);
+        var classRepo = new ClassRepository(context);
+        await classRepo.CreateAsync(cls);
+        await context.SaveChangesAsync();
+
+        // Act
+        var levelRepo = new ClassLevelRepository(context);
+        var toUpdate = await levelRepo.GetWithAllDataAsync(cls.Id);
+
+        toUpdate!.NewFeatures.Add(CreateTestClassFeature(cls));
+        toUpdate.AbilityScoreBonus = 5;
+
+        await levelRepo.UpdateAsync(toUpdate);
+        await context.SaveChangesAsync();
+
+        // Assert
+        var updated = await levelRepo.GetWithAllDataAsync(toUpdate.Id);
+
+        // Assert
+        Assert.NotNull(updated);
+        Assert.Equal(5, updated.AbilityScoreBonus);
+        Assert.NotNull(updated.NewFeatures);
+        Assert.NotEmpty(updated.NewFeatures);
+        Assert.Equal(2, updated.NewFeatures.Count);
+    }
+    
+    [Fact]
+    public async Task DeleteClassLevel_ShouldDelete()
+    {
+        // Arrange
+        var options = GetInMemoryOptions("ClassLevel_DeleteDB");
+        var cls = CreateTestClass();
+
+        await using var context = new AppDbContext(options);
+        var classRepo = new ClassRepository(context);
+        await classRepo.CreateAsync(cls);
+        await context.SaveChangesAsync();
+
+        // Act
+        var levelRepo = new ClassLevelRepository(context);
+        var toDelete = await levelRepo.GetByIdAsync(cls.Id);
+
+        await levelRepo.DeleteAsync(toDelete);
+        await context.SaveChangesAsync();
+        var deleted = await levelRepo.GetByIdAsync(cls.Id);
+
+        // Assert
+        Assert.Null(deleted);
+    }
+
+    [Fact]
     public async Task AddAndRetrieveClass_WorksCorrectly()
     {
         // Arrange
-        var options = GetInMemoryOptions("Class_AddRetrieveDB");
+        var options = GetInMemoryOptions("ClassLevel_AddRetrieveDB");
         var cls = CreateTestClass();
 
         await using var context = new AppDbContext(options);
@@ -98,7 +155,7 @@ public class ClassLevelRepositoryTests
     public async Task GetWithAllDataAsync_IncludesAllNavigationProperties()
     {
         // Arrange
-        var options = GetInMemoryOptions("Class_GetWithAllDataDB");
+        var options = GetInMemoryOptions("ClassLevel_GetWithAllDataDB");
         var cls = CreateTestClass();
 
         await using var context = new AppDbContext(options);

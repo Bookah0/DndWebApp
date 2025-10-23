@@ -92,6 +92,57 @@ public class ClassRepositoryTests
     }
 
     [Fact]
+    public async Task UpdateClass_WorksCorrectly()
+    {
+        // Arrange
+        var options = GetInMemoryOptions("Class_AddRetrieveDB");
+        var cls = CreateTestClass("Ranger");
+
+        await using var context = new AppDbContext(options);
+        var repo = new ClassRepository(context);
+        await repo.CreateAsync(cls);
+        await context.SaveChangesAsync();
+
+        // Act
+        var toUpdate = await repo.GetWithAllDataAsync(cls.Id);
+
+        toUpdate!.Name = "Barbarian";
+        toUpdate.StartingEquipment.Clear();
+
+        await repo.UpdateAsync(toUpdate);
+        await context.SaveChangesAsync();
+
+        // Assert
+        var updated = await repo.GetWithAllDataAsync(toUpdate.Id);
+
+        Assert.NotNull(updated);
+        Assert.Equal("Barbarian", updated.Name);
+        Assert.NotNull(updated.StartingEquipment);
+        Assert.Empty(updated.StartingEquipment);
+    }
+
+    [Fact]
+    public async Task DeleteClass_ShouldDelete()
+    {
+        var options = GetInMemoryOptions("Character_AllPrimitiveDB");
+
+        var cls = CreateTestClass("Ranger");
+
+        await using var context = new AppDbContext(options);
+        var repo = new ClassRepository(context);
+        await repo.CreateAsync(cls);
+        await context.SaveChangesAsync();
+
+        // Act
+        await repo.DeleteAsync(cls);
+        await context.SaveChangesAsync();
+        var deleted = await repo.GetWithAllDataAsync(cls.Id);
+
+        // Assert
+        Assert.Null(deleted);
+    }
+    
+    [Fact]
     public async Task AddAndRetrieveClass_WorksCorrectly()
     {
         // Arrange

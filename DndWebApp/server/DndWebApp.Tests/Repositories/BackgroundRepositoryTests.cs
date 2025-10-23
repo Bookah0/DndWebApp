@@ -69,11 +69,62 @@ public class BackgroundRepositoryTests
             .Options;
     }
 
+[Fact]
+    public async Task UpdateBackground_WorksCorrectly()
+    {
+        // Arrange
+        var options = GetInMemoryOptions("BG_UpdateDB");
+        var bg = CreateTestBackground("Outlander");
+
+        await using var context = new AppDbContext(options);
+        var repo = new BackgroundRepository(context);
+        await repo.CreateAsync(bg);
+        await context.SaveChangesAsync();
+
+        // Act
+        var toUpdate = await repo.GetWithAllDataAsync(bg.Id);
+
+        toUpdate!.Name = "Butler";
+        toUpdate.StartingItems.Add(CreateTestItem("Golden spoon", "A golden spooon", ItemCategory.Art, 5));
+
+        await repo.UpdateAsync(toUpdate);
+        await context.SaveChangesAsync();
+
+        // Assert
+        var updated = await repo.GetWithAllDataAsync(toUpdate.Id);
+
+        Assert.NotNull(updated);
+        Assert.Equal("Butler", updated.Name);
+        Assert.NotNull(updated.StartingItems);
+        Assert.Equal(5, updated.StartingItems.Count);
+    }
+
+    [Fact]
+    public async Task DeleteBackground_ShouldDelete()
+    {
+        var options = GetInMemoryOptions("BG_DeleteDB");
+
+        var bg = CreateTestBackground("Outlander");
+
+        await using var context = new AppDbContext(options);
+        var repo = new BackgroundRepository(context);
+        await repo.CreateAsync(bg);
+        await context.SaveChangesAsync();
+
+        // Act
+        await repo.DeleteAsync(bg);
+        await context.SaveChangesAsync();
+        var deleted = await repo.GetWithAllDataAsync(bg.Id);
+
+        // Assert
+        Assert.Null(deleted);
+    }
+
     [Fact]
     public async Task AddAndRetrieveBackground_WorksCorrectly()
     {
         // Arrange
-        var options = GetInMemoryOptions("Background_AddRetrieveDB");
+        var options = GetInMemoryOptions("BG_AddRetrieveDB");
         var background = CreateTestBackground("Acolyte");
 
         await using (var context = new AppDbContext(options))
@@ -103,7 +154,7 @@ public class BackgroundRepositoryTests
     public async Task GetPrimitiveDataAsync_ReturnsCorrectValues()
     {
         // Arrange
-        var options = GetInMemoryOptions("Background_PrimitiveDataDB");
+        var options = GetInMemoryOptions("BG_PrimitiveDataDB");
         var background = CreateTestBackground("Acolyte");
 
         await using (var context = new AppDbContext(options))
@@ -131,7 +182,7 @@ public class BackgroundRepositoryTests
     public async Task GetAllPrimitiveDataAsync_ReturnsAllBackgrounds()
     {
         // Arrange
-        var options = GetInMemoryOptions("Background_GetAllPrimitiveDB");
+        var options = GetInMemoryOptions("BG_GetAllPrimitiveDB");
         var bg1 = CreateTestBackground("Acolyte");
         var bg2 = CreateTestBackground("Soldier");
 
@@ -160,7 +211,7 @@ public class BackgroundRepositoryTests
     public async Task GetWithAllDataAsync_IncludesAllNavigationProperties()
     {
         // Arrange
-        var options = GetInMemoryOptions("Background_GetWithAllDataDB");
+        var options = GetInMemoryOptions("BG_GetWithAllDataDB");
         var background = CreateTestBackground("Acolyte");
 
         await using (var context = new AppDbContext(options))

@@ -68,11 +68,61 @@ public class FeatureRepositoryTests
         };
         return background;
     }
-    
+
     private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) => new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: dbName)
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
+
+    [Fact]
+    public async Task Feature_Update_WorksCorrectly()
+    {
+        // Arrange
+        var options = GetInMemoryOptions("Feature_UpdateDB");
+        await using var context = new AppDbContext(options);
+
+        var feature = CreateTestFeature();
+        var repo = new FeatureRepository(context);
+        await repo.CreateAsync(feature);
+        await context.SaveChangesAsync();
+
+        // Act
+        feature.Name = "Updated Feature";
+        feature.Description = "Updated description";
+        feature.IsHomebrew = true;
+
+        await repo.UpdateAsync(feature);
+        await context.SaveChangesAsync();
+
+        // Assert
+        var updated = await repo.GetWithAllDataAsync(feature.Id);
+        Assert.NotNull(updated);
+        Assert.Equal("Updated Feature", updated!.Name);
+        Assert.Equal("Updated description", updated.Description);
+        Assert.True(updated.IsHomebrew);
+    }
+
+    [Fact]
+    public async Task Feature_Delete_WorksCorrectly()
+    {
+        // Arrange
+        var options = GetInMemoryOptions("Feature_DeleteDB");
+        await using var context = new AppDbContext(options);
+
+        var feature = CreateTestFeature();
+        var repo = new FeatureRepository(context);
+        await repo.CreateAsync(feature);
+        await context.SaveChangesAsync();
+
+        // Act
+        await repo.DeleteAsync(feature);
+        await context.SaveChangesAsync();
+
+        // Assert
+        var deleted = await repo.GetWithAllDataAsync(feature.Id);
+        Assert.Null(deleted);
+    }
+
 
     [Fact]
     public async Task AddAndRetrieveFeatures_WorksCorrectly()
@@ -93,7 +143,7 @@ public class FeatureRepositoryTests
         var classFeature = CreateTestClassFeature(cls);
         var feat = CreateTestFeat();
         var backgroundFeature = CreateTestBackgroundFeature(bg);
-        
+
         // Act
         var featureRepo = new FeatureRepository(context);
         var traitRepo = new TraitRepository(context);
@@ -146,7 +196,7 @@ public class FeatureRepositoryTests
         var feature = CreateTestFeature();
         await context.AddAsync(feature);
         await context.SaveChangesAsync();
-        
+
         // Act
         var featureRepo = new FeatureRepository(context);
         var allFeatures = await featureRepo.GetAllWithAllDataAsync();
@@ -200,14 +250,14 @@ public class FeatureRepositoryTests
         var race = CreateTestRace();
         var trait = CreateTestTrait(race);
         var repo = new TraitRepository(context);
-        
+
         // Act
         await repo.CreateAsync(trait);
         await context.SaveChangesAsync();
 
         var primitive = await repo.GetPrimitiveDataAsync(trait.Id);
         var allPrimitives = await repo.GetAllPrimitiveDataAsync();
-        
+
         // Assert
         Assert.NotNull(primitive);
         Assert.Equal(trait.Id, primitive!.Id);
@@ -249,7 +299,7 @@ public class FeatureRepositoryTests
         Assert.Single(allPrimitives);
         Assert.Equal(feature.Id, allPrimitives.First().Id);
     }
-    
+
 
     [Fact]
     public async Task BackgroundFeature_PrimitiveData_Works()
@@ -260,7 +310,7 @@ public class FeatureRepositoryTests
 
         var background = CreateTestBackground();
         var feature = CreateTestBackgroundFeature(background);
-        
+
         // Act
         var repo = new BackgroundFeatureRepository(context);
         await repo.CreateAsync(feature);
@@ -289,7 +339,7 @@ public class FeatureRepositoryTests
         await using var context = new AppDbContext(options);
 
         var feat = CreateTestFeat();
-        
+
         // Act
         var repo = new FeatRepository(context);
         await repo.CreateAsync(feat);

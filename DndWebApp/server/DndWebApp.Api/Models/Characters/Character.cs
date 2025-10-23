@@ -1,7 +1,9 @@
+using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World;
+using DndWebApp.Api.Models.World.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
@@ -65,7 +67,6 @@ public class CombatStats
 [Owned]
 public class CurrentSpellSlots
 {
-    public required int CharacterId { get; set; }
     public required int Lvl1 { get; set; }
     public int Lvl2 { get; set; } = 0;
     public int Lvl3 { get; set; } = 0;
@@ -98,7 +99,8 @@ public class CharacterBuilding
 [Owned]
 public class SaveThrowProficiency
 {
-    public required int AbilityId { get; set; }
+    public required AbilityType AbilityType { get; set; }
+    public int AbilityId { get; set; }
     public required int CharacterFeatureId { get; set; }
 }
 
@@ -113,7 +115,8 @@ public class DamageAffinity
 [Owned]
 public class SkillProficiency
 {
-    public required int SkillId { get; set; }
+    public required SkillType SkillType { get; set; }
+    public int SkillId { get; set; }
     public required bool HasExpertise { get; set; }
     public required int CharacterFeatureId { get; set; }
 }
@@ -142,6 +145,7 @@ public class ToolProficiency
 [Owned]
 public class LanguageProficiency
 {
-    public required int LanguageId { get; set; }
+    public required LanguageType LanguageType { get; set; }
+    public int LanguageId { get; set; }
     public required int CharacterFeatureId { get; set; }
 }

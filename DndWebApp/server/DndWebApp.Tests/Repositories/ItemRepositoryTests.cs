@@ -56,7 +56,7 @@ public class ItemRepositoryTests
     public async Task AddAndRetrieveItems_WorksCorrectly()
     {
         // Arrange
-        var options = GetInMemoryOptions("Race_AddRetrieveDB");
+        var options = GetInMemoryOptions("Items_AddRetrieveDB");
         await using var context = new AppDbContext(options);
 
         var item = CreateTestItem();
@@ -275,7 +275,7 @@ public class ItemRepositoryTests
     public async Task RetrieveToolWithAllData_ShouldHaveCorrectActivitiesAndProperties()
     {
         // Arrange
-        var options = GetInMemoryOptions("GetAllWithCollections_AddRetrieveDB");
+        var options = GetInMemoryOptions("Tools_AddRetrieveDB");
 
         var tool = CreateTestTool();
         var activity1 = new ToolActivity { Title = "Pick a lock", DC = "Varies" };

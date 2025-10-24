@@ -1,8 +1,7 @@
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Items;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;

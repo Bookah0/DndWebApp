@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Items.Enums;
+﻿using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
-using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Spells;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;

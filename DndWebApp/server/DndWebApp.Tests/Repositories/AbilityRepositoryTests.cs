@@ -1,6 +1,6 @@
 ﻿using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Abilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;

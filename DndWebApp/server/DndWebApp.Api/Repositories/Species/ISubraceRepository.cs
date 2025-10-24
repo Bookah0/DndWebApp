@@ -1,12 +1,9 @@
-using System.IO.Compression;
-using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Repositories;
+namespace DndWebApp.Api.Repositories.Species;
 
-public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(context)
+public interface ISubraceRepository : IRepository<Subrace>
 {
     /// <summary>
     /// Retrieves primitive data from a <see cref="Subrace"/> by its <paramref name="id"/>,
@@ -20,19 +17,7 @@ public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(con
     /// <remarks>
     /// Typically used for simple display of a single subrace.
     /// </remarks>
-    public async Task<SubracePrimitiveDto?> GetPrimitiveDataAsync(int id)
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(r => new SubracePrimitiveDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                GeneralDescription = r.RaceDescription.GeneralDescription,
-                ParentRaceId = r.ParentRaceId,
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<SubracePrimitiveDto?> GetPrimitiveDataAsync(int id);
 
     /// <summary>
     /// Retrieves a <see cref="Subrace"/> entity by its <paramref name="id"/>, 
@@ -46,13 +31,7 @@ public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(con
     /// <remarks>
     /// Typically used for detailed display of a single subrace, including its traits and parent race.
     /// </remarks>
-    public async Task<Subrace?> GetWithAllDataAsync(int id)
-    {
-        return await dbSet
-        .Include(r => r.Traits)
-        .Include(r => r.ParentRace)
-        .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<Subrace?> GetWithAllDataAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Subrace"/> entities in the database,
@@ -64,28 +43,10 @@ public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(con
     /// <remarks>
     /// Typically used for search results, dropdowns, or subrace selection during character creation.
     /// </remarks>
-    public async Task<ICollection<SubracePrimitiveDto>> GetAllPrimitiveDataAsync()
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(r => new SubracePrimitiveDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                GeneralDescription = r.RaceDescription.GeneralDescription,
-                ParentRaceId = r.ParentRaceId,
-            })
-            .ToListAsync();
-    }
+    Task<ICollection<SubracePrimitiveDto>> GetAllPrimitiveDataAsync();
 
     // Currently unused, but may become relevant for future functionality.
     // The ParentRace can already be accessed through the Subrace’s foreign key.
     // For now, all current use cases are covered by GetAllPrimitiveDataAsync().
-    public async Task<ICollection<Subrace>> GetAllWithAllDataAsync()
-    {
-        return await dbSet
-        .Include(r => r.Traits)
-        .Include(r => r.ParentRace)
-        .ToListAsync();
-    }
+    Task<ICollection<Subrace>> GetAllWithAllDataAsync();
 }

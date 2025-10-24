@@ -1,24 +1,13 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Repositories.Abilities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Repositories;
+namespace DndWebApp.Api.Repositories.Characters;
 
-public class CharacterRepository(AppDbContext context) : EfRepository<Character>(context)
+public class CharacterRepository(AppDbContext context) : EfRepository<Character>(context), ICharacterRepository
 {
-    /// <summary>
-    /// Retrieves data representing the current spell slots from a <see cref="Character"/> by its <paramref name="id"/>,
-    /// excluding related navigation properties.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="Character"/>.</param>
-    /// <returns>
-    /// A read-only <see cref="CharacterSpellSlotsDto"/> containing spellslot data,
-    /// or <c>null</c> if no <see cref="Character"/> with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for displaying <see cref="Character"/>s current spellslots.
-    /// </remarks>
     public async Task<CharacterSpellSlotsDto?> GetCurrentSpellSlotsAsync(int id)
     {
         return await dbSet
@@ -40,18 +29,6 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .FirstOrDefaultAsync();
     }
 
-    /// <summary>
-    /// Retrieves data representing the description of a <see cref="Character"/> by its <paramref name="id"/>,
-    /// excluding related navigation properties.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="Character"/>.</param>
-    /// <returns>
-    /// A read-only <see cref="CharacterDescriptionDto"/> containing data such as eye color, ideals and background story,
-    /// or <c>null</c> if no <see cref="Character"/> with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for displaying detailed <see cref="Character"/> description.
-    /// </remarks>
     public async Task<CharacterDescriptionDto?> GetCharacterDescriptionAsync(int id)
     {
         return await dbSet
@@ -77,18 +54,6 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .FirstOrDefaultAsync();
     }
 
-    /// <summary>
-    /// Retrieves primitive data of a <see cref="Character"/> 
-    /// excluding <see cref="CharacterBuilding"/> data, <see cref="CurrentSpellSlots"/> data and related navigation properties.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="Character"/>.</param>
-    /// <returns>
-    /// A read-only <see cref="PrimitiveCharacterDto"/> entity containing primitive data,
-    /// or <c>null</c> if no <see cref="Character"/> with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for displaying general <see cref="Character"/> information.
-    /// </remarks>
     public async Task<PrimitiveCharacterDto?> GetPrimitiveDataAsync(int id)
     {
         return await dbSet
@@ -118,16 +83,6 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .FirstOrDefaultAsync();
     }
 
-    /// <summary>
-    /// Retrieves primitive data of all <see cref="Character"/>s, 
-    /// excluding <see cref="CharacterBuilding"/> data, <see cref="CurrentSpellSlots"/> data and related navigation properties.
-    /// </summary>
-    /// <returns>
-    /// A collection of read-only <see cref="PrimitiveCharacterDto"/> entities containing primitive data.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for displaying <see cref="Character"/>s in lists and grids.
-    /// </remarks>
     public async Task<ICollection<PrimitiveCharacterDto>> GetAllPrimitiveDataAsync()
     {
         return await dbSet
@@ -156,26 +111,6 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .ToListAsync();
     }
 
-    /// <summary>
-    /// Retrieves a <see cref="Feature"/> entity by its <paramref name="id"/>, 
-    /// including its related navigation properties: 
-    /// <see cref="Feature.AbilityIncreases"/>,  
-    /// <see cref="Feature.SpellsGained"/>, 
-    /// <see cref="Feature.AbilityIncreaseChoices"/>, 
-    /// <see cref="Feature.SkillProficiencyChoices"/>, 
-    /// <see cref="Feature.ToolProficiencyChoices"/>, 
-    /// <see cref="Feature.LanguageChoices"/>, 
-    /// <see cref="Feature.ArmorProficiencyChoices"/>, and 
-    /// <see cref="Feature.WeaponProficiencyChoices"/>.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="Feature"/> to retrieve.</param>
-    /// <returns>
-    /// The <see cref="Feature"/> entity with its related navigation properties,
-    /// or <c>null</c> if no <see cref="Feature"/> with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for setting a <see cref="Character"/> proficiencies and apply changes to the <see cref="Character"/>s stats.
-    /// </remarks>
     public async Task<Character?> GetWithAllDataAsync(int id)
     {
         return await dbSet

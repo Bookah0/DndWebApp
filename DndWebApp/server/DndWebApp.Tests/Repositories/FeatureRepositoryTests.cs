@@ -3,9 +3,10 @@ using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Features;
 
+namespace DndWebApp.Tests.Repositories;
+
 public class FeatureRepositoryTests
 {
-
     private Feature CreateTestFeature() => new Feature
     {
         Name = "Power Strike",

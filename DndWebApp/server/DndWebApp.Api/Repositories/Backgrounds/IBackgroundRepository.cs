@@ -1,11 +1,9 @@
-using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Repositories;
+namespace DndWebApp.Api.Repositories.Backgrounds;
 
-public class BackgroundRepository(AppDbContext context) : EfRepository<Background>(context)
+public interface IBackgroundRepository
 {
     /// <summary>
     /// Retrieves primitive data from a <see cref="Background"/> by its <paramref name="id"/>,
@@ -22,19 +20,7 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Background"/>.
     /// </remarks>
-    public async Task<BackgroundPrimitiveDto?> GetPrimitiveDataAsync(int id)
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(r => new BackgroundPrimitiveDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Description = r.Description,
-                IsHomebrew = r.IsHomebrew,
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<BackgroundPrimitiveDto?> GetPrimitiveDataAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Background"/> entities in the database,
@@ -49,20 +35,8 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
     /// <remarks>
     /// Typically used for search results, dropdowns, or <see cref="Background"/> selection during character creation.
     /// </remarks>
-    public async Task<ICollection<BackgroundPrimitiveDto>> GetAllPrimitiveDataAsync()
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(r => new BackgroundPrimitiveDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Description = r.Description,
-                IsHomebrew = r.IsHomebrew,
-            })
-            .ToListAsync();
-    }
-    
+    Task<ICollection<BackgroundPrimitiveDto>> GetAllPrimitiveDataAsync();
+
     /// <summary>
     /// Retrieves a <see cref="Background"/> entity by its <paramref name="id"/>, 
     /// including its related navigation properties: 
@@ -78,17 +52,7 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
     /// <remarks>
     /// Typically used for detailed display of a single <see cref="Background"/>, including its related navigation properties.
     /// </remarks>
-    public async Task<Background?> GetWithAllDataAsync(int id)
-    {
-        return await dbSet
-            .AsSplitQuery()
-            .Include(b => b.Features)
-            .Include(b => b.StartingItems)
-            .Include(b => b.StartingItemsOptions)
-                .ThenInclude(o => o.Options)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
+    Task<Background?> GetWithAllDataAsync(int id);
 
     /// <summary>
     /// Retrieves all <see cref="Background"/> entities, 
@@ -103,14 +67,5 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
     /// <remarks>
     /// Typically used when displaying a complete list of <see cref="Background"/>s.
     /// </remarks>
-    public async Task<ICollection<Background>> GetAllWithAllDataAsync()
-    {
-        return await dbSet
-            .AsSplitQuery()
-            .Include(b => b.Features)
-            .Include(b => b.StartingItems)
-            .Include(b => b.StartingItemsOptions)
-                .ThenInclude(o => o.Options)
-            .ToListAsync();
-    }
+    Task<ICollection<Background>> GetAllWithAllDataAsync();
 }

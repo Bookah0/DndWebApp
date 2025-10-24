@@ -2,9 +2,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Items;
 
-[Owned]
 public class Inventory
 {
+    public int Id { get; set; }
+    public int CharacterId { get; set; }
     public required Currency Currency { get; set; }
     public int TotalWeight { get; set; }
     public int MaxWeight { get; set; }

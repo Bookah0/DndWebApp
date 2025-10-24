@@ -1,9 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Classes;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
@@ -104,7 +101,7 @@ public class ClassLevelRepositoryTests
         var levelRepo = new ClassLevelRepository(context);
         var toDelete = await levelRepo.GetByIdAsync(cls.Id);
 
-        await levelRepo.DeleteAsync(toDelete);
+        await levelRepo.DeleteAsync(toDelete!);
         await context.SaveChangesAsync();
         var deleted = await levelRepo.GetByIdAsync(cls.Id);
 

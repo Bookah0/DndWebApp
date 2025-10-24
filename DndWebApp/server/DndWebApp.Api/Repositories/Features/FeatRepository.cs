@@ -6,43 +6,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Features;
 
-public class BackgroundFeatureRepository(AppDbContext context) : EfRepository<BackgroundFeature>(context)
+public class FeatRepository(AppDbContext context) : EfRepository<Feat>(context), IFeatRepository
 {
-    public async Task<FeaturePrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<FeatPrimitiveDto?> GetPrimitiveDataAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(b => new FeaturePrimitiveDto
+            .Select(f => new FeatPrimitiveDto
             {
-                Id = b.Id,
-                Name = b.Name,
-                Description = b.Description,
-                IsHomebrew = b.IsHomebrew,
-                FromEntityId = b.BackgroundId
+                Id = f.Id,
+                Name = f.Name,
+                Description = f.Description,
+                IsHomebrew = f.IsHomebrew,
+                Prerequisite = f.Prerequisite
             })
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeaturePrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<FeatPrimitiveDto>> GetAllPrimitiveDataAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(b => new FeaturePrimitiveDto
+            .Select(f => new FeatPrimitiveDto
             {
-                Id = b.Id,
-                Name = b.Name,
-                Description = b.Description,
-                IsHomebrew = b.IsHomebrew,
-                FromEntityId = b.BackgroundId
+                Id = f.Id,
+                Name = f.Name,
+                Description = f.Description,
+                IsHomebrew = f.IsHomebrew,
+                Prerequisite = f.Prerequisite
             })
             .ToListAsync();
     }
 
-    public async Task<BackgroundFeature?> GetWithAllDataAsync(int id)
+    public async Task<Feat?> GetWithAllDataAsync(int id)
     {
         return await dbSet
             .AsSplitQuery()
-            .Include(b => b.Background)
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
             .Include(f => f.LanguageChoices)
@@ -56,11 +55,10 @@ public class BackgroundFeatureRepository(AppDbContext context) : EfRepository<Ba
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<BackgroundFeature>> GetAllWithAllDataAsync()
+    public async Task<ICollection<Feat>> GetAllWithAllDataAsync()
     {
         return await dbSet
             .AsSplitQuery()
-            .Include(b => b.Background)
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
             .Include(f => f.LanguageChoices)

@@ -1,13 +1,9 @@
-using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Features;
 
-// TODO:
-// FeatureRepository classes contain large amounts of duplicated code.
-public class FeatureRepository(AppDbContext context) : EfRepository<Feature>(context)
+public interface IFeatureRepository : IRepository<Feature>
 {
     /// <summary>
     /// Retrieves primitive data from a <see cref="Feature"/> by its <paramref name="id"/>,
@@ -26,19 +22,8 @@ public class FeatureRepository(AppDbContext context) : EfRepository<Feature>(con
     /// therefore FromEntityId = null
     /// Typically used for simple display of a single <see cref="Feature"/>.
     /// </remarks>
-    public async Task<BaseFeaturePrimitiveDto?> GetPrimitiveDataAsync(int id)
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(r => new BaseFeaturePrimitiveDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Description = r.Description,
-                IsHomebrew = r.IsHomebrew,
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<BaseFeaturePrimitiveDto?> GetPrimitiveDataAsync(int id);
+
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Feature"/> entities in the database,
@@ -55,19 +40,7 @@ public class FeatureRepository(AppDbContext context) : EfRepository<Feature>(con
     /// therefore FromEntityId = null
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    public async Task<ICollection<BaseFeaturePrimitiveDto>> GetAllPrimitiveDataAsync()
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(r => new BaseFeaturePrimitiveDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Description = r.Description,
-                IsHomebrew = r.IsHomebrew,
-            })
-            .ToListAsync();
-    }
+    Task<ICollection<BaseFeaturePrimitiveDto>> GetAllPrimitiveDataAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Feature"/> entity by its <paramref name="id"/>, 
@@ -89,24 +62,7 @@ public class FeatureRepository(AppDbContext context) : EfRepository<Feature>(con
     /// <remarks>
     /// Typically used for setting a <see cref="Character"/> proficiencies and apply changes to the <see cref="Character"/>s stats.
     /// </remarks>
-    public async Task<Feature?> GetWithAllDataAsync(int id)
-    {
-        return await dbSet
-            .Where(f => !(f is ClassFeature) && !(f is Feat) && !(f is BackgroundFeature) && !(f is Trait))
-            .AsSplitQuery()
-            .Include(f => f.AbilityIncreases)
-            .Include(f => f.SpellsGained)
-            .Include(f => f.LanguageChoices)
-            .Include(f => f.SkillProficiencyChoices)
-            .Include(f => f.ToolProficiencyChoices)
-            .Include(f => f.LanguageChoices)
-            .Include(f => f.ArmorProficiencyChoices)
-            .Include(f => f.WeaponProficiencyChoices)
-            .Include(f => f.AbilityIncreaseChoices)
-                .ThenInclude(o => o.Options)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
+    Task<Feature?> GetWithAllDataAsync(int id);
 
     /// <summary>
     /// Retrieves all <see cref="Background"/> entities, 
@@ -121,28 +77,5 @@ public class FeatureRepository(AppDbContext context) : EfRepository<Feature>(con
     /// <remarks>
     /// Typically used when displaying a complete list of <see cref="Background"/>s.
     /// </remarks>
-    public async Task<ICollection<Feature>> GetAllWithAllDataAsync()
-    {
-        return await dbSet
-            .Where(f => !(f is ClassFeature) && !(f is Feat) && !(f is BackgroundFeature) && !(f is Trait))
-            .AsSplitQuery()
-            .Include(f => f.AbilityIncreases)
-            .Include(f => f.SpellsGained)
-            .Include(f => f.LanguageChoices)
-            .Include(f => f.SkillProficiencyChoices)
-            .Include(f => f.ToolProficiencyChoices)
-            .Include(f => f.LanguageChoices)
-            .Include(f => f.ArmorProficiencyChoices)
-            .Include(f => f.WeaponProficiencyChoices)
-            .Include(f => f.AbilityIncreaseChoices)
-                .ThenInclude(o => o.Options)
-            .ToListAsync();
-    }
+    Task<ICollection<Feature>> GetAllWithAllDataAsync();
 }
-
-
-
-
-
-
-

@@ -2,9 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Repositories.Features;
+using DndWebApp.Api.Repositories.Characters;
+using DndWebApp.Api.Repositories.Abilities;
+using DndWebApp.Api.Repositories.Skills;
+using DndWebApp.Api.Repositories.Items;
+using DndWebApp.Api.Repositories.Species;
+using DndWebApp.Api.Repositories.Spells;
+using DndWebApp.Api.Repositories.Classes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,24 +20,27 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
-builder.Services.AddScoped<IRepository<Character>, CharacterRepository>();
-builder.Services.AddScoped<IRepository<Ability>, AbilityRepository>();
-builder.Services.AddScoped<IRepository<Skill>, SkillRepository>();
+builder.Services.AddScoped<IAbilityRepository, AbilityRepository>();
+builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 
-builder.Services.AddScoped<IRepository<Trait>, TraitRepository>();
-builder.Services.AddScoped<IRepository<Feat>, FeatRepository>();
-builder.Services.AddScoped<IRepository<ClassFeature>, ClassFeatureRepository>();
-builder.Services.AddScoped<IRepository<Feature>, FeatureRepository>();
+builder.Services.AddScoped<IClassLevelRepository, ClassLevelRepository>();
+builder.Services.AddScoped<IClassRepository, ClassRepository>();
 
-builder.Services.AddScoped<IRepository<Item>, ItemRepository>();
-builder.Services.AddScoped<IRepository<Weapon>, WeaponRepository>();
-builder.Services.AddScoped<IRepository<Armor>, ArmorRepository>();
-builder.Services.AddScoped<IRepository<Tool>, ToolRepository>();
+builder.Services.AddScoped<IFeatureRepository, FeatureRepository>();
+builder.Services.AddScoped<IFeatRepository, FeatRepository>();
+builder.Services.AddScoped<ITraitRepository, TraitRepository>();
+builder.Services.AddScoped<IClassFeatureRepository, ClassFeatureRepository>();
 
-builder.Services.AddScoped<IRepository<Race>, RaceRepository>();
-builder.Services.AddScoped<IRepository<Subrace>, SubraceRepository>();
+builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 
-builder.Services.AddScoped<IRepository<Spell>, SpellRepository>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<IToolRepository, ToolRepository>();
+
+builder.Services.AddScoped<IRaceRepository, RaceRepository>();
+builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
+
+builder.Services.AddScoped<ISpellRepository, SpellRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();

@@ -1,15 +1,10 @@
-using DndWebApp.Api.Data;
+using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Spells;
-using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Repositories;
+namespace DndWebApp.Api.Repositories.Spells;
 
-// TODO:
-// The Spell class contains a large amount of data. To improve performance and flexibility, 
-// additional getter methods should be introduced using DTOs with reduced datasets.
-// More DTO variations will be added later as specific use cases and data requirements become clearer.
-public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context)
+public interface ISpellRepository : IRepository<Spell>
 {
     /// <summary>
     /// Retrieves a <see cref="Spell"/> entity by its <paramref name="id"/>, 
@@ -23,12 +18,7 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
     /// <remarks>
     /// Typically used when displaying a single spell with all related data.
     /// </remarks>
-    public async Task<Spell?> GetWithClassesAsync(int id)
-    {
-        return await dbSet
-            .Include(s => s.Classes)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<Spell?> GetWithClassesAsync(int id);
 
     /// <summary>
     /// Retrieves all <see cref="Spell"/> entities, 
@@ -40,10 +30,5 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
     /// <remarks>
     /// Typically used when displaying lists of spells.
     /// </remarks>
-    public async Task<ICollection<Spell>> GetAllWithClassesAsync()
-    {
-        return await dbSet
-            .Include(s => s.Classes)
-            .ToListAsync();
-    }
+    Task<ICollection<Spell>> GetAllWithClassesAsync();
 }

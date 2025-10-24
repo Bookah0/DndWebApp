@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Species;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace DndWebApp.Tests.Repositories;
 

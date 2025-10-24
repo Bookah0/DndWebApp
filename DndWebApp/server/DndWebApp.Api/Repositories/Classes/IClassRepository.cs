@@ -1,11 +1,9 @@
-using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Repositories;
+namespace DndWebApp.Api.Repositories.Classes;
 
-public class ClassRepository(AppDbContext context) : EfRepository<Class>(context)
+public interface IClassRepository : IRepository<Class>
 {
     /// <summary>
     /// Retrieves primitive data from a <see cref="Class"/> by its <paramref name="id"/>,
@@ -22,20 +20,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Class"/>.
     /// </remarks>
-    public async Task<ClassPrimitiveDto?> GetPrimitiveDataAsync(int id)
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(c => new ClassPrimitiveDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description,
-                IsHomebrew = c.IsHomebrew,
-                HitDie = c.HitDie
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<ClassPrimitiveDto?> GetPrimitiveDataAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Class"/> entities in the database,
@@ -50,21 +35,8 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
     /// <remarks>
     /// Typically used for search results, dropdowns, or <see cref="Class"/> selection during character creation.
     /// </remarks>
-    public async Task<ICollection<ClassPrimitiveDto>> GetAllPrimitiveDataAsync()
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(c => new ClassPrimitiveDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description,
-                IsHomebrew = c.IsHomebrew,
-                HitDie = c.HitDie
-            })
-            .ToListAsync();
-    }
-    
+    Task<ICollection<ClassPrimitiveDto>> GetAllPrimitiveDataAsync();
+
     /// <summary>
     /// Retrieves a <see cref="Class"/> entity by its <paramref name="id"/>, 
     /// including its related navigation properties: 
@@ -80,17 +52,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
     /// <remarks>
     /// Typically used for detailed display of a single <see cref="Class"/>.
     /// </remarks>
-    public async Task<Class?> GetWithAllDataAsync(int id)
-    {
-        return await dbSet
-            .AsSplitQuery()
-            .Include(b => b.ClassLevels)
-            .Include(b => b.StartingEquipment)
-            .Include(b => b.StartingEquipmentOptions)
-                .ThenInclude(o => o.Options)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
+    Task<Class?> GetWithAllDataAsync(int id);
 
     /// <summary>
     /// Retrieves all <see cref="Class"/> entities, 
@@ -105,14 +67,5 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
     /// <remarks>
     /// Typically used when displaying a complete list of <see cref="Class"/>s.
     /// </remarks>
-    public async Task<ICollection<Class>> GetAllWithAllDataAsync()
-    {
-        return await dbSet
-            .AsSplitQuery()
-            .Include(b => b.ClassLevels)
-            .Include(b => b.StartingEquipment)
-            .Include(b => b.StartingEquipmentOptions)
-                .ThenInclude(o => o.Options)
-            .ToListAsync();
-    }
+    Task<ICollection<Class>> GetAllWithAllDataAsync();
 }

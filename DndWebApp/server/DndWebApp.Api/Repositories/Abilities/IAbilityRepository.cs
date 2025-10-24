@@ -1,12 +1,9 @@
-using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.DTOs;
-using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Repositories;
+namespace DndWebApp.Api.Repositories.Abilities;
 
-public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(context)
+public interface IAbilityRepository
 {
     /// <summary>
     /// Retrieves primitive data from an <see cref="Ability"/> by its <paramref name="id"/>,
@@ -20,19 +17,7 @@ public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(con
     /// <remarks>
     /// Typical use cases include simple display of a single ability.
     /// </remarks>
-    public async Task<AbilityPrimitiveDto?> GetPrimitiveDataAsync(int id)
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(a => new AbilityPrimitiveDto
-            {
-                Id = a.Id,
-                FullName = a.FullName,
-                ShortName = a.ShortName,
-                Description = a.Description
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<AbilityPrimitiveDto?> GetPrimitiveDataAsync(int id);
 
     /// <summary>
     /// Retrieves an <see cref="Ability"/> entity by its <paramref name="id"/>, 
@@ -46,12 +31,7 @@ public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(con
     /// <remarks>
     /// Typical use cases include detailed display of a single ability with its related skills.
     /// </remarks>
-    public async Task<Ability?> GetWithSkillsAsync(int id)
-    {
-        return await dbSet
-            .Include(a => a.Skills)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<Ability?> GetWithSkillsAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Ability"/> entities in the database,
@@ -63,19 +43,7 @@ public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(con
     /// <remarks>
     /// Typical use cases include search, simple display, dropdowns, and ability selection.
     /// </remarks>
-    public async Task<ICollection<AbilityPrimitiveDto>> GetAllPrimitiveDataAsync()
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(a => new AbilityPrimitiveDto
-            {
-                Id = a.Id,
-                FullName = a.FullName,
-                ShortName = a.ShortName,
-                Description = a.Description
-            })
-            .ToListAsync();
-    }
+    Task<ICollection<AbilityPrimitiveDto>> GetAllPrimitiveDataAsync();
 
     /// <summary>
     /// Retrieves all <see cref="Ability"/> entities, 
@@ -87,10 +55,5 @@ public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(con
     /// <remarks>
     /// Typical use cases include displaying all abilities alongside their related skills.
     /// </remarks>
-    public async Task<ICollection<Ability>> GetAllWithSkillsAsync()
-    {
-        return await dbSet
-            .Include(a => a.Skills)
-            .ToListAsync();
-    }
+    Task<ICollection<Ability>> GetAllWithSkillsAsync();
 }

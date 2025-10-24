@@ -1,12 +1,9 @@
-using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.DTOs;
-using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Repositories;
+namespace DndWebApp.Api.Repositories.Species;
 
-public class RaceRepository(AppDbContext context) : EfRepository<Race>(context)
+public interface IRaceRepository : IRepository<Race>
 {
     /// <summary>
     /// Retrieves primitive data from a <see cref="Race"/> by its <paramref name="id"/>,
@@ -20,18 +17,7 @@ public class RaceRepository(AppDbContext context) : EfRepository<Race>(context)
     /// <remarks>
     /// Typically used for simple display of a single race.
     /// </remarks>
-    public async Task<RacePrimitiveDto?> GetPrimitiveDataAsync(int id)
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(r => new RacePrimitiveDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                GeneralDescription = r.RaceDescription.GeneralDescription,
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<RacePrimitiveDto?> GetPrimitiveDataAsync(int id);
 
     /// <summary>
     /// Retrieves a <see cref="Race"/> entity by its <paramref name="id"/>, 
@@ -45,13 +31,7 @@ public class RaceRepository(AppDbContext context) : EfRepository<Race>(context)
     /// <remarks>
     /// Typically used for detailed display of a single race, including its traits and subraces.
     /// </remarks>
-    public async Task<Race?> GetWithAllDataAsync(int id)
-    {
-        return await dbSet
-        .Include(r => r.Traits)
-        .Include(r => r.SubRaces)
-        .FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<Race?> GetWithAllDataAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Race"/> entities in the database,
@@ -63,26 +43,9 @@ public class RaceRepository(AppDbContext context) : EfRepository<Race>(context)
     /// <remarks>
     /// Typically used for search results, dropdowns, or race selection during character creation.
     /// </remarks>
-    public async Task<ICollection<RacePrimitiveDto>> GetAllPrimitiveDataAsync()
-    {
-        return await dbSet
-            .AsNoTracking()
-            .Select(r => new RacePrimitiveDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                GeneralDescription = r.RaceDescription.GeneralDescription,
-            })
-            .ToListAsync();
-    }
+    Task<ICollection<RacePrimitiveDto>> GetAllPrimitiveDataAsync();
 
     // Currently unused, but may become relevant for future functionality.
     // For now, all current use cases are covered by GetAllPrimitiveDataAsync().
-    public async Task<ICollection<Race>> GetAllWithAllDataAsync()
-    {
-        return await dbSet
-        .Include(r => r.Traits)
-        .Include(r => r.SubRaces)
-        .ToListAsync();
-    }
+    Task<ICollection<Race>> GetAllWithAllDataAsync();
 }

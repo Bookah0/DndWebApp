@@ -1,48 +1,45 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Features;
 
-public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context)
+public class FeatureRepository(AppDbContext context) : EfRepository<Feature>(context), IFeatureRepository
 {
-    public async Task<FeaturePrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<BaseFeaturePrimitiveDto?> GetPrimitiveDataAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(t => new FeaturePrimitiveDto
+            .Select(r => new BaseFeaturePrimitiveDto
             {
-                Id = t.Id,
-                Name = t.Name,
-                Description = t.Description,
-                IsHomebrew = t.IsHomebrew,
-                FromEntityId = t.RaceId
+                Id = r.Id,
+                Name = r.Name,
+                Description = r.Description,
+                IsHomebrew = r.IsHomebrew,
             })
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeaturePrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<BaseFeaturePrimitiveDto>> GetAllPrimitiveDataAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(t => new FeaturePrimitiveDto
+            .Select(r => new BaseFeaturePrimitiveDto
             {
-                Id = t.Id,
-                Name = t.Name,
-                Description = t.Description,
-                IsHomebrew = t.IsHomebrew,
-                FromEntityId = t.RaceId
+                Id = r.Id,
+                Name = r.Name,
+                Description = r.Description,
+                IsHomebrew = r.IsHomebrew,
             })
             .ToListAsync();
     }
 
-    public async Task<Trait?> GetWithAllDataAsync(int id)
+    public async Task<Feature?> GetWithAllDataAsync(int id)
     {
         return await dbSet
+            .Where(f => !(f is ClassFeature) && !(f is Feat) && !(f is BackgroundFeature) && !(f is Trait))
             .AsSplitQuery()
-            .Include(t => t.FromRace)
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
             .Include(f => f.LanguageChoices)
@@ -56,11 +53,11 @@ public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<Trait>> GetAllWithAllDataAsync()
+    public async Task<ICollection<Feature>> GetAllWithAllDataAsync()
     {
         return await dbSet
+            .Where(f => !(f is ClassFeature) && !(f is Feat) && !(f is BackgroundFeature) && !(f is Trait))
             .AsSplitQuery()
-            .Include(t => t.FromRace)
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
             .Include(f => f.LanguageChoices)
@@ -74,3 +71,10 @@ public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context
             .ToListAsync();
     }
 }
+
+
+
+
+
+
+

@@ -11,27 +11,33 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<Character> Characters { get; set; }
+    public DbSet<Inventory> Inventories { get; set; }
+
     public DbSet<Ability> AbilityScores { get; set; }
-    public DbSet<Class> Classes { get; set; }
-    public DbSet<Race> Races { get; set; }
-    public DbSet<Subrace> SubRaces { get; set; }
+    public DbSet<AbilityValue> AbilityValues { get; set; }
     public DbSet<Skill> Skills { get; set; }
 
-    // Feature sets
+    public DbSet<Alignment> Alignments { get; set; }
+    public DbSet<Language> Languages { get; set; }
+    public DbSet<Choice> Choices { get; set; }
+
+    public DbSet<Class> Classes { get; set; }
+    public DbSet<ClassLevel> ClassLevels { get; set; }
+
+    public DbSet<Race> Races { get; set; }
+    public DbSet<Subrace> SubRaces { get; set; }
+
     public DbSet<Feature> Features { get; set; }
     public DbSet<Trait> Traits { get; set; }
     public DbSet<Feat> Feats { get; set; }
     public DbSet<ClassFeature> ClassFeatures { get; set; }
     public DbSet<BackgroundFeature> BackgroundFeatures { get; set; }
         
-    // Item sets
     public DbSet<Item> Items { get; set; }
     public DbSet<Weapon> Weapons { get; set; }
     public DbSet<Armor> Armor { get; set; }
     public DbSet<Tool> Tools { get; set; }
     
     public DbSet<Spell> Spells { get; set; }
-    public DbSet<Alignment> Alignments { get; set; }
-    public DbSet<Language> Languages { get; set; }
     
 }

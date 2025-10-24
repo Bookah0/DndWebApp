@@ -1,10 +1,9 @@
-using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using Microsoft.EntityFrameworkCore;
+using DndWebApp.Api.Models.DTOs;
 
-namespace DndWebApp.Api.Repositories;
+namespace DndWebApp.Api.Repositories.Skills;
 
-public class SkillRepository(AppDbContext context) : EfRepository<Skill>(context)
+public interface ISkillRepository : IRepository<Skill>
 {
     /// <summary>
     /// Retrieves a <see cref="Skill"/> entity by its <paramref name="id"/>, 
@@ -18,10 +17,7 @@ public class SkillRepository(AppDbContext context) : EfRepository<Skill>(context
     /// <remarks>
     /// Typically used when displaying detailed information for a single skill.
     /// </remarks>
-    public async Task<Skill?> GetWithAbilityAsync(int id)
-    {
-        return await dbSet.Include(s => s.Ability).FirstOrDefaultAsync(x => x.Id == id);
-    }
+    Task<Skill?> GetWithAbilityAsync(int id);
 
     /// <summary>
     /// Retrieves all <see cref="Skill"/> entities, 
@@ -33,8 +29,5 @@ public class SkillRepository(AppDbContext context) : EfRepository<Skill>(context
     /// <remarks>
     /// Typically used when displaying a complete list of skills.
     /// </remarks>
-    public async Task<ICollection<Skill>> GetAllWithAbilityAsync()
-    {
-        return await dbSet.Include(s => s.Ability).ToListAsync();
-    }
+    Task<ICollection<Skill>> GetAllWithAbilityAsync();
 }

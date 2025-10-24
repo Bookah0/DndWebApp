@@ -14,13 +14,13 @@ public interface IBackgroundFeatureRepository : IRepository<BackgroundFeature>
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="BackgroundFeature"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="FeatureDto"/> containing primitive data,
+    /// A read-only <see cref="BackgroundFeatureDto"/> containing primitive data,
     /// or <c>null</c> if no <see cref="BackgroundFeature"/> with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="BackgroundFeature"/>.
     /// </remarks>
-    Task<FeatureDto?> GetBackgroundDtoAsync(int id);
+    Task<BackgroundFeatureDto?> GetBackgroundDtoAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="BackgroundFeature"/> entities in the database,
@@ -30,12 +30,12 @@ public interface IBackgroundFeatureRepository : IRepository<BackgroundFeature>
     /// <see cref="BackgroundFeature.DamageWeaknessGained"/>.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="FeatureDto"/> entities containing primitive data.
+    /// A collection of read-only <see cref="BackgroundFeatureDto"/> entities containing primitive data.
     /// </returns>
     /// <remarks>
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<FeatureDto>> GetAllBackgroundDtosAsync();
+    Task<ICollection<BackgroundFeatureDto>> GetAllBackgroundDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="BackgroundFeature"/> entity by its <paramref name="id"/>, 

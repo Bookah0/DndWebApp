@@ -8,11 +8,11 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context), ITraitRepository
 {
-    public async Task<FeatureDto?> GetTraitDtoAsync(int id)
+    public async Task<TraitDto?> GetTraitDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(t => new FeatureDto
+            .Select(t => new TraitDto
             {
                 Id = t.Id,
                 Name = t.Name,
@@ -23,11 +23,11 @@ public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeatureDto>> GetAllTraitDtosAsync()
+    public async Task<ICollection<TraitDto>> GetAllTraitDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(t => new FeatureDto
+            .Select(t => new TraitDto
             {
                 Id = t.Id,
                 Name = t.Name,

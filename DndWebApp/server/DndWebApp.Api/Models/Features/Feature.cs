@@ -1,12 +1,13 @@
+using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World.Enums;
 
-namespace DndWebApp.Api.Models.Characters;
+namespace DndWebApp.Api.Models.Features;
 
-public class Feature
+public abstract class Feature
 {
     public int Id { get; set; }
     public required string Name { get; set; }

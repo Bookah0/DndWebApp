@@ -14,13 +14,13 @@ public interface ITraitRepository : IRepository<Trait>
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Trait"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="FeatureDto"/> containing primitive data,
+    /// A read-only <see cref="TraitDto"/> containing primitive data,
     /// or <c>null</c> if no <see cref="Trait"/> with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Trait"/>.
     /// </remarks>
-    Task<FeatureDto?> GetTraitDtoAsync(int id);
+    Task<TraitDto?> GetTraitDtoAsync(int id);
 
 
     /// <summary>
@@ -31,12 +31,12 @@ public interface ITraitRepository : IRepository<Trait>
     /// <see cref="Trait.DamageWeaknessGained"/>.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="FeatureDto"/> entities containing primitive data.
+    /// A collection of read-only <see cref="TraitDto"/> entities containing primitive data.
     /// </returns>
     /// <remarks>
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<FeatureDto>> GetAllTraitDtosAsync();
+    Task<ICollection<TraitDto>> GetAllTraitDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Trait"/> entity by its <paramref name="id"/>, 

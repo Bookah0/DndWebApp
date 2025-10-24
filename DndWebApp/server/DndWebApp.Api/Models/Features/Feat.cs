@@ -1,10 +1,11 @@
 
+using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World;
 
-namespace DndWebApp.Api.Models.Characters;
+namespace DndWebApp.Api.Models.Features;
 
 // Based on https://api.open5e.com/v2/feats/
 public class Feat : Feature

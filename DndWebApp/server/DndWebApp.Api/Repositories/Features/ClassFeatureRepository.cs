@@ -8,11 +8,11 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFeature>(context), IClassFeatureRepository
 {
-    public async Task<FeatureDto?> GetClassFeatureDtoAsync(int id)
+    public async Task<ClassFeatureDto?> GetClassFeatureDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(f => new FeatureDto
+            .Select(f => new ClassFeatureDto
             {
                 Id = f.Id,
                 Name = f.Name,
@@ -23,11 +23,11 @@ public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFe
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeatureDto>> GetAllClassFeaturDtosAsync()
+    public async Task<ICollection<ClassFeatureDto>> GetAllClassFeaturDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(f => new FeatureDto
+            .Select(f => new ClassFeatureDto
             {
                 Id = f.Id,
                 Name = f.Name,

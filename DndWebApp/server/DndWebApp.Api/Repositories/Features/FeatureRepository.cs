@@ -1,12 +1,16 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Features;
+/*
 
+May be used as an ItemFeature class later
 public class FeatureRepository(AppDbContext context) : EfRepository<Feature>(context), IFeatureRepository
 {
+    
     public async Task<BaseFeatureDto?> GetBaseFeatureDtoAsync(int id)
     {
         return await dbSet
@@ -70,7 +74,9 @@ public class FeatureRepository(AppDbContext context) : EfRepository<Feature>(con
                 .ThenInclude(o => o.Options)
             .ToListAsync();
     }
+    
 }
+*/
 
 
 

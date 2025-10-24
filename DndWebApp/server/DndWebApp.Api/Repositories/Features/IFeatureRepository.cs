@@ -2,7 +2,7 @@ using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 
 namespace DndWebApp.Api.Repositories.Features;
-
+/*
 public interface IFeatureRepository : IRepository<Feature>
 {
     /// <summary>
@@ -78,4 +78,6 @@ public interface IFeatureRepository : IRepository<Feature>
     /// Typically used when displaying a complete list of <see cref="Background"/>s.
     /// </remarks>
     Task<ICollection<Feature>> GetAllWithAllDataAsync();
+    
 }
+*/

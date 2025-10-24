@@ -1,19 +1,17 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Repositories.Backgrounds;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Features;
 
 public class BackgroundFeatureRepository(AppDbContext context) : EfRepository<BackgroundFeature>(context), IBackgroundFeatureRepository
 {
-    public async Task<FeatureDto?> GetBackgroundDtoAsync(int id)
+    public async Task<BackgroundFeatureDto?> GetBackgroundDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(b => new FeatureDto
+            .Select(b => new BackgroundFeatureDto
             {
                 Id = b.Id,
                 Name = b.Name,
@@ -24,11 +22,11 @@ public class BackgroundFeatureRepository(AppDbContext context) : EfRepository<Ba
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeatureDto>> GetAllBackgroundDtosAsync()
+    public async Task<ICollection<BackgroundFeatureDto>> GetAllBackgroundDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(b => new FeatureDto
+            .Select(b => new BackgroundFeatureDto
             {
                 Id = b.Id,
                 Name = b.Name,

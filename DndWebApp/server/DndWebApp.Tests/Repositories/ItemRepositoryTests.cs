@@ -1,6 +1,7 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
+using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Items;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,8 +66,8 @@ public class ItemRepositoryTests
 
         // Act
         var itemRepo = new ItemRepository(context);
-        var armorRepo = new ArmorRepository(context);
-        var weaponRepo = new WeaponRepository(context);
+        var armorRepo = new EfRepository<Armor>(context);
+        var weaponRepo = new EfRepository<Weapon>(context);
         var toolRepo = new ToolRepository(context);
 
         await itemRepo.CreateAsync(item);
@@ -127,8 +128,8 @@ public class ItemRepositoryTests
         var tool = CreateTestTool();
 
         var itemRepo = new ItemRepository(context);
-        var armorRepo = new ArmorRepository(context);
-        var weaponRepo = new WeaponRepository(context);
+        var armorRepo = new EfRepository<Armor>(context);
+        var weaponRepo = new EfRepository<Weapon>(context);
         var toolRepo = new ToolRepository(context);
 
         await itemRepo.CreateAsync(item);
@@ -174,8 +175,8 @@ public class ItemRepositoryTests
         var tool = CreateTestTool();
 
         var itemRepo = new ItemRepository(context);
-        var armorRepo = new ArmorRepository(context);
-        var weaponRepo = new WeaponRepository(context);
+        var armorRepo = new EfRepository<Armor>(context);
+        var weaponRepo = new EfRepository<Weapon>(context);
         var toolRepo = new ToolRepository(context);
 
         await itemRepo.CreateAsync(item);
@@ -241,8 +242,8 @@ public class ItemRepositoryTests
         var tool = CreateTestTool();
 
         var itemRepo = new ItemRepository(context);
-        var armorRepo = new ArmorRepository(context);
-        var weaponRepo = new WeaponRepository(context);
+        var armorRepo = new EfRepository<Armor>(context);
+        var weaponRepo = new EfRepository<Weapon>(context);
         var toolRepo = new ToolRepository(context);
 
         await itemRepo.CreateAsync(item);

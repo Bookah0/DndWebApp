@@ -54,12 +54,12 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .FirstOrDefaultAsync();
     }
 
-    public async Task<PrimitiveCharacterDto?> GetPrimitiveDataAsync(int id)
+    public async Task<CharacterDto?> GetPrimitiveDataAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
             .Where(x => x.Id == id)
-            .Select(r => new PrimitiveCharacterDto
+            .Select(r => new CharacterDto
             {
                 Id = r.Id,
                 Name = r.Name,
@@ -83,11 +83,11 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .FirstOrDefaultAsync();
     }
 
-    public async Task<ICollection<PrimitiveCharacterDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<CharacterDto>> GetAllPrimitiveDataAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(r => new PrimitiveCharacterDto
+            .Select(r => new CharacterDto
             {
                 Id = r.Id,
                 Name = r.Name,

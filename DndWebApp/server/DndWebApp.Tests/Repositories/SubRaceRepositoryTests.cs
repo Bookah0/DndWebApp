@@ -154,8 +154,8 @@ public class SubraceRepositoryTests
         {
             var repo = new SubraceRepository(context);
 
-            var primitiveHighElf = await repo.GetPrimitiveDataAsync(1);
-            var primitiveWoodElf = await repo.GetPrimitiveDataAsync(2);
+            var primitiveHighElf = await repo.GetSubraceDtoAsync(1);
+            var primitiveWoodElf = await repo.GetSubraceDtoAsync(2);
 
             Assert.NotNull(primitiveHighElf);
             Assert.Equal("High Elf", primitiveHighElf!.Name);
@@ -169,7 +169,7 @@ public class SubraceRepositoryTests
             Assert.NotNull(primitiveWoodElf.GeneralDescription);
             Assert.Equal("Wood elf description", primitiveWoodElf.GeneralDescription);
 
-            var allRacesAsPrimitive = await repo.GetAllPrimitiveDataAsync();
+            var allRacesAsPrimitive = await repo.GetAllSubraceDtosAsync();
             Assert.Equal(2, allRacesAsPrimitive.Count);
             Assert.Contains(allRacesAsPrimitive, r => r.Name == "High Elf");
             Assert.Contains(allRacesAsPrimitive, r => r.Name == "Wood Elf");

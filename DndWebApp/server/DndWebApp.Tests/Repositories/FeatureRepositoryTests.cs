@@ -227,8 +227,8 @@ public class FeatureRepositoryTests
         await repo.CreateAsync(feature);
         await context.SaveChangesAsync();
 
-        var primitive = await repo.GetPrimitiveDataAsync(feature.Id);
-        var allPrimitives = await repo.GetAllPrimitiveDataAsync();
+        var primitive = await repo.GetBaseFeatureDtoAsync(feature.Id);
+        var allPrimitives = await repo.GetAllBaseFeatureDtosAsync();
 
         // Assert
         Assert.NotNull(primitive);
@@ -256,8 +256,8 @@ public class FeatureRepositoryTests
         await repo.CreateAsync(trait);
         await context.SaveChangesAsync();
 
-        var primitive = await repo.GetPrimitiveDataAsync(trait.Id);
-        var allPrimitives = await repo.GetAllPrimitiveDataAsync();
+        var primitive = await repo.GetTraitDtoAsync(trait.Id);
+        var allPrimitives = await repo.GetAllTraitDtosAsync();
 
         // Assert
         Assert.NotNull(primitive);
@@ -265,7 +265,7 @@ public class FeatureRepositoryTests
         Assert.Equal(trait.Name, primitive.Name);
         Assert.Equal(trait.Description, primitive.Description);
         Assert.Equal(trait.IsHomebrew, primitive.IsHomebrew);
-        Assert.Equal(trait.RaceId, primitive.FromEntityId);
+        Assert.Equal(trait.RaceId, primitive.FromId);
 
         Assert.Single(allPrimitives);
         Assert.Equal(trait.Id, allPrimitives.First().Id);
@@ -286,8 +286,8 @@ public class FeatureRepositoryTests
         await repo.CreateAsync(feature);
         await context.SaveChangesAsync();
 
-        var primitive = await repo.GetPrimitiveDataAsync(feature.Id);
-        var allPrimitives = await repo.GetAllPrimitiveDataAsync();
+        var primitive = await repo.GetClassFeatureDtoAsync(feature.Id);
+        var allPrimitives = await repo.GetAllClassFeaturDtosAsync();
 
         // Assert
         Assert.NotNull(primitive);
@@ -295,7 +295,7 @@ public class FeatureRepositoryTests
         Assert.Equal(feature.Name, primitive.Name);
         Assert.Equal(feature.Description, primitive.Description);
         Assert.Equal(feature.IsHomebrew, primitive.IsHomebrew);
-        Assert.Equal(feature.ClassId, primitive.FromEntityId);
+        Assert.Equal(feature.ClassId, primitive.FromId);
 
         Assert.Single(allPrimitives);
         Assert.Equal(feature.Id, allPrimitives.First().Id);
@@ -317,8 +317,8 @@ public class FeatureRepositoryTests
         await repo.CreateAsync(feature);
         await context.SaveChangesAsync();
 
-        var primitive = await repo.GetPrimitiveDataAsync(feature.Id);
-        var allPrimitives = await repo.GetAllPrimitiveDataAsync();
+        var primitive = await repo.GetBackgroundDtoAsync(feature.Id);
+        var allPrimitives = await repo.GetAllBackgroundDtosAsync();
 
         // Assert
         Assert.NotNull(primitive);
@@ -326,7 +326,7 @@ public class FeatureRepositoryTests
         Assert.Equal(feature.Name, primitive.Name);
         Assert.Equal(feature.Description, primitive.Description);
         Assert.Equal(feature.IsHomebrew, primitive.IsHomebrew);
-        Assert.Equal(feature.BackgroundId, primitive.FromEntityId);
+        Assert.Equal(feature.BackgroundId, primitive.FromId);
 
         Assert.Single(allPrimitives);
         Assert.Equal(feature.Id, allPrimitives.First().Id);
@@ -346,8 +346,8 @@ public class FeatureRepositoryTests
         await repo.CreateAsync(feat);
         await context.SaveChangesAsync();
 
-        var primitive = await repo.GetPrimitiveDataAsync(feat.Id);
-        var allPrimitives = await repo.GetAllPrimitiveDataAsync();
+        var primitive = await repo.GetFeatDtoAsync(feat.Id);
+        var allPrimitives = await repo.GetAllFeatDtosAsync();
 
         // Assert
         Assert.NotNull(primitive);

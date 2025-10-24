@@ -39,25 +39,25 @@ public interface ICharacterRepository
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Character"/>.</param>
     /// <returns>
-    /// A read-only <see cref="PrimitiveCharacterDto"/> entity containing primitive data,
+    /// A read-only <see cref="CharacterDto"/> entity containing primitive data,
     /// or <c>null</c> if no <see cref="Character"/> with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typically used for displaying general <see cref="Character"/> information.
     /// </remarks>
 
-    Task<PrimitiveCharacterDto?> GetPrimitiveDataAsync(int id);
+    Task<CharacterDto?> GetPrimitiveDataAsync(int id);
     /// <summary>
     /// Retrieves primitive data of all <see cref="Character"/>s, 
     /// excluding <see cref="CharacterBuilding"/> data, <see cref="CurrentSpellSlots"/> data and related navigation properties.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="PrimitiveCharacterDto"/> entities containing primitive data.
+    /// A collection of read-only <see cref="CharacterDto"/> entities containing primitive data.
     /// </returns>
     /// <remarks>
     /// Typically used for displaying <see cref="Character"/>s in lists and grids.
     /// </remarks>
-    Task<ICollection<PrimitiveCharacterDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<CharacterDto>> GetAllPrimitiveDataAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Feature"/> entity by its <paramref name="id"/>, 

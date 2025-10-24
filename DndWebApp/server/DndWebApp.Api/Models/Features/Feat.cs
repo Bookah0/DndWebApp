@@ -10,5 +10,14 @@ namespace DndWebApp.Api.Models.Characters;
 public class Feat : Feature
 {
     public string Prerequisite { get; set; } = "";
-    
+    public int? FromClassId { get; set; }
+    public Class? FromClass { get; set; }
+
+    public int? FromRaceId { get; set; }
+    public Race? FromRace { get; set; }
+
+    public int? FromBackgroundId { get; set; }
+    public Background? FromBackground { get; set; }
 }
+
+public enum FeatFromType { Class, Background, Race }

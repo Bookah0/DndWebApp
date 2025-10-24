@@ -4,11 +4,12 @@ namespace DndWebApp.Api.Models.DTOs;
 
 
 /// <summary>
-/// Contains primitive data from the Race class
+/// Contains primitive data from the Background class
 /// </summary>
-public class RacePrimitiveDto
+public class BackgroundDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }
-    public required string GeneralDescription { get; set; }
+    public required string Description { get; set; }
+    public bool IsHomebrew { get; set; } = false;
 }

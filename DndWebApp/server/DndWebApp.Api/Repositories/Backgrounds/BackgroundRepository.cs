@@ -7,11 +7,11 @@ namespace DndWebApp.Api.Repositories.Backgrounds;
 
 public class BackgroundRepository(AppDbContext context) : EfRepository<Background>(context), IBackgroundRepository
 {
-    public async Task<BackgroundPrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<BackgroundDto?> GetPrimitiveDataAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(r => new BackgroundPrimitiveDto
+            .Select(r => new BackgroundDto
             {
                 Id = r.Id,
                 Name = r.Name,
@@ -21,11 +21,11 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<BackgroundPrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<BackgroundDto>> GetAllPrimitiveDataAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(r => new BackgroundPrimitiveDto
+            .Select(r => new BackgroundDto
             {
                 Id = r.Id,
                 Name = r.Name,

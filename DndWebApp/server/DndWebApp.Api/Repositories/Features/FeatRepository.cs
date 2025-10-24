@@ -8,32 +8,44 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class FeatRepository(AppDbContext context) : EfRepository<Feat>(context), IFeatRepository
 {
-    public async Task<FeatPrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<FeatDto?> GetFeatDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(f => new FeatPrimitiveDto
+            .Select(f => new FeatDto
             {
                 Id = f.Id,
                 Name = f.Name,
                 Description = f.Description,
                 IsHomebrew = f.IsHomebrew,
-                Prerequisite = f.Prerequisite
+                Prerequisite = f.Prerequisite,
+                FromId = f.FromClassId ?? f.FromRaceId ?? f.FromBackgroundId ?? 0,
+                FromType =
+                    f.FromClassId != null ? FeatFromType.Class :
+                    f.FromRaceId != null ? FeatFromType.Race :
+                    f.FromBackgroundId != null ? FeatFromType.Background :
+                    0
             })
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeatPrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<FeatDto>> GetAllFeatDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(f => new FeatPrimitiveDto
+            .Select(f => new FeatDto
             {
                 Id = f.Id,
                 Name = f.Name,
                 Description = f.Description,
                 IsHomebrew = f.IsHomebrew,
-                Prerequisite = f.Prerequisite
+                Prerequisite = f.Prerequisite,
+                FromId = f.FromClassId ?? f.FromRaceId ?? f.FromBackgroundId ?? 0,
+                FromType =
+                    f.FromClassId != null ? FeatFromType.Class :
+                    f.FromRaceId != null ? FeatFromType.Race :
+                    f.FromBackgroundId != null ? FeatFromType.Background :
+                    0
             })
             .ToListAsync();
     }

@@ -11,13 +11,13 @@ public interface IAbilityRepository
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Ability"/> to retrieve.</param>
     /// <returns>
-    /// Read-only <see cref="AbilityPrimitiveDto"/> entity containing primitive data (Id, FullName, ShortName, and Description),
+    /// Read-only <see cref="AbilityDto"/> entity containing primitive data (Id, FullName, ShortName, and Description),
     /// or <c>null</c> if no ability with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typical use cases include simple display of a single ability.
     /// </remarks>
-    Task<AbilityPrimitiveDto?> GetPrimitiveDataAsync(int id);
+    Task<AbilityDto?> GetPrimitiveDataAsync(int id);
 
     /// <summary>
     /// Retrieves an <see cref="Ability"/> entity by its <paramref name="id"/>, 
@@ -38,12 +38,12 @@ public interface IAbilityRepository
     /// excluding related navigation properties: <see cref="Ability.Skills"/>.
     /// </summary>
     /// <returns>
-    /// Read-only <see cref="AbilityPrimitiveDto"/> entities containing primitive data (Id, FullName, ShortName, and Description).
+    /// Read-only <see cref="AbilityDto"/> entities containing primitive data (Id, FullName, ShortName, and Description).
     /// </returns>
     /// <remarks>
     /// Typical use cases include search, simple display, dropdowns, and ability selection.
     /// </remarks>
-    Task<ICollection<AbilityPrimitiveDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<AbilityDto>> GetAllPrimitiveDataAsync();
 
     /// <summary>
     /// Retrieves all <see cref="Ability"/> entities, 

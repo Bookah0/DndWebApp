@@ -14,7 +14,7 @@ public interface IFeatureRepository : IRepository<Feature>
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Feature"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="BaseFeaturePrimitiveDto"/> containing primitive data,
+    /// A read-only <see cref="BaseFeatureDto"/> containing primitive data,
     /// or <c>null</c> if no <see cref="Feature"/> with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
@@ -22,7 +22,7 @@ public interface IFeatureRepository : IRepository<Feature>
     /// therefore FromEntityId = null
     /// Typically used for simple display of a single <see cref="Feature"/>.
     /// </remarks>
-    Task<BaseFeaturePrimitiveDto?> GetPrimitiveDataAsync(int id);
+    Task<BaseFeatureDto?> GetBaseFeatureDtoAsync(int id);
 
 
     /// <summary>
@@ -33,14 +33,14 @@ public interface IFeatureRepository : IRepository<Feature>
     /// <see cref="Feature.DamageWeaknessGained"/>.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="BaseFeaturePrimitiveDto"/> entities containing primitive data.
+    /// A collection of read-only <see cref="BaseFeatureDto"/> entities containing primitive data.
     /// </returns>
     /// <remarks>
     /// An entity of type <see cref="Feature"/> is not connected to any <see cref="Class"/>, <see cref="Background"/> or <see cref="Species"/>,
     /// therefore FromEntityId = null
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<BaseFeaturePrimitiveDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<BaseFeatureDto>> GetAllBaseFeatureDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Feature"/> entity by its <paramref name="id"/>, 

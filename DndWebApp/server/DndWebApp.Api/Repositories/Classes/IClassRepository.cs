@@ -14,13 +14,13 @@ public interface IClassRepository : IRepository<Class>
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Class"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="ClassPrimitiveDto"/> containing primitive data,
+    /// A read-only <see cref="ClassDto"/> containing primitive data,
     /// or <c>null</c> if no <see cref="Class"/> with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Class"/>.
     /// </remarks>
-    Task<ClassPrimitiveDto?> GetPrimitiveDataAsync(int id);
+    Task<ClassDto?> GetPrimitiveDataAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Class"/> entities in the database,
@@ -30,12 +30,12 @@ public interface IClassRepository : IRepository<Class>
     /// <see cref="Class.StartingEquipmentOptions"/>.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="ClassPrimitiveDto"/> entities containing primitive data.
+    /// A collection of read-only <see cref="ClassDto"/> entities containing primitive data.
     /// </returns>
     /// <remarks>
     /// Typically used for search results, dropdowns, or <see cref="Class"/> selection during character creation.
     /// </remarks>
-    Task<ICollection<ClassPrimitiveDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<ClassDto>> GetAllPrimitiveDataAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Class"/> entity by its <paramref name="id"/>, 

@@ -5,7 +5,7 @@ namespace DndWebApp.Api.Models.DTOs;
 /// <summary>
 /// Contains primitive data from Class
 /// </summary>
-public class ClassPrimitiveDto
+public class ClassDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }

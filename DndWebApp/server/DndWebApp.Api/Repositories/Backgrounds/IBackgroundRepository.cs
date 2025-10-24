@@ -14,13 +14,13 @@ public interface IBackgroundRepository
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Background"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="BackgroundPrimitiveDto"/> containing primitive data (Id, Name, Speed, and description strings),
+    /// A read-only <see cref="BackgroundDto"/> containing primitive data (Id, Name, Speed, and description strings),
     /// or <c>null</c> if no <see cref="Background"/> with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Background"/>.
     /// </remarks>
-    Task<BackgroundPrimitiveDto?> GetPrimitiveDataAsync(int id);
+    Task<BackgroundDto?> GetPrimitiveDataAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Background"/> entities in the database,
@@ -30,12 +30,12 @@ public interface IBackgroundRepository
     /// <see cref="Background.StartingItemsOptions"/>.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="BackgroundPrimitiveDto"/> entities containing primitive data (Id, Name, Description and IsHowmebrew boolean).
+    /// A collection of read-only <see cref="BackgroundDto"/> entities containing primitive data (Id, Name, Description and IsHowmebrew boolean).
     /// </returns>
     /// <remarks>
     /// Typically used for search results, dropdowns, or <see cref="Background"/> selection during character creation.
     /// </remarks>
-    Task<ICollection<BackgroundPrimitiveDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<BackgroundDto>> GetAllPrimitiveDataAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Background"/> entity by its <paramref name="id"/>, 

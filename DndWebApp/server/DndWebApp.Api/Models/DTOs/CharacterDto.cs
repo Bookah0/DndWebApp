@@ -4,9 +4,9 @@ using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World;
 using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Models.Characters;
+namespace DndWebApp.Api.Models.DTOs;
 
-public class PrimitiveCharacterDto
+public class CharacterDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }

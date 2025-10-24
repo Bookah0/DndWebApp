@@ -14,13 +14,13 @@ public interface IFeatRepository : IRepository<Feat>
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Feat"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="FeatPrimitiveDto"/> containing primitive data,
+    /// A read-only <see cref="FeatDto"/> containing primitive data,
     /// or <c>null</c> if no <see cref="Feat"/> with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Feat"/>.
     /// </remarks>
-    Task<FeatPrimitiveDto?> GetPrimitiveDataAsync(int id);
+    Task<FeatDto?> GetFeatDtoAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Feat"/> entities in the database,
@@ -30,12 +30,12 @@ public interface IFeatRepository : IRepository<Feat>
     /// <see cref="Feat.DamageWeaknessGained"/>.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="FeatPrimitiveDto"/> entities containing primitive data.
+    /// A collection of read-only <see cref="FeatDto"/> entities containing primitive data.
     /// </returns>
     /// <remarks>
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<FeatPrimitiveDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<FeatDto>> GetAllFeatDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Feat"/> entity by its <paramref name="id"/>, 

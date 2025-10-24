@@ -11,13 +11,13 @@ public interface IRaceRepository : IRepository<Race>
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Race"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="RacePrimitiveDto"/> containing primitive data (Id, Name, Speed, and description strings),
+    /// A read-only <see cref="RaceDto"/> containing primitive data (Id, Name, Speed, and description strings),
     /// or <c>null</c> if no race with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typically used for simple display of a single race.
     /// </remarks>
-    Task<RacePrimitiveDto?> GetPrimitiveDataAsync(int id);
+    Task<RaceDto?> GetRaceDtoAsync(int id);
 
     /// <summary>
     /// Retrieves a <see cref="Race"/> entity by its <paramref name="id"/>, 
@@ -38,12 +38,12 @@ public interface IRaceRepository : IRepository<Race>
     /// excluding their <see cref="Trait"/>s and <see cref="Subrace"/>s.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="RacePrimitiveDto"/> entities containing primitive data (Id, Name, Speed, and description strings).
+    /// A collection of read-only <see cref="RaceDto"/> entities containing primitive data (Id, Name, Speed, and description strings).
     /// </returns>
     /// <remarks>
     /// Typically used for search results, dropdowns, or race selection during character creation.
     /// </remarks>
-    Task<ICollection<RacePrimitiveDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<RaceDto>> GetAllRaceDtosAsync();
 
     // Currently unused, but may become relevant for future functionality.
     // For now, all current use cases are covered by GetAllPrimitiveDataAsync().

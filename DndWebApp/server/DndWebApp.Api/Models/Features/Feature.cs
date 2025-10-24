@@ -12,7 +12,6 @@ public class Feature
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
-
     public AbilityType SavingThrows { get; set; }
     public ICollection<AbilityValue> AbilityIncreases { get; set; } = [];
     public ICollection<Spell> SpellsGained { get; set; } = [];

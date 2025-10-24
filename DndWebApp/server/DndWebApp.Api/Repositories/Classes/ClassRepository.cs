@@ -7,11 +7,11 @@ namespace DndWebApp.Api.Repositories.Classes;
 
 public class ClassRepository(AppDbContext context) : EfRepository<Class>(context), IClassRepository
 {
-    public async Task<ClassPrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<ClassDto?> GetPrimitiveDataAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(c => new ClassPrimitiveDto
+            .Select(c => new ClassDto
             {
                 Id = c.Id,
                 Name = c.Name,
@@ -22,11 +22,11 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<ClassPrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<ClassDto>> GetAllPrimitiveDataAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(c => new ClassPrimitiveDto
+            .Select(c => new ClassDto
             {
                 Id = c.Id,
                 Name = c.Name,

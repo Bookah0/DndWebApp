@@ -160,8 +160,8 @@ public class RaceRepositoryTests
         {
             var repo = new RaceRepository(context);
 
-            var primitiveElf = await repo.GetPrimitiveDataAsync(elfId);
-            var primitiveDwarf = await repo.GetPrimitiveDataAsync(dwarfId);
+            var primitiveElf = await repo.GetRaceDtoAsync(elfId);
+            var primitiveDwarf = await repo.GetRaceDtoAsync(dwarfId);
 
             Assert.NotNull(primitiveElf);
             Assert.Equal("Elf", primitiveElf!.Name);
@@ -173,7 +173,7 @@ public class RaceRepositoryTests
             Assert.NotNull(primitiveDwarf.GeneralDescription);
             Assert.Equal("Dwarf description", primitiveDwarf.GeneralDescription);
 
-            var allRacesAsPrimitive = await repo.GetAllPrimitiveDataAsync();
+            var allRacesAsPrimitive = await repo.GetAllRaceDtosAsync();
             Assert.Equal(2, allRacesAsPrimitive.Count);
             Assert.Contains(allRacesAsPrimitive, r => r.Name == "Dwarf");
             Assert.Contains(allRacesAsPrimitive, r => r.Name == "Elf");

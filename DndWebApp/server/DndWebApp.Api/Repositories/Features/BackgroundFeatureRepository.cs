@@ -9,32 +9,32 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class BackgroundFeatureRepository(AppDbContext context) : EfRepository<BackgroundFeature>(context), IBackgroundFeatureRepository
 {
-    public async Task<FeaturePrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<FeatureDto?> GetBackgroundDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(b => new FeaturePrimitiveDto
+            .Select(b => new FeatureDto
             {
                 Id = b.Id,
                 Name = b.Name,
                 Description = b.Description,
                 IsHomebrew = b.IsHomebrew,
-                FromEntityId = b.BackgroundId
+                FromId = b.BackgroundId
             })
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeaturePrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<FeatureDto>> GetAllBackgroundDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(b => new FeaturePrimitiveDto
+            .Select(b => new FeatureDto
             {
                 Id = b.Id,
                 Name = b.Name,
                 Description = b.Description,
                 IsHomebrew = b.IsHomebrew,
-                FromEntityId = b.BackgroundId
+                FromId = b.BackgroundId
             })
             .ToListAsync();
     }

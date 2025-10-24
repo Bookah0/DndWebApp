@@ -8,11 +8,11 @@ namespace DndWebApp.Api.Repositories.Species;
 
 public class RaceRepository(AppDbContext context) : EfRepository<Race>(context), IRaceRepository
 {
-    public async Task<RacePrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<RaceDto?> GetRaceDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(r => new RacePrimitiveDto
+            .Select(r => new RaceDto
             {
                 Id = r.Id,
                 Name = r.Name,
@@ -30,11 +30,11 @@ public class RaceRepository(AppDbContext context) : EfRepository<Race>(context),
     }
 
 
-    public async Task<ICollection<RacePrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<RaceDto>> GetAllRaceDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(r => new RacePrimitiveDto
+            .Select(r => new RaceDto
             {
                 Id = r.Id,
                 Name = r.Name,

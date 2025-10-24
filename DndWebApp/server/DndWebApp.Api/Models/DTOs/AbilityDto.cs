@@ -6,7 +6,7 @@ namespace DndWebApp.Api.Models.DTOs;
 /// <summary>
 /// Contains primitive data from the Ability class
 /// </summary>
-public class AbilityPrimitiveDto
+public class AbilityDto
 {
     public int Id { get; set; }
     public required string ShortName { get; set; }

@@ -11,13 +11,13 @@ public interface ISubraceRepository : IRepository<Subrace>
     /// </summary>
     /// <param name="id">The unique identifier of the <see cref="Subrace"/> to retrieve.</param>
     /// <returns>
-    /// A read-only <see cref="SubracePrimitiveDto"/> containing primitive data (Id, Name, Speed, description strings, and ParentRaceId),
+    /// A read-only <see cref="SubraceDto"/> containing primitive data (Id, Name, Speed, description strings, and ParentRaceId),
     /// or <c>null</c> if no subrace with the specified <paramref name="id"/> exists.
     /// </returns>
     /// <remarks>
     /// Typically used for simple display of a single subrace.
     /// </remarks>
-    Task<SubracePrimitiveDto?> GetPrimitiveDataAsync(int id);
+    Task<SubraceDto?> GetSubraceDtoAsync(int id);
 
     /// <summary>
     /// Retrieves a <see cref="Subrace"/> entity by its <paramref name="id"/>, 
@@ -38,12 +38,12 @@ public interface ISubraceRepository : IRepository<Subrace>
     /// excluding their <see cref="Trait"/>s and <see cref="Subrace.ParentRace"/>s.
     /// </summary>
     /// <returns>
-    /// A collection of read-only <see cref="SubracePrimitiveDto"/> entities containing primitive data (Id, Name, Speed, description strings, and ParentRaceId).
+    /// A collection of read-only <see cref="SubraceDto"/> entities containing primitive data (Id, Name, Speed, description strings, and ParentRaceId).
     /// </returns>
     /// <remarks>
     /// Typically used for search results, dropdowns, or subrace selection during character creation.
     /// </remarks>
-    Task<ICollection<SubracePrimitiveDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<SubraceDto>> GetAllSubraceDtosAsync();
 
     // Currently unused, but may become relevant for future functionality.
     // The ParentRace can already be accessed through the Subrace’s foreign key.

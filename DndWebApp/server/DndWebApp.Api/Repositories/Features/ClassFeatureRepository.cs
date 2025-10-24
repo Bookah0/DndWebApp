@@ -8,32 +8,32 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFeature>(context), IClassFeatureRepository
 {
-    public async Task<FeaturePrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<FeatureDto?> GetClassFeatureDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(f => new FeaturePrimitiveDto
+            .Select(f => new FeatureDto
             {
                 Id = f.Id,
                 Name = f.Name,
                 Description = f.Description,
                 IsHomebrew = f.IsHomebrew,
-                FromEntityId = f.ClassId
+                FromId = f.ClassId
             })
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeaturePrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<FeatureDto>> GetAllClassFeaturDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(f => new FeaturePrimitiveDto
+            .Select(f => new FeatureDto
             {
                 Id = f.Id,
                 Name = f.Name,
                 Description = f.Description,
                 IsHomebrew = f.IsHomebrew,
-                FromEntityId = f.ClassId
+                FromId = f.ClassId
             })
             .ToListAsync();
     }

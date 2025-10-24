@@ -7,11 +7,11 @@ namespace DndWebApp.Api.Repositories.Abilities;
 
 public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(context), IAbilityRepository
 {
-    public async Task<AbilityPrimitiveDto?> GetPrimitiveDataAsync(int id)
+    public async Task<AbilityDto?> GetPrimitiveDataAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
-            .Select(a => new AbilityPrimitiveDto
+            .Select(a => new AbilityDto
             {
                 Id = a.Id,
                 FullName = a.FullName,
@@ -28,11 +28,11 @@ public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(con
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<AbilityPrimitiveDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<AbilityDto>> GetAllPrimitiveDataAsync()
     {
         return await dbSet
             .AsNoTracking()
-            .Select(a => new AbilityPrimitiveDto
+            .Select(a => new AbilityDto
             {
                 Id = a.Id,
                 FullName = a.FullName,

@@ -1,8 +1,5 @@
 namespace DndWebApp.Api.Models.DTOs;
 
-/// <summary>
-/// Contains primitive data from the base Feature class
-/// </summary>
 public class TraitDto
 {
     public int Id { get; set; }

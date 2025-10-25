@@ -8,7 +8,7 @@ using DndWebApp.Api.Models.World;
 namespace DndWebApp.Api.Models.Features;
 
 // Based on https://api.open5e.com/v2/feats/
-public class Feat : Feature
+public class Feat : AFeature
 {
     public string Prerequisite { get; set; } = "";
     public int? FromClassId { get; set; }

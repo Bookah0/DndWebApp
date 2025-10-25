@@ -12,6 +12,7 @@ public class CharacterDto
     public required string Name { get; set; }
     public required int Level { get; set; }
     public required int RaceId { get; set; }
+    public required int SubraceId { get; set; }
     public required int ClassId { get; set; }
     public required int? SubClassId { get; set; }
     public required int? BackgroundId { get; set; }

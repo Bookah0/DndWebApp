@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.DTOs;
 
-// Might be used?
 public class CharacterSpellSlotsDto
 {
     public int Id { get; set; }

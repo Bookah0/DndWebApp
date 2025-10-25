@@ -29,7 +29,6 @@ public class RaceRepository(AppDbContext context) : EfRepository<Race>(context),
         .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-
     public async Task<ICollection<RaceDto>> GetAllRaceDtosAsync()
     {
         return await dbSet

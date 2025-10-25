@@ -2,10 +2,6 @@ using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Api.Models.DTOs;
 
-
-/// <summary>
-/// Contains primitive data from the Background class
-/// </summary>
 public class BackgroundDto
 {
     public int Id { get; set; }

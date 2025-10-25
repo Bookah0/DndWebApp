@@ -2,10 +2,6 @@ using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Api.Models.DTOs;
 
-
-/// <summary>
-/// Contains primitive data from the Race class
-/// </summary>
 public class RaceDto
 {
     public int Id { get; set; }

@@ -18,6 +18,8 @@ public class Character
 
     public required Race Race { get; set; }
     public int RaceId { get; set; }
+    public required Subrace Subrace { get; set; }
+    public int SubraceId { get; set; }
     public ICollection<Race> OtherRaces { get; set; } = [];
 
     public required Class Class { get; set; }
@@ -33,7 +35,6 @@ public class Character
 
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
-    public ICollection<Feature> PassiveEffects { get; set; } = [];
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public CurrentSpellSlots? CurrentSpellSlots { get; set; }
     public CharacterBuilding CharacterBuildData { get; set; } = new();

@@ -7,7 +7,7 @@ namespace DndWebApp.Api.Repositories.Classes;
 
 public class ClassRepository(AppDbContext context) : EfRepository<Class>(context), IClassRepository
 {
-    public async Task<ClassDto?> GetPrimitiveDataAsync(int id)
+    public async Task<ClassDto?> GetClassDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -22,7 +22,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<ClassDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<ClassDto>> GetAllClassDtoDataAsync()
     {
         return await dbSet
             .AsNoTracking()
@@ -36,12 +36,30 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
             })
             .ToListAsync();
     }
-    
+
     public async Task<Class?> GetWithAllDataAsync(int id)
     {
         return await dbSet
             .AsSplitQuery()
             .Include(b => b.ClassLevels)
+            .Include(b => b.StartingEquipment)
+            .Include(b => b.StartingEquipmentOptions)
+                .ThenInclude(o => o.Options)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public async Task<Class?> GetWithClassLevelsAsync(int id)
+    {
+        return await dbSet
+            .AsSplitQuery()
+            .Include(b => b.ClassLevels)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public async Task<Class?> GetWithStartingEquipmentAsync(int id)
+    {
+        return await dbSet
+            .AsSplitQuery()
             .Include(b => b.StartingEquipment)
             .Include(b => b.StartingEquipmentOptions)
                 .ThenInclude(o => o.Options)

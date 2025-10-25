@@ -130,8 +130,8 @@ public class AbilityRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new AbilityRepository(context);
-            var savedDex = await repo.GetPrimitiveDataAsync(dex.Id);
-            var savedCon = await repo.GetPrimitiveDataAsync(con.Id);
+            var savedDex = await repo.GetAbilityDtoAsync(dex.Id);
+            var savedCon = await repo.GetAbilityDtoAsync(con.Id);
 
             Assert.NotNull(savedDex);
             Assert.Equal("Dexterity", savedDex!.FullName);
@@ -141,7 +141,7 @@ public class AbilityRepositoryTests
             Assert.Equal("Constitution", savedCon!.FullName);
             Assert.Equal("Con", savedCon.ShortName);
 
-            var allAbilities = await repo.GetAllPrimitiveDataAsync();
+            var allAbilities = await repo.GetAllAbilityDtosAsync();
             Assert.Equal(2, allAbilities.Count);
             Assert.Contains(allAbilities, a => a.FullName == "Dexterity");
             Assert.Contains(allAbilities, a => a.FullName == "Constitution");

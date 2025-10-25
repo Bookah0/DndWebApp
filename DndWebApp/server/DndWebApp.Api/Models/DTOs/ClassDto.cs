@@ -2,9 +2,6 @@ using DndWebApp.Api.Models.Characters.Enums;
 
 namespace DndWebApp.Api.Models.DTOs;
 
-/// <summary>
-/// Contains primitive data from Class
-/// </summary>
 public class ClassDto
 {
     public int Id { get; set; }

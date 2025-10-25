@@ -1,5 +1,6 @@
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.Features;
 
 namespace DndWebApp.Api.Repositories.Features;
 

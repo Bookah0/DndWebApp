@@ -23,7 +23,7 @@ public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFe
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<ClassFeatureDto>> GetAllClassFeaturDtosAsync()
+    public async Task<ICollection<ClassFeatureDto>> GetAllClassFeatureDtosAsync()
     {
         return await dbSet
             .AsNoTracking()

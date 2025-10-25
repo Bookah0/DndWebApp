@@ -1,5 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Backgrounds;
@@ -14,9 +15,9 @@ public class BackgroundRepositoryTests
         return new Item { Name = name, Description = description, Catagories = category, Quantity = quantity };
     }
 
-    private Feature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.")
+    private BackgroundFeature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.", Background bg = null, int bgId = -1)
     {
-        return new Feature { Name = name, Description = description };
+        return new BackgroundFeature { Name = name, Description = description, Background = bg, BackgroundId = bgId};
     }
 
     private Item CreateTestStartingItem(string name = "Holy Symbol", ItemCategory categories = ItemCategory.Utility, int quantity = 1)

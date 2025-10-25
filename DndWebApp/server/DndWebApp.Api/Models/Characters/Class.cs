@@ -1,4 +1,5 @@
 using DndWebApp.Api.Models.Characters.Enums;
+using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Spells;
 using Microsoft.EntityFrameworkCore;

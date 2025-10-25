@@ -3,9 +3,6 @@ using DndWebApp.Api.Models.Features;
 
 namespace DndWebApp.Api.Models.DTOs;
 
-/// <summary>
-/// Contains primitive data from the Feat class
-/// </summary>
 public class FeatDto
 {
     public int Id { get; set; }

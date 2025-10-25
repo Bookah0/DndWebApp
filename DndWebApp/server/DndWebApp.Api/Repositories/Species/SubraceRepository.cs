@@ -44,6 +44,15 @@ public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(con
             .ToListAsync();
     }
 
+    public async Task<ICollection<Subrace>> GetAllSubracesByRaceAsync(int raceId)
+    {
+        return await dbSet
+        .Where(s => s.ParentRaceId == raceId)
+        .Include(r => r.Traits)
+        .Include(r => r.ParentRace)
+        .ToListAsync();
+    }
+
     public async Task<ICollection<Subrace>> GetAllWithAllDataAsync()
     {
         return await dbSet

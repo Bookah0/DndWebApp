@@ -1,4 +1,5 @@
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World;
@@ -22,12 +23,11 @@ public class AppDbContext : DbContext
     public DbSet<Choice> Choices { get; set; }
 
     public DbSet<Class> Classes { get; set; }
-    public DbSet<ClassLevel> ClassLevels { get; set; }
+    // public DbSet<ClassLevel> ClassLevels { get; set; }
 
     public DbSet<Race> Races { get; set; }
     public DbSet<Subrace> SubRaces { get; set; }
 
-    public DbSet<Feature> Features { get; set; }
     public DbSet<Trait> Traits { get; set; }
     public DbSet<Feat> Feats { get; set; }
     public DbSet<ClassFeature> ClassFeatures { get; set; }

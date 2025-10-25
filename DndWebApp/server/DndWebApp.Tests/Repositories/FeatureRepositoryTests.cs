@@ -2,18 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Features;
+using DndWebApp.Api.Models.Features;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class FeatureRepositoryTests
 {
-    private Feature CreateTestFeature() => new Feature
-    {
-        Name = "Power Strike",
-        Description = "Increases melee damage.",
-        IsHomebrew = false
-    };
-
     private Trait CreateTestTrait(Species species) => new Trait
     {
         Name = "Darkvision",
@@ -76,56 +70,6 @@ public class FeatureRepositoryTests
             .Options;
 
     [Fact]
-    public async Task Feature_Update_WorksCorrectly()
-    {
-        // Arrange
-        var options = GetInMemoryOptions("Feature_UpdateDB");
-        await using var context = new AppDbContext(options);
-
-        var feature = CreateTestFeature();
-        var repo = new FeatureRepository(context);
-        await repo.CreateAsync(feature);
-        await context.SaveChangesAsync();
-
-        // Act
-        feature.Name = "Updated Feature";
-        feature.Description = "Updated description";
-        feature.IsHomebrew = true;
-
-        await repo.UpdateAsync(feature);
-        await context.SaveChangesAsync();
-
-        // Assert
-        var updated = await repo.GetWithAllDataAsync(feature.Id);
-        Assert.NotNull(updated);
-        Assert.Equal("Updated Feature", updated!.Name);
-        Assert.Equal("Updated description", updated.Description);
-        Assert.True(updated.IsHomebrew);
-    }
-
-    [Fact]
-    public async Task Feature_Delete_WorksCorrectly()
-    {
-        // Arrange
-        var options = GetInMemoryOptions("Feature_DeleteDB");
-        await using var context = new AppDbContext(options);
-
-        var feature = CreateTestFeature();
-        var repo = new FeatureRepository(context);
-        await repo.CreateAsync(feature);
-        await context.SaveChangesAsync();
-
-        // Act
-        await repo.DeleteAsync(feature);
-        await context.SaveChangesAsync();
-
-        // Assert
-        var deleted = await repo.GetWithAllDataAsync(feature.Id);
-        Assert.Null(deleted);
-    }
-
-
-    [Fact]
     public async Task AddAndRetrieveFeatures_WorksCorrectly()
     {
         // Arrange
@@ -139,20 +83,17 @@ public class FeatureRepositoryTests
         await context.AddRangeAsync(species, cls, bg);
         await context.SaveChangesAsync();
 
-        var feature = CreateTestFeature();
         var trait = CreateTestTrait(species);
         var classFeature = CreateTestClassFeature(cls);
         var feat = CreateTestFeat();
         var backgroundFeature = CreateTestBackgroundFeature(bg);
 
         // Act
-        var featureRepo = new FeatureRepository(context);
         var traitRepo = new TraitRepository(context);
         var classFeatureRepo = new ClassFeatureRepository(context);
         var featRepo = new FeatRepository(context);
         var bgFeatureRepo = new BackgroundFeatureRepository(context);
 
-        await featureRepo.CreateAsync(feature);
         await traitRepo.CreateAsync(trait);
         await classFeatureRepo.CreateAsync(classFeature);
         await featRepo.CreateAsync(feat);
@@ -160,13 +101,6 @@ public class FeatureRepositoryTests
         await context.SaveChangesAsync();
 
         // Assert
-        var fullFeature = await featureRepo.GetWithAllDataAsync(feature.Id);
-        Assert.NotNull(fullFeature);
-        Assert.Equal("Power Strike", fullFeature!.Name);
-        Assert.NotNull(fullFeature.AbilityIncreases);
-        Assert.NotNull(fullFeature.SpellsGained);
-        Assert.NotNull(fullFeature.LanguageChoices);
-
         var fullTrait = await traitRepo.GetWithAllDataAsync(trait.Id);
         Assert.NotNull(fullTrait);
         Assert.Equal(species.Id, fullTrait!.FromRace.Id);
@@ -185,60 +119,6 @@ public class FeatureRepositoryTests
         Assert.NotNull(fullBgFeat);
         Assert.Equal(bg.Id, fullBgFeat!.Background.Id);
         Assert.NotNull(fullBgFeat.AbilityIncreases);
-    }
-
-    [Fact]
-    public async Task GetAllFeaturesWithAllData_ReturnsAllEntities()
-    {
-        // Arrange
-        var options = GetInMemoryOptions("Feature_GetAllDB");
-        await using var context = new AppDbContext(options);
-
-        var feature = CreateTestFeature();
-        await context.AddAsync(feature);
-        await context.SaveChangesAsync();
-
-        // Act
-        var featureRepo = new FeatureRepository(context);
-        var allFeatures = await featureRepo.GetAllWithAllDataAsync();
-
-        // Assert
-        Assert.NotEmpty(allFeatures);
-        Assert.Contains(allFeatures, f => f.Id == feature.Id);
-        Assert.All(allFeatures, f =>
-        {
-            Assert.NotNull(f.AbilityIncreases);
-            Assert.NotNull(f.SpellsGained);
-            Assert.NotNull(f.LanguageChoices);
-        });
-    }
-
-    [Fact]
-    public async Task Feature_PrimitiveData_Works()
-    {
-        // Arrange
-        var options = GetInMemoryOptions("FeaturePrimitiveDB");
-        await using var context = new AppDbContext(options);
-
-        var feature = CreateTestFeature();
-
-        // Act
-        var repo = new FeatureRepository(context);
-        await repo.CreateAsync(feature);
-        await context.SaveChangesAsync();
-
-        var primitive = await repo.GetBaseFeatureDtoAsync(feature.Id);
-        var allPrimitives = await repo.GetAllBaseFeatureDtosAsync();
-
-        // Assert
-        Assert.NotNull(primitive);
-        Assert.Equal(feature.Id, primitive!.Id);
-        Assert.Equal(feature.Name, primitive.Name);
-        Assert.Equal(feature.Description, primitive.Description);
-        Assert.Equal(feature.IsHomebrew, primitive.IsHomebrew);
-
-        Assert.Single(allPrimitives);
-        Assert.Equal(feature.Id, allPrimitives.First().Id);
     }
 
     [Fact]
@@ -287,7 +167,7 @@ public class FeatureRepositoryTests
         await context.SaveChangesAsync();
 
         var primitive = await repo.GetClassFeatureDtoAsync(feature.Id);
-        var allPrimitives = await repo.GetAllClassFeaturDtosAsync();
+        var allPrimitives = await repo.GetAllClassFeatureDtosAsync();
 
         // Assert
         Assert.NotNull(primitive);

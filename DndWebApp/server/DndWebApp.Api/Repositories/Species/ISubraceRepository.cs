@@ -45,6 +45,8 @@ public interface ISubraceRepository : IRepository<Subrace>
     /// </remarks>
     Task<ICollection<SubraceDto>> GetAllSubraceDtosAsync();
 
+    Task<ICollection<Subrace>> GetAllSubracesByRaceAsync(int raceId);
+
     // Currently unused, but may become relevant for future functionality.
     // The ParentRace can already be accessed through the Subrace’s foreign key.
     // For now, all current use cases are covered by GetAllPrimitiveDataAsync().

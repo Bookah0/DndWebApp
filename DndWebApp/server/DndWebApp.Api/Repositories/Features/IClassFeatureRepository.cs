@@ -35,7 +35,7 @@ public interface IClassFeatureRepository : IRepository<ClassFeature>
     /// <remarks>
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<ClassFeatureDto>> GetAllClassFeaturDtosAsync();
+    Task<ICollection<ClassFeatureDto>> GetAllClassFeatureDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="ClassFeature"/> entity by its <paramref name="id"/>, 

@@ -1,3 +1,4 @@
+using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.World;
 
@@ -12,7 +13,7 @@ public class Background
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
 
-    public ICollection<Feature> Features { get; set; } = [];
+    public ICollection<AFeature> Features { get; set; } = [];
     public ICollection<Item> StartingItems { get; set; } = [];
     public ICollection<ItemChoice> StartingItemsOptions { get; set; } = [];
     public required Currency StartingCurrency { get; set; }

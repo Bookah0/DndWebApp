@@ -2,9 +2,6 @@ using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Api.Models.DTOs;
 
-/// <summary>
-/// Contains primitive data from the Subrace class
-/// </summary>
 public class SubraceDto
 {
     public int Id { get; set; }

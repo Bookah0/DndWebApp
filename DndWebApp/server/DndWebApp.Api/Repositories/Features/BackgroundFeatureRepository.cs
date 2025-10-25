@@ -1,6 +1,7 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Features;

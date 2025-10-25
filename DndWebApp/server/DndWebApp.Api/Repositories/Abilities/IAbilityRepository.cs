@@ -17,7 +17,7 @@ public interface IAbilityRepository
     /// <remarks>
     /// Typical use cases include simple display of a single ability.
     /// </remarks>
-    Task<AbilityDto?> GetPrimitiveDataAsync(int id);
+    Task<AbilityDto?> GetAbilityDtoAsync(int id);
 
     /// <summary>
     /// Retrieves an <see cref="Ability"/> entity by its <paramref name="id"/>, 
@@ -43,7 +43,7 @@ public interface IAbilityRepository
     /// <remarks>
     /// Typical use cases include search, simple display, dropdowns, and ability selection.
     /// </remarks>
-    Task<ICollection<AbilityDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<AbilityDto>> GetAllAbilityDtosAsync();
 
     /// <summary>
     /// Retrieves all <see cref="Ability"/> entities, 

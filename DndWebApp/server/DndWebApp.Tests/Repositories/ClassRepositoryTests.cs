@@ -1,5 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Classes;
@@ -180,7 +181,7 @@ public class ClassRepositoryTests
         await repo.CreateAsync(cls);
         await context.SaveChangesAsync();
 
-        var primitive = await repo.GetPrimitiveDataAsync(cls.Id);
+        var primitive = await repo.GetClassDtoAsync(cls.Id);
 
         // Assert
         Assert.NotNull(primitive);
@@ -204,7 +205,7 @@ public class ClassRepositoryTests
         await repo.CreateAsync(c1);
         await repo.CreateAsync(c2);
         await context.SaveChangesAsync();
-        var allPrimitives = await repo.GetAllPrimitiveDataAsync();
+        var allPrimitives = await repo.GetAllClassDtoDataAsync();
 
         // Assert
         Assert.Equal(2, allPrimitives.Count);

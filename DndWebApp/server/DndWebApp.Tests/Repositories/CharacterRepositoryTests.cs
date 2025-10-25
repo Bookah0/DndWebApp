@@ -40,6 +40,7 @@ public class CharacterRepositoryTests
             Name = "Arannis",
             Level = 5,
             Race = new Race { Name = "Elf", Speed = 30 },
+            Subrace = new Subrace { Name = "HighElf", ParentRace = null!, ParentRaceId = -1, Speed= 30 },
             Class = cls,
             ClassId = cls.Id,
             Background = background,

@@ -65,6 +65,7 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
                 Name = r.Name,
                 Level = r.Level,
                 RaceId = r.RaceId,
+                SubraceId = r.SubraceId,
                 ClassId = r.ClassId,
                 SubClassId = r.SubClassId,
                 BackgroundId = r.BackgroundId,
@@ -93,6 +94,7 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
                 Name = r.Name,
                 Level = r.Level,
                 RaceId = r.RaceId,
+                SubraceId = r.Subrace.Id,
                 ClassId = r.ClassId,
                 SubClassId = r.SubClassId,
                 BackgroundId = r.BackgroundId,
@@ -124,7 +126,6 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .Include(f => f.CharacterBuildData)
             .AsSplitQuery()
             .Include(f => f.OtherRaces)
-            .Include(f => f.PassiveEffects)
             .Include(f => f.ReadySpells)
             .Include(f => f.SavingThrows)
             .Include(f => f.DamageAffinities)

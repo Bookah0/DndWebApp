@@ -2,9 +2,6 @@ using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Api.Models.DTOs;
 
-/// <summary>
-/// Contains primitive data from the Trait, ClassFeature and BackgroundFeature class
-/// </summary>
 public class ClassFeatureDto
 {
     public int Id { get; set; }

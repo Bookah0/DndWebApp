@@ -8,17 +8,16 @@ namespace DndWebApp.Tests.Repositories;
 
 public class SpellRepositoryTests
 {
-    private Spell CreateTestSpell(string name, Damage? damage = null) => new()
+    private Spell CreateTestSpell(string name, SpellDamage? damage = null) => new()
     {
         Name = name,
         Description = $"Description of {name}",
         Level = 1,
-        Duration = "",
-        CastingTime = "",
-        TargetType = "",
-        Damage = damage!,
+        Duration = 0,
+        CastingTime = 0,
+        SpellTargeting = new(){ TargetType = SpellTargetType.Creature, Range = SpellRange.Feet, RangeValue = 20 },
+        SpellDamage = damage!,
         MagicSchool = MagicSchool.Evocation,
-        Range = 1,
     };
 
     private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) => new DbContextOptionsBuilder<AppDbContext>()
@@ -31,7 +30,7 @@ public class SpellRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("Spell_AddRetrieveDB");
 
-        var damage = new Damage { DamageRoll = "1d4+1" };
+        var damage = new SpellDamage { DamageRoll = "1d4+1" };
         var magicMissile = CreateTestSpell("Magic Missile", damage);
         var fireball = CreateTestSpell("Fireball");
         int magicMissileId;
@@ -55,8 +54,8 @@ public class SpellRepositoryTests
             var savedMagicMissile = await repo.GetByIdAsync(magicMissileId);
             Assert.NotNull(savedMagicMissile);
             Assert.Equal("Magic Missile", savedMagicMissile!.Name);
-            Assert.NotNull(savedMagicMissile.Damage);
-            Assert.Equal("1d4+1", savedMagicMissile.Damage.DamageRoll);
+            Assert.NotNull(savedMagicMissile.SpellDamage);
+            Assert.Equal("1d4+1", savedMagicMissile.SpellDamage.DamageRoll);
 
             var allSpells = await repo.GetAllAsync();
             Assert.Equal(2, allSpells.Count);

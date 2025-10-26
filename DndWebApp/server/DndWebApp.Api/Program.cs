@@ -13,6 +13,7 @@ using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Services;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.Spells;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,9 @@ builder.Services.AddScoped<ISpellRepository, SpellRepository>();
 
 
 builder.Services.AddScoped<IService<Alignment, AlignmentDto, AlignmentDto>, AlignmentService>();
+builder.Services.AddScoped<IService<Skill, SkillDto, SkillDto>, SkillService>();
+builder.Services.AddScoped<IService<Language, LanguageDto, LanguageDto>, LanguageService>();
+builder.Services.AddScoped<IService<Spell, SpellDto, SpellDto>, SpellService>();
 
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();

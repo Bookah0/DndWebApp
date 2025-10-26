@@ -32,7 +32,7 @@ public class SkillServiceTests
     }
 
     [Fact]
-    public async Task AddAndRetrieveAlignments_WorksCorrectly()
+    public async Task AddAndRetrieveSkills_WorksCorrectly()
     {
         var options = GetInMemoryOptions("Skill_AddRetrieveDB");
         

@@ -17,8 +17,6 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 
     public async Task<Alignment> CreateAsync(AlignmentDto dto)
     {
-        if (dto is null)
-            throw new NullReferenceException("Dto can't be null");
         if (string.IsNullOrWhiteSpace(dto.Name))
             throw new ArgumentException($"Name cannot be null, empty, or whitespace.");
         if (string.IsNullOrWhiteSpace(dto.Description))

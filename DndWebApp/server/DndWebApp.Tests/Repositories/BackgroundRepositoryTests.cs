@@ -15,7 +15,7 @@ public class BackgroundRepositoryTests
         return new Item { Name = name, Description = description, Catagories = category, Quantity = quantity };
     }
 
-    private BackgroundFeature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.", Background bg = null, int bgId = -1)
+    private BackgroundFeature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.", Background bg = null!, int bgId = -1)
     {
         return new BackgroundFeature { Name = name, Description = description, Background = bg, BackgroundId = bgId};
     }

@@ -11,7 +11,7 @@ using Xunit.Sdk;
 
 namespace DndWebApp.Tests.Services;
 
-public class AbilityServiceTests
+public class AlignmentServiceTests
 {
     private AlignmentDto CreateAlignmentDto(string name, string abbreviation, string description)
     {

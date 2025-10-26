@@ -1,5 +1,6 @@
 
 using DndWebApp.Api.Data;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 namespace DndWebApp.Api.Repositories;
 
@@ -14,9 +15,10 @@ public class EfRepository<T> : IRepository<T> where T : class
         dbSet = context.Set<T>();
     }
 
-    public virtual async Task CreateAsync(T entity)
+    public virtual async Task<T> CreateAsync(T entity)
     {
         await dbSet.AddAsync(entity!);
+        return entity;
     }
 
     public virtual async Task DeleteAsync(T entity)

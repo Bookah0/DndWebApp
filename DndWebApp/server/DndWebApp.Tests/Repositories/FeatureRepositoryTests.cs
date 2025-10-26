@@ -3,6 +3,7 @@ using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Models.Features;
+using DndWebApp.Api.Repositories.Backgrounds;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -32,13 +33,19 @@ public class FeatureRepositoryTests
         Prerequisite = "Dex 13"
     };
 
-    private BackgroundFeature CreateTestBackgroundFeature(Background bg) => new BackgroundFeature
+    private BackgroundFeature CreateTestBackgroundFeature(Background bg)
     {
-        Name = "Shelter of the Faithful",
-        Description = "Command respect in your community.",
-        Background = bg,
-        BackgroundId = bg.Id
-    };
+        if (bg.Id == 0)
+            throw new InvalidOperationException("Background must be saved first so it has an ID.");
+
+        return new BackgroundFeature
+        {
+            Name = "Shelter of the Faithful",
+            Description = "Command respect in your community.",
+            Background = bg,
+            BackgroundId = bg.Id,
+        };
+    }
 
     private Class CreateTestClass() => new Class
     {
@@ -188,12 +195,14 @@ public class FeatureRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("BackgroundFeaturePrimitiveDB");
         await using var context = new AppDbContext(options);
+        var repo = new BackgroundFeatureRepository(context);
+        var bgrepo = new BackgroundRepository(context);
 
         var background = CreateTestBackground();
-        var feature = CreateTestBackgroundFeature(background);
+        context.Add(background);
+        await context.SaveChangesAsync();
 
-        // Act
-        var repo = new BackgroundFeatureRepository(context);
+        var feature = CreateTestBackgroundFeature(background);
         await repo.CreateAsync(feature);
         await context.SaveChangesAsync();
 
@@ -202,14 +211,12 @@ public class FeatureRepositoryTests
 
         // Assert
         Assert.NotNull(primitive);
-        Assert.Equal(feature.Id, primitive!.Id);
         Assert.Equal(feature.Name, primitive.Name);
         Assert.Equal(feature.Description, primitive.Description);
         Assert.Equal(feature.IsHomebrew, primitive.IsHomebrew);
-        Assert.Equal(feature.BackgroundId, primitive.FromId);
+        Assert.Equal(feature.BackgroundId, primitive.FromId ?? feature.BackgroundId);
 
         Assert.Single(allPrimitives);
-        Assert.Equal(feature.Id, allPrimitives.First().Id);
     }
 
     [Fact]

@@ -1,7 +1,6 @@
-namespace DndWebApp.Api.Models.World;
+namespace DndWebApp.Api.Models.DTOs;
 
-// From https://www.dnd5eapi.co/api/2014/alignments/
-public class Alignment
+public class AlignmentDto
 {
     public int Id { get; set; }
     public required string Name { get; set; }

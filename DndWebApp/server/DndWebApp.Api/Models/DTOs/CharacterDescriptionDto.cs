@@ -8,6 +8,7 @@ namespace DndWebApp.Api.Models.DTOs;
 
 public class CharacterDescriptionDto
 {
+    public int Id { get; set; }
     public required int? AlignmentId { get; set; }
     public required string PersonalityTraits { get; set; }
     public required string Ideals { get; set; }

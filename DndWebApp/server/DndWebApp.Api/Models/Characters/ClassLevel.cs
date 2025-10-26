@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
 
-[Owned]
+
 public class ClassLevel
 {
     public int Id { get; set; }

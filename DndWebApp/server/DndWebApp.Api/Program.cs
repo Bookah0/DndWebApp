@@ -10,6 +10,9 @@ using DndWebApp.Api.Repositories.Items;
 using DndWebApp.Api.Repositories.Species;
 using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Repositories.Classes;
+using DndWebApp.Api.Services;
+using DndWebApp.Api.Models.World;
+using DndWebApp.Api.Models.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +29,6 @@ builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 builder.Services.AddScoped<IClassLevelRepository, ClassLevelRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 
-builder.Services.AddScoped<IFeatureRepository, FeatureRepository>();
 builder.Services.AddScoped<IFeatRepository, FeatRepository>();
 builder.Services.AddScoped<ITraitRepository, TraitRepository>();
 builder.Services.AddScoped<IClassFeatureRepository, ClassFeatureRepository>();
@@ -41,6 +43,9 @@ builder.Services.AddScoped<IRaceRepository, RaceRepository>();
 builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
 
 builder.Services.AddScoped<ISpellRepository, SpellRepository>();
+
+
+builder.Services.AddScoped<IService<Alignment, AlignmentDto, AlignmentDto>, AlignmentService>();
 
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();

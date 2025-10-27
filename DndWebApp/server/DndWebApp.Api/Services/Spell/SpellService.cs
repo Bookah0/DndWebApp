@@ -4,15 +4,16 @@ using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Utils;
 namespace DndWebApp.Api.Services;
 
 public class SpellService : IService<Spell, SpellDto, SpellDto>
 {
-    protected IRepository<Spell> repo;
+    protected SpellRepository repo;
     protected AppDbContext context;
 
-    public SpellService(IRepository<Spell> repo, AppDbContext context)
+    public SpellService(SpellRepository repo, AppDbContext context)
     {
         this.context = context;
         this.repo = repo;
@@ -70,6 +71,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     }
 
     public async Task<ICollection<Spell>> GetAllAsync()
+    {
+        return await repo.GetAllAsync();
+    }
+
+    public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)
     {
         return await repo.GetAllAsync();
     }

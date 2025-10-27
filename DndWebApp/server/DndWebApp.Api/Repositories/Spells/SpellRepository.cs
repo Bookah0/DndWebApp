@@ -47,7 +47,7 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
             query = query.Where(s => filter.CastingTimes.Contains(s.CastingTime));
 
         if (filter.SpellTypes is not null)
-            query = query.Where(s => filter.SpellTypes.ToString()!.Contains(s.SpellTypes.ToString()));
+            query = query.Where(s => s.SpellTypes.Any(t => filter.SpellTypes.Contains(t)));
 
         if (filter.TargetType is not null && filter.TargetType.Count != 0)
              query = query.Where(s => filter.TargetType.Contains(s.SpellTargeting.TargetType));
@@ -56,7 +56,7 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
             query = query.Where(s => filter.Range.Contains(s.SpellTargeting.Range));
 
         if (filter.DamageTypes is not null)
-            query = query.Where(s => filter.DamageTypes.ToString()!.Contains(s.SpellDamage.DamageTypes.ToString()));
+            query = query.Where(s => s.DamageTypes.Any(t => filter.DamageTypes.Contains(t)));
 
         if (filter.IsHomebrew.HasValue)
             query = query.Where(s => s.IsHomebrew == filter.IsHomebrew.Value);

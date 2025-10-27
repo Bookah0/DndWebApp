@@ -12,7 +12,7 @@ public class InventoryRepositoryTests
     {
         Name = "Leather Armor",
         Description = "Light armor made from tanned leather, provides basic protection.",
-        Catagories = ItemCategory.Armor,
+        Categories = [ItemCategory.Armor],
         Category = ArmorCategory.Light,
         BaseArmorClass = 11,
         PlusDexMod = true
@@ -22,10 +22,11 @@ public class InventoryRepositoryTests
     {
         Name = "Shortbow",
         Description = "A small bow ideal for ranged attacks.",
-        Catagories = ItemCategory.Weapon,
-        WeaponCategories = WeaponCategory.SimpleRanged | WeaponCategory.Shortbow,
-        Properties = WeaponProperty.TwoHanded,
-        DamageTypes = DamageType.Piercing,
+        Categories = [ItemCategory.Weapon],
+        WeaponCategory = WeaponCategory.SimpleRanged,
+        WeaponType = WeaponType.Shortbow,
+        Properties = [WeaponProperty.TwoHanded],
+        DamageTypes = [DamageType.Piercing],
         DamageDice = "1d6",
         Range = 80
     };
@@ -34,7 +35,7 @@ public class InventoryRepositoryTests
     {
         Name = "Thieves' Kit",
         Description = "A set of lockpicks and other tools for stealthy operations.",
-        Catagories = ItemCategory.Tools,
+        Categories = [ItemCategory.Tools],
         Activities = [],
         Properties = []
     };
@@ -83,9 +84,9 @@ public class InventoryRepositoryTests
 
         Assert.Empty(withEquipped.Gear);
         Assert.Empty(withEquipped.Equipment);
-        Assert.Equal(ItemCategory.Tools, withStorage.Gear.First().Catagories);
+        Assert.Equal(ItemCategory.Tools, withStorage.Gear.First().Categories.First());
         Assert.Equal("Shortbow", withStorage.Equipment.First().Name);
-        Assert.Equal(ItemCategory.Tools, withAll.Gear.First().Catagories);
+        Assert.Equal(ItemCategory.Tools, withAll.Gear.First().Categories.First());
         Assert.Equal("Shortbow", withAll.Equipment.First().Name);
     }
 }

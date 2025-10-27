@@ -18,4 +18,21 @@ public static class ValidationUtil
         }
         return result;
     }
+
+    public static List<TEnum> ParseEnumsOrThrow<TEnum>(string enumsAsString) where TEnum : struct, Enum
+    {
+        var splitStr = enumsAsString.Split('|');
+        var result = new List<TEnum>();
+
+        foreach (var str in splitStr)
+        {
+            if (!Enum.TryParse<TEnum>(str, true, out var e))
+            {
+                throw new InvalidOperationException($"Could not convert {e} to Enum of type {typeof(TEnum).Name}.");
+            }
+            result.Add(e);
+        }
+
+        return result;
+    }
 }

@@ -9,7 +9,7 @@ namespace DndWebApp.Tests.Repositories;
 
 public class SpellRepositoryTests
 {
-    private Spell CreateTestSpell(string name, SpellDamage? damage = null) => new()
+    private Spell CreateTestSpell(string name) => new()
     {
         Name = name,
         Description = $"Description of {name}",
@@ -17,7 +17,6 @@ public class SpellRepositoryTests
         Duration = 0,
         CastingTime = 0,
         SpellTargeting = new(){ TargetType = SpellTargetType.Creature, Range = SpellRange.Feet, RangeValue = 20 },
-        SpellDamage = damage!,
         MagicSchool = MagicSchool.Evocation,
     };
 
@@ -31,8 +30,7 @@ public class SpellRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("Spell_AddRetrieveDB");
 
-        var damage = new SpellDamage { DamageRoll = "1d4+1" };
-        var magicMissile = CreateTestSpell("Magic Missile", damage);
+        var magicMissile = CreateTestSpell("Magic Missile");
         var fireball = CreateTestSpell("Fireball");
         int magicMissileId;
 
@@ -55,8 +53,6 @@ public class SpellRepositoryTests
             var savedMagicMissile = await repo.GetByIdAsync(magicMissileId);
             Assert.NotNull(savedMagicMissile);
             Assert.Equal("Magic Missile", savedMagicMissile!.Name);
-            Assert.NotNull(savedMagicMissile.SpellDamage);
-            Assert.Equal("1d4+1", savedMagicMissile.SpellDamage.DamageRoll);
 
             var allSpells = await repo.GetAllAsync();
             Assert.Equal(2, allSpells.Count);
@@ -167,14 +163,11 @@ public class SpellRepositoryTests
         var options = GetInMemoryOptions("Spell_FilterDB");
         var context = new AppDbContext(options);
 
-        var fireDamage = new SpellDamage { DamageTypes = DamageType.Fire };
-        var coldDamage = new SpellDamage { DamageTypes = DamageType.Cold };
-
         var spells = new List<Spell>
         {
-            CreateTestSpell("Fireball", fireDamage),
-            CreateTestSpell("Frostbite", coldDamage),
-            CreateTestSpell("Magic Missile", fireDamage)
+            CreateTestSpell("Fireball"),
+            CreateTestSpell("Frostbite"),
+            CreateTestSpell("Magic Missile")
         };
 
         await context.Spells.AddRangeAsync(spells);
@@ -186,7 +179,6 @@ public class SpellRepositoryTests
             MinLevel = 1,
             MaxLevel = 3,
             MagicSchools = [MagicSchool.Evocation],
-            DamageTypes = DamageType.Fire,
             IsHomebrew = false
         };
 
@@ -199,6 +191,5 @@ public class SpellRepositoryTests
         var spell = result.First();
         Assert.Equal("Fireball", spell.Name);
         Assert.Equal(MagicSchool.Evocation, spell.MagicSchool);
-        Assert.Equal(DamageType.Fire, spell.SpellDamage.DamageTypes);
     }
 }

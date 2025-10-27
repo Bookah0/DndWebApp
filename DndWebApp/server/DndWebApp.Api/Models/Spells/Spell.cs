@@ -16,13 +16,16 @@ public class Spell
     public string EffectsAtHigherLevels { get; set; } = "";
     public ICollection<Class> Classes { get; set; } = [];
     public required SpellDuration Duration { get; set; }
+    public int DurationValue { get; set; }
     public required CastingTime CastingTime { get; set; }
+    public int CastingTimeValue { get; set; }
     public string ReactionCondition { get; set; } = "";
     public required MagicSchool MagicSchool { get; set; }
 
-    public SpellType SpellTypes { get; set; } = SpellType.Normal;
+    public ICollection<SpellType> SpellTypes { get; set; } = [];
     public required SpellTargeting SpellTargeting { get; set; }  
-    public SpellDamage SpellDamage { get; set; } = new();
+    public string DamageRoll { get; set; } = "";
+    public ICollection<DamageType> DamageTypes { get; set; } = [];
     public CastingRequirements CastingRequirements { get; set; } = new();  
 }
 
@@ -35,13 +38,6 @@ public class SpellTargeting
     public string? ShapeType { get; set; }
     public string? ShapeWidth { get; set; }
     public string? ShapeLength { get; set; }
-}
-
-[Owned]
-public class SpellDamage
-{
-    public string DamageRoll { get; set; } = "";
-    public DamageType DamageTypes { get; set; }
 }
 
 [Owned]

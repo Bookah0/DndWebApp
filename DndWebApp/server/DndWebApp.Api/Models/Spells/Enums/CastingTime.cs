@@ -5,8 +5,7 @@ public enum CastingTime
     Action,
     BonusAction,
     Reaction,
-    Minute1,
-    Minute10,
-    Hour1,
+    Minute,
+    Hour,
     Special
 }

@@ -26,7 +26,7 @@ public class SpellServiceTests
             Level = 3,
             EffectsAtHigherLevels = "Extra effect",
             ReactionCondition = "",
-            Duration = "Minute1",
+            Duration = "Minute",
             CastingTime = "Action",
             MagicSchool = "Evocation",
             TargetType = "Creature",
@@ -84,9 +84,8 @@ public class SpellServiceTests
         Assert.Equal(SpellRange.Feet, retrievedFireball.SpellTargeting.Range);
         Assert.Equal(10, retrievedFireball.SpellTargeting.RangeValue);
 
-        Assert.NotNull(retrievedFireball.SpellDamage);
-        Assert.Equal("2d6", retrievedFireball.SpellDamage.DamageRoll);
-        Assert.Equal(DamageType.Fire, retrievedFireball.SpellDamage.DamageTypes);
+        Assert.Equal("2d6", retrievedFireball.DamageRoll);
+        Assert.Equal(DamageType.Fire, retrievedFireball.DamageTypes.First());
 
         Assert.NotNull(retrievedFireball.CastingRequirements);
         Assert.True(retrievedFireball.CastingRequirements.Verbal);
@@ -132,8 +131,7 @@ public class SpellServiceTests
         Assert.NotNull(updatedFireball.SpellTargeting);
         Assert.Equal(20, updatedFireball.SpellTargeting.RangeValue);
 
-        Assert.NotNull(updatedFireball.SpellDamage);
-        Assert.Equal("4d6", updatedFireball.SpellDamage.DamageRoll);
+        Assert.Equal("4d6", updatedFireball.DamageRoll);
 
         Assert.NotNull(updatedFireball.CastingRequirements);
         Assert.Equal("Dragon scale", updatedFireball.CastingRequirements.Materials);

@@ -14,7 +14,7 @@ public class ClassRepositoryTests
     {
         Name = "Thieves' Kit",
         Description = "A set of lockpicks and other tools for stealthy operations.",
-        Catagories = ItemCategory.Tools,
+        Categories = [ItemCategory.Tools],
         Activities = [],
         Properties = []
     };
@@ -23,7 +23,7 @@ public class ClassRepositoryTests
     {
         Name = "Leather Armor",
         Description = "Light armor made from tanned leather, provides basic protection.",
-        Catagories = ItemCategory.Armor,
+        Categories = [ItemCategory.Armor],
         Category = ArmorCategory.Light,
         BaseArmorClass = 11,
         PlusDexMod = true
@@ -33,10 +33,11 @@ public class ClassRepositoryTests
     {
         Name = "Shortbow",
         Description = "A small bow ideal for ranged attacks.",
-        Catagories = ItemCategory.Weapon,
-        WeaponCategories = WeaponCategory.SimpleRanged | WeaponCategory.Shortbow,
-        Properties = WeaponProperty.TwoHanded,
-        DamageTypes = DamageType.Piercing,
+        Categories = [ItemCategory.Weapon],
+        WeaponCategory = WeaponCategory.SimpleRanged,
+        WeaponType = WeaponType.Shortbow,
+        Properties = [WeaponProperty.TwoHanded],
+        DamageTypes = [DamageType.Piercing],
         DamageDice = "1d6",
         Range = 80
     };
@@ -234,7 +235,7 @@ public class ClassRepositoryTests
         Assert.NotEmpty(fullClass!.StartingEquipment);
         var tool = fullClass.StartingEquipment.FirstOrDefault(i => i.Name == "Thieves' Kit");
         Assert.NotNull(tool);
-        Assert.Equal(ItemCategory.Tools, tool!.Catagories);
+        Assert.Equal(ItemCategory.Tools, tool!.Categories.First());
 
         // Starting Item Choices
         Assert.NotEmpty(fullClass.StartingEquipmentOptions);

@@ -31,8 +31,8 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         var dtoSpellRange = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.Range);
         var dtoDuration = ValidationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
         var dtoCastTime = ValidationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
-        var dtoSpellTypes = ValidationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
-        var dtoDamageTypes = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+        var dtoSpellTypes = ValidationUtil.ParseEnumsOrThrow<SpellType>(dto.Types);
+        var dtoDamageTypes = ValidationUtil.ParseEnumsOrThrow<DamageType>(dto.DamageTypes);
 
         if (dto.Level <= 0)
             throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
@@ -49,7 +49,8 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
             dto.EffectsAtHigherLevels,
             dto.ReactionCondition,
             SpellFactory.CreateTargeting(dtoTargetType, dtoSpellRange, dto.RangeValue, dto.ShapeType, dto.ShapeWidth, dto.ShapeLength),
-            SpellFactory.CreateSpellDamage(dto.DamageRoll, dtoDamageTypes),
+            dto.DamageRoll,
+            dtoDamageTypes,
             SpellFactory.CreateCastingRequirments(dto.Verbal, dto.Somatic, dto.Materials, dto.MaterialCost, dto.MaterialsConsumed),
             dtoDuration,
             dtoCastTime,
@@ -80,10 +81,7 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
             throw new ArgumentOutOfRangeException(nameof(filter), "Maximum level must be greater than or equal to minimum level");
         if (filter.Name is not null)
             filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name);
-        if (filter.Name is not null)
-            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name); 
-        if (filter.Name is not null)
-            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name); 
+
         return await repo.FilterAllAsync(filter);
     }
 
@@ -108,8 +106,8 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         var dtoSpellRange = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.Range);
         var dtoDuration = ValidationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
         var dtoCastTime = ValidationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
-        var dtoSpellTypes = ValidationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
-        var dtoDamageTypes = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+        var dtoSpellTypes = ValidationUtil.ParseEnumsOrThrow<SpellType>(dto.Types);
+        var dtoDamageTypes = ValidationUtil.ParseEnumsOrThrow<DamageType>(dto.DamageTypes);
 
         if (dto.Level <= 0)
             throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
@@ -130,7 +128,8 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         spell.SpellTypes = dtoSpellTypes;
 
         spell.SpellTargeting = SpellFactory.CreateTargeting(dtoTargetType, dtoSpellRange, dto.RangeValue, dto.ShapeType, dto.ShapeWidth, dto.ShapeLength);
-        spell.SpellDamage = SpellFactory.CreateSpellDamage(dto.DamageRoll, dtoDamageTypes);
+        spell.DamageRoll = dto.DamageRoll;
+        spell.DamageTypes = dtoDamageTypes;
         spell.CastingRequirements = SpellFactory.CreateCastingRequirments(dto.Verbal, dto.Somatic, dto.Materials, dto.MaterialCost, dto.MaterialsConsumed);
 
         await repo.UpdateAsync(spell);

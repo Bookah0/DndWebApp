@@ -10,14 +10,14 @@ public class SpellFilter
     public bool? IsHomebrew { get; set; }
     public int? MinLevel { get; set; }
     public int? MaxLevel { get; set; }
-    public List<int>? ClassIds { get; set; }
-    public List<SpellDuration>? Durations { get; set; }
-    public List<CastingTime>? CastingTimes { get; set; }
-    public List<MagicSchool>? MagicSchools { get; set; }
-    public SpellType? SpellTypes { get; set; }
-    public List<SpellTargetType>? TargetType { get; set; }
-    public List<SpellRange>? Range { get; set; }
-    public DamageType? DamageTypes { get; set; }
+    public ICollection<int>? ClassIds { get; set; }
+    public ICollection<SpellDuration>? Durations { get; set; }
+    public ICollection<CastingTime>? CastingTimes { get; set; }
+    public ICollection<MagicSchool>? MagicSchools { get; set; }
+    public ICollection<SpellType>? SpellTypes { get; set; }
+    public ICollection<SpellTargetType>? TargetType { get; set; }
+    public ICollection<SpellRange>? Range { get; set; }
+    public ICollection<DamageType>? DamageTypes { get; set; }
 
     /*
     Not sure if these should be added:

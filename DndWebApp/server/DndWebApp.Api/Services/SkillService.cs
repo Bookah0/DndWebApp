@@ -4,6 +4,7 @@ using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Abilities;
+using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
 public class SkillService : IService<Skill, SkillDto, SkillDto>
@@ -20,9 +21,7 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
 
     public async Task<Skill> CreateAsync(SkillDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            throw new ArgumentException($"Name cannot be null, empty, or whitespace.");
-
+        ValidationUtil.ValidateRequiredString(dto.Name);
         var ability = await abilityRepo.GetByIdAsync(dto.AbilityId) ?? throw new NullReferenceException("Ability could not be found");
 
         Skill skill = new()
@@ -58,9 +57,7 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
 
     public async Task UpdateAsync(SkillDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            throw new ArgumentException($"Name cannot be null, empty, or whitespace.");
-
+        ValidationUtil.ValidateRequiredString(dto.Name);
         var skill = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Skill could not be found");
 
         if (skill.AbilityId != dto.AbilityId)

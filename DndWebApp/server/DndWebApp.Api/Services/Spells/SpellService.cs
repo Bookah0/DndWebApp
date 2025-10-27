@@ -3,10 +3,9 @@ using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Spells;
-using DndWebApp.Api.Services.Utils;
-namespace DndWebApp.Api.Services;
+using DndWebApp.Api.Services.Util;
+namespace DndWebApp.Api.Services.Spells;
 
 public class SpellService : IService<Spell, SpellDto, SpellDto>
 {
@@ -21,11 +20,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
 
     public async Task<Spell> CreateAsync(SpellDto dto)
     {
-        ValidationUtil.ValidateRequired(dto.Name, "Name");
-        ValidationUtil.ValidateRequired(dto.Description, "Description");
-        ValidationUtil.ValidateRequired(dto.Duration, "Duration");
-        ValidationUtil.ValidateRequired(dto.CastingTime, "CastingTime");
-        ValidationUtil.ValidateRequired(dto.MagicSchool, "MagicSchool");
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.ValidateRequiredString(dto.Duration);
+        ValidationUtil.ValidateRequiredString(dto.CastingTime);
+        ValidationUtil.ValidateRequiredString(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
         var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);
@@ -77,7 +76,15 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
 
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)
     {
-        return await repo.GetAllAsync();
+        if (filter.MinLevel > filter.MaxLevel)
+            throw new ArgumentOutOfRangeException(nameof(filter), "Maximum level must be greater than or equal to minimum level");
+        if (filter.Name is not null)
+            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name);
+        if (filter.Name is not null)
+            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name); 
+        if (filter.Name is not null)
+            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name); 
+        return await repo.FilterAllAsync(filter);
     }
 
     public async Task<Spell> GetByIdAsync(int id)
@@ -90,11 +97,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     {
         var spell = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Spell could not be found");
 
-        ValidationUtil.ValidateRequired(dto.Name, "Name");
-        ValidationUtil.ValidateRequired(dto.Description, "Description");
-        ValidationUtil.ValidateRequired(dto.Duration, "Duration");
-        ValidationUtil.ValidateRequired(dto.CastingTime, "CastingTime");
-        ValidationUtil.ValidateRequired(dto.MagicSchool, "MagicSchool");
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.ValidateRequiredString(dto.Duration);
+        ValidationUtil.ValidateRequiredString(dto.CastingTime);
+        ValidationUtil.ValidateRequiredString(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
         var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);

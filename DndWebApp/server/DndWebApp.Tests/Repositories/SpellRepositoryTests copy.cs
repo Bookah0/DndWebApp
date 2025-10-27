@@ -1,4 +1,5 @@
 ﻿using DndWebApp.Api.Data;
+using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories.Spells;
@@ -157,5 +158,47 @@ public class SpellRepositoryTests
             var deleted = await repo.GetByIdAsync(spellId);
             Assert.Null(deleted);
         }
+    }
+
+    [Fact]
+    public async Task FilterAllAsync_WithMatchingFilter_ReturnsExpectedSpells()
+    {
+        // Arrange
+        var options = GetInMemoryOptions("Spell_FilterDB");
+        var context = new AppDbContext(options);
+
+        var fireDamage = new SpellDamage { DamageTypes = DamageType.Fire };
+        var coldDamage = new SpellDamage { DamageTypes = DamageType.Cold };
+
+        var spells = new List<Spell>
+        {
+            CreateTestSpell("Fireball", fireDamage),
+            CreateTestSpell("Frostbite", coldDamage),
+            CreateTestSpell("Magic Missile", fireDamage)
+        };
+
+        await context.Spells.AddRangeAsync(spells);
+        await context.SaveChangesAsync();
+
+        var filter = new SpellFilter
+        {
+            Name = "Fire",
+            MinLevel = 1,
+            MaxLevel = 3,
+            MagicSchools = [MagicSchool.Evocation],
+            DamageTypes = DamageType.Fire,
+            IsHomebrew = false
+        };
+
+        // Act
+        var repo = new SpellRepository(context);
+        var result = await repo.FilterAllAsync(filter);
+
+        // Assert
+        Assert.Single(result);
+        var spell = result.First();
+        Assert.Equal("Fireball", spell.Name);
+        Assert.Equal(MagicSchool.Evocation, spell.MagicSchool);
+        Assert.Equal(DamageType.Fire, spell.SpellDamage.DamageTypes);
     }
 }

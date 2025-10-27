@@ -4,6 +4,7 @@ using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services;
+using DndWebApp.Api.Services.Spells;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Services;

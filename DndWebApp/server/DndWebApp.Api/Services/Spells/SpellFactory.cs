@@ -2,7 +2,7 @@ using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 
-namespace DndWebApp.Api.Services;
+namespace DndWebApp.Api.Services.Spells;
 
 public static class SpellFactory
 {

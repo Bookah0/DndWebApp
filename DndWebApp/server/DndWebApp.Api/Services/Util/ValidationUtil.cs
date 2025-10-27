@@ -1,12 +1,12 @@
-namespace DndWebApp.Api.Services.Utils;
+namespace DndWebApp.Api.Services.Util;
 
 public static class ValidationUtil
 {
-    public static void ValidateRequired(string str, string varName)
+    public static void ValidateRequiredString(string str)
     {
         if (string.IsNullOrWhiteSpace(str))
         {
-            throw new ArgumentException($"{varName} cannot be null, empty, or whitespace.");
+            throw new ArgumentException($"{nameof(str)} cannot be null, empty, or whitespace.");
         }
     }
 

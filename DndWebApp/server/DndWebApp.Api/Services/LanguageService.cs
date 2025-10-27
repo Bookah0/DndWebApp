@@ -4,6 +4,7 @@ using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Abilities;
+using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
 public class LanguageService : IService<Language, LanguageDto, LanguageDto>
@@ -18,12 +19,9 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
 
     public async Task<Language> CreateAsync(LanguageDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            throw new ArgumentException($"Name cannot be null, empty, or whitespace.");
-        if (string.IsNullOrWhiteSpace(dto.Script))
-            throw new ArgumentException($"Script cannot be null, empty, or whitespace.");
-        if (string.IsNullOrWhiteSpace(dto.Family))
-            throw new ArgumentException($"Family cannot be null, empty, or whitespace.");
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Script);
+        ValidationUtil.ValidateRequiredString(dto.Family);
 
         Language language = new()
         {
@@ -58,12 +56,9 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
 
     public async Task UpdateAsync(LanguageDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            throw new ArgumentException($"Name cannot be null, empty, or whitespace.");
-        if (string.IsNullOrWhiteSpace(dto.Script))
-            throw new ArgumentException($"Script cannot be null, empty, or whitespace.");
-        if (string.IsNullOrWhiteSpace(dto.Family))
-            throw new ArgumentException($"Family cannot be null, empty, or whitespace.");
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Script);
+        ValidationUtil.ValidateRequiredString(dto.Family);
 
         var language = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Language could not be found");
 

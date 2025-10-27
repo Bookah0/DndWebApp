@@ -21,7 +21,7 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
             .ToListAsync();
     }
 
-    public async Task<ICollection<Spell>> FilterAsync(SpellFilter filter)
+    public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)
     {
         var query = dbSet.AsQueryable();
 
@@ -34,28 +34,28 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
         if (filter.MaxLevel.HasValue)
             query = query.Where(s => s.Level <= filter.MaxLevel.Value);
 
-        if (filter.MagicSchools != null && filter.MagicSchools.Count != 0)
+        if (filter.MagicSchools is not null && filter.MagicSchools.Count != 0)
             query = query.Where(s => filter.MagicSchools.Contains(s.MagicSchool));
 
-        if (filter.ClassIds != null && filter.ClassIds.Count != 0)
+        if (filter.ClassIds is not null && filter.ClassIds.Count != 0)
             query = query.Where(s => s.Classes.Any(c => filter.ClassIds.Contains(c.Id)));
 
-        if (filter.Durations != null && filter.Durations.Count != 0)
+        if (filter.Durations is not null && filter.Durations.Count != 0)
             query = query.Where(s => filter.Durations.Contains(s.Duration));
 
-        if (filter.CastingTimes != null && filter.CastingTimes.Count != 0)
+        if (filter.CastingTimes is not null && filter.CastingTimes.Count != 0)
             query = query.Where(s => filter.CastingTimes.Contains(s.CastingTime));
 
-        if (filter.SpellTypes != null)
+        if (filter.SpellTypes is not null)
             query = query.Where(s => filter.SpellTypes.ToString()!.Contains(s.SpellTypes.ToString()));
 
-        if (filter.TargetType != null && filter.TargetType.Count != 0)
+        if (filter.TargetType is not null && filter.TargetType.Count != 0)
              query = query.Where(s => filter.TargetType.Contains(s.SpellTargeting.TargetType));
 
-        if (filter.Range != null && filter.Range.Count != 0)
+        if (filter.Range is not null && filter.Range.Count != 0)
             query = query.Where(s => filter.Range.Contains(s.SpellTargeting.Range));
 
-        if (filter.DamageTypes != null)
+        if (filter.DamageTypes is not null)
             query = query.Where(s => filter.DamageTypes.ToString()!.Contains(s.SpellDamage.DamageTypes.ToString()));
 
         if (filter.IsHomebrew.HasValue)

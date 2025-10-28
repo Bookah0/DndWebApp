@@ -31,4 +31,6 @@ public interface ISpellRepository : IRepository<Spell>
     /// Typically used when displaying lists of spells.
     /// </remarks>
     Task<ICollection<Spell>> GetAllWithClassesAsync();
+
+    Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter);
 }

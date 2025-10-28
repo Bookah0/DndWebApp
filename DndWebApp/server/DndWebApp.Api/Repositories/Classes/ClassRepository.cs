@@ -1,6 +1,7 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Repositories.Spells;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Classes;
@@ -75,5 +76,10 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
             .Include(b => b.StartingEquipmentOptions)
                 .ThenInclude(o => o.Options)
             .ToListAsync();
+    }
+
+    public Task<ICollection<Class>> FilterAllAsync(SpellFilter spellFilter)
+    {
+        throw new NotImplementedException();
     }
 }

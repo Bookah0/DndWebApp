@@ -1,17 +1,16 @@
 
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Services.Generic;
 using Microsoft.EntityFrameworkCore;
 namespace DndWebApp.Api.Services;
 
 public class EfService<T> : IService<T, T, T>
 {
     protected IRepository<T> repo;
-    AppDbContext context;
 
-    public EfService(IRepository<T> repo, AppDbContext context)
+    public EfService(IRepository<T> repo)
     {
-        this.context = context;
         this.repo = repo;
     }
 
@@ -21,7 +20,6 @@ public class EfService<T> : IService<T, T, T>
             throw new NullReferenceException("Entity can't be null");
 
         await repo.CreateAsync(entity);
-        await context.SaveChangesAsync();
         return entity;
     }
 
@@ -33,7 +31,6 @@ public class EfService<T> : IService<T, T, T>
             throw new NullReferenceException("Entity can't be null");
 
         await repo.DeleteAsync(entity);
-        await context.SaveChangesAsync();
     }
 
     public virtual async Task<ICollection<T>> GetAllAsync()
@@ -57,6 +54,5 @@ public class EfService<T> : IService<T, T, T>
             throw new NullReferenceException("Entity can't be null");
 
         await repo.UpdateAsync(updatedEntity);
-        await context.SaveChangesAsync();
     }
 }

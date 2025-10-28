@@ -14,7 +14,7 @@ public class AbilityRepositoryTests
 
     private Ability CreateAbility(string fullName, string shortName, string description, List<Skill>? skills = null)
     {
-        return new() { FullName = fullName, ShortName = shortName, Description = description, Skills = skills ?? [], SortWeight = 0 };
+        return new() { FullName = fullName, ShortName = shortName, Description = description, Skills = skills ?? [] };
     }
 
     private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)

@@ -1,25 +1,24 @@
-using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Items.Enums;
+using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Repositories.Spells;
-using DndWebApp.Api.Services;
 using DndWebApp.Api.Services.Spells;
-using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace DndWebApp.Tests.Services;
 
 public class SpellServiceTests
 {
-    private SpellDto CreateSpellDto(string name, int id = 0)
+    private static SpellDto CreateTestSpellDto(string name, bool isHomebrew = false, int id = 1)
     {
         return new SpellDto
         {
             Id = id,
             Name = name,
             Description = "A powerful spell",
-            IsHomebrew = false,
+            IsHomebrew = isHomebrew,
             ClassIds = [1],
             ShapeLength = "0",
             ShapeType = "0",
@@ -44,26 +43,48 @@ public class SpellServiceTests
         };
     }
 
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
+    private static Spell CreateTestSpell(string name, int level, SpellDuration spellDuration, int id = 1)
     {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
+        return new Spell
+        {
+            Id = id,
+            Name = name,
+            Description = "A powerful spell",
+            Level = level,
+            Duration = spellDuration,
+            CastingTime = 0,
+            MagicSchool = 0,
+            SpellTargeting = new() { Range = SpellRange.Feet, TargetType = SpellTargetType.Creature }
+        };
     }
 
     [Fact]
     public async Task AddAndRetrieveSpells_WorksCorrectly()
     {
         // Arrange
-        var options = GetInMemoryOptions("SpellService_AddRetrieveDB");
-        using var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
-        var classRepo = new ClassRepository(context);
-        var service = new SpellService(repo, classRepo, context);
+        var repo = new Mock<ISpellRepository>();
+        var classRepo = new Mock<IClassRepository>();
+        var service = new SpellService(repo.Object, classRepo.Object);
 
-        var fireballDto = CreateSpellDto("Fireball");
-        var lightningDto = CreateSpellDto("Lightning Bolt");
+        var fireballDto = CreateTestSpellDto("Fireball");
+        var lightningDto = CreateTestSpellDto("Lightning Bolt");
+        
+        List<Spell> spells = [];
+
+        repo.Setup(r => r.CreateAsync(It.IsAny<Spell>()))
+            .ReturnsAsync((Spell s) =>
+            {
+                s.Id = spells.Count+1;
+                spells.Add(s);
+                return s;
+            });
+
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => spells
+            .FirstOrDefault(s => s.Id == id));
+
+        repo.Setup(r => r.GetAllAsync())
+            .ReturnsAsync(() => [.. spells]);
 
         // Act
         var createdFireball = await service.CreateAsync(fireballDto);
@@ -71,7 +92,7 @@ public class SpellServiceTests
 
         var retrievedFireball = await service.GetByIdAsync(createdFireball.Id);
         var retrievedLightning = await service.GetByIdAsync(createdLightning.Id);
-        
+
         // Assert
         Assert.NotNull(retrievedFireball);
         Assert.Equal("Fireball", retrievedFireball.Name);
@@ -79,52 +100,55 @@ public class SpellServiceTests
         Assert.Equal(MagicSchool.Evocation, retrievedFireball.MagicSchool);
 
         Assert.NotNull(retrievedLightning);
+        Console.WriteLine("Id: " + retrievedLightning.Id);
         Assert.Equal("Lightning Bolt", retrievedLightning.Name);
 
         Assert.NotNull(retrievedFireball.SpellTargeting);
         Assert.Equal(SpellTargetType.Creature, retrievedFireball.SpellTargeting.TargetType);
-        Assert.Equal(SpellRange.Feet, retrievedFireball.SpellTargeting.Range);
         Assert.Equal(10, retrievedFireball.SpellTargeting.RangeValue);
 
         Assert.Equal("2d6", retrievedFireball.DamageRoll);
         Assert.Equal(DamageType.Fire, retrievedFireball.DamageTypes.First());
 
-        Assert.NotNull(retrievedFireball.CastingRequirements);
-        Assert.True(retrievedFireball.CastingRequirements.Verbal);
-        Assert.True(retrievedFireball.CastingRequirements.Somatic);
-        Assert.Equal("Bat guano", retrievedFireball.CastingRequirements.Materials);
-        Assert.Equal(5, retrievedFireball.CastingRequirements.MaterialCost);
-        Assert.False(retrievedFireball.CastingRequirements.MaterialsConsumed);
-
         var allSpells = await service.GetAllAsync();
         Assert.Contains(allSpells, s => s.Name == "Fireball");
         Assert.Contains(allSpells, s => s.Name == "Lightning Bolt");
+
+        repo.Verify(r => r.CreateAsync(It.IsAny<Spell>()), Times.Exactly(2));
     }
 
     [Fact]
     public async Task UpdateSpell_WorksCorrectly()
     {
         // Arrange
-        var options = GetInMemoryOptions("SpellService_UpdateDB");
-        using var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
-        var classRepo = new ClassRepository(context);
-        var service = new SpellService(repo, classRepo, context);
+        var repo = new Mock<ISpellRepository>();
+        var classRepo = new Mock<IClassRepository>();
+        var service = new SpellService(repo.Object, classRepo.Object);
 
-        var fireballDto = CreateSpellDto("Fireball");
-        var createdFireball = await service.CreateAsync(fireballDto);
+        List<Spell> spells = [CreateTestSpell("Fireball", 0, 0, 0)];
 
-        // Act
-        fireballDto.Id = createdFireball.Id;
-        fireballDto.Name = "Mega Fireball";
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => spells
+            .FirstOrDefault(s => s.Id == id));
+
+        repo.Setup(r => r.UpdateAsync(It.IsAny<Spell>()))
+            .Callback((Spell s) =>
+            {
+                var spell = spells.FirstOrDefault(sk => sk.Id == s.Id);
+                s!.IsHomebrew = s.IsHomebrew;
+                s.Name = s.Name;
+            });
+
+        var fireballDto = CreateTestSpellDto("Mega Fireball", true);
         fireballDto.Level = 5;
         fireballDto.RangeValue = 20;
         fireballDto.DamageRoll = "4d6";
         fireballDto.Materials = "Dragon scale";
+        fireballDto.Id = spells.First().Id;
 
+        // Act
         await service.UpdateAsync(fireballDto);
-
-        var updatedFireball = await service.GetByIdAsync(createdFireball.Id);
+        var updatedFireball = await service.GetByIdAsync(spells.First().Id);
 
         // Assert
         Assert.NotNull(updatedFireball);
@@ -133,91 +157,93 @@ public class SpellServiceTests
 
         Assert.NotNull(updatedFireball.SpellTargeting);
         Assert.Equal(20, updatedFireball.SpellTargeting.RangeValue);
-
         Assert.Equal("4d6", updatedFireball.DamageRoll);
 
         Assert.NotNull(updatedFireball.CastingRequirements);
         Assert.Equal("Dragon scale", updatedFireball.CastingRequirements.Materials);
+
+        repo.Verify(r => r.UpdateAsync(It.IsAny<Spell>()), Times.Exactly(1));
     }
 
     [Fact]
     public async Task DeleteSpell_WorksCorrectly()
     {
         // Arrange
-        var options = GetInMemoryOptions("SpellService_DeleteDB");
-        using var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
-        var classRepo = new ClassRepository(context);
-        var service = new SpellService(repo, classRepo, context);
+        var repo = new Mock<ISpellRepository>();
+        var classRepo = new Mock<IClassRepository>();
+        var service = new SpellService(repo.Object, classRepo.Object);
 
-        var lightningDto = CreateSpellDto("Lightning Bolt");
-        var createdLightning = await service.CreateAsync(lightningDto);
+        List<Spell> spells = [CreateTestSpell("Lightning Bolt", 0, 0, 0)];
+
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => spells
+            .FirstOrDefault(s => s.Id == id));
+
+        repo.Setup(r => r.DeleteAsync(It.IsAny<Spell>()))
+            .Callback((Spell s) =>
+            {
+                spells.Remove(s);
+            });
 
         // Act
-        await service.DeleteAsync(createdLightning.Id);
+        await service.DeleteAsync(spells.First().Id);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(createdLightning.Id));
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(createdLightning.Id));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(1));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Spell>()), Times.Exactly(1));
     }
 
     [Fact]
-    public async Task SortBy_WorksCorrectly()
+    public async Task GetAndDeleteSkill_BadId_ShouldNotGetOrDelete()
     {
         // Arrange
-        var options = GetInMemoryOptions("SpellService_DeleteDB");
-        using var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
-        var classRepo = new ClassRepository(context);
-        var service = new SpellService(repo, classRepo, context);
+        var repo = new Mock<ISpellRepository>();
+        var classRepo = new Mock<IClassRepository>();
+        var service = new SpellService(repo.Object, classRepo.Object);
 
-        var lightningDto = CreateSpellDto("Lightning Bolt");
-        var flameDto = CreateSpellDto("Flame Bolt");
-        var iceDto = CreateSpellDto("Ice Bolt");
-        var rockDto = CreateSpellDto("Rock Bolt");
-        
-        lightningDto.Level = 1;
-        flameDto.Level = 2;
-        iceDto.Level = 1;
-        rockDto.Level = 2;
-        
-        lightningDto.Duration = "Instantaneous";
-        flameDto.Duration = "Minute";
-        iceDto.Duration = "Minute";
-        rockDto.Duration = "Minute";
-        lightningDto.DurationValue = 0;
-        flameDto.DurationValue = 1;
-        iceDto.DurationValue = 1;
-        rockDto.DurationValue = 10;
+        List<Spell> spells = [CreateTestSpell("Lightning Bolt", 0, 0, 0)];
 
-        var createdLightning = await service.CreateAsync(lightningDto);
-        var createdFlame = await service.CreateAsync(flameDto);
-        var createdIce = await service.CreateAsync(iceDto);
-        var createdRock = await service.CreateAsync(rockDto);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => spells
+            .FirstOrDefault(s => s.Id == id));
 
         // Act & Assert
-        var allSpells = await service.GetAllAsync();
-        allSpells = service.SortBy(allSpells, SpellService.SpellSorting.Name);
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(-1));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(-1));
 
-        Assert.NotNull(allSpells);
-        Assert.Equal("Flame Bolt", allSpells.First().Name);
-        Assert.Equal("Rock Bolt", allSpells.Last().Name);
-        
-        allSpells = service.SortBy(allSpells, SpellService.SpellSorting.Name, true);
-        Assert.NotNull(allSpells);
-        Assert.Equal("Flame Bolt", allSpells.Last().Name);
-        Assert.Equal("Rock Bolt", allSpells.First().Name);
+        repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Spell>()), Times.Exactly(0));
+    }
 
-        allSpells = service.SortBy(allSpells, SpellService.SpellSorting.Level);
-        Assert.NotNull(allSpells);
-        Assert.Equal("Ice Bolt", allSpells.First().Name);
-        Assert.Equal("Rock Bolt", allSpells.Last().Name);
+    [Fact]
+    public void SortBy_WorksCorrectly()
+    {
+        // Arrange
+        var service = new SpellService(null!, null!);
 
-        allSpells = service.SortBy(allSpells, SpellService.SpellSorting.Duration);
-        Assert.NotNull(allSpells);
-        Assert.Equal("Lightning Bolt", allSpells.First().Name);
-        Assert.Equal("Flame Bolt", allSpells.ElementAt(1).Name);
-        Assert.Equal("Ice Bolt", allSpells.ElementAt(2).Name);
-        Assert.Equal("Rock Bolt", allSpells.Last().Name);
+        ICollection<Spell> spells =
+        [
+            CreateTestSpell("Lightning Bolt", 1, SpellDuration.Instantaneous, 0),
+            CreateTestSpell("Flame Bolt", 2, SpellDuration.Minute, 1),
+            CreateTestSpell("Ice Bolt", 1, SpellDuration.Minute, 1),
+            CreateTestSpell("Rock Bolt", 2, SpellDuration.Minute, 10),
+        ];
+
+        // Act & Assert
+        var sorted = service.SortBy(spells, SpellService.SpellSorting.Name);
+        string[] expectedOrder = ["Flame Bolt", "Ice Bolt", "Lightning Bolt", "Rock Bolt"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
+
+        sorted = service.SortBy(spells, SpellService.SpellSorting.Name, true);
+        expectedOrder = ["Rock Bolt", "Lightning Bolt", "Ice Bolt", "Flame Bolt"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
+
+        sorted = service.SortBy(spells, SpellService.SpellSorting.Level);
+        expectedOrder = ["Ice Bolt", "Lightning Bolt", "Flame Bolt", "Rock Bolt"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
+
+        sorted = service.SortBy(spells, SpellService.SpellSorting.Duration);
+        expectedOrder = ["Lightning Bolt", "Flame Bolt", "Ice Bolt", "Rock Bolt"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }
 }

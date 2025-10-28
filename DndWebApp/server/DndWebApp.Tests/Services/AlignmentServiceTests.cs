@@ -1,174 +1,215 @@
-using System.ComponentModel;
-using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Services;
-using Microsoft.EntityFrameworkCore;
-using Xunit.Sdk;
+using Moq;
 
 namespace DndWebApp.Tests.Services;
 
 public class AlignmentServiceTests
 {
-    private AlignmentDto CreateAlignmentDto(string name, string abbreviation, string description)
+    internal static AlignmentDto CreateTestAlignmentDto(string name, string abbreviation, string description, int id)
     {
-        return new() { Name = name, Description = description, Abbreviation = abbreviation };
+        return new() { Id = id, Name = name, Description = description, Abbreviation = abbreviation };
     }
 
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
+    internal static Alignment CreateTestAlignment(string name, string abbreviation, string description, int id)
     {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
+        return new() { Id = id, Name = name, Description = description, Abbreviation = abbreviation };
     }
 
     [Fact]
     public async Task AddAndRetrieveAlignments_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Alignment_AddRetrieveDB");
-        var lawfulGoodDto = CreateAlignmentDto("Lawful good", "LG", "A lawful good character typically acts with compassion and always with honor and a sense of duty.");
-        var chaoticEvilDto = CreateAlignmentDto("Chaotic evil", "CE", "A chaotic evil character tends to have no respect for rules.");
+        // Arrange
+        var repo = new Mock<IRepository<Alignment>>();
+        var service = new AlignmentService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Alignment>(context);
-        var service = new AlignmentService(repo, context);
+        ICollection<Alignment> alignments = [];
 
-        var created1 = await service.CreateAsync(lawfulGoodDto);
-        var created2 = await service.CreateAsync(chaoticEvilDto);
+        repo.Setup(r => r.CreateAsync(It.IsAny<Alignment>()))
+            .ReturnsAsync((Alignment a) =>
+            {
+                a.Id = alignments.Count+1;
+                alignments.Add(a);
+                return a;
+            });
+
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => alignments
+            .FirstOrDefault(a => a.Id == id));
+
+        repo.Setup(r => r.GetAllAsync())
+            .ReturnsAsync(() => [.. alignments]);
+
+        // Act
+        var created1 = await service.CreateAsync(CreateTestAlignmentDto("Lawful Good", "LG", "A lawful good character", 1));
+        var created2 = await service.CreateAsync(CreateTestAlignmentDto("Chaotic Evil", "CE", "A chaotic evil character", 2));
 
         var lawfulGood = await service.GetByIdAsync(created1.Id);
         var chaoticEvil = await service.GetByIdAsync(created2.Id);
+        alignments = await service.GetAllAsync();
 
+        // Assert
         Assert.NotNull(lawfulGood);
-        Assert.NotNull(chaoticEvil);
-        Assert.Equal("Lawful good", lawfulGood.Name);
-        Assert.Equal("CE", chaoticEvil.Abbreviation);
-        Assert.Equal("A lawful good character typically acts with compassion and always with honor and a sense of duty.", lawfulGood.Description);
+        Assert.Equal("Lawful Good", lawfulGood.Name);
+        Assert.Equal("LG", lawfulGood.Abbreviation);
 
-        var allAlignments = await service.GetAllAsync();
-        Assert.Contains(allAlignments, a => a.Name == "Chaotic evil");
-        Assert.Contains(allAlignments, a => a.Abbreviation == "LG");
+        Assert.NotNull(chaoticEvil);
+        Assert.Equal("Chaotic Evil", chaoticEvil.Name);
+        Assert.Equal("A chaotic evil character", chaoticEvil.Description);
+
+        // Asserts for all objects
+        Assert.Contains(alignments, a => a.Name == "Lawful Good");
+        Assert.Contains(alignments, a => a.Abbreviation == "CE");
+
+        repo.Verify(r => r.CreateAsync(It.IsAny<Alignment>()), Times.Exactly(2));
     }
 
     [Fact]
     public async Task AddAndRetrieveAlignments_BadInputData_ShouldNotCreate()
     {
-        var options = GetInMemoryOptions("Alignment_AddRetrieveDB");
-        var noName = CreateAlignmentDto("", "LG", "A lawful good character typically acts with compassion and always with honor and a sense of duty.");
-        var whitespaceAberration = CreateAlignmentDto("Lawful good", "   ", "A lawful good character typically acts with compassion and always with honor and a sense of duty.");
-        var nullDescription = CreateAlignmentDto("Lawful good", "LG", null!);
+        // Arrange
+        var repo = new Mock<IRepository<Alignment>>();
+        var service = new AlignmentService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Alignment>(context);
-        var service = new AlignmentService(repo, context);
+        var noName = CreateTestAlignmentDto("", "LG", "A lawful good character", 1);
+        var whitespaceAberration = CreateTestAlignmentDto("Lawful Good", "   ", "A lawful good character", 2);
+        var nullDescription = CreateTestAlignmentDto("Lawful Good", "LG", null!, 3);
 
+        // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(noName));
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(whitespaceAberration));
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(nullDescription));
+
+        repo.Verify(r => r.CreateAsync(It.IsAny<Alignment>()), Times.Exactly(0));
     }
 
     [Fact]
-    public async Task RemoveAlignment_WorksCorrectly()
+    public async Task DeleteAlignment_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Alignment_UpdateDB");
-        var chaoticEvilDto = CreateAlignmentDto("Chaotic evil", "CE", "A chaotic evil character tends to have no respect for rules.");
+        // Arrange
+        var repo = new Mock<IRepository<Alignment>>();
+        var service = new AlignmentService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Alignment>(context);
-        var service = new AlignmentService(repo, context);
+        List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
 
-        var created = await service.CreateAsync(chaoticEvilDto);
-        var chaoticEvil = await service.GetByIdAsync(created.Id);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => alignments
+            .FirstOrDefault(a => a.Id == id));
 
-        await service.DeleteAsync(created.Id);
+        repo.Setup(r => r.DeleteAsync(It.IsAny<Alignment>()))
+            .Callback((Alignment a) =>
+            {
+                alignments.Remove(a);
+            });
 
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(created.Id));
+        // Act
+        var id = alignments[0].Id;
+        await service.DeleteAsync(id);
+
+        // Assert
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(id));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Alignment>()), Times.Exactly(1));
+    }
+
+    [Fact]
+    public async Task GetAndDeleteAlignment_BadId_ShouldNotGetOrDelete()
+    {
+        // Arrange
+        var repo = new Mock<IRepository<Alignment>>();
+        var service = new AlignmentService(repo.Object);
+
+        List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
+        alignments[0].Id = 1;
+
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => alignments
+            .FirstOrDefault(a => a.Id == id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(-1));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(-1));
+
+        repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Alignment>()), Times.Exactly(0));
     }
 
     [Fact]
     public async Task UpdateAlignment_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Alignment_UpdateDB");
-        var chaoticEvilDto = CreateAlignmentDto("Chaotic evil", "CE", "A chaotic evil character tends to have no respect for rules.");
+        var repo = new Mock<IRepository<Alignment>>();
+        var service = new AlignmentService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Alignment>(context);
-        var service = new AlignmentService(repo, context);
+        List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
+        
+        var updateDto = CreateTestAlignmentDto("Lawful bad", "LB", "A lawful bad character", 1);
 
-        var created = await service.CreateAsync(chaoticEvilDto);
+        repo.Setup(r => r.UpdateAsync(It.IsAny<Alignment>()))
+            .Callback((Alignment a) =>
+            {
+                var alignment = alignments.FirstOrDefault(align => align.Id == a.Id);
+                alignment!.Name = a.Name;
+                alignment!.Abbreviation = a.Abbreviation;
+                alignment.Description = a.Description;
+            });
 
-        chaoticEvilDto.Name = "Chaotic Kindness.";
-        chaoticEvilDto.Description = "A chaotic kind character tends to promote kindness, mercy, and benevolence.";
-        chaoticEvilDto.Id = created.Id;
-        await service.UpdateAsync(chaoticEvilDto);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => alignments
+            .FirstOrDefault(a => a.Id == id));
 
-        var chaoticKindness = await service.GetByIdAsync(created.Id);
+        // Act
+        await service.UpdateAsync(updateDto);
+        var updated = await service.GetByIdAsync(1);
 
-        Assert.NotNull(chaoticKindness);
-        Assert.Equal("Chaotic Kindness.", chaoticKindness.Name);
-        Assert.Equal("CE", chaoticKindness.Abbreviation);
-        Assert.Equal("A chaotic kind character tends to promote kindness, mercy, and benevolence.", chaoticKindness.Description);
+        // Assert
+        Assert.NotNull(updated);
+        Assert.Equal("Lawful bad", updated.Name);
+        Assert.Equal("LB", updated.Abbreviation);
+        Assert.Equal("A lawful bad character", updated.Description);
+
+        repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Alignment>()), Times.Exactly(0));
     }
 
     [Fact]
     public async Task UpdateAlignments_BadInputData_ShouldNotUpdate()
     {
-        var options = GetInMemoryOptions("Alignment_BadUpdateDB");
-        var chaoticEvilDto = CreateAlignmentDto("Chaotic evil", "CE", "A chaotic evil character tends to have no respect for rules.");
-        var noName = CreateAlignmentDto("", "LG", "A lawful good character typically acts with compassion and always with honor and a sense of duty.");
-        var whitespaceAberration = CreateAlignmentDto("Lawful good", "   ", "A lawful good character typically acts with compassion and always with honor and a sense of duty.");
-        var nullDescription = CreateAlignmentDto("Lawful good", "LG", null!);
+        var repo = new Mock<IRepository<Alignment>>();
+        var service = new AlignmentService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Alignment>(context);
-        var service = new AlignmentService(repo, context);
+        List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
 
-        var created = await service.CreateAsync(chaoticEvilDto);
-        var chaoticEvil = await service.GetByIdAsync(created.Id);
+        var noName = CreateTestAlignmentDto("", "LG", "A lawful good character", 1);
+        var whitespaceAberration = CreateTestAlignmentDto("Lawful Good", "   ", "A lawful good character", 2);
+        var nullDescription = CreateTestAlignmentDto("Lawful Good", "LG", null!, 3);
 
-        await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(noName));
-        await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(whitespaceAberration));
-        await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(nullDescription));
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(noName));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(whitespaceAberration));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(nullDescription));
 
-        Assert.Equal("Chaotic evil", chaoticEvil.Name);
-        Assert.Equal("CE", chaoticEvil.Abbreviation);
-        Assert.Equal("A chaotic evil character tends to have no respect for rules.", chaoticEvil.Description);
+        repo.Verify(r => r.UpdateAsync(It.IsAny<Alignment>()), Times.Exactly(0));
     }
 
     [Fact]
-    public async Task SortBy_WorksCorrectly()
+    public void SortBy_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Alignment_SortDB");
+        // Arrange
+        var service = new AlignmentService(null!);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Alignment>(context);
-        var service = new AlignmentService(repo, context);
-
-        var lnDto = CreateAlignmentDto("Lawful Neutral", "LN", "Desc");
-        var ngDto = CreateAlignmentDto("Neutral Good", "NG", "Desc");
-        var ceDto = CreateAlignmentDto("Chaotic Evil", "CE", "Desc");
-
-        var auran = await service.CreateAsync(lnDto);
-        var dethek = await service.CreateAsync(ngDto);
-        var elvish = await service.CreateAsync(ceDto);
-        await context.SaveChangesAsync();
-
-        // Act & Assert
-        var allAlignments = await service.GetAllAsync();
-        allAlignments = service.SortBy(allAlignments);
-        Assert.NotNull(allAlignments);
-
-        string[] expectedOrder =
+        List<Alignment> alignments =
         [
-            "Neutral Good",
-            "Lawful Neutral",
-            "Chaotic Evil",
+            CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1),
+            CreateTestAlignment("Chaotic Evil", "CE", "A chaotic evil character", 2),
+            CreateTestAlignment("True Neutral", "TN", "A true neutral character", 3),
         ];
-        string[] actualOrder = [.. allAlignments.Select(s => s.Name)];
-        Assert.Equal(expectedOrder, actualOrder);
+
+        // Act
+        var sorted = service.SortBy(alignments);
+
+        // Assert
+        string[] expectedOrder = ["Lawful Good", "True Neutral", "Chaotic Evil"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }
 }

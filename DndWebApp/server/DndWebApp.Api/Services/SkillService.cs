@@ -1,21 +1,19 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Repositories.Skills;
+using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
 public class SkillService : IService<Skill, SkillDto, SkillDto>
 {
-    protected SkillRepository repo;
-    protected AppDbContext context;
-    protected AbilityRepository abilityRepo;
-    public SkillService(SkillRepository repo, AbilityRepository abilityRepo, AppDbContext context)
+    protected ISkillRepository repo;
+    protected IAbilityRepository abilityRepo;
+
+    public SkillService(ISkillRepository repo, IAbilityRepository abilityRepo)
     {
-        this.context = context;
         this.repo = repo;
         this.abilityRepo = abilityRepo;
     }
@@ -33,16 +31,13 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
             IsHomebrew = dto.IsHomebrew,
         };
         
-        await repo.CreateAsync(skill);
-        await context.SaveChangesAsync();
-        return skill;
+        return await repo.CreateAsync(skill);
     }
 
     public async Task DeleteAsync(int id)
     {
         var skill = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Skill could not be found");
         await repo.DeleteAsync(skill);
-        await context.SaveChangesAsync();
     }
 
     public async Task<ICollection<Skill>> GetAllAsync()
@@ -57,13 +52,13 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
 
     public async Task<Skill> GetByIdAsync(int id)
     {
-        var skill = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Skill could not be found");
-        return skill;
+        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Skill could not be found");
     }
 
     public async Task UpdateAsync(SkillDto dto)
     {
         ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredNumeric(dto.AbilityId);
         var skill = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Skill could not be found");
 
         if (skill.AbilityId != dto.AbilityId)
@@ -73,9 +68,9 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
         }
 
         skill.Name = dto.Name;
+        skill.IsHomebrew = dto.IsHomebrew;
 
         await repo.UpdateAsync(skill);
-        await context.SaveChangesAsync();
     }
     
     public enum SkillSorting { Name, Ability }

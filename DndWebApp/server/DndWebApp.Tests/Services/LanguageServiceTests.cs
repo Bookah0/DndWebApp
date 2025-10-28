@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Data.Common;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
@@ -7,189 +8,229 @@ using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit.Sdk;
 
 namespace DndWebApp.Tests.Services;
 
 public class LanguageServiceTests
 {
-    private LanguageDto CreateLanguageDto(string name, string family, string script)
+    internal static LanguageDto CreateTestLanguageDto(string name, string family, string script, int id = 1)
     {
-        return new() { Name = name, Family = family, Script = script, IsHomebrew = false };
+        return new() { Id = id, Name = name, Family = family, Script = script, IsHomebrew = false };
     }
 
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
+    internal static Language CreateTestLanguage(string name, string family, string script, int id = 1)
     {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
+        return new() { Id = id, Name = name, Family = family, Script = script, IsHomebrew = false };
     }
 
     [Fact]
     public async Task AddAndRetrieveLanguages_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Language_AddRetrieveDB");
-        var auranDto = CreateLanguageDto("Auran", "Primordial", "Dwarvish");
-        var dethekDto = CreateLanguageDto("Dethek", "Dwarvish", "Dwarvish");
+        // Arrange
+        var repo = new Mock<IRepository<Language>>();
+        var service = new LanguageService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Language>(context);
-        var service = new LanguageService(repo, context);
+        List<Language> languages = [];
 
-        var created1 = await service.CreateAsync(auranDto);
-        var created2 = await service.CreateAsync(dethekDto);
+        repo.Setup(r => r.CreateAsync(It.IsAny<Language>()))
+            .ReturnsAsync((Language l) =>
+            {
+                l.Id = languages.Count+1;
+                languages.Add(l);
+                return l;
+            });
+
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => languages
+            .FirstOrDefault(l => l.Id == id));
+
+        repo.Setup(r => r.GetAllAsync())
+            .ReturnsAsync(() => [.. languages]);
+
+        // Act
+        var created1 = await service.CreateAsync(CreateTestLanguageDto("Auran", "Primordial", "Dwarvish"));
+        var created2 = await service.CreateAsync(CreateTestLanguageDto("Dethek", "Dwarvish", "Dwarvish"));
 
         var auran = await service.GetByIdAsync(created1.Id);
         var dethek = await service.GetByIdAsync(created2.Id);
+        var allLanguages = await service.GetAllAsync();
 
+        // Assert
         Assert.NotNull(auran);
         Assert.NotNull(dethek);
         Assert.Equal("Auran", auran.Name);
         Assert.Equal("Primordial", auran.Family);
         Assert.Equal("Dwarvish", dethek.Script);
 
-        var allLanguages = await service.GetAllAsync();
-        Assert.Contains(allLanguages, a => a.Name == "Dethek");
-        Assert.Contains(allLanguages, a => a.Family == "Dwarvish");
-        Assert.Contains(allLanguages, a => a.Script == "Dwarvish");
+        Assert.Contains(allLanguages, l => l.Name == "Dethek");
+        Assert.Contains(allLanguages, l => l.Family == "Dwarvish");
+        Assert.Contains(allLanguages, l => l.Script == "Dwarvish");
+
+        repo.Verify(r => r.CreateAsync(It.IsAny<Language>()), Times.Exactly(2));
     }
 
     [Fact]
     public async Task AddAndRetrieveLanguages_BadInputData_ShouldNotCreate()
     {
-        var options = GetInMemoryOptions("Language_AddRetrieveDB");
-        var noName = CreateLanguageDto("", "Primordial", "Dwarvish");
-        var whitespaceFamily = CreateLanguageDto("Auran", "   ", "Dwarvish");
-        var nullScript = CreateLanguageDto("Auran", "Primordial", null!);
+        // Arrange
+        var repo = new Mock<IRepository<Language>>();
+        var service = new LanguageService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Language>(context);
-        var service = new LanguageService(repo, context);
+        var noName = CreateTestLanguageDto("", "Primordial", "Dwarvish");
+        var whitespaceFamily = CreateTestLanguageDto("Auran", "   ", "Dwarvish");
+        var nullScript = CreateTestLanguageDto("Auran", "Primordial", null!);
 
+        // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(noName));
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(whitespaceFamily));
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(nullScript));
+        repo.Verify(r => r.CreateAsync(It.IsAny<Language>()), Times.Exactly(0));
     }
 
     [Fact]
     public async Task DeleteLanguage_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Language_DeleteDB");
-        var auranDto = CreateLanguageDto("Auran", "Primordial", "Dwarvish");
+        // Arrange
+        var repo = new Mock<IRepository<Language>>();
+        var service = new LanguageService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Language>(context);
-        var service = new LanguageService(repo, context);
+        List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
 
-        var created = await service.CreateAsync(auranDto);
-        var auran = await service.GetByIdAsync(created.Id);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => languages
+            .FirstOrDefault(l => l.Id == id));
 
-        await service.DeleteAsync(auran.Id);
+        repo.Setup(r => r.DeleteAsync(It.IsAny<Language>()))
+            .Callback((Language l) =>
+            {
+                languages.Remove(l);
+            });
 
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(auran.Id));
+        // Act
+        var id = languages.First().Id;
+        await service.DeleteAsync(id);
+
+        // Assert
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(id));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Language>()), Times.Exactly(1));
     }
 
+        [Fact]
+    public async Task GetAndDeleteSkill_BadId_ShouldNotGetOrDelete()
+    {
+        // Arrange
+        var repo = new Mock<IRepository<Language>>();
+        var service = new LanguageService(repo.Object);
+
+        List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
+
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => languages
+            .FirstOrDefault(l => l.Id == id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(-1));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(-1));
+
+        repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Language>()), Times.Exactly(0));
+    }
+    
     [Fact]
     public async Task UpdateLanguage_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Language_UpdateDB");
-        var auranDto = CreateLanguageDto("Auran", "Primordial", "Dwarvish");
+        var repo = new Mock<IRepository<Language>>();
+        var service = new LanguageService(repo.Object);
+        
+        List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
+        var updateDto = CreateTestLanguageDto("Auran", "Elvish", "Espruar");
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Language>(context);
-        var service = new LanguageService(repo, context);
+        repo.Setup(r => r.UpdateAsync(It.IsAny<Language>()))
+            .Callback(() =>
+            {
+                var language = languages.First();
+                language!.Name = updateDto.Name;
+                language.Family = updateDto.Family;
+                language.Script = updateDto.Script;
+            });
 
-        var created = await service.CreateAsync(auranDto);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => languages
+            .FirstOrDefault(l => l.Id == id));
 
-        auranDto.Family = "Elvish";
-        auranDto.Script = "Espruar";
-        auranDto.Id = created.Id;
-        await service.UpdateAsync(auranDto);
+        // Act
+        await service.UpdateAsync(updateDto);
+        var updated = await service.GetByIdAsync(1);
 
-        var auran = await service.GetByIdAsync(created.Id);
-
-        Assert.NotNull(auran);
-        Assert.Equal("Auran", auran.Name);
-        Assert.Equal("Elvish", auran.Family);
-        Assert.Equal("Espruar", auran.Script);
+        // Assert
+        Assert.NotNull(updated);
+        Assert.Equal("Auran", updated.Name);
+        Assert.Equal("Elvish", updated.Family);
+        Assert.Equal("Espruar", updated.Script);
     }
 
     [Fact]
     public async Task UpdateLanguages_BadInputData_ShouldNotUpdate()
     {
-        var options = GetInMemoryOptions("Language_BadUpdateDB");
-        var auranDto = CreateLanguageDto("Auran", "Primordial", "Dwarvish");
-        var noName = CreateLanguageDto("", "Primordial", "Dwarvish");
-        var whitespaceFamily = CreateLanguageDto("Auran", "   ", "Dwarvish");
-        var nullScript = CreateLanguageDto("Auran", "Primordial", null!);
+        var repo = new Mock<IRepository<Language>>();
+        var service = new LanguageService(repo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Language>(context);
-        var service = new LanguageService(repo, context);
+        List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
+        var auranDto = CreateTestLanguageDto("Auran", "Primordial", "Dwarvish");
+        var noName = CreateTestLanguageDto("", "Primordial", "Dwarvish");
+        var whitespaceFamily = CreateTestLanguageDto("Auran", "   ", "Dwarvish");
+        var nullScript = CreateTestLanguageDto("Auran", "Primordial", null!);
 
-        var created = await service.CreateAsync(auranDto);
-        var auran = await service.GetByIdAsync(created.Id);
+        repo.Setup(r => r.UpdateAsync(It.IsAny<Language>()))
+            .Callback((Language l) =>
+            {
+                var language = languages.FirstOrDefault(lang => lang.Id == l.Id);
+                language!.Name = l.Name;
+                language.Family = l.Family;
+                language.Script = l.Script;
+            });
 
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => languages
+            .FirstOrDefault(a => a.Id == id));
+
+        // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(noName));
         await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(whitespaceFamily));
         await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(nullScript));
 
+        var auran = await service.GetByIdAsync(1);
         Assert.Equal("Auran", auran.Name);
         Assert.Equal("Primordial", auran.Family);
         Assert.Equal("Dwarvish", auran.Script);
     }
 
-        [Fact]
-    public async Task SortBy_WorksCorrectly()
+    [Fact]
+    public void SortBy_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Language_SortDB");
+        // Arrange
+        var service = new LanguageService(null!);
 
-        using var context = new AppDbContext(options);
-        var repo = new EfRepository<Language>(context);
-        var service = new LanguageService(repo, context);
-
-        var auranDto = CreateLanguageDto("Auran", "Primordial", "Dwarvish");
-        var dethekDto = CreateLanguageDto("Dethek", "Dwarvish", "Dwarvish");
-        var elvishDto = CreateLanguageDto("Elvish", "Elven", "Espruar");
-
-        var auran = await service.CreateAsync(auranDto);
-        var dethek = await service.CreateAsync(dethekDto);
-        var elvish = await service.CreateAsync(elvishDto);
-        await context.SaveChangesAsync();
+        List<Language> languages =
+        [
+            CreateTestLanguage("Auran", "Primordial", "Dwarvish"),
+            CreateTestLanguage("Dethek", "Dwarvish", "Dwarvish"),
+            CreateTestLanguage("Elvish", "Elven", "Espruar"),
+        ];
 
         // Act & Assert
-        var allLanguages = await service.GetAllAsync();
+        var sorted = service.SortBy(languages, LanguageService.LanguageSorting.Name);
+        string[] expectedOrder =["Auran","Dethek","Elvish",];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        allLanguages = service.SortBy(allLanguages, LanguageService.LanguageSorting.Name);
-        Assert.NotNull(allLanguages);
-        string[] expectedOrder =
-        [
-            "Auran",
-            "Dethek",
-            "Elvish",
-        ];
-        string[] actualOrder = [.. allLanguages.Select(s => s.Name)];
-        Assert.Equal(expectedOrder, actualOrder);
+        sorted = service.SortBy(languages, LanguageService.LanguageSorting.Family, true);
+        expectedOrder =["Primordial","Elven","Dwarvish",];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Family));
 
-        allLanguages = service.SortBy(allLanguages, LanguageService.LanguageSorting.Family, true);
-        expectedOrder =
-        [
-            "Auran",
-            "Elvish",
-            "Dethek",
-        ];
-        actualOrder = [.. allLanguages.Select(s => s.Name)];
-        Assert.Equal(expectedOrder, actualOrder);
-
-        allLanguages = service.SortBy(allLanguages, LanguageService.LanguageSorting.Script);
-        expectedOrder =
-        [
-            "Auran",
-            "Dethek",
-            "Elvish",
-        ];
-        actualOrder = [.. allLanguages.Select(s => s.Name)];
-        Assert.Equal(expectedOrder, actualOrder);
+        sorted = service.SortBy(languages, LanguageService.LanguageSorting.Script);
+        expectedOrder =["Auran","Dethek","Elvish"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }
 }

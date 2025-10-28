@@ -3,7 +3,7 @@ using DndWebApp.Api.Models.DTOs;
 
 namespace DndWebApp.Api.Repositories.Abilities;
 
-public interface IAbilityRepository
+public interface IAbilityRepository : IRepository<Ability>
 {
     /// <summary>
     /// Retrieves primitive data from an <see cref="Ability"/> by its <paramref name="id"/>,

@@ -1,5 +1,6 @@
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Repositories.Spells;
 
 namespace DndWebApp.Api.Repositories.Classes;
 
@@ -68,4 +69,6 @@ public interface IClassRepository : IRepository<Class>
     /// Typically used when displaying a complete list of <see cref="Class"/>s.
     /// </remarks>
     Task<ICollection<Class>> GetAllWithAllDataAsync();
+
+    Task<ICollection<Class>> FilterAllAsync(SpellFilter spellFilter);
 }

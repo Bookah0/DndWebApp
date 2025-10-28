@@ -2,17 +2,16 @@ using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
 public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 {
     protected IRepository<Alignment> repo;
-    protected AppDbContext context;
 
-    public AlignmentService(IRepository<Alignment> repo, AppDbContext context)
+    public AlignmentService(IRepository<Alignment> repo)
     {
-        this.context = context;
         this.repo = repo;
     }
 
@@ -30,16 +29,13 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
             Abbreviation = dto.Abbreviation
         };
 
-        await repo.CreateAsync(alignment);
-        await context.SaveChangesAsync();
-        return alignment;
+        return await repo.CreateAsync(alignment);
     }
 
     public async Task DeleteAsync(int id)
     {
         var alignment = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Alignment could not be found");
         await repo.DeleteAsync(alignment);
-        await context.SaveChangesAsync();
     }
 
     public async Task<ICollection<Alignment>> GetAllAsync()
@@ -49,8 +45,7 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 
     public async Task<Alignment> GetByIdAsync(int id)
     {
-        var alignment = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Alignment could not be found");
-        return alignment;
+        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Alignment could not be found");
     }
 
     public async Task UpdateAsync(AlignmentDto dto)
@@ -66,7 +61,6 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
         alignment.Abbreviation = dto.Abbreviation;
 
         await repo.UpdateAsync(alignment);
-        await context.SaveChangesAsync();
     }
 
     public ICollection<Alignment> SortBy(ICollection<Alignment> alignments)

@@ -7,18 +7,17 @@ using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Util;
 using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Services.Generic;
 
 namespace DndWebApp.Api.Services.Spells;
 
 public class SpellService : IService<Spell, SpellDto, SpellDto>
 {
-    protected SpellRepository repo;
-    protected AppDbContext context;
-    protected ClassRepository classRepo;
+    protected ISpellRepository repo;
+    protected IClassRepository classRepo;
 
-    public SpellService(SpellRepository repo, ClassRepository classRepo, AppDbContext context)
+    public SpellService(ISpellRepository repo, IClassRepository classRepo)
     {
-        this.context = context;
         this.repo = repo;
         this.classRepo = classRepo;
     }
@@ -63,31 +62,14 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
             dtoSpellTypes
         );
 
-        await repo.CreateAsync(factorySpell);
-        await context.SaveChangesAsync();
-        return factorySpell;
+        return await repo.CreateAsync(factorySpell);
     }
 
-    public enum SpellSorting { Name, Level, CastingTime, Duration, Target, Range }
-    public ICollection<Spell> SortBy(ICollection<Spell> spells, SpellSorting sortFilter, bool descending = false)
-    {
-        return sortFilter switch
-        {
-            SpellSorting.Name => SortUtil.OrderByMany(spells, [(s => s.Name)], descending),
-            SpellSorting.Level => SortUtil.OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
-            SpellSorting.CastingTime => SortUtil.OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue), (s => s.Name)], descending),
-            SpellSorting.Duration => SortUtil.OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
-            SpellSorting.Target => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
-            SpellSorting.Range => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
-            _ => spells,
-        };
-    }
 
     public async Task DeleteAsync(int id)
     {
         var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
         await repo.DeleteAsync(spell);
-        await context.SaveChangesAsync();
     }
 
     public async Task<ICollection<Spell>> GetAllAsync()
@@ -106,7 +88,7 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         if (dto.MaxLevel is not null && dto.MaxLevel < 0)
             throw new ArgumentOutOfRangeException(nameof(dto), "Maximum level must be greater than or equal to zero");
 
-        await ValidationUtil.ValidateIdsExist<ClassRepository, Class>(dto.ClassIds, classRepo);
+        await ValidationUtil.ValidateIdsExist<IClassRepository, Class>(dto.ClassIds, classRepo);
 
         var dtoSchools = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchools);
         var dtoTargetTypes = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetTypes);
@@ -133,7 +115,7 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         };
 
         if (filter.MinLevel > filter.MaxLevel)
-            throw new ArgumentOutOfRangeException(nameof(filter), "Maximum level must be greater than or equal to minimum level");
+            throw new ArgumentOutOfRangeException(nameof(filter.MaxLevel), "Maximum level must be greater than or equal to minimum level");
         if (filter.Name is not null)
             filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name);
 
@@ -142,8 +124,7 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
 
     public async Task<Spell> GetByIdAsync(int id)
     {
-        var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
-        return spell;
+        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
     }
 
     public async Task UpdateAsync(SpellDto dto)
@@ -188,6 +169,20 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         spell.CastingRequirements = SpellFactory.CreateCastingRequirments(dto.Verbal, dto.Somatic, dto.Materials, dto.MaterialCost, dto.MaterialsConsumed);
 
         await repo.UpdateAsync(spell);
-        await context.SaveChangesAsync();
+    }
+
+    public enum SpellSorting { Name, Level, CastingTime, Duration, Target, Range }
+    public ICollection<Spell> SortBy(ICollection<Spell> spells, SpellSorting sortFilter, bool descending = false)
+    {
+        return sortFilter switch
+        {
+            SpellSorting.Name => SortUtil.OrderByMany(spells, [(s => s.Name)], descending),
+            SpellSorting.Level => SortUtil.OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
+            SpellSorting.CastingTime => SortUtil.OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue), (s => s.Name)], descending),
+            SpellSorting.Duration => SortUtil.OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
+            SpellSorting.Target => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
+            SpellSorting.Range => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
+            _ => spells,
+        };
     }
 }

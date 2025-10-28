@@ -8,52 +8,59 @@ using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Repositories.Skills;
 using DndWebApp.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit.Sdk;
 
 namespace DndWebApp.Tests.Services;
 
 public class SkillServiceTests
 {
-    private Ability CreateAbility(string fullName, string shortName, int sortWeight = 0)
+    private static SkillDto CreateTestSkillDto(string name, int abilityId, int id = 1, bool isHomebrew = false)
     {
-        return new() { FullName = fullName, ShortName = shortName, Description = "Desc..", Skills = [], SortWeight = sortWeight };
+        return new() { Id = id, Name = name, AbilityId = abilityId, IsHomebrew = isHomebrew };
     }
 
-    private SkillDto CreateSkillDto(string name, int abilityId, int id = 1)
+    private static Skill CreateTestSkill(string name, int abilityId, Ability ability = null!, int id = 1)
     {
-        return new() { Id = id, Name = name, AbilityId = abilityId, IsHomebrew = false };
+        return new() { Id = id, Name = name, AbilityId = abilityId, Ability = ability };
     }
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
-    }
-
+    
     [Fact]
     public async Task AddAndRetrieveSkills_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Skill_AddRetrieveDB");
+        // Arrange
+        var repo = new Mock<ISkillRepository>();
+        var abilityRepo = new Mock<IAbilityRepository>();
+        var service = new SkillService(repo.Object, abilityRepo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new SkillRepository(context);
-        var abilityRepo = new AbilityRepository(context);
-        var service = new SkillService(repo, abilityRepo, context);
+        List<Skill> skills = [];
 
-        var ability = CreateAbility("Luck", "LK");
-        await abilityRepo.CreateAsync(ability);
-        await context.SaveChangesAsync();
+        repo.Setup(r => r.CreateAsync(It.IsAny<Skill>()))
+            .ReturnsAsync((Skill s) =>
+            {
+                s.Id = skills.Count+1;
+                skills.Add(s);
+                return s;
+            });
 
-        var fishingDto = CreateSkillDto("Fishing", ability.Id);
-        var engineeringDto = CreateSkillDto("Engineering", ability.Id);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => skills
+            .FirstOrDefault(s => s.Id == id));
+        
+        abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => new Ability{ Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
 
-        var created1 = await service.CreateAsync(fishingDto);
-        var created2 = await service.CreateAsync(engineeringDto);
+        repo.Setup(r => r.GetAllAsync())
+            .ReturnsAsync(() => [.. skills]);
+
+        // Act
+        var created1 = await service.CreateAsync(CreateTestSkillDto("Fishing", 1));
+        var created2 = await service.CreateAsync(CreateTestSkillDto("Engineering", 1));
 
         var fishing = await service.GetByIdAsync(created1.Id);
         var engineering = await service.GetByIdAsync(created2.Id);
 
+        // Assert
         Assert.NotNull(fishing);
         Assert.NotNull(engineering);
         Assert.Equal("Fishing", fishing.Name);
@@ -62,210 +69,199 @@ public class SkillServiceTests
         var allSkills = await service.GetAllAsync();
         Assert.Contains(allSkills, a => a.Name == "Fishing");
         Assert.Contains(allSkills, a => a.Name == "Engineering");
+
+        repo.Verify(r => r.CreateAsync(It.IsAny<Skill>()), Times.Exactly(2));
     }
 
     [Fact]
     public async Task AddAndRetrieveSkills_BadInputData_ShouldNotCreate()
     {
-        var options = GetInMemoryOptions("Skill_BadAddRetrieveDB");
+        // Arrange
+        var repo = new Mock<ISkillRepository>();
+        var abilityRepo = new Mock<IAbilityRepository>();
+        var service = new SkillService(repo.Object, abilityRepo.Object);
 
-        using var context = new AppDbContext(options);
-        var repo = new SkillRepository(context);
-        var abilityRepo = new AbilityRepository(context);
-        var service = new SkillService(repo, abilityRepo, context);
+        var badAbilityId = CreateTestSkillDto("Fishing", -1);
+        var noName = CreateTestSkillDto("", 1);
+        var whiteSpace = CreateTestSkillDto("  ", 1);
 
-        var ability = CreateAbility("Luck", "LK");
-        await abilityRepo.CreateAsync(ability);
-        await context.SaveChangesAsync();
-
-        var badAbilityId = CreateSkillDto("Fishing", -1);
-        var noName = CreateSkillDto("", ability.Id);
-        var whiteSpace = CreateSkillDto("  ", ability.Id);
-
+        // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() => service.CreateAsync(badAbilityId));
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(noName));
         await Assert.ThrowsAsync<ArgumentException>(() => service.CreateAsync(whiteSpace));
+        repo.Verify(r => r.CreateAsync(It.IsAny<Skill>()), Times.Exactly(0));
     }
 
     [Fact]
     public async Task DeleteSkill_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Skill_RemoveDB");
-        using var context = new AppDbContext(options);
-        var repo = new SkillRepository(context);
-        var abilityRepo = new AbilityRepository(context);
-        var service = new SkillService(repo, abilityRepo, context);
+        // Arrange
+        var repo = new Mock<ISkillRepository>();
+        var abilityRepo = new Mock<IAbilityRepository>();
+        var service = new SkillService(repo.Object, abilityRepo.Object);
 
-        var ability = CreateAbility("Luck", "LK");
-        await abilityRepo.CreateAsync(ability);
-        await context.SaveChangesAsync();
+        List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
-        var fishingDto = CreateSkillDto("Fishing", ability.Id);
-        var created1 = await service.CreateAsync(fishingDto);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => skills
+            .FirstOrDefault(s => s.Id == id));
 
-        await service.DeleteAsync(created1.Id);
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(created1.Id));
+        repo.Setup(r => r.DeleteAsync(It.IsAny<Skill>()))
+            .Callback((Skill s) =>
+            {
+                skills.Remove(s);
+            });
+
+        abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
+            
+        // Act & Assert
+        await service.DeleteAsync(1);
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(1));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Skill>()), Times.Exactly(1));
     }
 
     [Fact]
-    public async Task DeleteSkill_BadId_ShouldNotDelete()
+    public async Task GetAndDeleteSkill_BadId_ShouldNotGetOrDelete()
     {
-        var options = GetInMemoryOptions("Skill_BadRemoveDB");
-        using var context = new AppDbContext(options);
-        var repo = new SkillRepository(context);
-        var abilityRepo = new AbilityRepository(context);
-        var service = new SkillService(repo, abilityRepo, context);
+        // Arrange
+        var repo = new Mock<ISkillRepository>();
+        var abilityRepo = new Mock<IAbilityRepository>();
+        var service = new SkillService(repo.Object, abilityRepo.Object);
 
-        var ability = CreateAbility("Luck", "LK");
-        await abilityRepo.CreateAsync(ability);
-        await context.SaveChangesAsync();
+        List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
-        var fishingDto = CreateSkillDto("Fishing", ability.Id);
-        var created1 = await service.CreateAsync(fishingDto);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => skills
+            .FirstOrDefault(s => s.Id == id));
 
-        await service.DeleteAsync(created1.Id);
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(created1.Id));
+        abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
+            
+        // Act & Assert
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(-1));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(-1));
+
+        repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
+        repo.Verify(r => r.DeleteAsync(It.IsAny<Skill>()), Times.Exactly(0));
     }
 
     [Fact]
     public async Task UpdateSkill_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Skill_UpdateDB");
+        // Arrange
+        var repo = new Mock<ISkillRepository>();
+        var abilityRepo = new Mock<IAbilityRepository>();
+        var service = new SkillService(repo.Object, abilityRepo.Object);
+        
+        List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
-        using var context = new AppDbContext(options);
-        var repo = new SkillRepository(context);
-        var abilityRepo = new AbilityRepository(context);
-        var service = new SkillService(repo, abilityRepo, context);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => skills
+            .FirstOrDefault(s => s.Id == id));
 
-        var luckAbility = CreateAbility("Luck", "LK");
-        var pilotingAbility = CreateAbility("Piloting", "PT");
-        await abilityRepo.CreateAsync(luckAbility);
-        await abilityRepo.CreateAsync(pilotingAbility);
-        await context.SaveChangesAsync();
+        repo.Setup(r => r.UpdateAsync(It.IsAny<Skill>()))
+            .Callback((Skill s) =>
+            {
+                var skill = skills.FirstOrDefault(sk => sk.Id == s.Id);
+                skill!.IsHomebrew = s.IsHomebrew;
+                skill.Name = s.Name;
+            });
 
-        var fishingDto = CreateSkillDto("Fishing", luckAbility.Id);
-        var fishingSkill = await service.CreateAsync(fishingDto);
+        abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => new Ability{ Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
 
-        fishingDto.Name = "Driving";
-        fishingDto.AbilityId = pilotingAbility.Id;
-        fishingDto.Id = fishingSkill.Id;
+        var fishingDto = CreateTestSkillDto("Driving", 0, id: 1, isHomebrew: true);
+        
+        // Act
         await service.UpdateAsync(fishingDto);
-        var drivingSkill = await service.GetByIdAsync(fishingSkill.Id);
+        var drivingSkill = await service.GetByIdAsync(1);
 
+        // Assert
         Assert.NotNull(drivingSkill);
-        Assert.NotNull(drivingSkill.Ability);
         Assert.Equal("Driving", drivingSkill.Name);
-        Assert.Equal("Piloting", drivingSkill.Ability.FullName);
+        Assert.True(drivingSkill.IsHomebrew);
+
+        repo.Verify(r => r.UpdateAsync(It.IsAny<Skill>()), Times.Exactly(1));
+        repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
     }
 
     [Fact]
     public async Task UpdateSkills_BadInputData_ShouldNotUpdate()
     {
-        var options = GetInMemoryOptions("Skill_BadUpdateDB");
+        // Assert
+        var repo = new Mock<ISkillRepository>();
+        var abilityRepo = new Mock<IAbilityRepository>();
+        var service = new SkillService(repo.Object, abilityRepo.Object);
+        
+        List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
-        using var context = new AppDbContext(options);
-        var repo = new SkillRepository(context);
-        var abilityRepo = new AbilityRepository(context);
-        var service = new SkillService(repo, abilityRepo, context);
+        repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => skills
+            .FirstOrDefault(s => s.Id == id));
 
-        var luckAbility = CreateAbility("Luck", "LK");
-        await abilityRepo.CreateAsync(luckAbility);
-        await context.SaveChangesAsync();
+        repo.Setup(r => r.DeleteAsync(It.IsAny<Skill>()))
+            .Callback((Skill s) =>
+            {
+                skills.Remove(s);
+            });
 
-        var fishingDto = CreateSkillDto("Fishing", luckAbility.Id);
-        var fishingSkill = await service.CreateAsync(fishingDto);
+        repo.Setup(r => r.UpdateAsync(It.IsAny<Skill>()))
+            .Callback((Skill s) =>
+            {
+                var skill = skills.FirstOrDefault(sk => sk.Id == s.Id);
+                skill!.IsHomebrew = s.IsHomebrew;
+                skill.Name = s.Name;
+                skill.AbilityId = s.AbilityId;
+            });
 
-        var badId = CreateSkillDto("Fishing", luckAbility.Id, id: -1);
-        var noName = CreateSkillDto("", luckAbility.Id, id: fishingSkill.Id);
-        var whitespaceName = CreateSkillDto("   ", luckAbility.Id, id: fishingSkill.Id);
-        var badAbilityId = CreateSkillDto("Fishing", -1, id: fishingSkill.Id);
+        abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync((int id) => new Ability{ Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
 
+        var badId = CreateTestSkillDto("Fishing", 2, id: -1);
+        var noName = CreateTestSkillDto("", 2, id: 1);
+        var whitespaceName = CreateTestSkillDto("   ", 2, id: 1);
+        var badAbilityId = CreateTestSkillDto("Fishing", -1, id: 1);
+
+        // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() => service.UpdateAsync(badId));
         await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(noName));
         await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(whitespaceName));
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.UpdateAsync(badAbilityId));
+        await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(badAbilityId));
     }
 
     [Fact]
-    public async Task SortBy_WorksCorrectly()
+    public void SortBy_WorksCorrectly()
     {
-        var options = GetInMemoryOptions("Skill_SortDB");
+        // Assert
+        var service = new SkillService(null!, null!);
 
-        using var context = new AppDbContext(options);
-        var repo = new SkillRepository(context);
-        var abilityRepo = new AbilityRepository(context);
-        var service = new SkillService(repo, abilityRepo, context);
+        var intel = AbilityServiceTests.CreateTestAbility("Intelligence", "INT", "Desc..", id: 1);
+        var str = AbilityServiceTests.CreateTestAbility("Strength", "STR", "Desc..", id: 2);
+        var wis = AbilityServiceTests.CreateTestAbility("Wisdom", "WIS", "Desc..", id: 3);
 
-        var intel = CreateAbility("Intelligence", "INT", sortWeight: 4);
-        var str = CreateAbility("Strength", "STR", sortWeight: 1);
-        var wis = CreateAbility("Wisdom", "WIS", sortWeight: 5);
-        await abilityRepo.CreateAsync(intel);
-        await abilityRepo.CreateAsync(str);
-        await abilityRepo.CreateAsync(wis);
-        await context.SaveChangesAsync();
-
-        var arcanaDto = CreateSkillDto("Arcana", intel.Id);
-        var historyDto = CreateSkillDto("History", intel.Id);
-        var natureDto = CreateSkillDto("Nature", intel.Id);
-        var religionDto = CreateSkillDto("Religion", intel.Id);
-        var medicineDto = CreateSkillDto("Medicine", wis.Id);
-        var insightDto = CreateSkillDto("Insight", wis.Id);
-        var athleticsDto = CreateSkillDto("Athletics", str.Id);
-
-        var arcana = await service.CreateAsync(arcanaDto);
-        var history = await service.CreateAsync(historyDto);
-        var nature = await service.CreateAsync(natureDto);
-        var religion = await service.CreateAsync(religionDto);
-        var medicine = await service.CreateAsync(medicineDto);
-        var insight = await service.CreateAsync(insightDto);
-        var athletics = await service.CreateAsync(athleticsDto);
-        await context.SaveChangesAsync();
+        List<Skill> skills =
+        [
+            CreateTestSkill("Arcana", 1, ability: intel),
+            CreateTestSkill("History", 1, ability: intel),
+            CreateTestSkill("Nature", 1, ability: intel),
+            CreateTestSkill("Religion", 1, ability: intel),
+            CreateTestSkill("Medicine", 3, ability: wis),
+            CreateTestSkill("Insight", 3, ability: wis),
+            CreateTestSkill("Athletics", 2, ability: str),
+        ];
 
         // Act & Assert
-        var allSkills = await service.GetAllAsync();
+        var sorted = service.SortBy(skills, SkillService.SkillSorting.Name);
+        string[] expectedOrder = ["Arcana", "Athletics", "History", "Insight", "Medicine", "Nature", "Religion"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        allSkills = service.SortBy(allSkills, SkillService.SkillSorting.Name);
-        Assert.NotNull(allSkills);
-        string[] expectedOrder =
-        [
-            "Arcana",
-            "Athletics",
-            "History",
-            "Insight",
-            "Medicine",
-            "Nature",
-            "Religion",
-        ];
-        string[] actualOrder = [.. allSkills.Select(s => s.Name)];
-        Assert.Equal(expectedOrder, actualOrder);
+        sorted = service.SortBy(skills, SkillService.SkillSorting.Ability);
+        expectedOrder = ["Athletics", "Arcana", "History", "Nature", "Religion", "Insight", "Medicine"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        allSkills = await service.GetAllWithAbilityAsync();
-        allSkills = service.SortBy(allSkills, SkillService.SkillSorting.Ability);
-        expectedOrder =
-        [
-            "Athletics",
-            "Arcana",
-            "History",
-            "Nature",
-            "Religion",
-            "Insight",
-            "Medicine"
-        ];
-        actualOrder = [.. allSkills.Select(s => s.Name)];
-        Assert.Equal(expectedOrder, actualOrder);
-
-        allSkills = service.SortBy(allSkills, SkillService.SkillSorting.Ability, true);
-        expectedOrder =
-        [
-            "Medicine",
-            "Insight",
-            "Religion",
-            "Nature",
-            "History",
-            "Arcana",
-            "Athletics"
-        ];
-        actualOrder = [.. allSkills.Select(s => s.Name)];
-        Assert.Equal(expectedOrder, actualOrder);
+        sorted = service.SortBy(skills, SkillService.SkillSorting.Ability, true);
+        expectedOrder = ["Medicine", "Insight", "Religion", "Nature", "History", "Arcana", "Athletics"];
+        Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }
 }

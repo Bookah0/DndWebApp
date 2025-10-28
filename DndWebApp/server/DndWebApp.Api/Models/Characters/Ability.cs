@@ -10,7 +10,6 @@ public class Ability
     public required string ShortName { get; set; }
     public required string FullName { get; set; }
     public required string Description { get; set; }
-    public required int SortWeight { get; set; }
     public required ICollection<Skill> Skills { get; set; }
 }
 

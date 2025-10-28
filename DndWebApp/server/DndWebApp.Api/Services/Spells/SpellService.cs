@@ -69,33 +69,20 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     }
 
     public enum SpellSorting { Name, Level, CastingTime, Duration, Target, Range }
-    // Name, level, castingtime?, duration?, targettype?, range?
     public ICollection<Spell> SortBy(ICollection<Spell> spells, SpellSorting sortFilter, bool descending = false)
     {
         return sortFilter switch
         {
-            SpellSorting.Name => descending
-                            ? [.. spells.OrderByDescending(s => s.Name)]
-                            : [.. spells.OrderBy(s => s.Name)],
-            SpellSorting.Level => descending
-                            ? [.. spells.OrderByDescending(s => s.Level).ThenByDescending(s => s.Name)]
-                            : [.. spells.OrderBy(s => s.Level).ThenBy(s => s.Name)],
-            SpellSorting.CastingTime => descending
-                            ? [.. spells.OrderByDescending(s => s.CastingTime).ThenByDescending(s => s.CastingTimeValue).ThenByDescending(s => s.Name)]
-                            : [.. spells.OrderBy(s => s.CastingTime).ThenBy(s => s.CastingTimeValue).ThenBy(s => s.Name)],
-            SpellSorting.Duration => descending
-                            ? [.. spells.OrderByDescending(s => s.Duration).ThenByDescending(s => s.DurationValue).ThenByDescending(s => s.Name)]
-                            : [.. spells.OrderBy(s => s.Duration).ThenBy(s => s.DurationValue).ThenBy(s => s.Name)],
-            SpellSorting.Target => descending
-                            ? [.. spells.OrderByDescending(s => s.SpellTargeting.TargetType).ThenByDescending(s => s.Name)]
-                            : [.. spells.OrderBy(s => s.SpellTargeting.TargetType).ThenBy(s => s.Name)],
-            SpellSorting.Range => descending
-                            ? [.. spells.OrderByDescending(s => s.SpellTargeting.Range).ThenByDescending(s => s.SpellTargeting.RangeValue).ThenByDescending(s => s.Name)]
-                            : [.. spells.OrderBy(s => s.SpellTargeting.Range).ThenBy(s => s.SpellTargeting.RangeValue).ThenBy(s => s.Name)],
+            SpellSorting.Name => SortUtil.OrderByMany(spells, [(s => s.Name)], descending),
+            SpellSorting.Level => SortUtil.OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
+            SpellSorting.CastingTime => SortUtil.OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue), (s => s.Name)], descending),
+            SpellSorting.Duration => SortUtil.OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
+            SpellSorting.Target => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
+            SpellSorting.Range => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
             _ => spells,
         };
     }
-    
+
     public async Task DeleteAsync(int id)
     {
         var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");

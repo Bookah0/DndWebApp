@@ -78,10 +78,8 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
             "Lawful Evil", "Neutral Evil", "Chaotic Evil"
         ];
 
-        var sortOrderAsDict = fixedSortOrder
-            .Select((name, index) => new { name, index })
-            .ToDictionary(x => x.name, x => x.index);
-
-        return [.. alignments.OrderBy(a => sortOrderAsDict[a.Name])];
+        var alignmentOrder = SortUtil.CreateOrderLookup(fixedSortOrder);
+        
+        return [.. alignments.OrderBy(a => alignmentOrder[a.Name])];
     }
 }

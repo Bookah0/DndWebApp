@@ -76,15 +76,9 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
     {
         return sortFilter switch
         {
-            LanguageSorting.Name => descending
-                            ? [.. languages.OrderByDescending(l => l.Name)]
-                            : [.. languages.OrderBy(l => l.Name)],
-            LanguageSorting.Family => descending
-                            ? [.. languages.OrderByDescending(l => l.Family).ThenBy(l => l.Name)]
-                            : [.. languages.OrderBy(l => l.Family).ThenBy(l => l.Name)],
-            LanguageSorting.Script => descending
-                            ? [.. languages.OrderByDescending(l => l.Script).ThenBy(l => l.Name)]
-                            : [.. languages.OrderBy(l => l.Script).ThenBy(l => l.Name)],
+            LanguageSorting.Name => SortUtil.OrderByMany(languages, [(l => l.Name)], descending),
+            LanguageSorting.Family => SortUtil.OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
+            LanguageSorting.Script => SortUtil.OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
             _ => languages,
         };
     }

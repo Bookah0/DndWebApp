@@ -81,14 +81,12 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
     public enum SkillSorting { Name, Ability }
     public ICollection<Skill> SortBy(ICollection<Skill> skills, SkillSorting sortFilter, bool descending = false)
     {
-        return sortFilter switch 
+        var abilityOrder = SortUtil.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
+
+        return sortFilter switch
         {
-            SkillSorting.Name => descending
-                            ? [.. skills.OrderByDescending(s => s.Name)]
-                            : [.. skills.OrderBy(s => s.Name)],
-            SkillSorting.Ability => descending
-                            ? [.. skills.OrderByDescending(s => s.Ability!.SortWeight).ThenByDescending(s => s.Name)]
-                            : [.. skills.OrderBy(s => s.Ability!.SortWeight).ThenBy(s => s.Name)],
+            SkillSorting.Name => SortUtil.OrderByMany(skills, [(s => s.Name)], descending),
+            SkillSorting.Ability => SortUtil.OrderByMany(skills, [(s => abilityOrder[s.Ability!.FullName]), (s => s.Name)], descending),
             _ => skills,
         };
     }

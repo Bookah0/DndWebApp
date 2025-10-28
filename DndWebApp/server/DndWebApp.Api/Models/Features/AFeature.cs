@@ -13,7 +13,7 @@ public abstract class AFeature
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
-    public AbilityType SavingThrows { get; set; }
+    public List<AbilityType> SavingThrows { get; set; } = [];
     public ICollection<AbilityValue> AbilityIncreases { get; set; } = [];
     public ICollection<Spell> SpellsGained { get; set; } = [];
 
@@ -23,11 +23,11 @@ public abstract class AFeature
     public DamageType DamageWeaknessGained { get; set; }
 
     // Proficiencies
-    public SkillType SkillProficiencies { get; set; }
-    public WeaponCategory WeaponProficiencies { get; set; }
-    public ArmorCategory ArmorProficiencies { get; set; }
-    public ToolCategory ToolProficiencies { get; set; }
-    public LanguageType Languages { get; set; }
+    public List<SkillType> SkillProficiencies { get; set; } = [];
+    public List<WeaponCategory> WeaponProficiencies { get; set; } = [];
+    public List<ArmorCategory> ArmorProficiencies { get; set; } = [];
+    public List<ToolCategory> ToolProficiencies { get; set; } = [];
+    public List<LanguageType> Languages { get; set; } = [];
 
     // Proficiency choices
     public ICollection<AbilityIncreaseChoice> AbilityIncreaseChoices { get; set; } = [];

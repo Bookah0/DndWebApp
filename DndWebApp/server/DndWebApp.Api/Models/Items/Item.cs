@@ -14,7 +14,7 @@ public class Item
     public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public required ItemCategory Catagories { get; set; }
+    public required ICollection<ItemCategory> Categories { get; set; }
     public ItemRarity? Rarity { get; set; }
     public bool RequiresAttunement { get; set; } = false;
     public int Weight { get; set; }

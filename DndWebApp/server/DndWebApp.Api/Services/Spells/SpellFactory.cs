@@ -2,7 +2,7 @@ using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 
-namespace DndWebApp.Api.Services;
+namespace DndWebApp.Api.Services.Spells;
 
 public static class SpellFactory
 {
@@ -14,12 +14,13 @@ public static class SpellFactory
         string effectsAtHigherLevels,
         string reactionCondition,
         SpellTargeting targeting,
-        SpellDamage damage,
+        string DamageRoll,
+        ICollection<DamageType> DamageTypes,
         CastingRequirements castingRequirements,
         SpellDuration duration,
         CastingTime castingTime,
         MagicSchool magicSchool,
-        SpellType spellTypes
+        ICollection<SpellType> spellTypes
     )
     {
         return new()
@@ -35,7 +36,8 @@ public static class SpellFactory
             SpellTargeting = targeting,
             MagicSchool = magicSchool,
             SpellTypes = spellTypes,
-            SpellDamage = damage,
+            DamageRoll = DamageRoll,
+            DamageTypes = DamageTypes,
             CastingRequirements = castingRequirements
         };
     }
@@ -49,15 +51,6 @@ public static class SpellFactory
             Materials = Materials,
             MaterialCost = MaterialCost,
             MaterialsConsumed = MaterialsConsumed
-        };
-    }
-
-    public static SpellDamage CreateSpellDamage(string DamageRoll, DamageType DamageTypes)
-    {
-        return new()
-        {
-            DamageRoll = DamageRoll,
-            DamageTypes = DamageTypes
         };
     }
 

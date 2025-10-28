@@ -14,6 +14,7 @@ using DndWebApp.Api.Services;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Spells;
+using DndWebApp.Api.Services.Spells;
 
 var builder = WebApplication.CreateBuilder(args);
 

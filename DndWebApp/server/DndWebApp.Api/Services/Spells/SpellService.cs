@@ -1,21 +1,14 @@
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
-<<<<<<< Updated upstream:DndWebApp/server/DndWebApp.Api/Services/Spell/SpellService.cs
-using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Repositories.Spells;
-using DndWebApp.Api.Services.Utils;
-namespace DndWebApp.Api.Services;
-=======
-using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Util;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
+using DndWebApp.Api.Repositories.Classes;
+using DndWebApp.Api.Models.Characters;
+
 namespace DndWebApp.Api.Services.Spells;
->>>>>>> Stashed changes:DndWebApp/server/DndWebApp.Api/Services/Spells/SpellService.cs
 
 public class SpellService : IService<Spell, SpellDto, SpellDto>
 {
@@ -23,7 +16,6 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     protected AppDbContext context;
     protected ClassRepository classRepo;
 
-    public SpellService(SpellRepository repo, AppDbContext context)
     public SpellService(SpellRepository repo, ClassRepository classRepo, AppDbContext context)
     {
         this.context = context;
@@ -33,11 +25,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
 
     public async Task<Spell> CreateAsync(SpellDto dto)
     {
-        ValidationUtil.ValidateRequired(dto.Name, "Name");
-        ValidationUtil.ValidateRequired(dto.Description, "Description");
-        ValidationUtil.ValidateRequired(dto.Duration, "Duration");
-        ValidationUtil.ValidateRequired(dto.CastingTime, "CastingTime");
-        ValidationUtil.ValidateRequired(dto.MagicSchool, "MagicSchool");
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.ValidateRequiredString(dto.Duration);
+        ValidationUtil.ValidateRequiredString(dto.CastingTime);
+        ValidationUtil.ValidateRequiredString(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
         var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);
@@ -62,7 +54,8 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
             dto.EffectsAtHigherLevels,
             dto.ReactionCondition,
             SpellFactory.CreateTargeting(dtoTargetType, dtoSpellRange, dto.RangeValue, dto.ShapeType, dto.ShapeWidth, dto.ShapeLength),
-            SpellFactory.CreateSpellDamage(dto.DamageRoll, dtoDamageTypes),
+            dto.DamageRoll,
+            dtoDamageTypes,
             SpellFactory.CreateCastingRequirments(dto.Verbal, dto.Somatic, dto.Materials, dto.MaterialCost, dto.MaterialsConsumed),
             dtoDuration,
             dtoCastTime,
@@ -115,12 +108,8 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         return await repo.GetAllAsync();
     }
 
-    public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto)
     {
-<<<<<<< Updated upstream:DndWebApp/server/DndWebApp.Api/Services/Spell/SpellService.cs
-        return await repo.GetAllAsync();
-=======
         if (dto.Name is not null)
             dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
         if (dto.MinLevel is not null && dto.MaxLevel is not null && dto.MinLevel > dto.MaxLevel)
@@ -156,8 +145,12 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
             DamageTypes = dtoDamageTypes,
         };
 
+        if (filter.MinLevel > filter.MaxLevel)
+            throw new ArgumentOutOfRangeException(nameof(filter), "Maximum level must be greater than or equal to minimum level");
+        if (filter.Name is not null)
+            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name);
+
         return await repo.FilterAllAsync(filter);
->>>>>>> Stashed changes:DndWebApp/server/DndWebApp.Api/Services/Spells/SpellService.cs
     }
 
     public async Task<Spell> GetByIdAsync(int id)
@@ -170,11 +163,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     {
         var spell = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Spell could not be found");
 
-        ValidationUtil.ValidateRequired(dto.Name, "Name");
-        ValidationUtil.ValidateRequired(dto.Description, "Description");
-        ValidationUtil.ValidateRequired(dto.Duration, "Duration");
-        ValidationUtil.ValidateRequired(dto.CastingTime, "CastingTime");
-        ValidationUtil.ValidateRequired(dto.MagicSchool, "MagicSchool");
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.ValidateRequiredString(dto.Duration);
+        ValidationUtil.ValidateRequiredString(dto.CastingTime);
+        ValidationUtil.ValidateRequiredString(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
         var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);
@@ -203,7 +196,8 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         spell.SpellTypes = dtoSpellTypes;
 
         spell.SpellTargeting = SpellFactory.CreateTargeting(dtoTargetType, dtoSpellRange, dto.RangeValue, dto.ShapeType, dto.ShapeWidth, dto.ShapeLength);
-        spell.SpellDamage = SpellFactory.CreateSpellDamage(dto.DamageRoll, dtoDamageTypes);
+        spell.DamageRoll = dto.DamageRoll;
+        spell.DamageTypes = dtoDamageTypes;
         spell.CastingRequirements = SpellFactory.CreateCastingRequirments(dto.Verbal, dto.Somatic, dto.Materials, dto.MaterialCost, dto.MaterialsConsumed);
 
         await repo.UpdateAsync(spell);

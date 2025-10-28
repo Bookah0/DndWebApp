@@ -6,9 +6,10 @@ namespace DndWebApp.Api.Models.Items;
 
 public class Weapon : Item
 {
-    public required WeaponCategory WeaponCategories { get; set; }
-    public required WeaponProperty Properties { get; set; }
-    public required DamageType DamageTypes { get; set; }
+    public required WeaponCategory WeaponCategory { get; set; }
+    public required WeaponType WeaponType { get; set; }
+    public required ICollection<WeaponProperty> Properties { get; set; }
+    public required ICollection<DamageType> DamageTypes { get; set; }
     public required string DamageDice { get; set; }
     public required int Range { get; set; }
 

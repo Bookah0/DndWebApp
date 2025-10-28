@@ -12,7 +12,7 @@ public class BackgroundRepositoryTests
 {
     private Item CreateTestItem(string name, string description, ItemCategory category, int quantity)
     {
-        return new Item { Name = name, Description = description, Catagories = category, Quantity = quantity };
+        return new Item { Name = name, Description = description, Categories = [category], Quantity = quantity };
     }
 
     private BackgroundFeature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.", Background bg = null!, int bgId = -1)
@@ -20,9 +20,9 @@ public class BackgroundRepositoryTests
         return new BackgroundFeature { Name = name, Description = description, Background = bg, BackgroundId = bgId};
     }
 
-    private Item CreateTestStartingItem(string name = "Holy Symbol", ItemCategory categories = ItemCategory.Utility, int quantity = 1)
+    private Item CreateTestStartingItem(string name = "Holy Symbol", ItemCategory category = ItemCategory.Utility, int quantity = 1)
     {
-        return CreateTestItem(name, $"{name} description", categories, quantity);
+        return CreateTestItem(name, $"{name} description", category, quantity);
     }
 
     private ItemChoice CreateTestStartingItemChoice()

@@ -16,7 +16,7 @@ public abstract class Choice
 
 public class SkillProficiencyChoice : Choice
 {
-    public required SkillType Options { get; set; }
+    public required ICollection<SkillType> Options { get; set; }
 }
 
 public class ItemChoice : Choice
@@ -31,20 +31,21 @@ public class AbilityIncreaseChoice : Choice
 
 public class ToolProficiencyChoice : Choice
 {
-    public required ToolCategory Options { get; set; }
+    public required ICollection<ToolCategory> Options { get; set; }
 }
 
 public class LanguageChoice : Choice
 {
-    public required LanguageType Options { get; set; }
+    public required ICollection<LanguageType> Options { get; set; }
 }
 
 public class WeaponProficiencyChoice : Choice
 {
-    public required WeaponCategory Options { get; set; }
+    public required ICollection<WeaponCategory> CategoryOptions { get; set; }
+    public required ICollection<WeaponType> TypeOptions { get; set; }
 }
 
 public class ArmorProficiencyChoice : Choice
 {
-    public required ArmorCategory Options { get; set; }
+    public required ICollection<ArmorCategory> Options { get; set; }
 }

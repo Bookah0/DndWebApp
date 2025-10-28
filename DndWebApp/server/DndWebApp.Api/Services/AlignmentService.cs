@@ -2,6 +2,7 @@ using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
 public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
@@ -17,12 +18,9 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 
     public async Task<Alignment> CreateAsync(AlignmentDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            throw new ArgumentException($"Name cannot be null, empty, or whitespace.");
-        if (string.IsNullOrWhiteSpace(dto.Description))
-            throw new ArgumentException($"Description cannot be null, empty, or whitespace.");
-        if (string.IsNullOrWhiteSpace(dto.Abbreviation))
-            throw new ArgumentException($"Abbreviation cannot be null, empty, or whitespace.");
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.ValidateRequiredString(dto.Abbreviation);
 
 
         Alignment alignment = new()
@@ -57,12 +55,9 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 
     public async Task UpdateAsync(AlignmentDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            throw new ArgumentException($"Name cannot be null, empty, or whitespace.");
-        if (string.IsNullOrWhiteSpace(dto.Description))
-            throw new ArgumentException($"Description cannot be null, empty, or whitespace.");
-        if (string.IsNullOrWhiteSpace(dto.Abbreviation))
-            throw new ArgumentException($"Abbreviation cannot be null, empty, or whitespace.");
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.ValidateRequiredString(dto.Abbreviation);
 
         var alignment = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Alignment could not be found");
 

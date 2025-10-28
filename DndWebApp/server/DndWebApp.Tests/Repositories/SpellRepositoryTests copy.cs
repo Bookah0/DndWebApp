@@ -1,4 +1,5 @@
 ﻿using DndWebApp.Api.Data;
+using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories.Spells;
@@ -8,7 +9,7 @@ namespace DndWebApp.Tests.Repositories;
 
 public class SpellRepositoryTests
 {
-    private Spell CreateTestSpell(string name, SpellDamage? damage = null) => new()
+    private Spell CreateTestSpell(string name) => new()
     {
         Name = name,
         Description = $"Description of {name}",
@@ -16,7 +17,6 @@ public class SpellRepositoryTests
         Duration = 0,
         CastingTime = 0,
         SpellTargeting = new(){ TargetType = SpellTargetType.Creature, Range = SpellRange.Feet, RangeValue = 20 },
-        SpellDamage = damage!,
         MagicSchool = MagicSchool.Evocation,
     };
 
@@ -30,8 +30,7 @@ public class SpellRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("Spell_AddRetrieveDB");
 
-        var damage = new SpellDamage { DamageRoll = "1d4+1" };
-        var magicMissile = CreateTestSpell("Magic Missile", damage);
+        var magicMissile = CreateTestSpell("Magic Missile");
         var fireball = CreateTestSpell("Fireball");
         int magicMissileId;
 
@@ -54,8 +53,6 @@ public class SpellRepositoryTests
             var savedMagicMissile = await repo.GetByIdAsync(magicMissileId);
             Assert.NotNull(savedMagicMissile);
             Assert.Equal("Magic Missile", savedMagicMissile!.Name);
-            Assert.NotNull(savedMagicMissile.SpellDamage);
-            Assert.Equal("1d4+1", savedMagicMissile.SpellDamage.DamageRoll);
 
             var allSpells = await repo.GetAllAsync();
             Assert.Equal(2, allSpells.Count);

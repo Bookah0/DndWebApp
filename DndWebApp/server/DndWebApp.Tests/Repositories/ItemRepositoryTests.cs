@@ -13,14 +13,14 @@ public class ItemRepositoryTests
     {
         Name = "Spoon",
         Description = "A simple metal spoon, useful for eating or mixing potions.",
-        Catagories = ItemCategory.AdventuringGear
+        Categories = [ItemCategory.AdventuringGear]
     };
 
     private Armor CreateTestArmor() => new Armor
     {
         Name = "Leather Armor",
         Description = "Light armor made from tanned leather, provides basic protection.",
-        Catagories = ItemCategory.Armor,
+        Categories = [ItemCategory.Armor],
         Category = ArmorCategory.Light,
         BaseArmorClass = 11,
         PlusDexMod = true
@@ -30,10 +30,11 @@ public class ItemRepositoryTests
     {
         Name = "Shortbow",
         Description = "A small bow ideal for ranged attacks.",
-        Catagories = ItemCategory.Weapon,
-        WeaponCategories = WeaponCategory.SimpleRanged | WeaponCategory.Shortbow,
-        Properties = WeaponProperty.TwoHanded,
-        DamageTypes = DamageType.Piercing,
+        Categories = [ItemCategory.Weapon],
+        WeaponCategory = WeaponCategory.SimpleRanged,
+        WeaponType = WeaponType.Shortbow,
+        Properties = [WeaponProperty.TwoHanded],
+        DamageTypes = [DamageType.Piercing],
         DamageDice = "1d6",
         Range = 80
     };
@@ -42,7 +43,7 @@ public class ItemRepositoryTests
     {
         Name = "Thieves' Kit",
         Description = "A set of lockpicks and other tools for stealthy operations.",
-        Catagories = ItemCategory.Tools,
+        Categories = [ItemCategory.Tools],
         Activities = [],
         Properties = []
     };
@@ -86,13 +87,13 @@ public class ItemRepositoryTests
         Assert.NotNull(savedItem);
         Assert.Equal("Spoon", savedItem!.Name);
         Assert.Equal("A simple metal spoon, useful for eating or mixing potions.", savedItem.Description);
-        Assert.Equal(ItemCategory.AdventuringGear, savedItem.Catagories);
+        Assert.Equal(ItemCategory.AdventuringGear, savedItem.Categories.First());
 
         // Armor
         Assert.NotNull(savedArmor);
         Assert.Equal("Leather Armor", savedArmor!.Name);
         Assert.Equal("Light armor made from tanned leather, provides basic protection.", savedArmor.Description);
-        Assert.Equal(ItemCategory.Armor, savedArmor.Catagories);
+        Assert.Equal(ItemCategory.Armor, savedArmor.Categories.First());
         Assert.Equal(ArmorCategory.Light, savedArmor.Category);
         Assert.Equal(11, savedArmor.BaseArmorClass);
         Assert.True(savedArmor.PlusDexMod);
@@ -101,10 +102,10 @@ public class ItemRepositoryTests
         Assert.NotNull(savedWeapon);
         Assert.Equal("Shortbow", savedWeapon!.Name);
         Assert.Equal("A small bow ideal for ranged attacks.", savedWeapon.Description);
-        Assert.Equal(ItemCategory.Weapon, savedWeapon.Catagories);
-        Assert.Equal(WeaponCategory.SimpleRanged | WeaponCategory.Shortbow, savedWeapon.WeaponCategories);
-        Assert.Equal(WeaponProperty.TwoHanded, savedWeapon.Properties);
-        Assert.Equal(DamageType.Piercing, savedWeapon.DamageTypes);
+        Assert.Equal(ItemCategory.Weapon, savedWeapon.Categories.First());
+        Assert.Equal(WeaponCategory.SimpleRanged, savedWeapon.WeaponCategory);
+        Assert.Equal(WeaponProperty.TwoHanded, savedWeapon.Properties.First());
+        Assert.Equal(DamageType.Piercing, savedWeapon.DamageTypes.First());
         Assert.Equal("1d6", savedWeapon.DamageDice);
         Assert.Equal(80, savedWeapon.Range);
 
@@ -112,7 +113,7 @@ public class ItemRepositoryTests
         Assert.NotNull(savedTool);
         Assert.Equal("Thieves' Kit", savedTool!.Name);
         Assert.Equal("A set of lockpicks and other tools for stealthy operations.", savedTool.Description);
-        Assert.Equal(ItemCategory.Tools, savedTool.Catagories);
+        Assert.Equal(ItemCategory.Tools, savedTool.Categories.First());
     }
 
     [Fact]

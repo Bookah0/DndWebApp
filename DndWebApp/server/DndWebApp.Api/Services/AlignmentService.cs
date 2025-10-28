@@ -24,13 +24,14 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
         if (string.IsNullOrWhiteSpace(dto.Abbreviation))
             throw new ArgumentException($"Abbreviation cannot be null, empty, or whitespace.");
 
+
         Alignment alignment = new()
         {
             Name = dto.Name,
             Description = dto.Description,
             Abbreviation = dto.Abbreviation
         };
-        
+
         await repo.CreateAsync(alignment);
         await context.SaveChangesAsync();
         return alignment;
@@ -64,12 +65,28 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
             throw new ArgumentException($"Abbreviation cannot be null, empty, or whitespace.");
 
         var alignment = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Alignment could not be found");
-        
+
         alignment.Name = dto.Name;
         alignment.Description = dto.Description;
         alignment.Abbreviation = dto.Abbreviation;
 
         await repo.UpdateAsync(alignment);
         await context.SaveChangesAsync();
+    }
+
+    public ICollection<Alignment> SortBy(ICollection<Alignment> alignments)
+    {
+        string[] fixedSortOrder =
+        [
+            "Lawful Good",  "Neutral Good", "Chaotic Good",
+            "Lawful Neutral", "True Neutral", "Chaotic Neutral",
+            "Lawful Evil", "Neutral Evil", "Chaotic Evil"
+        ];
+
+        var sortOrderAsDict = fixedSortOrder
+            .Select((name, index) => new { name, index })
+            .ToDictionary(x => x.name, x => x.index);
+
+        return [.. alignments.OrderBy(a => sortOrderAsDict[a.Name])];
     }
 }

@@ -158,4 +158,48 @@ public class SpellRepositoryTests
             Assert.Null(deleted);
         }
     }
+
+    [Fact]
+    public async Task FilterAllAsync_WithMatchingFilter_ReturnsExpectedSpells()
+    {
+        // Arrange
+        var options = GetInMemoryOptions("Spell_FilterDB");
+        var context = new AppDbContext(options);
+
+        var spells = new List<Spell>
+        {
+            CreateTestSpell("Fireball"),
+            CreateTestSpell("Frostbite"),
+            CreateTestSpell("Magic Missile")
+        };
+
+        await context.Spells.AddRangeAsync(spells);
+        await context.SaveChangesAsync();
+
+        var filter = new SpellFilter
+        {
+            Name = "Fire",
+            MinLevel = 1,
+            MaxLevel = 3,
+            MagicSchools = [MagicSchool.Evocation],
+            IsHomebrew = false,
+            ClassIds = null,
+            Durations = null,
+            CastingTimes = null,
+            SpellTypes = null,
+            TargetType = null,
+            Range = null,
+            DamageTypes = null,
+        };
+
+        // Act
+        var repo = new SpellRepository(context);
+        var result = await repo.FilterAllAsync(filter);
+
+        // Assert
+        Assert.Single(result);
+        var spell = result.First();
+        Assert.Equal("Fireball", spell.Name);
+        Assert.Equal(MagicSchool.Evocation, spell.MagicSchool);
+    }
 }

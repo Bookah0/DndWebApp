@@ -2,11 +2,9 @@ namespace DndWebApp.Api.Models.Spells.Enums;
 
 public enum SpellDuration
 {
-    Instantaneous,
-    Minute1,
-    Minutes10,
-    Hour1,
-    Hour8,
-    UntilDispelled,
-    Special
+    Instantaneous = 1,
+    Minute = 2,
+    Hours = 3,
+    UntilDispelled = 4,
+    Special = 5
 }

@@ -139,4 +139,57 @@ public class LanguageServiceTests
         Assert.Equal("Primordial", auran.Family);
         Assert.Equal("Dwarvish", auran.Script);
     }
+
+        [Fact]
+    public async Task SortBy_WorksCorrectly()
+    {
+        var options = GetInMemoryOptions("Language_SortDB");
+
+        using var context = new AppDbContext(options);
+        var repo = new EfRepository<Language>(context);
+        var service = new LanguageService(repo, context);
+
+        var auranDto = CreateLanguageDto("Auran", "Primordial", "Dwarvish");
+        var dethekDto = CreateLanguageDto("Dethek", "Dwarvish", "Dwarvish");
+        var elvishDto = CreateLanguageDto("Elvish", "Elven", "Espruar");
+
+        var auran = await service.CreateAsync(auranDto);
+        var dethek = await service.CreateAsync(dethekDto);
+        var elvish = await service.CreateAsync(elvishDto);
+        await context.SaveChangesAsync();
+
+        // Act & Assert
+        var allLanguages = await service.GetAllAsync();
+
+        allLanguages = service.SortBy(allLanguages, LanguageService.LanguageSorting.Name);
+        Assert.NotNull(allLanguages);
+        string[] expectedOrder =
+        [
+            "Auran",
+            "Dethek",
+            "Elvish",
+        ];
+        string[] actualOrder = [.. allLanguages.Select(s => s.Name)];
+        Assert.Equal(expectedOrder, actualOrder);
+
+        allLanguages = service.SortBy(allLanguages, LanguageService.LanguageSorting.Family, true);
+        expectedOrder =
+        [
+            "Auran",
+            "Elvish",
+            "Dethek",
+        ];
+        actualOrder = [.. allLanguages.Select(s => s.Name)];
+        Assert.Equal(expectedOrder, actualOrder);
+
+        allLanguages = service.SortBy(allLanguages, LanguageService.LanguageSorting.Script);
+        expectedOrder =
+        [
+            "Auran",
+            "Dethek",
+            "Elvish",
+        ];
+        actualOrder = [.. allLanguages.Select(s => s.Name)];
+        Assert.Equal(expectedOrder, actualOrder);
+    }
 }

@@ -1,4 +1,6 @@
-namespace DndWebApp.Api.Services.Utils;
+using DndWebApp.Api.Repositories;
+
+namespace DndWebApp.Api.Services.Util;
 
 public static class ValidationUtil
 {
@@ -17,5 +19,31 @@ public static class ValidationUtil
             throw new InvalidOperationException($"Could not convert {enumAsString} to Enum of type {typeof(TEnum).Name}.");
         }
         return result;
+    }
+
+    public static List<TEnum> ParseEnumOrThrow<TEnum>(ICollection<string>? enumStrings) where TEnum : struct, Enum
+    {
+        if (enumStrings is null)
+            return [];
+
+        return [.. enumStrings.Select(ParseEnumOrThrow<TEnum>)];
+    }
+
+    public static async Task ValidateIdExist<T, C>(int id, T repo) where T : IRepository<C>
+    {
+        if (await repo.GetByIdAsync(id) == null)
+            throw new ArgumentOutOfRangeException(nameof(id), $"Entity of type {typeof(T).Name} with id {id} does not exist.");
+    }
+
+    public static async Task ValidateIdsExist<T, C>(ICollection<int>? ids, T repo) where T : IRepository<C>
+    {
+        if (ids == null)
+            return;
+
+        foreach (var id in ids)
+        {
+            if (await repo.GetByIdAsync(id) == null)
+                throw new ArgumentOutOfRangeException(nameof(ids), $"Entity of type {typeof(T).Name} with id {id} does not exist.");
+        }
     }
 }

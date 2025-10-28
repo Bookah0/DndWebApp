@@ -1,22 +1,34 @@
 using DndWebApp.Api.Data;
+using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
+<<<<<<< Updated upstream:DndWebApp/server/DndWebApp.Api/Services/Spell/SpellService.cs
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Utils;
 namespace DndWebApp.Api.Services;
+=======
+using DndWebApp.Api.Repositories.Classes;
+using DndWebApp.Api.Repositories.Spells;
+using DndWebApp.Api.Services.Util;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+namespace DndWebApp.Api.Services.Spells;
+>>>>>>> Stashed changes:DndWebApp/server/DndWebApp.Api/Services/Spells/SpellService.cs
 
 public class SpellService : IService<Spell, SpellDto, SpellDto>
 {
     protected SpellRepository repo;
     protected AppDbContext context;
+    protected ClassRepository classRepo;
 
     public SpellService(SpellRepository repo, AppDbContext context)
+    public SpellService(SpellRepository repo, ClassRepository classRepo, AppDbContext context)
     {
         this.context = context;
         this.repo = repo;
+        this.classRepo = classRepo;
     }
 
     public async Task<Spell> CreateAsync(SpellDto dto)
@@ -63,6 +75,34 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         return factorySpell;
     }
 
+    public enum SpellSorting { Name, Level, CastingTime, Duration, Target, Range }
+    // Name, level, castingtime?, duration?, targettype?, range?
+    public ICollection<Spell> SortBy(ICollection<Spell> spells, SpellSorting sortFilter, bool descending = false)
+    {
+        return sortFilter switch
+        {
+            SpellSorting.Name => descending
+                            ? [.. spells.OrderByDescending(s => s.Name)]
+                            : [.. spells.OrderBy(s => s.Name)],
+            SpellSorting.Level => descending
+                            ? [.. spells.OrderByDescending(s => s.Level).ThenByDescending(s => s.Name)]
+                            : [.. spells.OrderBy(s => s.Level).ThenBy(s => s.Name)],
+            SpellSorting.CastingTime => descending
+                            ? [.. spells.OrderByDescending(s => s.CastingTime).ThenByDescending(s => s.CastingTimeValue).ThenByDescending(s => s.Name)]
+                            : [.. spells.OrderBy(s => s.CastingTime).ThenBy(s => s.CastingTimeValue).ThenBy(s => s.Name)],
+            SpellSorting.Duration => descending
+                            ? [.. spells.OrderByDescending(s => s.Duration).ThenByDescending(s => s.DurationValue).ThenByDescending(s => s.Name)]
+                            : [.. spells.OrderBy(s => s.Duration).ThenBy(s => s.DurationValue).ThenBy(s => s.Name)],
+            SpellSorting.Target => descending
+                            ? [.. spells.OrderByDescending(s => s.SpellTargeting.TargetType).ThenByDescending(s => s.Name)]
+                            : [.. spells.OrderBy(s => s.SpellTargeting.TargetType).ThenBy(s => s.Name)],
+            SpellSorting.Range => descending
+                            ? [.. spells.OrderByDescending(s => s.SpellTargeting.Range).ThenByDescending(s => s.SpellTargeting.RangeValue).ThenByDescending(s => s.Name)]
+                            : [.. spells.OrderBy(s => s.SpellTargeting.Range).ThenBy(s => s.SpellTargeting.RangeValue).ThenBy(s => s.Name)],
+            _ => spells,
+        };
+    }
+    
     public async Task DeleteAsync(int id)
     {
         var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
@@ -76,8 +116,48 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     }
 
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)
+    public async Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto)
     {
+<<<<<<< Updated upstream:DndWebApp/server/DndWebApp.Api/Services/Spell/SpellService.cs
         return await repo.GetAllAsync();
+=======
+        if (dto.Name is not null)
+            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
+        if (dto.MinLevel is not null && dto.MaxLevel is not null && dto.MinLevel > dto.MaxLevel)
+            throw new ArgumentOutOfRangeException(nameof(dto), "Maximum level must be greater than or equal to minimum level");
+        if (dto.MinLevel is not null && dto.MinLevel < 0)
+            throw new ArgumentOutOfRangeException(nameof(dto), "Minimum level must be greater than or equal to zero");
+        if (dto.MaxLevel is not null && dto.MaxLevel < 0)
+            throw new ArgumentOutOfRangeException(nameof(dto), "Maximum level must be greater than or equal to zero");
+
+        await ValidationUtil.ValidateIdsExist<ClassRepository, Class>(dto.ClassIds, classRepo);
+
+        var dtoSchools = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchools);
+        var dtoTargetTypes = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetTypes);
+        var dtoSpellRanges = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.Range);
+        var dtoDurations = ValidationUtil.ParseEnumOrThrow<SpellDuration>(dto.Durations);
+        var dtoCastTimes = ValidationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTimes);
+        var dtoSpellTypes = ValidationUtil.ParseEnumOrThrow<SpellType>(dto.SpellTypes);
+        var dtoDamageTypes = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+
+        var filter = new SpellFilter()
+        {
+            Name = dto.Name,
+            MinLevel = dto.MinLevel,
+            MaxLevel = dto.MaxLevel,
+            IsHomebrew = dto.IsHomebrew,
+            ClassIds = dto.ClassIds,
+            Durations = dtoDurations,
+            CastingTimes = dtoCastTimes,
+            MagicSchools = dtoSchools,
+            SpellTypes = dtoSpellTypes,
+            TargetType = dtoTargetTypes,
+            Range = dtoSpellRanges,
+            DamageTypes = dtoDamageTypes,
+        };
+
+        return await repo.FilterAllAsync(filter);
+>>>>>>> Stashed changes:DndWebApp/server/DndWebApp.Api/Services/Spells/SpellService.cs
     }
 
     public async Task<Spell> GetByIdAsync(int id)

@@ -14,9 +14,9 @@ namespace DndWebApp.Tests.Services;
 
 public class SkillServiceTests
 {
-    private Ability CreateAbility(string fullName, string shortName)
+    private Ability CreateAbility(string fullName, string shortName, int sortWeight = 0)
     {
-        return new() { FullName = fullName, ShortName = shortName, Description = "Desc..", Skills = [] };
+        return new() { FullName = fullName, ShortName = shortName, Description = "Desc..", Skills = [], SortWeight = sortWeight };
     }
 
     private SkillDto CreateSkillDto(string name, int abilityId, int id = 1)
@@ -35,7 +35,7 @@ public class SkillServiceTests
     public async Task AddAndRetrieveSkills_WorksCorrectly()
     {
         var options = GetInMemoryOptions("Skill_AddRetrieveDB");
-        
+
         using var context = new AppDbContext(options);
         var repo = new SkillRepository(context);
         var abilityRepo = new AbilityRepository(context);
@@ -126,12 +126,12 @@ public class SkillServiceTests
         await service.DeleteAsync(created1.Id);
         await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(created1.Id));
     }
-    
+
     [Fact]
     public async Task UpdateSkill_WorksCorrectly()
     {
         var options = GetInMemoryOptions("Skill_UpdateDB");
-        
+
         using var context = new AppDbContext(options);
         var repo = new SkillRepository(context);
         var abilityRepo = new AbilityRepository(context);
@@ -162,7 +162,7 @@ public class SkillServiceTests
     public async Task UpdateSkills_BadInputData_ShouldNotUpdate()
     {
         var options = GetInMemoryOptions("Skill_BadUpdateDB");
-        
+
         using var context = new AppDbContext(options);
         var repo = new SkillRepository(context);
         var abilityRepo = new AbilityRepository(context);
@@ -184,5 +184,88 @@ public class SkillServiceTests
         await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(noName));
         await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(whitespaceName));
         await Assert.ThrowsAsync<NullReferenceException>(() => service.UpdateAsync(badAbilityId));
+    }
+
+    [Fact]
+    public async Task SortBy_WorksCorrectly()
+    {
+        var options = GetInMemoryOptions("Skill_SortDB");
+
+        using var context = new AppDbContext(options);
+        var repo = new SkillRepository(context);
+        var abilityRepo = new AbilityRepository(context);
+        var service = new SkillService(repo, abilityRepo, context);
+
+        var intel = CreateAbility("Intelligence", "INT", sortWeight: 4);
+        var str = CreateAbility("Strength", "STR", sortWeight: 1);
+        var wis = CreateAbility("Wisdom", "WIS", sortWeight: 5);
+        await abilityRepo.CreateAsync(intel);
+        await abilityRepo.CreateAsync(str);
+        await abilityRepo.CreateAsync(wis);
+        await context.SaveChangesAsync();
+
+        var arcanaDto = CreateSkillDto("Arcana", intel.Id);
+        var historyDto = CreateSkillDto("History", intel.Id);
+        var natureDto = CreateSkillDto("Nature", intel.Id);
+        var religionDto = CreateSkillDto("Religion", intel.Id);
+        var medicineDto = CreateSkillDto("Medicine", wis.Id);
+        var insightDto = CreateSkillDto("Insight", wis.Id);
+        var athleticsDto = CreateSkillDto("Athletics", str.Id);
+
+        var arcana = await service.CreateAsync(arcanaDto);
+        var history = await service.CreateAsync(historyDto);
+        var nature = await service.CreateAsync(natureDto);
+        var religion = await service.CreateAsync(religionDto);
+        var medicine = await service.CreateAsync(medicineDto);
+        var insight = await service.CreateAsync(insightDto);
+        var athletics = await service.CreateAsync(athleticsDto);
+        await context.SaveChangesAsync();
+
+        // Act & Assert
+        var allSkills = await service.GetAllAsync();
+
+        allSkills = service.SortBy(allSkills, SkillService.SkillSorting.Name);
+        Assert.NotNull(allSkills);
+        string[] expectedOrder =
+        [
+            "Arcana",
+            "Athletics",
+            "History",
+            "Insight",
+            "Medicine",
+            "Nature",
+            "Religion",
+        ];
+        string[] actualOrder = [.. allSkills.Select(s => s.Name)];
+        Assert.Equal(expectedOrder, actualOrder);
+
+        allSkills = await service.GetAllWithAbilityAsync();
+        allSkills = service.SortBy(allSkills, SkillService.SkillSorting.Ability);
+        expectedOrder =
+        [
+            "Athletics",
+            "Arcana",
+            "History",
+            "Nature",
+            "Religion",
+            "Insight",
+            "Medicine"
+        ];
+        actualOrder = [.. allSkills.Select(s => s.Name)];
+        Assert.Equal(expectedOrder, actualOrder);
+
+        allSkills = service.SortBy(allSkills, SkillService.SkillSorting.Ability, true);
+        expectedOrder =
+        [
+            "Medicine",
+            "Insight",
+            "Religion",
+            "Nature",
+            "History",
+            "Arcana",
+            "Athletics"
+        ];
+        actualOrder = [.. allSkills.Select(s => s.Name)];
+        Assert.Equal(expectedOrder, actualOrder);
     }
 }

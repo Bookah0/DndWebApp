@@ -4,14 +4,16 @@ using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Abilities;
+using DndWebApp.Api.Repositories.Skills;
+using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
 public class SkillService : IService<Skill, SkillDto, SkillDto>
 {
-    protected IRepository<Skill> repo;
+    protected SkillRepository repo;
     protected AppDbContext context;
     protected AbilityRepository abilityRepo;
-    public SkillService(IRepository<Skill> repo, AbilityRepository abilityRepo, AppDbContext context)
+    public SkillService(SkillRepository repo, AbilityRepository abilityRepo, AppDbContext context)
     {
         this.context = context;
         this.repo = repo;
@@ -50,6 +52,11 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
         return await repo.GetAllAsync();
     }
 
+    public async Task<ICollection<Skill>> GetAllWithAbilityAsync()
+    {
+        return await repo.GetAllWithAbilityAsync();
+    }
+
     public async Task<Skill> GetByIdAsync(int id)
     {
         var skill = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Skill could not be found");
@@ -68,10 +75,25 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
             skill.Ability = await abilityRepo.GetByIdAsync(dto.AbilityId) ?? throw new NullReferenceException("Ability could not be found");
             skill.AbilityId = dto.AbilityId;
         }
-        
+
         skill.Name = dto.Name;
-        
+
         await repo.UpdateAsync(skill);
         await context.SaveChangesAsync();
+    }
+    
+    public enum SkillSorting { Name, Ability }
+    public ICollection<Skill> SortBy(ICollection<Skill> skills, SkillSorting sortFilter, bool descending = false)
+    {
+        return sortFilter switch 
+        {
+            SkillSorting.Name => descending
+                            ? [.. skills.OrderByDescending(s => s.Name)]
+                            : [.. skills.OrderBy(s => s.Name)],
+            SkillSorting.Ability => descending
+                            ? [.. skills.OrderByDescending(s => s.Ability!.SortWeight).ThenByDescending(s => s.Name)]
+                            : [.. skills.OrderBy(s => s.Ability!.SortWeight).ThenBy(s => s.Name)],
+            _ => skills,
+        };
     }
 }

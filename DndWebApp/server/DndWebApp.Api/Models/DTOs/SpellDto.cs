@@ -15,16 +15,18 @@ public class SpellDto
     public required string TargetType { get; set; }
     public required string MagicSchool { get; set; }
     public required string Range { get; set; }
-    public required string Types { get; set; }
+    public required List<string> Types { get; set; }
     public required string ShapeType { get; set; }
     public required string ShapeWidth { get; set; }
     public required string ShapeLength { get; set; }
+    public int RangeValue { get; set; } = 0;
+    public int DurationValue { get; set; }
+    public int CastingTimeValue { get; set; }
     public required string DamageRoll { get; set; }
-    public required string DamageTypes { get; set; }
+    public required List<string> DamageTypes { get; set; }
     public required bool Verbal { get; set; }
     public required bool Somatic { get; set; }
     public required string Materials { get; set; }
     public int MaterialCost { get; set; }
     public required bool MaterialsConsumed { get; set; }
-    public required int RangeValue { get; set; }
 }

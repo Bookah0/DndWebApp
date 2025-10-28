@@ -26,7 +26,7 @@ public class CharacterRepositoryTests
 
     private Ability CreateTestAbility()
     {
-        return new Ability() { FullName = "Strength", ShortName = "Str", Description = "Description", Skills = [] };
+        return new Ability() { FullName = "Strength", ShortName = "Str", Description = "Description", Skills = [], SortWeight = 0 };
     }
 
     private Character CreateTestCharacter()

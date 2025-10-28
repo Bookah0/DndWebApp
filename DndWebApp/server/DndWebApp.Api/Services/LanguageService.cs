@@ -71,8 +71,26 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
         language.Script = dto.Script;
         language.Family = dto.Family;
         language.IsHomebrew = dto.IsHomebrew;
-        
+
         await repo.UpdateAsync(language);
         await context.SaveChangesAsync();
+    }
+    
+    public enum LanguageSorting { Name, Family, Script }
+    public ICollection<Language> SortBy(ICollection<Language> languages, LanguageSorting sortFilter, bool descending = false)
+    {
+        return sortFilter switch
+        {
+            LanguageSorting.Name => descending
+                            ? [.. languages.OrderByDescending(l => l.Name)]
+                            : [.. languages.OrderBy(l => l.Name)],
+            LanguageSorting.Family => descending
+                            ? [.. languages.OrderByDescending(l => l.Family).ThenBy(l => l.Name)]
+                            : [.. languages.OrderBy(l => l.Family).ThenBy(l => l.Name)],
+            LanguageSorting.Script => descending
+                            ? [.. languages.OrderByDescending(l => l.Script).ThenBy(l => l.Name)]
+                            : [.. languages.OrderBy(l => l.Script).ThenBy(l => l.Name)],
+            _ => languages,
+        };
     }
 }

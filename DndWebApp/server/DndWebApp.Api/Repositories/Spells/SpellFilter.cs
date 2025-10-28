@@ -6,18 +6,18 @@ namespace DndWebApp.Api.Repositories.Spells;
 
 public class SpellFilter
 {
-    public string? Name { get; set; }
-    public bool? IsHomebrew { get; set; }
-    public int? MinLevel { get; set; }
-    public int? MaxLevel { get; set; }
-    public List<int>? ClassIds { get; set; }
-    public List<SpellDuration>? Durations { get; set; }
-    public List<CastingTime>? CastingTimes { get; set; }
-    public List<MagicSchool>? MagicSchools { get; set; }
-    public SpellType? SpellTypes { get; set; }
-    public List<SpellTargetType>? TargetType { get; set; }
-    public List<SpellRange>? Range { get; set; }
-    public DamageType? DamageTypes { get; set; }
+    public required string? Name { get; set; }
+    public required bool? IsHomebrew { get; set; }
+    public required int? MinLevel { get; set; }
+    public required int? MaxLevel { get; set; }
+    public required ICollection<int>? ClassIds { get; set; }
+    public required ICollection<SpellDuration>? Durations { get; set; }
+    public required ICollection<CastingTime>? CastingTimes { get; set; }
+    public required ICollection<MagicSchool>? MagicSchools { get; set; }
+    public required ICollection<SpellType>? SpellTypes { get; set; }
+    public required ICollection<SpellTargetType>? TargetType { get; set; }
+    public required ICollection<SpellRange>? Range { get; set; }
+    public required ICollection<DamageType>? DamageTypes { get; set; }
 
     /*
     Not sure if these should be added:

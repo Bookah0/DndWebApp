@@ -20,8 +20,8 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
             .Include(s => s.Classes)
             .ToListAsync();
     }
-
-    public async Task<ICollection<Spell>> FilterAsync(SpellFilter filter)
+    
+    public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)
     {
         var query = dbSet.AsQueryable();
 
@@ -49,8 +49,8 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
         if (filter.SpellTypes != null)
             query = query.Where(s => filter.SpellTypes.ToString()!.Contains(s.SpellTypes.ToString()));
 
-        if (filter.TargetType != null && filter.TargetType.Count != 0)
-             query = query.Where(s => filter.TargetType.Contains(s.SpellTargeting.TargetType));
+        if (filter.TargetType is not null && filter.TargetType.Count != 0)
+            query = query.Where(s => filter.TargetType.Contains(s.SpellTargeting.TargetType));
 
         if (filter.Range != null && filter.Range.Count != 0)
             query = query.Where(s => filter.Range.Contains(s.SpellTargeting.Range));
@@ -60,7 +60,7 @@ public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context
 
         if (filter.IsHomebrew.HasValue)
             query = query.Where(s => s.IsHomebrew == filter.IsHomebrew.Value);
-    
+
         return await query.ToListAsync();
     }
 }

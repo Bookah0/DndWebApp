@@ -138,4 +138,37 @@ public class AlignmentServiceTests
         Assert.Equal("CE", chaoticEvil.Abbreviation);
         Assert.Equal("A chaotic evil character tends to have no respect for rules.", chaoticEvil.Description);
     }
+
+    [Fact]
+    public async Task SortBy_WorksCorrectly()
+    {
+        var options = GetInMemoryOptions("Alignment_SortDB");
+
+        using var context = new AppDbContext(options);
+        var repo = new EfRepository<Alignment>(context);
+        var service = new AlignmentService(repo, context);
+
+        var lnDto = CreateAlignmentDto("Lawful Neutral", "LN", "Desc");
+        var ngDto = CreateAlignmentDto("Neutral Good", "NG", "Desc");
+        var ceDto = CreateAlignmentDto("Chaotic Evil", "CE", "Desc");
+
+        var auran = await service.CreateAsync(lnDto);
+        var dethek = await service.CreateAsync(ngDto);
+        var elvish = await service.CreateAsync(ceDto);
+        await context.SaveChangesAsync();
+
+        // Act & Assert
+        var allAlignments = await service.GetAllAsync();
+        allAlignments = service.SortBy(allAlignments);
+        Assert.NotNull(allAlignments);
+
+        string[] expectedOrder =
+        [
+            "Neutral Good",
+            "Lawful Neutral",
+            "Chaotic Evil",
+        ];
+        string[] actualOrder = [.. allAlignments.Select(s => s.Name)];
+        Assert.Equal(expectedOrder, actualOrder);
+    }
 }

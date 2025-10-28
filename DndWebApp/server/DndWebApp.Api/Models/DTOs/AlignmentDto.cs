@@ -1,3 +1,5 @@
+using DndWebApp.Api.Models.World.Enums;
+
 namespace DndWebApp.Api.Models.DTOs;
 
 public class AlignmentDto

@@ -19,10 +19,11 @@ public class Spell
     public required CastingTime CastingTime { get; set; }
     public string ReactionCondition { get; set; } = "";
     public required MagicSchool MagicSchool { get; set; }
-
-    public SpellType SpellTypes { get; set; } = SpellType.Normal;
+    public string DamageRoll { get; set; } = "";
+    public ICollection<DamageType> DamageTypes { get; set; } = [];
+    public ICollection<SpellType> SpellTypes { get; set; } = [];
+    
     public required SpellTargeting SpellTargeting { get; set; }  
-    public SpellDamage SpellDamage { get; set; } = new();
     public CastingRequirements CastingRequirements { get; set; } = new();  
 }
 

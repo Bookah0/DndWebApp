@@ -21,7 +21,7 @@ public interface IFeatRepository : IRepository<Feat>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Feat"/>.
     /// </remarks>
-    Task<FeatDto?> GetFeatDtoAsync(int id);
+    Task<FeatDto?> GetDtoAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Feat"/> entities in the database,
@@ -36,7 +36,7 @@ public interface IFeatRepository : IRepository<Feat>
     /// <remarks>
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<FeatDto>> GetAllFeatDtosAsync();
+    Task<ICollection<FeatDto>> GetDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Feat"/> entity by its <paramref name="id"/>, 

@@ -17,7 +17,7 @@ public interface IAbilityRepository : IRepository<Ability>
     /// <remarks>
     /// Typical use cases include simple display of a single ability.
     /// </remarks>
-    Task<AbilityDto?> GetAbilityDtoAsync(int id);
+    Task<AbilityDto?> GetDtoAsync(int id);
 
     /// <summary>
     /// Retrieves an <see cref="Ability"/> entity by its <paramref name="id"/>, 
@@ -43,7 +43,7 @@ public interface IAbilityRepository : IRepository<Ability>
     /// <remarks>
     /// Typical use cases include search, simple display, dropdowns, and ability selection.
     /// </remarks>
-    Task<ICollection<AbilityDto>> GetAllAbilityDtosAsync();
+    Task<ICollection<AbilityDto>> GetAllDtosAsync();
 
     /// <summary>
     /// Retrieves all <see cref="Ability"/> entities, 

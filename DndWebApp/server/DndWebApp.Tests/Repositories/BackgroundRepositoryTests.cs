@@ -1,75 +1,13 @@
+using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Backgrounds;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class BackgroundRepositoryTests
 {
-    private Item CreateTestItem(string name, string description, ItemCategory category, int quantity)
-    {
-        return new Item { Name = name, Description = description, Categories = [category], Quantity = quantity };
-    }
-
-    private BackgroundFeature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.", Background bg = null!, int bgId = -1)
-    {
-        return new BackgroundFeature { Name = name, Description = description, Background = bg, BackgroundId = bgId};
-    }
-
-    private Item CreateTestStartingItem(string name = "Holy Symbol", ItemCategory category = ItemCategory.Utility, int quantity = 1)
-    {
-        return CreateTestItem(name, $"{name} description", category, quantity);
-    }
-
-    private ItemChoice CreateTestStartingItemChoice()
-    {
-        var option = new ItemChoice
-        {
-            Description = "a prayer book or prayer wheel",
-            NumberOfChoices = 2,
-            Options = []
-        };
-
-        option.Options.Add(CreateTestStartingItem("Prayer Book", ItemCategory.None));
-        option.Options.Add(CreateTestStartingItem("Prayer Wheel", ItemCategory.None));
-
-        return option;
-    }
-
-    private Background CreateTestBackground(string name)
-    {
-        var description = $"{name} description";
-        var background = new Background
-        {
-            Name = name,
-            Description = description,
-            StartingCurrency = new() { Gold = 15 }
-        };
-
-        background.StartingItems.Add(CreateTestStartingItem("Holy Symbol", ItemCategory.Utility));
-        background.StartingItems.Add(CreateTestStartingItem("Incense Sticks", ItemCategory.None, 5));
-        background.StartingItems.Add(CreateTestStartingItem("Vestments", ItemCategory.None));
-        background.StartingItems.Add(CreateTestStartingItem("Common Clothes", ItemCategory.None));
-        background.StartingItemsOptions.Add(CreateTestStartingItemChoice());
-
-        background.Features.Add(CreateTestFeature());
-
-        return background;
-    }
-
-
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .Options;
-    }
-
-[Fact]
+    [Fact]
     public async Task UpdateBackground_WorksCorrectly()
     {
         // Arrange
@@ -79,16 +17,15 @@ public class BackgroundRepositoryTests
         await using var context = new AppDbContext(options);
         var repo = new BackgroundRepository(context);
         await repo.CreateAsync(bg);
-        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
 
         // Act
         var toUpdate = await repo.GetWithAllDataAsync(bg.Id);
 
         toUpdate!.Name = "Butler";
-        toUpdate.StartingItems.Add(CreateTestItem("Golden spoon", "A golden spooon", ItemCategory.Art, 5));
+        toUpdate.StartingItems.Add(CreateTestItem("Golden spoon", ItemCategory.Art, description: "A golden spooon", quantity: 5));
 
         await repo.UpdateAsync(toUpdate);
-        await context.SaveChangesAsync();
 
         // Assert
         var updated = await repo.GetWithAllDataAsync(toUpdate.Id);
@@ -168,7 +105,7 @@ public class BackgroundRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new BackgroundRepository(context);
-            var primitive = await repo.GetPrimitiveDataAsync(background.Id);
+            var primitive = await repo.GetDtoAsync(background.Id);
 
             // Assert
             Assert.NotNull(primitive);
@@ -198,7 +135,7 @@ public class BackgroundRepositoryTests
         await using (var context = new AppDbContext(options))
         {
             var repo = new BackgroundRepository(context);
-            var allPrimitives = await repo.GetAllPrimitiveDataAsync();
+            var allPrimitives = await repo.GetAllDtosAsync();
 
             // Assert
             Assert.Equal(2, allPrimitives.Count);
@@ -213,6 +150,7 @@ public class BackgroundRepositoryTests
         // Arrange
         var options = GetInMemoryOptions("BG_GetWithAllDataDB");
         var background = CreateTestBackground("Acolyte");
+        background.Features.Add(CreateTestFeature());
 
         await using (var context = new AppDbContext(options))
         {
@@ -253,7 +191,7 @@ public class BackgroundRepositoryTests
             Assert.NotEmpty(fullBackground.Features);
             var shelter = fullBackground.Features.FirstOrDefault(f => f.Name == "Shelter of the Faithful");
             Assert.NotNull(shelter);
-            Assert.Equal("As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity.", shelter!.Description);
+            Assert.Equal("As an acolyte...", shelter!.Description);
         }
     }
 }

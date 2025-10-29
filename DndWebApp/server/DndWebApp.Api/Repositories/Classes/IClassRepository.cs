@@ -21,7 +21,7 @@ public interface IClassRepository : IRepository<Class>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Class"/>.
     /// </remarks>
-    Task<ClassDto?> GetClassDtoAsync(int id);
+    Task<ClassDto?> GetDtoAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Class"/> entities in the database,
@@ -36,7 +36,7 @@ public interface IClassRepository : IRepository<Class>
     /// <remarks>
     /// Typically used for search results, dropdowns, or <see cref="Class"/> selection during character creation.
     /// </remarks>
-    Task<ICollection<ClassDto>> GetAllClassDtoDataAsync();
+    Task<ICollection<ClassDto>> GetAllDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Class"/> entity by its <paramref name="id"/>, 

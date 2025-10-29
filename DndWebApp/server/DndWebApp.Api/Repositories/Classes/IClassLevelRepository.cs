@@ -3,7 +3,7 @@ using DndWebApp.Api.Models.DTOs;
 
 namespace DndWebApp.Api.Repositories.Classes;
 
-public interface IClassLevelRepository
+public interface IClassLevelRepository : IRepository<ClassLevel>
 {
     /// <summary>
     /// Retrieves a <see cref="ClassLevel"/> entity by its <paramref name="id"/>, 

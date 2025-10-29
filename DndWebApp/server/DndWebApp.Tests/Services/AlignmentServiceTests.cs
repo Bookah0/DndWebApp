@@ -1,4 +1,4 @@
-using DndWebApp.Api.Models.DTOs;
+using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Services;
@@ -8,16 +8,6 @@ namespace DndWebApp.Tests.Services;
 
 public class AlignmentServiceTests
 {
-    internal static AlignmentDto CreateTestAlignmentDto(string name, string abbreviation, string description, int id)
-    {
-        return new() { Id = id, Name = name, Description = description, Abbreviation = abbreviation };
-    }
-
-    internal static Alignment CreateTestAlignment(string name, string abbreviation, string description, int id)
-    {
-        return new() { Id = id, Name = name, Description = description, Abbreviation = abbreviation };
-    }
-
     [Fact]
     public async Task AddAndRetrieveAlignments_WorksCorrectly()
     {

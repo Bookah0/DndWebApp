@@ -9,7 +9,7 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class FeatRepository(AppDbContext context) : EfRepository<Feat>(context), IFeatRepository
 {
-    public async Task<FeatDto?> GetFeatDtoAsync(int id)
+    public async Task<FeatDto?> GetDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -30,7 +30,7 @@ public class FeatRepository(AppDbContext context) : EfRepository<Feat>(context),
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<FeatDto>> GetAllFeatDtosAsync()
+    public async Task<ICollection<FeatDto>> GetDtosAsync()
     {
         return await dbSet
             .AsNoTracking()

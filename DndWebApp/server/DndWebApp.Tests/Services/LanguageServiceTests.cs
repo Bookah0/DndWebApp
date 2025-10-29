@@ -1,30 +1,13 @@
-using System.ComponentModel;
-using System.Data.Common;
-using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Services;
-using Microsoft.EntityFrameworkCore;
 using Moq;
-using Xunit.Sdk;
 
 namespace DndWebApp.Tests.Services;
 
 public class LanguageServiceTests
 {
-    internal static LanguageDto CreateTestLanguageDto(string name, string family, string script, int id = 1)
-    {
-        return new() { Id = id, Name = name, Family = family, Script = script, IsHomebrew = false };
-    }
-
-    internal static Language CreateTestLanguage(string name, string family, string script, int id = 1)
-    {
-        return new() { Id = id, Name = name, Family = family, Script = script, IsHomebrew = false };
-    }
-
     [Fact]
     public async Task AddAndRetrieveLanguages_WorksCorrectly()
     {

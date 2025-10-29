@@ -1,95 +1,48 @@
+using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Items;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class ItemRepositoryTests
 {
-    private Item CreateTestItem() => new Item
-    {
-        Name = "Spoon",
-        Description = "A simple metal spoon, useful for eating or mixing potions.",
-        Categories = [ItemCategory.AdventuringGear]
-    };
-
-    private Armor CreateTestArmor() => new Armor
-    {
-        Name = "Leather Armor",
-        Description = "Light armor made from tanned leather, provides basic protection.",
-        Categories = [ItemCategory.Armor],
-        Category = ArmorCategory.Light,
-        BaseArmorClass = 11,
-        PlusDexMod = true
-    };
-
-    private Weapon CreateTestWeapon() => new Weapon
-    {
-        Name = "Shortbow",
-        Description = "A small bow ideal for ranged attacks.",
-        Categories = [ItemCategory.Weapon],
-        WeaponCategory = WeaponCategory.SimpleRanged,
-        WeaponType = WeaponType.Shortbow,
-        Properties = [WeaponProperty.TwoHanded],
-        DamageTypes = [DamageType.Piercing],
-        DamageDice = "1d6",
-        Range = 80
-    };
-
-    private Tool CreateTestTool() => new Tool
-    {
-        Name = "Thieves' Kit",
-        Description = "A set of lockpicks and other tools for stealthy operations.",
-        Categories = [ItemCategory.Tools],
-        Activities = [],
-        Properties = []
-    };
-
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) => new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
-
     [Fact]
     public async Task AddAndRetrieveItems_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Items_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-
+        var itemRepo = new ItemRepository(context);
+        var armorRepo = new EfRepository<Armor>(context);
+        var weaponRepo = new EfRepository<Weapon>(context);
+        var toolRepo = new ToolRepository(context);
+        
+        // Arrange
         var item = CreateTestItem();
         var armor = CreateTestArmor();
         var weapon = CreateTestWeapon();
         var tool = CreateTestTool();
 
         // Act
-        var itemRepo = new ItemRepository(context);
-        var armorRepo = new EfRepository<Armor>(context);
-        var weaponRepo = new EfRepository<Weapon>(context);
-        var toolRepo = new ToolRepository(context);
-
         await itemRepo.CreateAsync(item);
         await armorRepo.CreateAsync(armor);
         await weaponRepo.CreateAsync(weapon);
         await toolRepo.CreateAsync(tool);
         await context.SaveChangesAsync();
 
-        // Assert
         var savedItem = await itemRepo.GetByIdAsync(item.Id);
         var savedArmor = await armorRepo.GetByIdAsync(armor.Id);
         var savedWeapon = await weaponRepo.GetByIdAsync(weapon.Id);
         var savedTool = await toolRepo.GetByIdAsync(tool.Id);
 
-        // Item
+        // Assert
         Assert.NotNull(savedItem);
         Assert.Equal("Spoon", savedItem!.Name);
         Assert.Equal("A simple metal spoon, useful for eating or mixing potions.", savedItem.Description);
         Assert.Equal(ItemCategory.AdventuringGear, savedItem.Categories.First());
 
-        // Armor
         Assert.NotNull(savedArmor);
         Assert.Equal("Leather Armor", savedArmor!.Name);
         Assert.Equal("Light armor made from tanned leather, provides basic protection.", savedArmor.Description);
@@ -98,7 +51,6 @@ public class ItemRepositoryTests
         Assert.Equal(11, savedArmor.BaseArmorClass);
         Assert.True(savedArmor.PlusDexMod);
 
-        // Weapon
         Assert.NotNull(savedWeapon);
         Assert.Equal("Shortbow", savedWeapon!.Name);
         Assert.Equal("A small bow ideal for ranged attacks.", savedWeapon.Description);
@@ -109,7 +61,6 @@ public class ItemRepositoryTests
         Assert.Equal("1d6", savedWeapon.DamageDice);
         Assert.Equal(80, savedWeapon.Range);
 
-        // Tool
         Assert.NotNull(savedTool);
         Assert.Equal("Thieves' Kit", savedTool!.Name);
         Assert.Equal("A set of lockpicks and other tools for stealthy operations.", savedTool.Description);
@@ -166,25 +117,23 @@ public class ItemRepositoryTests
     [Fact]
     public async Task UpdateItems_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Items_UpdateDB");
         await using var context = new AppDbContext(options);
-
-        var item = CreateTestItem();
-        var armor = CreateTestArmor();
-        var weapon = CreateTestWeapon();
-        var tool = CreateTestTool();
-
         var itemRepo = new ItemRepository(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
         var toolRepo = new ToolRepository(context);
 
+        // Arrange
+        var item = CreateTestItem();
+        var armor = CreateTestArmor();
+        var weapon = CreateTestWeapon();
+        var tool = CreateTestTool();
+
         await itemRepo.CreateAsync(item);
         await armorRepo.CreateAsync(armor);
         await weaponRepo.CreateAsync(weapon);
         await toolRepo.CreateAsync(tool);
-        await context.SaveChangesAsync();
 
         // Act
         item.Name = "Golden Spoon";
@@ -202,7 +151,6 @@ public class ItemRepositoryTests
         await armorRepo.UpdateAsync(armor);
         await weaponRepo.UpdateAsync(weapon);
         await toolRepo.UpdateAsync(tool);
-        await context.SaveChangesAsync();
 
         // Assert
         var savedItem = await itemRepo.GetByIdAsync(item.Id);
@@ -210,22 +158,18 @@ public class ItemRepositoryTests
         var savedWeapon = await weaponRepo.GetByIdAsync(weapon.Id);
         var savedTool = await toolRepo.GetByIdAsync(tool.Id);
 
-        // Item
         Assert.NotNull(savedItem);
         Assert.Equal("Golden Spoon", savedItem!.Name);
         Assert.Equal("A fancy golden spoon.", savedItem.Description);
 
-        // Armor
         Assert.NotNull(savedArmor);
         Assert.Equal(12, savedArmor!.BaseArmorClass);
         Assert.False(savedArmor.PlusDexMod);
 
-        // Weapon
         Assert.NotNull(savedWeapon);
         Assert.Equal("1d8", savedWeapon!.DamageDice);
         Assert.Equal(100, savedWeapon.Range);
 
-        // Tool
         Assert.NotNull(savedTool);
         Assert.Equal("Updated set of lockpicks and stealth tools.", savedTool!.Description);
     }
@@ -233,39 +177,36 @@ public class ItemRepositoryTests
     [Fact]
     public async Task DeleteItems_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Items_DeleteDB");
         await using var context = new AppDbContext(options);
-
-        var item = CreateTestItem();
-        var armor = CreateTestArmor();
-        var weapon = CreateTestWeapon();
-        var tool = CreateTestTool();
-
         var itemRepo = new ItemRepository(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
         var toolRepo = new ToolRepository(context);
 
+        // Arrange
+        var item = CreateTestItem();
+        var armor = CreateTestArmor();
+        var weapon = CreateTestWeapon();
+        var tool = CreateTestTool();
+
         await itemRepo.CreateAsync(item);
         await armorRepo.CreateAsync(armor);
         await weaponRepo.CreateAsync(weapon);
         await toolRepo.CreateAsync(tool);
-        await context.SaveChangesAsync();
 
         // Act
         await itemRepo.DeleteAsync(item);
         await armorRepo.DeleteAsync(armor);
         await weaponRepo.DeleteAsync(weapon);
         await toolRepo.DeleteAsync(tool);
-        await context.SaveChangesAsync();
 
-        // Assert
         var deletedItem = await itemRepo.GetByIdAsync(item.Id);
         var deletedArmor = await armorRepo.GetByIdAsync(armor.Id);
         var deletedWeapon = await weaponRepo.GetByIdAsync(weapon.Id);
         var deletedTool = await toolRepo.GetByIdAsync(tool.Id);
 
+        // Assert
         Assert.Null(deletedItem);
         Assert.Null(deletedArmor);
         Assert.Null(deletedWeapon);
@@ -275,9 +216,11 @@ public class ItemRepositoryTests
     [Fact]
     public async Task RetrieveToolWithAllData_ShouldHaveCorrectActivitiesAndProperties()
     {
-        // Arrange
         var options = GetInMemoryOptions("Tools_AddRetrieveDB");
+        await using var context = new AppDbContext(options);
+        var repo = new ToolRepository(context);
 
+        // Arrange
         var tool = CreateTestTool();
         var activity1 = new ToolActivity { Title = "Pick a lock", DC = "Varies" };
         var activity2 = new ToolActivity { Title = "Disable a trap", DC = "Varies" };
@@ -289,15 +232,10 @@ public class ItemRepositoryTests
         tool.Properties.Add(property2);
 
         // Act
-        await using var context = new AppDbContext(options);
-
-        var repo = new ToolRepository(context);
         await repo.CreateAsync(tool);
-        await context.SaveChangesAsync();
-
-        // Assert
         var retrievedTool = await repo.GetWithAllDataAsync(tool.Id);
 
+        // Assert
         Assert.NotNull(retrievedTool);
         Assert.Equal("Thieves' Kit", retrievedTool!.Name);
 

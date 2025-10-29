@@ -8,7 +8,7 @@ namespace DndWebApp.Api.Repositories.Classes;
 
 public class ClassRepository(AppDbContext context) : EfRepository<Class>(context), IClassRepository
 {
-    public async Task<ClassDto?> GetClassDtoAsync(int id)
+    public async Task<ClassDto?> GetDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -23,7 +23,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<ClassDto>> GetAllClassDtoDataAsync()
+    public async Task<ICollection<ClassDto>> GetAllDtosAsync()
     {
         return await dbSet
             .AsNoTracking()

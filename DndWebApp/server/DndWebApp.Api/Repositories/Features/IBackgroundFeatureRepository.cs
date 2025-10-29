@@ -21,7 +21,7 @@ public interface IBackgroundFeatureRepository : IRepository<BackgroundFeature>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="BackgroundFeature"/>.
     /// </remarks>
-    Task<BackgroundFeatureDto?> GetBackgroundDtoAsync(int id);
+    Task<BackgroundFeatureDto?> GetDtoAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="BackgroundFeature"/> entities in the database,
@@ -36,7 +36,7 @@ public interface IBackgroundFeatureRepository : IRepository<BackgroundFeature>
     /// <remarks>
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<BackgroundFeatureDto>> GetAllBackgroundDtosAsync();
+    Task<ICollection<BackgroundFeatureDto>> GetAllDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="BackgroundFeature"/> entity by its <paramref name="id"/>, 

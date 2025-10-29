@@ -8,7 +8,7 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFeature>(context), IClassFeatureRepository
 {
-    public async Task<ClassFeatureDto?> GetClassFeatureDtoAsync(int id)
+    public async Task<ClassFeatureDto?> GetDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -18,12 +18,12 @@ public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFe
                 Name = f.Name,
                 Description = f.Description,
                 IsHomebrew = f.IsHomebrew,
-                FromId = f.ClassId
+                ClassLevelId = f.ClassLevelId
             })
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<ClassFeatureDto>> GetAllClassFeatureDtosAsync()
+    public async Task<ICollection<ClassFeatureDto>> GetAllDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
@@ -33,7 +33,7 @@ public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFe
                 Name = f.Name,
                 Description = f.Description,
                 IsHomebrew = f.IsHomebrew,
-                FromId = f.ClassId
+                ClassLevelId = f.ClassLevelId
             })
             .ToListAsync();
     }
@@ -42,7 +42,7 @@ public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFe
     {
         return await dbSet
             .AsSplitQuery()
-            .Include(f => f.Class)
+            .Include(f => f.ClassLevel)
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
             .Include(f => f.LanguageChoices)
@@ -60,7 +60,7 @@ public class ClassFeatureRepository(AppDbContext context) : EfRepository<ClassFe
     {
         return await dbSet
             .AsSplitQuery()
-            .Include(f => f.Class)
+            .Include(f => f.ClassLevel)
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
             .Include(f => f.LanguageChoices)

@@ -7,7 +7,7 @@ namespace DndWebApp.Api.Repositories.Abilities;
 
 public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(context), IAbilityRepository
 {
-    public async Task<AbilityDto?> GetAbilityDtoAsync(int id)
+    public async Task<AbilityDto?> GetDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -28,7 +28,7 @@ public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(con
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<AbilityDto>> GetAllAbilityDtosAsync()
+    public async Task<ICollection<AbilityDto>> GetAllDtosAsync()
     {
         return await dbSet
             .AsNoTracking()

@@ -1,5 +1,5 @@
+using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Services;
 using Moq;
@@ -8,16 +8,6 @@ namespace DndWebApp.Tests.Services;
 
 public class AbilityServiceTests
 {
-    internal static AbilityDto CreateTestAbilityDto(string fullName, string shortName, string description, int id)
-    {
-        return new() { Id = id, FullName = fullName, ShortName = shortName, Description = description };
-    }
-
-    internal static Ability CreateTestAbility(string fullName, string shortName, string description, int id, ICollection<Skill> skills = null!)
-    {
-        return new() { Id = id, FullName = fullName, ShortName = shortName, Description = description, Skills = skills };
-    }
-
     [Fact]
     public async Task AddAndRetrieveabilities_WorksCorrectly()
     {

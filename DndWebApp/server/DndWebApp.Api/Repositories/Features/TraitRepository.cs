@@ -8,7 +8,7 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context), ITraitRepository
 {
-    public async Task<TraitDto?> GetTraitDtoAsync(int id)
+    public async Task<TraitDto?> GetDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -18,12 +18,12 @@ public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context
                 Name = t.Name,
                 Description = t.Description,
                 IsHomebrew = t.IsHomebrew,
-                FromId = t.RaceId
+                RaceId = t.RaceId
             })
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<TraitDto>> GetAllTraitDtosAsync()
+    public async Task<ICollection<TraitDto>> GetAllDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
@@ -33,7 +33,7 @@ public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context
                 Name = t.Name,
                 Description = t.Description,
                 IsHomebrew = t.IsHomebrew,
-                FromId = t.RaceId
+                RaceId = t.RaceId
             })
             .ToListAsync();
     }

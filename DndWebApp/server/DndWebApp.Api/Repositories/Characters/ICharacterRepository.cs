@@ -46,7 +46,7 @@ public interface ICharacterRepository
     /// Typically used for displaying general <see cref="Character"/> information.
     /// </remarks>
 
-    Task<CharacterDto?> GetPrimitiveDataAsync(int id);
+    Task<CharacterDto?> GetDtoAsync(int id);
     /// <summary>
     /// Retrieves primitive data of all <see cref="Character"/>s, 
     /// excluding <see cref="CharacterBuilding"/> data, <see cref="CurrentSpellSlots"/> data and related navigation properties.
@@ -57,7 +57,7 @@ public interface ICharacterRepository
     /// <remarks>
     /// Typically used for displaying <see cref="Character"/>s in lists and grids.
     /// </remarks>
-    Task<ICollection<CharacterDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<CharacterDto>> GetAllDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Feature"/> entity by its <paramref name="id"/>, 

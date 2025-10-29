@@ -1,30 +1,14 @@
-using System.ComponentModel;
-using DndWebApp.Api.Data;
+using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Repositories.Skills;
 using DndWebApp.Api.Services;
-using Microsoft.EntityFrameworkCore;
 using Moq;
-using Xunit.Sdk;
 
 namespace DndWebApp.Tests.Services;
 
 public class SkillServiceTests
 {
-    private static SkillDto CreateTestSkillDto(string name, int abilityId, int id = 1, bool isHomebrew = false)
-    {
-        return new() { Id = id, Name = name, AbilityId = abilityId, IsHomebrew = isHomebrew };
-    }
-
-    private static Skill CreateTestSkill(string name, int abilityId, Ability ability = null!, int id = 1)
-    {
-        return new() { Id = id, Name = name, AbilityId = abilityId, Ability = ability };
-    }
-    
     [Fact]
     public async Task AddAndRetrieveSkills_WorksCorrectly()
     {
@@ -236,9 +220,9 @@ public class SkillServiceTests
         // Assert
         var service = new SkillService(null!, null!);
 
-        var intel = AbilityServiceTests.CreateTestAbility("Intelligence", "INT", "Desc..", id: 1);
-        var str = AbilityServiceTests.CreateTestAbility("Strength", "STR", "Desc..", id: 2);
-        var wis = AbilityServiceTests.CreateTestAbility("Wisdom", "WIS", "Desc..", id: 3);
+        var intel = CreateTestAbility("Intelligence", "INT", "Desc..", id: 1);
+        var str = CreateTestAbility("Strength", "STR", "Desc..", id: 2);
+        var wis = CreateTestAbility("Wisdom", "WIS", "Desc..", id: 3);
 
         List<Skill> skills =
         [

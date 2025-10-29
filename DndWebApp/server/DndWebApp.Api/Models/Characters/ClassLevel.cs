@@ -36,6 +36,7 @@ public class SpellSlotsAtLevel
 [Owned]
 public class ClassSpecificSlot
 {
+    public int Id { get; set; }
     public required string Name { get; set; }
     public required int Quantity { get; set; }
 }

@@ -20,7 +20,7 @@ public interface ITraitRepository : IRepository<Trait>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Trait"/>.
     /// </remarks>
-    Task<TraitDto?> GetTraitDtoAsync(int id);
+    Task<TraitDto?> GetDtoAsync(int id);
 
 
     /// <summary>
@@ -36,7 +36,7 @@ public interface ITraitRepository : IRepository<Trait>
     /// <remarks>
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<TraitDto>> GetAllTraitDtosAsync();
+    Task<ICollection<TraitDto>> GetAllDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Trait"/> entity by its <paramref name="id"/>, 

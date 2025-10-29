@@ -2,6 +2,7 @@ using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Services.Generic;
+using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Features;
 
@@ -14,28 +15,53 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
         this.repo = repo;
     }
 
-    public Task<Feat> CreateAsync(FeatDto entity)
+    public async Task<Feat> CreateAsync(FeatDto dto)
     {
-        throw new NotImplementedException();
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Description);
+
+        var feat = new Feat
+        {
+            Name = dto.Name,
+            Description = dto.Description,
+            IsHomebrew = dto.IsHomebrew
+        };
+
+        // TODO
+        // Method that parses description into data that fills the lists in AFeature
+
+        return await repo.CreateAsync(feat);
     }
 
-    public Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        var feat = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Feat could not be found");
+        await repo.DeleteAsync(feat);
     }
 
-    public Task<ICollection<Feat>> GetAllAsync()
+    public async Task<ICollection<Feat>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await repo.GetAllAsync();
     }
 
-    public Task<Feat> GetByIdAsync(int id)
+    public async Task<Feat> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Feat could not be found");
     }
 
-    public Task UpdateAsync(FeatDto updatedEntity)
+    public async Task UpdateAsync(FeatDto dto)
     {
-        throw new NotImplementedException();
+        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.ValidateRequiredString(dto.Description);
+
+        var feat = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Feat could not be found");
+
+        feat.Name = dto.Name;
+        feat.Description = dto.Description;
+
+        // TODO
+        // Method that parses description into data that fills the lists in AFeature
+
+        await repo.UpdateAsync(feat);
     }
 }

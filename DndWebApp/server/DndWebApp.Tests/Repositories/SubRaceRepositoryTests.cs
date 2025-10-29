@@ -1,53 +1,32 @@
+using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Species;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class SubraceRepositoryTests
 {
-    private Race CreateTestRace(string name) => new() { Name = name, Speed = 30 };
-
-    private Subrace CreateTestSubrace(string name, Race parentRace, int parentRaceId)
-    {
-        return new() { Name = name, Speed = 30, ParentRace = parentRace, ParentRaceId = parentRaceId };
-    }
-
-    private Trait CreateTestTrait(string name, string description, Species fromRace, int raceId)
-    {
-        return new() { Name = name, Description = description, FromRace = fromRace, RaceId = raceId };
-    }
-
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .Options;
-    }
-
     [Fact]
     public async Task AddAndRetrieveSubraces_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Subrace_AddRetrieveDB");
+        await using var context = new AppDbContext(options);
+        var repo = new SubraceRepository(context);
+
+        // Arrange
         var elfRace = CreateTestRace("Elf");
         var highElf = CreateTestSubrace("High Elf", elfRace, elfRace.Id);
         var woodElf = CreateTestSubrace("Wood Elf", elfRace, elfRace.Id);
-        elfRace.SubRaces.Add(highElf);
-        elfRace.SubRaces.Add(woodElf);
 
         // Act
-        await using var context = new AppDbContext(options);
+        elfRace.SubRaces.Add(highElf);
+        elfRace.SubRaces.Add(woodElf);
         context.Races.Add(elfRace);
-        await context.SaveChangesAsync();
-
-        // Assert
-        var repo = new SubraceRepository(context);
 
         var savedHighElf = await repo.GetByIdAsync(highElf.Id);
         var savedWoodElf = await repo.GetByIdAsync(woodElf.Id);
 
+        // Assert
         Assert.NotNull(savedHighElf);
         Assert.Equal("High Elf", savedHighElf!.Name);
         Assert.Equal(elfRace.Id, savedHighElf.ParentRaceId);
@@ -65,124 +44,90 @@ public class SubraceRepositoryTests
     [Fact]
     public async Task UpdateSubrace_WorksCorrectly()
     {
-        // Arrange
-        var options = GetInMemoryOptions("Subrace_UpdateDB");
-        var subrace = CreateTestSubrace("High Elf", null!, -1);
+        var options = GetInMemoryOptions("Subrace_DeleteDB");
+        await using var context = new AppDbContext(options);
+        var repo = new SubraceRepository(context);
 
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new SubraceRepository(context);
-            await repo.CreateAsync(subrace);
-            await context.SaveChangesAsync();
-        }
+        // Arrange
+        var subrace = CreateTestSubrace("High Elf", null!, -1);
+        await repo.CreateAsync(subrace);
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new SubraceRepository(context);
-            var savedSubrace = await repo.GetByIdAsync(1);
-            savedSubrace!.Name = "Updated Elf";
-
-            await repo.UpdateAsync(savedSubrace);
-            await context.SaveChangesAsync();
-        }
+        var savedSubrace = await repo.GetByIdAsync(1);
+        savedSubrace!.Name = "Updated Elf";
+        await repo.UpdateAsync(savedSubrace);
+        var updated = await repo.GetByIdAsync(1);
 
         // Assert
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new SubraceRepository(context);
-            var updated = await repo.GetByIdAsync(1);
-            Assert.Equal("Updated Elf", updated!.Name);
-        }
+        Assert.Equal("Updated Elf", updated!.Name);
     }
 
     [Fact]
     public async Task DeleteSubrace_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Subrace_DeleteDB");
+        await using var context = new AppDbContext(options);
+        var repo = new SubraceRepository(context);
+
+        // Arrange
         var subrace = CreateTestSubrace("High Elf", null!, -1);
-
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new SubraceRepository(context);
-
-            await repo.CreateAsync(subrace);
-            await context.SaveChangesAsync();
-        }
+        await repo.CreateAsync(subrace);
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new SubraceRepository(context);
-            await repo.DeleteAsync(subrace);
-            await context.SaveChangesAsync();
-        }
+        await repo.DeleteAsync(subrace);
+        var deleted = await repo.GetByIdAsync(subrace.Id);
 
         // Assert
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new SubraceRepository(context);
-            var deleted = await repo.GetByIdAsync(subrace.Id);
-
-            Assert.Null(deleted);
-        }
+        Assert.Null(deleted);
     }
 
     [Fact]
     public async Task RetrieveSubracesAsPrimitiveDtos_ShouldHaveCorrectFieldValues()
     {
-        // Arrange
         var options = GetInMemoryOptions("PrimitiveSubrace_AddRetrieveDB");
+        await using var context = new AppDbContext(options);
+        var repo = new SubraceRepository(context);
 
+        // Arrange
         var highElf = CreateTestSubrace("High Elf", null!, 1);
         var woodElf = CreateTestSubrace("Wood Elf", null!, 2);
         highElf.RaceDescription.GeneralDescription = "High elf description";
         woodElf.RaceDescription.GeneralDescription = "Wood elf description";
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new SubraceRepository(context);
-            await repo.CreateAsync(highElf);
-            await repo.CreateAsync(woodElf);
-            await context.SaveChangesAsync();
-        }
+        await repo.CreateAsync(highElf);
+        await repo.CreateAsync(woodElf);
+
+        var primitiveHighElf = await repo.GetSubraceDtoAsync(1);
+        var primitiveWoodElf = await repo.GetSubraceDtoAsync(2);
+        var allRacesAsPrimitive = await repo.GetAllSubraceDtosAsync();
 
         // Assert
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new SubraceRepository(context);
+        Assert.NotNull(primitiveHighElf);
+        Assert.Equal("High Elf", primitiveHighElf!.Name);
+        Assert.Equal(1, primitiveHighElf.ParentRaceId);
+        Assert.NotNull(primitiveHighElf.GeneralDescription);
+        Assert.Equal("High elf description", primitiveHighElf.GeneralDescription);
 
-            var primitiveHighElf = await repo.GetSubraceDtoAsync(1);
-            var primitiveWoodElf = await repo.GetSubraceDtoAsync(2);
+        Assert.NotNull(primitiveWoodElf);
+        Assert.Equal("Wood Elf", primitiveWoodElf!.Name);
+        Assert.Equal(2, primitiveWoodElf.ParentRaceId);
+        Assert.NotNull(primitiveWoodElf.GeneralDescription);
+        Assert.Equal("Wood elf description", primitiveWoodElf.GeneralDescription);
 
-            Assert.NotNull(primitiveHighElf);
-            Assert.Equal("High Elf", primitiveHighElf!.Name);
-            Assert.Equal(1, primitiveHighElf.ParentRaceId);
-            Assert.NotNull(primitiveHighElf.GeneralDescription);
-            Assert.Equal("High elf description", primitiveHighElf.GeneralDescription);
-
-            Assert.NotNull(primitiveWoodElf);
-            Assert.Equal("Wood Elf", primitiveWoodElf!.Name);
-            Assert.Equal(2, primitiveWoodElf.ParentRaceId);
-            Assert.NotNull(primitiveWoodElf.GeneralDescription);
-            Assert.Equal("Wood elf description", primitiveWoodElf.GeneralDescription);
-
-            var allRacesAsPrimitive = await repo.GetAllSubraceDtosAsync();
-            Assert.Equal(2, allRacesAsPrimitive.Count);
-            Assert.Contains(allRacesAsPrimitive, r => r.Name == "High Elf");
-            Assert.Contains(allRacesAsPrimitive, r => r.Name == "Wood Elf");
-        }
+        Assert.Equal(2, allRacesAsPrimitive.Count);
+        Assert.Contains(allRacesAsPrimitive, r => r.Name == "High Elf");
+        Assert.Contains(allRacesAsPrimitive, r => r.Name == "Wood Elf");
     }
 
     [Fact]
     public async Task AddAndRetrieveWithTraits_ShouldHaveCorrectTraits()
     {
-        // Arrange
         var options = GetInMemoryOptions("Subrace_RetrieveWithTraitsDB");
         await using var context = new AppDbContext(options);
+        var repo = new SubraceRepository(context);
 
+        // Arrange
         var elfRace = CreateTestRace("Elf");
         context.Races.Add(elfRace);
 
@@ -197,11 +142,12 @@ public class SubraceRepositoryTests
 
         await context.SaveChangesAsync();
 
-        // Assert
-        var repo = new SubraceRepository(context);
+        // Act
         var fetchedHighElf = await repo.GetWithAllDataAsync(highElf.Id);
         var fetchedWoodElf = await repo.GetWithAllDataAsync(woodElf.Id);
+        var allSubraces = await repo.GetAllWithAllDataAsync();
 
+        // Assert
         Assert.NotNull(fetchedHighElf);
         Assert.Equal("High Elf", fetchedHighElf!.Name);
         Assert.NotNull(fetchedHighElf.Traits);
@@ -212,7 +158,6 @@ public class SubraceRepositoryTests
         Assert.NotNull(fetchedWoodElf.Traits);
         Assert.Single(fetchedWoodElf.Traits);
 
-        var allSubraces = await repo.GetAllWithAllDataAsync();
         Assert.NotNull(allSubraces);
         Assert.NotEmpty(allSubraces);
     }

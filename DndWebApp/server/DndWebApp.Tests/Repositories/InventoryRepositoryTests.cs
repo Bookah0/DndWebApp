@@ -1,71 +1,24 @@
+using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Items;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class InventoryRepositoryTests
 {
-    private Armor CreateTestArmor() => new Armor
-    {
-        Name = "Leather Armor",
-        Description = "Light armor made from tanned leather, provides basic protection.",
-        Categories = [ItemCategory.Armor],
-        Category = ArmorCategory.Light,
-        BaseArmorClass = 11,
-        PlusDexMod = true
-    };
-
-    private Weapon CreateTestWeapon() => new Weapon
-    {
-        Name = "Shortbow",
-        Description = "A small bow ideal for ranged attacks.",
-        Categories = [ItemCategory.Weapon],
-        WeaponCategory = WeaponCategory.SimpleRanged,
-        WeaponType = WeaponType.Shortbow,
-        Properties = [WeaponProperty.TwoHanded],
-        DamageTypes = [DamageType.Piercing],
-        DamageDice = "1d6",
-        Range = 80
-    };
-
-    private Tool CreateTestTool() => new Tool
-    {
-        Name = "Thieves' Kit",
-        Description = "A set of lockpicks and other tools for stealthy operations.",
-        Categories = [ItemCategory.Tools],
-        Activities = [],
-        Properties = []
-    };
-
-    private Inventory CreateTestInventory(){
-        var inv = new Inventory { Currency = new() };
-        inv.EquippedArmor = CreateTestArmor();
-        inv.Equipment.Add(CreateTestWeapon());
-        inv.Gear.Add(CreateTestTool());
-        return inv;
-    }
-
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) => new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
-
     [Fact]
     public async Task AddAndRetrieveItems_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Inventory_AddRetrieveDB");
         await using var context = new AppDbContext(options);
+        var invRepo = new InventoryRepository(context);
 
+        // Arrange
         var inv = CreateTestInventory();
 
         // Act
-        var invRepo = new InventoryRepository(context);
         await invRepo.CreateAsync(inv);
-        await context.SaveChangesAsync();
 
         var savedInventory = await invRepo.GetByIdAsync(inv.Id);
         var withEquipped = await invRepo.GetWithEquippedItemsAsync(inv.Id);

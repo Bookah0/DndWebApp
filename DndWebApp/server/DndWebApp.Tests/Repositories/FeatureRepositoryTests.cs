@@ -1,111 +1,41 @@
-using Microsoft.EntityFrameworkCore;
+using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Features;
-using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Backgrounds;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class FeatureRepositoryTests
 {
-    private Trait CreateTestTrait(Species species) => new Trait
-    {
-        Name = "Darkvision",
-        Description = "See in the dark.",
-        FromRace = species,
-        RaceId = species.Id
-    };
-
-    private ClassFeature CreateTestClassFeature(Class cls) => new ClassFeature
-    {
-        Name = "Spellcasting",
-        Description = "Gain spellcasting abilities.",
-        Class = cls,
-        ClassId = cls.Id,
-        LevelWhenGained = 1
-    };
-
-    private Feat CreateTestFeat() => new Feat
-    {
-        Name = "Sharpshooter",
-        Description = "Improve ranged attacks.",
-        Prerequisite = "Dex 13"
-    };
-
-    private BackgroundFeature CreateTestBackgroundFeature(Background bg)
-    {
-        if (bg.Id == 0)
-            throw new InvalidOperationException("Background must be saved first so it has an ID.");
-
-        return new BackgroundFeature
-        {
-            Name = "Shelter of the Faithful",
-            Description = "Command respect in your community.",
-            Background = bg,
-            BackgroundId = bg.Id,
-        };
-    }
-
-    private Class CreateTestClass() => new Class
-    {
-        Name = "Shelter of the Faithful",
-        Description = "Command respect in your community.",
-        HitDie = "",
-        ClassLevels = [],
-        SpellLevel = 2,
-        Info = [],
-        SpellcastingAbilityId = -1
-    };
-
-    private Race CreateTestRace(string name = "Elf") => new() { Name = name, Speed = 30 };
-
-    private Background CreateTestBackground()
-    {
-        var background = new Background
-        {
-            Name = "Acholyte",
-            Description = "Acholyte description",
-            StartingCurrency = new() { Gold = 15 }
-        };
-        return background;
-    }
-
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName) => new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
-
     [Fact]
     public async Task AddAndRetrieveFeatures_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Feature_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-
-        var species = CreateTestRace();
-        var cls = CreateTestClass();
-        var bg = CreateTestBackground();
-
-        await context.AddRangeAsync(species, cls, bg);
-        await context.SaveChangesAsync();
-
-        var trait = CreateTestTrait(species);
-        var classFeature = CreateTestClassFeature(cls);
-        var feat = CreateTestFeat();
-        var backgroundFeature = CreateTestBackgroundFeature(bg);
-
-        // Act
         var traitRepo = new TraitRepository(context);
         var classFeatureRepo = new ClassFeatureRepository(context);
         var featRepo = new FeatRepository(context);
         var bgFeatureRepo = new BackgroundFeatureRepository(context);
 
+        // Arrange
+        var species = CreateTestRace("Elf");
+        var cls = CreateTestClass();
+        var classLevel = CreateTestLevel(cls);
+        var bg = CreateTestBackground("Acholyte");
+
+        await context.AddRangeAsync(classLevel, species, cls, bg);
+        await context.SaveChangesAsync();
+
+        var trait = CreateTestTrait("Trait", "decsription", species, species.Id);
+        var classFeature = CreateTestClassFeature(classLevel.Id);
+        var feat = CreateTestFeat();
+        var backgroundFeature = CreateTestFeature(bg: bg, bgId: bg.Id);
+
+        // Act
         await traitRepo.CreateAsync(trait);
         await classFeatureRepo.CreateAsync(classFeature);
         await featRepo.CreateAsync(feat);
         await bgFeatureRepo.CreateAsync(backgroundFeature);
-        await context.SaveChangesAsync();
 
         // Assert
         var fullTrait = await traitRepo.GetWithAllDataAsync(trait.Id);
@@ -115,7 +45,7 @@ public class FeatureRepositoryTests
 
         var fullClassFeat = await classFeatureRepo.GetWithAllDataAsync(classFeature.Id);
         Assert.NotNull(fullClassFeat);
-        Assert.Equal(cls.Id, fullClassFeat!.Class.Id);
+        Assert.Equal(cls.ClassLevels.First().Id, fullClassFeat!.ClassLevelId);
         Assert.NotNull(fullClassFeat.AbilityIncreases);
 
         var fullFeat = await featRepo.GetWithAllDataAsync(feat.Id);
@@ -124,127 +54,125 @@ public class FeatureRepositoryTests
 
         var fullBgFeat = await bgFeatureRepo.GetWithAllDataAsync(backgroundFeature.Id);
         Assert.NotNull(fullBgFeat);
-        Assert.Equal(bg.Id, fullBgFeat!.Background.Id);
+        Assert.Equal(bg.Id, fullBgFeat.Background!.Id);
         Assert.NotNull(fullBgFeat.AbilityIncreases);
     }
 
     [Fact]
-    public async Task Trait_PrimitiveData_Works()
+    public async Task Trait_dtoData_Works()
     {
-        // Arrange
-        var options = GetInMemoryOptions("TraitPrimitiveDB");
+        var options = GetInMemoryOptions("TraitdtoDB");
         await using var context = new AppDbContext(options);
-
-        var race = CreateTestRace();
-        var trait = CreateTestTrait(race);
         var repo = new TraitRepository(context);
+
+        // Arrange
+        var race = CreateTestRace("Elf");
+        var trait = CreateTestTrait("", "", race, 1);
+        race.Id = 1;
 
         // Act
         await repo.CreateAsync(trait);
-        await context.SaveChangesAsync();
 
-        var primitive = await repo.GetTraitDtoAsync(trait.Id);
-        var allPrimitives = await repo.GetAllTraitDtosAsync();
+        var dto = await repo.GetDtoAsync(trait.Id);
+        var alldtos = await repo.GetAllDtosAsync();
 
         // Assert
-        Assert.NotNull(primitive);
-        Assert.Equal(trait.Id, primitive!.Id);
-        Assert.Equal(trait.Name, primitive.Name);
-        Assert.Equal(trait.Description, primitive.Description);
-        Assert.Equal(trait.IsHomebrew, primitive.IsHomebrew);
-        Assert.Equal(trait.RaceId, primitive.FromId);
+        Assert.NotNull(dto);
+        Assert.Equal(trait.Id, dto!.Id);
+        Assert.Equal(trait.Name, dto.Name);
+        Assert.Equal(trait.Description, dto.Description);
+        Assert.Equal(trait.IsHomebrew, dto.IsHomebrew);
+        Assert.Equal(trait.RaceId, dto.RaceId);
 
-        Assert.Single(allPrimitives);
-        Assert.Equal(trait.Id, allPrimitives.First().Id);
+        Assert.Single(alldtos);
+        Assert.Equal(trait.Id, alldtos.First().Id);
     }
 
     [Fact]
-    public async Task ClassFeature_PrimitiveData_Works()
+    public async Task ClassFeature_dtoData_Works()
     {
-        // Arrange
-        var options = GetInMemoryOptions("ClassFeaturePrimitiveDB");
+        var options = GetInMemoryOptions("ClassFeaturedtoDB");
         await using var context = new AppDbContext(options);
+        var repo = new ClassFeatureRepository(context);
 
+        // Arrange
         var clss = CreateTestClass();
-        var feature = CreateTestClassFeature(clss);
+        var classLevel = CreateTestLevel(clss);
+        var feature = CreateTestClassFeature(classLevel.Id);
 
         // Act
-        var repo = new ClassFeatureRepository(context);
         await repo.CreateAsync(feature);
-        await context.SaveChangesAsync();
 
-        var primitive = await repo.GetClassFeatureDtoAsync(feature.Id);
-        var allPrimitives = await repo.GetAllClassFeatureDtosAsync();
+        var dto = await repo.GetDtoAsync(feature.Id);
+        var alldtos = await repo.GetAllDtosAsync();
 
         // Assert
-        Assert.NotNull(primitive);
-        Assert.Equal(feature.Id, primitive!.Id);
-        Assert.Equal(feature.Name, primitive.Name);
-        Assert.Equal(feature.Description, primitive.Description);
-        Assert.Equal(feature.IsHomebrew, primitive.IsHomebrew);
-        Assert.Equal(feature.ClassId, primitive.FromId);
+        Assert.NotNull(dto);
+        Assert.Equal(feature.Id, dto!.Id);
+        Assert.Equal(feature.Name, dto.Name);
+        Assert.Equal(feature.Description, dto.Description);
+        Assert.Equal(feature.IsHomebrew, dto.IsHomebrew);
+        Assert.Equal(feature.ClassLevelId, dto.ClassLevelId);
 
-        Assert.Single(allPrimitives);
-        Assert.Equal(feature.Id, allPrimitives.First().Id);
+        Assert.Single(alldtos);
+        Assert.Equal(feature.Id, alldtos.First().Id);
     }
 
 
     [Fact]
-    public async Task BackgroundFeature_PrimitiveData_Works()
+    public async Task BackgroundFeature_dtoData_Works()
     {
-        // Arrange
-        var options = GetInMemoryOptions("BackgroundFeaturePrimitiveDB");
+        var options = GetInMemoryOptions("BackgroundFeaturedtoDB");
         await using var context = new AppDbContext(options);
         var repo = new BackgroundFeatureRepository(context);
         var bgrepo = new BackgroundRepository(context);
 
-        var background = CreateTestBackground();
-        context.Add(background);
+        // Arrange
+        var background = CreateTestBackground("Acholyte");
+        var feature = CreateTestFeature(bg: background, bgId: background.Id);
+        
+        background.Features.Add(feature);
+        context.Backgrounds.Add(background);
         await context.SaveChangesAsync();
 
-        var feature = CreateTestBackgroundFeature(background);
-        await repo.CreateAsync(feature);
-        await context.SaveChangesAsync();
-
-        var primitive = await repo.GetBackgroundDtoAsync(feature.Id);
-        var allPrimitives = await repo.GetAllBackgroundDtosAsync();
+        var dto = await repo.GetDtoAsync(background.Features.First().Id);
+        var alldtos = await repo.GetAllDtosAsync();
 
         // Assert
-        Assert.NotNull(primitive);
-        Assert.Equal(feature.Name, primitive.Name);
-        Assert.Equal(feature.Description, primitive.Description);
-        Assert.Equal(feature.IsHomebrew, primitive.IsHomebrew);
-        Assert.Equal(feature.BackgroundId, primitive.FromId ?? feature.BackgroundId);
+        Assert.NotNull(dto);
+        Assert.Equal(feature.Name, dto.Name);
+        Assert.Equal(feature.Description, dto.Description);
+        Assert.Equal(feature.IsHomebrew, dto.IsHomebrew);
 
-        Assert.Single(allPrimitives);
+        Assert.Single(alldtos);
     }
 
     [Fact]
-    public async Task Feat_PrimitiveData_Works()
+    public async Task Feat_dtoData_Works()
     {
-        // Arrange
-        var options = GetInMemoryOptions("FeatPrimitiveDB");
+        var options = GetInMemoryOptions("FeatdtoDB");
         await using var context = new AppDbContext(options);
+        var repo = new FeatRepository(context);
 
+        // Arrange
         var feat = CreateTestFeat();
 
         // Act
-        var repo = new FeatRepository(context);
         await repo.CreateAsync(feat);
         await context.SaveChangesAsync();
 
-        var primitive = await repo.GetFeatDtoAsync(feat.Id);
-        var allPrimitives = await repo.GetAllFeatDtosAsync();
+        var dto = await repo.GetDtoAsync(feat.Id);
+        var alldtos = await repo.GetDtosAsync();
 
         // Assert
-        Assert.NotNull(primitive);
-        Assert.Equal(feat.Id, primitive!.Id);
-        Assert.Equal(feat.Name, primitive.Name);
-        Assert.Equal(feat.Description, primitive.Description);
-        Assert.Equal(feat.IsHomebrew, primitive.IsHomebrew);
-        Assert.Equal(feat.Prerequisite, primitive.Prerequisite);
+        Assert.NotNull(dto);
+        Assert.Equal(feat.Id, dto!.Id);
+        Assert.Equal(feat.Name, dto.Name);
+        Assert.Equal(feat.Description, dto.Description);
+        Assert.Equal(feat.IsHomebrew, dto.IsHomebrew);
+        Assert.Equal(feat.Prerequisite, dto.Prerequisite);
 
-        Assert.Single(allPrimitives);
-        Assert.Equal(feat.Id, allPrimitives.First().Id);
+        Assert.Single(alldtos);
+        Assert.Equal(feat.Id, alldtos.First().Id);
     }
 }

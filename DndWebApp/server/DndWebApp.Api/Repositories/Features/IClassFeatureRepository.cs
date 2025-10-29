@@ -20,7 +20,7 @@ public interface IClassFeatureRepository : IRepository<ClassFeature>
     /// <remarks>
     /// Typically used for simple display of a single <see cref="ClassFeature"/>.
     /// </remarks>
-    Task<ClassFeatureDto?> GetClassFeatureDtoAsync(int id);
+    Task<ClassFeatureDto?> GetDtoAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="ClassFeature"/> entities in the database,
@@ -35,7 +35,7 @@ public interface IClassFeatureRepository : IRepository<ClassFeature>
     /// <remarks>
     /// Typically used for search results and dropdowns.
     /// </remarks>
-    Task<ICollection<ClassFeatureDto>> GetAllClassFeatureDtosAsync();
+    Task<ICollection<ClassFeatureDto>> GetAllDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="ClassFeature"/> entity by its <paramref name="id"/>, 

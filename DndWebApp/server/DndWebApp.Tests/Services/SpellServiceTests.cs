@@ -1,63 +1,17 @@
-using DndWebApp.Api.Models.DTOs;
+using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Spells;
+
 using Moq;
 
 namespace DndWebApp.Tests.Services;
 
 public class SpellServiceTests
 {
-    private static SpellDto CreateTestSpellDto(string name, bool isHomebrew = false, int id = 1)
-    {
-        return new SpellDto
-        {
-            Id = id,
-            Name = name,
-            Description = "A powerful spell",
-            IsHomebrew = isHomebrew,
-            ClassIds = [1],
-            ShapeLength = "0",
-            ShapeType = "0",
-            ShapeWidth = "0",
-            Level = 3,
-            EffectsAtHigherLevels = "Extra effect",
-            ReactionCondition = "",
-            Duration = "Minute",
-            CastingTime = "Action",
-            MagicSchool = "Evocation",
-            TargetType = "Creature",
-            Range = "Feet",
-            RangeValue = 10,
-            Types = ["Buff"],
-            DamageRoll = "2d6",
-            DamageTypes = ["Fire"],
-            Verbal = true,
-            Somatic = true,
-            Materials = "Bat guano",
-            MaterialCost = 5,
-            MaterialsConsumed = false
-        };
-    }
-
-    private static Spell CreateTestSpell(string name, int level, SpellDuration spellDuration, int id = 1)
-    {
-        return new Spell
-        {
-            Id = id,
-            Name = name,
-            Description = "A powerful spell",
-            Level = level,
-            Duration = spellDuration,
-            CastingTime = 0,
-            MagicSchool = 0,
-            SpellTargeting = new() { Range = SpellRange.Feet, TargetType = SpellTargetType.Creature }
-        };
-    }
-
     [Fact]
     public async Task AddAndRetrieveSpells_WorksCorrectly()
     {

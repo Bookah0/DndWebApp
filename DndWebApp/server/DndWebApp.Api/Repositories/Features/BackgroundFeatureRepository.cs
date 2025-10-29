@@ -8,7 +8,7 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class BackgroundFeatureRepository(AppDbContext context) : EfRepository<BackgroundFeature>(context), IBackgroundFeatureRepository
 {
-    public async Task<BackgroundFeatureDto?> GetBackgroundDtoAsync(int id)
+    public async Task<BackgroundFeatureDto?> GetDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -18,12 +18,12 @@ public class BackgroundFeatureRepository(AppDbContext context) : EfRepository<Ba
                 Name = b.Name,
                 Description = b.Description,
                 IsHomebrew = b.IsHomebrew,
-                FromId = b.BackgroundId
+                BackgroundId = b.BackgroundId
             })
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<BackgroundFeatureDto>> GetAllBackgroundDtosAsync()
+    public async Task<ICollection<BackgroundFeatureDto>> GetAllDtosAsync()
     {
         return await dbSet
             .AsNoTracking()
@@ -33,7 +33,7 @@ public class BackgroundFeatureRepository(AppDbContext context) : EfRepository<Ba
                 Name = b.Name,
                 Description = b.Description,
                 IsHomebrew = b.IsHomebrew,
-                FromId = b.BackgroundId
+                BackgroundId = b.BackgroundId
             })
             .ToListAsync();
     }

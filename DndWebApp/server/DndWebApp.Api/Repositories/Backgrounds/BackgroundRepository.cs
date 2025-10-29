@@ -7,7 +7,7 @@ namespace DndWebApp.Api.Repositories.Backgrounds;
 
 public class BackgroundRepository(AppDbContext context) : EfRepository<Background>(context), IBackgroundRepository
 {
-    public async Task<BackgroundDto?> GetPrimitiveDataAsync(int id)
+    public async Task<BackgroundDto?> GetDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -21,7 +21,7 @@ public class BackgroundRepository(AppDbContext context) : EfRepository<Backgroun
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<BackgroundDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<BackgroundDto>> GetAllDtosAsync()
     {
         return await dbSet
             .AsNoTracking()

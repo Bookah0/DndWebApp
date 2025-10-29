@@ -3,7 +3,7 @@ using DndWebApp.Api.Models.DTOs;
 
 namespace DndWebApp.Api.Repositories.Backgrounds;
 
-public interface IBackgroundRepository
+public interface IBackgroundRepository : IRepository<Background>
 {
     /// <summary>
     /// Retrieves primitive data from a <see cref="Background"/> by its <paramref name="id"/>,
@@ -20,7 +20,7 @@ public interface IBackgroundRepository
     /// <remarks>
     /// Typically used for simple display of a single <see cref="Background"/>.
     /// </remarks>
-    Task<BackgroundDto?> GetPrimitiveDataAsync(int id);
+    Task<BackgroundDto?> GetDtoAsync(int id);
 
     /// <summary>
     /// Retrieves primitive data for all <see cref="Background"/> entities in the database,
@@ -35,7 +35,7 @@ public interface IBackgroundRepository
     /// <remarks>
     /// Typically used for search results, dropdowns, or <see cref="Background"/> selection during character creation.
     /// </remarks>
-    Task<ICollection<BackgroundDto>> GetAllPrimitiveDataAsync();
+    Task<ICollection<BackgroundDto>> GetAllDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Background"/> entity by its <paramref name="id"/>, 

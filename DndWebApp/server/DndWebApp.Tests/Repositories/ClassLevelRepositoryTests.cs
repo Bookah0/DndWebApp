@@ -1,82 +1,36 @@
+using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Classes;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class ClassLevelRepositoryTests
 {
-    public SpellSlotsAtLevel CreateTestSpellSlotsAtLevel => new() { CantripsKnown = 1, SpellsKnown = 3, Lvl1 = 2 };
-
-    public List<ClassSpecificSlot> CreateClassSpecificSlots => [new ClassSpecificSlot { Name = "Bardic inspiration", Quantity = 2 }];
-
-    private ClassFeature CreateTestClassFeature(Class cls) => new()
-    {
-        Name = "Spellcasting",
-        Description = "Gain spellcasting abilities.",
-        Class = cls,
-        ClassId = cls.Id,
-        LevelWhenGained = 2
-    };
-
-    private ClassLevel CreateTestLevel(Class cls) => new()
-    {
-        Level = 2,
-        Class = cls,
-        ClassId = cls.Id,
-        AbilityScoreBonus = 1,
-        ProficiencyBonus = 3,
-        ClassSpecificSlotsAtLevel = CreateClassSpecificSlots,
-        SpellSlotsAtLevel = CreateTestSpellSlotsAtLevel,
-        NewFeatures = [CreateTestClassFeature(cls)]
-    };
-
-    private Class CreateTestClass()
-    {
-        var cls = new Class
-        {
-            Name = "Ranger",
-            Description = "Description",
-            HitDie = "1d8",
-            ClassLevels = []
-        };
-        cls.ClassLevels.Add(CreateTestLevel(cls));
-        return cls;
-    }
-
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .Options;
-    }
+    
 
     [Fact]
     public async Task UpdateClassLevel_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("ClassLevel_UpdateDB");
-        var cls = CreateTestClass();
-
         await using var context = new AppDbContext(options);
         var classRepo = new ClassRepository(context);
+
+        // Arrange
+        var cls = CreateTestClass();
+        cls.ClassLevels.Add(CreateTestLevel(cls));
         await classRepo.CreateAsync(cls);
-        await context.SaveChangesAsync();
 
         // Act
         var levelRepo = new ClassLevelRepository(context);
-        var toUpdate = await levelRepo.GetWithAllDataAsync(cls.Id);
+        var levelId = cls.ClassLevels.First().Id;
+        var toUpdate = await levelRepo.GetWithAllDataAsync(levelId);
 
-        toUpdate!.NewFeatures.Add(CreateTestClassFeature(cls));
+        toUpdate!.NewFeatures.Add(CreateTestClassFeature(toUpdate.Id));
         toUpdate.AbilityScoreBonus = 5;
 
         await levelRepo.UpdateAsync(toUpdate);
-        await context.SaveChangesAsync();
-
-        // Assert
         var updated = await levelRepo.GetWithAllDataAsync(toUpdate.Id);
-
+        
         // Assert
         Assert.NotNull(updated);
         Assert.Equal(5, updated.AbilityScoreBonus);
@@ -88,42 +42,41 @@ public class ClassLevelRepositoryTests
     [Fact]
     public async Task DeleteClassLevel_ShouldDelete()
     {
-        // Arrange
         var options = GetInMemoryOptions("ClassLevel_DeleteDB");
-        var cls = CreateTestClass();
-
         await using var context = new AppDbContext(options);
         var classRepo = new ClassRepository(context);
+
+        // Arrange
+        var cls = CreateTestClass();
+        cls.ClassLevels.Add(CreateTestLevel(cls));
         await classRepo.CreateAsync(cls);
-        await context.SaveChangesAsync();
 
         // Act
         var levelRepo = new ClassLevelRepository(context);
-        var toDelete = await levelRepo.GetByIdAsync(cls.Id);
-
+        var levelId = cls.ClassLevels.First().Id;
+        var toDelete = await levelRepo.GetByIdAsync(levelId);
         await levelRepo.DeleteAsync(toDelete!);
-        await context.SaveChangesAsync();
-        var deleted = await levelRepo.GetByIdAsync(cls.Id);
 
         // Assert
-        Assert.Null(deleted);
+        Assert.Null(await levelRepo.GetByIdAsync(levelId));
     }
 
     [Fact]
     public async Task AddAndRetrieveClass_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("ClassLevel_AddRetrieveDB");
-        var cls = CreateTestClass();
-
         await using var context = new AppDbContext(options);
         var classRepo = new ClassRepository(context);
+
+        // Arrange
+        var cls = CreateTestClass();
+        cls.ClassLevels.Add(CreateTestLevel(cls));
         await classRepo.CreateAsync(cls);
-        await context.SaveChangesAsync();
 
         // Act
         var levelRepo = new ClassLevelRepository(context);
-        var savedLevel = await levelRepo.GetByIdAsync(cls.Id);
+        var levelId = cls.ClassLevels.First().Id;
+        var savedLevel = await levelRepo.GetByIdAsync(levelId);
 
         // Assert
         Assert.NotNull(savedLevel);
@@ -151,14 +104,14 @@ public class ClassLevelRepositoryTests
     [Fact]
     public async Task GetWithAllDataAsync_IncludesAllNavigationProperties()
     {
-        // Arrange
         var options = GetInMemoryOptions("ClassLevel_GetWithAllDataDB");
-        var cls = CreateTestClass();
-
         await using var context = new AppDbContext(options);
         var classRepo = new ClassRepository(context);
+
+        // Arrange
+        var cls = CreateTestClass();
+        cls.ClassLevels.Add(CreateTestLevel(cls));
         await classRepo.CreateAsync(cls);
-        await context.SaveChangesAsync();
 
         // Act
         var levelRepo = new ClassLevelRepository(context);

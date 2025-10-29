@@ -13,14 +13,14 @@ public abstract class AFeature
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
-    public List<AbilityType> SavingThrows { get; set; } = [];
+    public ICollection<AbilityType> SavingThrows { get; set; } = [];
     public ICollection<AbilityValue> AbilityIncreases { get; set; } = [];
     public ICollection<Spell> SpellsGained { get; set; } = [];
 
     // Damage affinity
-    public DamageType DamageResistanceGained { get; set; }
-    public DamageType DamageImmunityGained { get; set; } 
-    public DamageType DamageWeaknessGained { get; set; }
+    public ICollection<DamageType> DamageResistanceGained { get; set; } = [];
+    public ICollection<DamageType> DamageImmunityGained { get; set; } = [];
+    public ICollection<DamageType> DamageWeaknessGained { get; set; } = [];
 
     // Proficiencies
     public List<SkillType> SkillProficiencies { get; set; } = [];

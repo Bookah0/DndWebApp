@@ -1,191 +1,124 @@
+using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Species;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class RaceRepositoryTests
 {
-    private Race CreateTestRace(string name) => new() { Name = name, Speed = 30 };
-
-    private Subrace CreateTestSubrace(string name, Race parentRace, int parentRaceId)
-    {
-        return new() { Name = name, Speed = 30, ParentRace = parentRace, ParentRaceId = parentRaceId };
-    }
-
-    private Trait CreateTestTrait(string name, string description, Species fromRace, int raceId )
-    {
-        return new() { Name = name, Description = description, FromRace = fromRace, RaceId = raceId };
-    }
-
-    private DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
-    {
-        return new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: dbName)
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .Options;
-    }
-
     [Fact]
     public async Task AddAndRetrieveRace_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Race_AddRetrieveDB");
+        await using var context = new AppDbContext(options);
+        var repo = new RaceRepository(context);
 
+        // Arrange
         var elfRace = CreateTestRace("Elf");
         var dwarfRace = CreateTestRace("Dwarf");
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
-            await repo.CreateAsync(elfRace);
-            await repo.CreateAsync(dwarfRace);
-            await context.SaveChangesAsync();
-        }
+        await repo.CreateAsync(elfRace);
+        await repo.CreateAsync(dwarfRace);
+
+        var savedElf = await repo.GetByIdAsync(1);
 
         // Assert
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
+        Assert.NotNull(savedElf);
+        Assert.Equal("Elf", savedElf!.Name);
 
-            var savedElf = await repo.GetByIdAsync(1);
-
-            Assert.NotNull(savedElf);
-            Assert.Equal("Elf", savedElf!.Name);
-
-            var allRaces = await repo.GetAllAsync();
-            Assert.Equal(2, allRaces.Count);
-            Assert.Contains(allRaces, r => r.Name == "Elf");
-            Assert.Contains(allRaces, r => r.Name == "Dwarf");
-        }
+        var allRaces = await repo.GetAllAsync();
+        Assert.Equal(2, allRaces.Count);
+        Assert.Contains(allRaces, r => r.Name == "Elf");
+        Assert.Contains(allRaces, r => r.Name == "Dwarf");
     }
 
     [Fact]
     public async Task UpdateRace_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Race_UpdateDB");
+        await using var context = new AppDbContext(options);
+        var repo = new RaceRepository(context);
 
+        // Arrange
         var race = CreateTestRace("Elf");
-
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
-            await repo.CreateAsync(race);
-            await context.SaveChangesAsync();
-        }
+        await repo.CreateAsync(race);
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
-            race.Name = "Updated Elf";
-            await repo.UpdateAsync(race);
-            await context.SaveChangesAsync();
-        }
+        race.Name = "Updated Elf";
+        await repo.UpdateAsync(race);
+        var updated = await repo.GetByIdAsync(1);
 
         // Assert
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
-            var updated = await repo.GetByIdAsync(1);
+        Assert.Equal("Updated Elf", updated!.Name);
 
-            Assert.Equal("Updated Elf", updated!.Name);
-        }
     }
 
     [Fact]
     public async Task DeleteRace_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("Race_DeleteDB");
+        await using var context = new AppDbContext(options);
+        var repo = new RaceRepository(context);
 
+        // Arrange
         var race = CreateTestRace("Elf");
-
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
-            await repo.CreateAsync(race);
-            await context.SaveChangesAsync();
-        }
+        await repo.CreateAsync(race);
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
-            await repo.DeleteAsync(race);
-            await context.SaveChangesAsync();
-        }
+        await repo.DeleteAsync(race);
+        var deleted = await repo.GetByIdAsync(race.Id);
 
         // Assert
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
-            var deleted = await repo.GetByIdAsync(race.Id);
-
-            Assert.Null(deleted);
-        }
+        Assert.Null(deleted);
     }
 
     [Fact]
     public async Task RetrieveRacesAsPrimitiveDtos_ShouldHaveCorrectFieldValues()
     {
-        // Arrange
         var options = GetInMemoryOptions("PrimitiveRace_AddRetrieveDB");
+        await using var context = new AppDbContext(options);
+        var repo = new RaceRepository(context);
 
+        // Arrange
         var elfRace = CreateTestRace("Elf");
         var dwarfRace = CreateTestRace("Dwarf");
-        int elfId;
-        int dwarfId;
 
         elfRace.RaceDescription.GeneralDescription = "Elf description";
         dwarfRace.RaceDescription.GeneralDescription = "Dwarf description";
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
-            await repo.CreateAsync(elfRace);
-            await repo.CreateAsync(dwarfRace);
-            await context.SaveChangesAsync();
+        var createdElf = await repo.CreateAsync(elfRace);
+        var createdDwarf = await repo.CreateAsync(dwarfRace);
 
-            elfId = elfRace.Id;
-            dwarfId = dwarfRace.Id;
-        }
+        var primitiveElf = await repo.GetRaceDtoAsync(createdElf.Id);
+        var primitiveDwarf = await repo.GetRaceDtoAsync(createdDwarf.Id);
 
         // Assert
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new RaceRepository(context);
+        Assert.NotNull(primitiveElf);
+        Assert.Equal("Elf", primitiveElf!.Name);
+        Assert.NotNull(primitiveElf.GeneralDescription);
+        Assert.Equal("Elf description", primitiveElf.GeneralDescription);
 
-            var primitiveElf = await repo.GetRaceDtoAsync(elfId);
-            var primitiveDwarf = await repo.GetRaceDtoAsync(dwarfId);
+        Assert.NotNull(primitiveDwarf);
+        Assert.Equal("Dwarf", primitiveDwarf!.Name);
+        Assert.NotNull(primitiveDwarf.GeneralDescription);
+        Assert.Equal("Dwarf description", primitiveDwarf.GeneralDescription);
 
-            Assert.NotNull(primitiveElf);
-            Assert.Equal("Elf", primitiveElf!.Name);
-            Assert.NotNull(primitiveElf.GeneralDescription);
-            Assert.Equal("Elf description", primitiveElf.GeneralDescription);
-
-            Assert.NotNull(primitiveDwarf);
-            Assert.Equal("Dwarf", primitiveDwarf!.Name);
-            Assert.NotNull(primitiveDwarf.GeneralDescription);
-            Assert.Equal("Dwarf description", primitiveDwarf.GeneralDescription);
-
-            var allRacesAsPrimitive = await repo.GetAllRaceDtosAsync();
-            Assert.Equal(2, allRacesAsPrimitive.Count);
-            Assert.Contains(allRacesAsPrimitive, r => r.Name == "Dwarf");
-            Assert.Contains(allRacesAsPrimitive, r => r.Name == "Elf");
-        }
+        var allRacesAsPrimitive = await repo.GetAllRaceDtosAsync();
+        Assert.Equal(2, allRacesAsPrimitive.Count);
+        Assert.Contains(allRacesAsPrimitive, r => r.Name == "Dwarf");
+        Assert.Contains(allRacesAsPrimitive, r => r.Name == "Elf");
     }
 
     [Fact]
     public async Task RetrieveWithTraitAndSubraces_ShouldHaveCorrectTrait()
     {
-        // Arrange
         var options = GetInMemoryOptions("GetAllWithCollections_AddRetrieveDB");
+        await using var context = new AppDbContext(options);
+        var repo = new RaceRepository(context);
 
+        // Arrange
         var elfRace = CreateTestRace("Elf");
         var dwarfRace = CreateTestRace("Dwarf");
 
@@ -200,17 +133,14 @@ public class RaceRepositoryTests
         elfRace.Traits.Add(trait2);
 
         // Act
-        await using var context = new AppDbContext(options);
-
         context.Races.Add(elfRace);
         context.Races.Add(dwarfRace);
         await context.SaveChangesAsync();
 
-        // Assert
-        var repo = new RaceRepository(context);
         var retrievedElf = await repo.GetWithAllDataAsync(elfRace.Id);
         var retrievedDwarf = await repo.GetWithAllDataAsync(dwarfRace.Id);
 
+        // Assert
         Assert.NotNull(retrievedElf);
         Assert.Equal("Elf", retrievedElf!.Name);
 

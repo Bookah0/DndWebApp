@@ -54,7 +54,7 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .FirstOrDefaultAsync();
     }
 
-    public async Task<CharacterDto?> GetPrimitiveDataAsync(int id)
+    public async Task<CharacterDto?> GetDtoAsync(int id)
     {
         return await dbSet
             .AsNoTracking()
@@ -84,7 +84,7 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
             .FirstOrDefaultAsync();
     }
 
-    public async Task<ICollection<CharacterDto>> GetAllPrimitiveDataAsync()
+    public async Task<ICollection<CharacterDto>> GetAllDtosAsync()
     {
         return await dbSet
             .AsNoTracking()

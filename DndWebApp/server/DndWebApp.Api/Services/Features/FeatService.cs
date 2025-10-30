@@ -27,9 +27,6 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
             IsHomebrew = dto.IsHomebrew
         };
 
-        // TODO
-        // Method that parses description into data that fills the lists in AFeature
-
         return await repo.CreateAsync(feat);
     }
 
@@ -58,10 +55,16 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
 
         feat.Name = dto.Name;
         feat.Description = dto.Description;
-
-        // TODO
-        // Method that parses description into data that fills the lists in AFeature
-
         await repo.UpdateAsync(feat);
+    }
+
+    public async Task UpdateCollectionsAsync(FeatDto dto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ICollection<Feat> SortBy(ICollection<Feat> feats, bool descending = false)
+    {
+        return SortUtil.OrderByMany(feats, [(f => f.Name)], descending);
     }
 }

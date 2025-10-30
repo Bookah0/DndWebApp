@@ -33,9 +33,6 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
             IsHomebrew = dto.IsHomebrew
         };
 
-        // TODO
-        // Method that parses description into data that fills the lists in AFeature
-
         return await repo.CreateAsync(bgFeature);
     }
 
@@ -67,19 +64,27 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
             feature.Background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NullReferenceException("Ability could not be found");
             feature.BackgroundId = dto.BackgroundId;
         }
-        
+
         feature.Name = dto.Name;
         feature.Description = dto.Description;
         feature.IsHomebrew = dto.IsHomebrew;
 
-        // TODO
-        // Method that parses description into data that fills the lists in AFeature
-
         await repo.UpdateAsync(feature);
     }
 
-    public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, bool descending = false)
+    public async Task UpdateCollectionsAsync(BackgroundFeatureDto dto)
     {
-        return SortUtil.OrderByMany(features, [(s => s.Name)], descending);
+        throw new NotImplementedException();
+    }
+
+    public enum BackgroundFeatureSortFilter { Name, Background }
+    public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, BackgroundFeatureSortFilter sortFilter, bool descending = false)
+    {
+        return sortFilter switch
+        {
+            BackgroundFeatureSortFilter.Name => SortUtil.OrderByMany(features, [(l => l.Name)], descending),
+            BackgroundFeatureSortFilter.Background => SortUtil.OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),
+            _ => features,
+        };
     }
 }

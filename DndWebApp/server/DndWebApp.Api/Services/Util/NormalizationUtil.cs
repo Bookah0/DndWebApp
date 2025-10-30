@@ -4,7 +4,6 @@ namespace DndWebApp.Api.Services.Util;
 
 public static class NormalizationUtil
 {
-    // Can use regex but NO!
     public static string NormalizeWhiteSpace(string str)
     {
         if (string.IsNullOrEmpty(str))

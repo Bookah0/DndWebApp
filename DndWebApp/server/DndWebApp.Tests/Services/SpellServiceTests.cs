@@ -184,19 +184,19 @@ public class SpellServiceTests
         ];
 
         // Act & Assert
-        var sorted = service.SortBy(spells, SpellService.SpellSorting.Name);
+        var sorted = service.SortBy(spells, SpellService.SpellSortFilter.Name);
         string[] expectedOrder = ["Flame Bolt", "Ice Bolt", "Lightning Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellService.SpellSorting.Name, true);
+        sorted = service.SortBy(spells, SpellService.SpellSortFilter.Name, true);
         expectedOrder = ["Rock Bolt", "Lightning Bolt", "Ice Bolt", "Flame Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellService.SpellSorting.Level);
+        sorted = service.SortBy(spells, SpellService.SpellSortFilter.Level);
         expectedOrder = ["Ice Bolt", "Lightning Bolt", "Flame Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellService.SpellSorting.Duration);
+        sorted = service.SortBy(spells, SpellService.SpellSortFilter.Duration);
         expectedOrder = ["Lightning Bolt", "Flame Bolt", "Ice Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }

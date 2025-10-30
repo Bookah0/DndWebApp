@@ -45,12 +45,12 @@ public static class ValidationUtil
 
     public static async Task ValidateIdsExist<T, C>(ICollection<int>? ids, T repo) where T : IRepository<C>
     {
-        if (ids == null)
+        if (ids is null)
             return;
 
         foreach (var id in ids)
         {
-            if (await repo.GetByIdAsync(id) == null)
+            if (await repo.GetByIdAsync(id) is null)
                 throw new ArgumentOutOfRangeException(nameof(ids), $"Entity of type {typeof(T).Name} with id {id} does not exist.");
         }
     }

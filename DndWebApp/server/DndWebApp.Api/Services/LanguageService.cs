@@ -65,14 +65,14 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
         await repo.UpdateAsync(language);
     }
     
-    public enum LanguageSorting { Name, Family, Script }
-    public ICollection<Language> SortBy(ICollection<Language> languages, LanguageSorting sortFilter, bool descending = false)
+    public enum LanguageSortFilter { Name, Family, Script }
+    public ICollection<Language> SortBy(ICollection<Language> languages, LanguageSortFilter sortFilter, bool descending = false)
     {
         return sortFilter switch
         {
-            LanguageSorting.Name => SortUtil.OrderByMany(languages, [(l => l.Name)], descending),
-            LanguageSorting.Family => SortUtil.OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
-            LanguageSorting.Script => SortUtil.OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
+            LanguageSortFilter.Name => SortUtil.OrderByMany(languages, [(l => l.Name)], descending),
+            LanguageSortFilter.Family => SortUtil.OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
+            LanguageSortFilter.Script => SortUtil.OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
             _ => languages,
         };
     }

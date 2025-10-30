@@ -171,17 +171,17 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         await repo.UpdateAsync(spell);
     }
 
-    public enum SpellSorting { Name, Level, CastingTime, Duration, Target, Range }
-    public ICollection<Spell> SortBy(ICollection<Spell> spells, SpellSorting sortFilter, bool descending = false)
+    public enum SpellSortFilter { Name, Level, CastingTime, Duration, Target, Range }
+    public ICollection<Spell> SortBy(ICollection<Spell> spells, SpellSortFilter sortFilter, bool descending = false)
     {
         return sortFilter switch
         {
-            SpellSorting.Name => SortUtil.OrderByMany(spells, [(s => s.Name)], descending),
-            SpellSorting.Level => SortUtil.OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
-            SpellSorting.CastingTime => SortUtil.OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue), (s => s.Name)], descending),
-            SpellSorting.Duration => SortUtil.OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
-            SpellSorting.Target => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
-            SpellSorting.Range => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
+            SpellSortFilter.Name => SortUtil.OrderByMany(spells, [(s => s.Name)], descending),
+            SpellSortFilter.Level => SortUtil.OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
+            SpellSortFilter.CastingTime => SortUtil.OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue), (s => s.Name)], descending),
+            SpellSortFilter.Duration => SortUtil.OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
+            SpellSortFilter.Target => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
+            SpellSortFilter.Range => SortUtil.OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
             _ => spells,
         };
     }

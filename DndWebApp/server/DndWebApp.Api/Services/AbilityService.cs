@@ -2,6 +2,7 @@ using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Repositories.Abilities;
+using DndWebApp.Api.Repositories.Skills;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
@@ -64,6 +65,11 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
         await repo.UpdateAsync(ability);
     }
 
+    public int GetModifier(AbilityValue val)
+    {
+        return val.Value - 10 / 2;
+    }
+    
     public ICollection<Ability> SortBy(ICollection<Ability> abilities)
     {
         var abilityOrder = SortUtil.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);

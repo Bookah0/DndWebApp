@@ -33,9 +33,6 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
             IsHomebrew = dto.IsHomebrew
         };
 
-        // TODO
-        // Method that parses description into data that fills the lists in AFeature
-
         return await repo.CreateAsync(classFeature);
     }
 
@@ -62,7 +59,7 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
         ValidationUtil.ValidateRequiredNumeric(dto.ClassLevelId);
 
         var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Class Feature could not be found");
-        
+
         if (feature.ClassLevelId != dto.ClassLevelId)
         {
             feature.ClassLevel = await classLevelRepo.GetByIdAsync(dto.ClassLevelId) ?? throw new NullReferenceException("Ability could not be found");
@@ -72,14 +69,22 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
         feature.Name = dto.Name;
         feature.Description = dto.Description;
 
-        // TODO
-        // Method that parses description into data that fills the lists in AFeature
-
         await repo.UpdateAsync(feature);
     }
 
-    public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, bool descending = false)
+    public async Task UpdateCollectionsAsync(ClassFeatureDto dto)
     {
-        return SortUtil.OrderByMany(features, [(s => s.Name)], descending);
+        throw new NotImplementedException();
+    }
+
+    public enum ClassFeatureSortFilter { Name, Class }
+    public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, ClassFeatureSortFilter sortFilter, bool descending = false)
+    {
+        return sortFilter switch
+        {
+            ClassFeatureSortFilter.Name => SortUtil.OrderByMany(features, [(l => l.Name)], descending),
+            ClassFeatureSortFilter.Class => SortUtil.OrderByMany(features, [(l => l.ClassLevel!.Class.Name), (l => l.Name)], descending),
+            _ => features,
+        };
     }
 }

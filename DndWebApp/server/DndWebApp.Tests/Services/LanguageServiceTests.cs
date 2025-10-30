@@ -204,15 +204,15 @@ public class LanguageServiceTests
         ];
 
         // Act & Assert
-        var sorted = service.SortBy(languages, LanguageService.LanguageSorting.Name);
+        var sorted = service.SortBy(languages, LanguageService.LanguageSortFilter.Name);
         string[] expectedOrder =["Auran","Dethek","Elvish",];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(languages, LanguageService.LanguageSorting.Family, true);
+        sorted = service.SortBy(languages, LanguageService.LanguageSortFilter.Family, true);
         expectedOrder =["Primordial","Elven","Dwarvish",];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Family));
 
-        sorted = service.SortBy(languages, LanguageService.LanguageSorting.Script);
+        sorted = service.SortBy(languages, LanguageService.LanguageSortFilter.Script);
         expectedOrder =["Auran","Dethek","Elvish"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }

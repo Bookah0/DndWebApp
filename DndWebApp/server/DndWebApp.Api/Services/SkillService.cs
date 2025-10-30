@@ -1,5 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Repositories.Skills;
@@ -74,11 +75,11 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
     }
     
     public enum SkillSorting { Name, Ability }
-    public ICollection<Skill> SortBy(ICollection<Skill> skills, SkillSorting sortFilter, bool descending = false)
+    public ICollection<Skill> SortBy(ICollection<Skill> skills, SkillSorting SkillSortFilter, bool descending = false)
     {
         var abilityOrder = SortUtil.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
 
-        return sortFilter switch
+        return SkillSortFilter switch
         {
             SkillSorting.Name => SortUtil.OrderByMany(skills, [(s => s.Name)], descending),
             SkillSorting.Ability => SortUtil.OrderByMany(skills, [(s => abilityOrder[s.Ability!.FullName]), (s => s.Name)], descending),

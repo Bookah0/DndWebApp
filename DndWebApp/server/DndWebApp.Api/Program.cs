@@ -16,6 +16,8 @@ using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Services.Spells;
 using DndWebApp.Api.Services.Generic;
+using DndWebApp.Api.Services.Features;
+using DndWebApp.Api.Models.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,8 +52,14 @@ builder.Services.AddScoped<ISpellRepository, SpellRepository>();
 
 builder.Services.AddScoped<IService<Alignment, AlignmentDto, AlignmentDto>, AlignmentService>();
 builder.Services.AddScoped<IService<Skill, SkillDto, SkillDto>, SkillService>();
+builder.Services.AddScoped<IService<Ability, AbilityDto, AbilityDto>, AbilityService>();
 builder.Services.AddScoped<IService<Language, LanguageDto, LanguageDto>, LanguageService>();
 builder.Services.AddScoped<IService<Spell, SpellDto, SpellDto>, SpellService>();
+
+builder.Services.AddScoped<IService<BackgroundFeature, BackgroundFeatureDto, BackgroundFeatureDto>, BackgroundFeatureService>();
+builder.Services.AddScoped<IService<Feat, FeatDto, FeatDto>, FeatService>();
+builder.Services.AddScoped<IService<Trait, TraitDto, TraitDto>, TraitService>();
+builder.Services.AddScoped<IService<ClassFeature, ClassFeatureDto, ClassFeatureDto>, ClassFeatureService>();
 
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();

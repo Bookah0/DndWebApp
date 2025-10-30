@@ -36,9 +36,6 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
             IsHomebrew = dto.IsHomebrew
         };
 
-        // TODO
-        // Method that parses description into data that fills the lists in AFeature
-
         return await repo.CreateAsync(trait);
     }
 
@@ -70,15 +67,26 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
             trait.FromRace = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NullReferenceException("Race could not be found");
             trait.RaceId = dto.RaceId;
         }
-        
+
         trait.Name = dto.Name;
         trait.Description = dto.Description;
         trait.IsHomebrew = dto.IsHomebrew;
-
-        // TODO
-        // Method that parses description into data that fills the lists in AFeature
-
         await repo.UpdateAsync(trait);
     }
+
+    public async Task UpdateCollectionsAsync(TraitDto dto)
+    {
+        throw new NotImplementedException();
+    }
     
+    public enum TraitSortFilter { Name, Race }
+    public ICollection<Trait> SortBy(ICollection<Trait> traits, TraitSortFilter sortFilter, bool descending = false)
+    {
+        return sortFilter switch
+        {
+            TraitSortFilter.Name => SortUtil.OrderByMany(traits, [(t => t.Name)], descending),
+            TraitSortFilter.Race => SortUtil.OrderByMany(traits, [(t => t!.Name), (t => t.Name)], descending),
+            _ => traits,
+        };
+    }
 }

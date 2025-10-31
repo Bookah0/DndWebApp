@@ -194,6 +194,7 @@ public static class TestObjectFactory
         Name = "Thieves' Kit",
         Description = "A set of lockpicks and other tools for stealthy operations.",
         Categories = [ItemCategory.Tools],
+        ToolType = ToolCategory.ThievesTools,
         Activities = [],
         Properties = []
     };

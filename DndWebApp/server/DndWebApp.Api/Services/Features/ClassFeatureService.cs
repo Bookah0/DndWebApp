@@ -21,9 +21,9 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
 
     public async Task<ClassFeature> CreateAsync(ClassFeatureDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
-        ValidationUtil.ValidateRequiredNumeric(dto.ClassLevelId);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.NotNullAboveZero(dto.ClassLevelId);
 
         var classLevel = await classLevelRepo.GetByIdAsync(dto.ClassLevelId) ?? throw new NullReferenceException("Class level could not be found");
 
@@ -39,7 +39,7 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
         return await repo.CreateAsync(classFeature);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Class Feature could not be found");
         await repo.DeleteAsync(feature);
@@ -57,9 +57,9 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
 
     public async Task UpdateAsync(ClassFeatureDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
-        ValidationUtil.ValidateRequiredNumeric(dto.ClassLevelId);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.NotNullAboveZero(dto.ClassLevelId);
 
         var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Class Feature could not be found");
 
@@ -75,7 +75,7 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
         await repo.UpdateAsync(feature);
     }
 
-    public async Task UpdateCollectionsAsync(ClassFeatureDto dto)
+    public Task UpdateCollectionsAsync(ClassFeatureDto dto)
     {
         throw new NotImplementedException();
     }

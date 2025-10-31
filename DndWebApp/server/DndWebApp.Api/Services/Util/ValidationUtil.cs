@@ -4,7 +4,7 @@ namespace DndWebApp.Api.Services.Util;
 
 public static class ValidationUtil
 {
-    public static void ValidateRequiredString(string? str)
+    public static void NotNullOrWhiteSpace(string? str)
     {
         if (string.IsNullOrWhiteSpace(str))
         {
@@ -12,7 +12,7 @@ public static class ValidationUtil
         }
     }
 
-    public static void ValidateRequiredNumeric(int? num)
+    public static void NotNullAboveZero(int? num)
     {
         if (num == null || num < 0)
         {
@@ -20,8 +20,11 @@ public static class ValidationUtil
         }
     }
 
-    public static TEnum ParseEnumOrThrow<TEnum>(string enumAsString) where TEnum : struct, Enum
+    public static TEnum ParseEnumOrThrow<TEnum>(string? enumAsString) where TEnum : struct, Enum
     {
+        if (enumAsString is null)
+            return default;
+
         if (!Enum.TryParse<TEnum>(enumAsString, true, out var result))
         {
             throw new InvalidOperationException($"Could not convert {enumAsString} to Enum of type {typeof(TEnum).Name}.");
@@ -37,13 +40,13 @@ public static class ValidationUtil
         return [.. enumStrings.Select(ParseEnumOrThrow<TEnum>)];
     }
 
-    public static async Task ValidateIdExist<T, C>(int id, T repo) where T : IRepository<C>
+    public static async Task IdExist<T, C>(int id, T repo) where T : IRepository<C>
     {
         if (await repo.GetByIdAsync(id) == null)
             throw new ArgumentOutOfRangeException(nameof(id), $"Entity of type {typeof(T).Name} with id {id} does not exist.");
     }
 
-    public static async Task ValidateIdsExist<T, C>(ICollection<int>? ids, T repo) where T : IRepository<C>
+    public static async Task IdsExist<T, C>(ICollection<int>? ids, T repo) where T : IRepository<C>
     {
         if (ids is null)
             return;

@@ -21,9 +21,9 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
 
     public async Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
-        ValidationUtil.ValidateRequiredNumeric(dto.BackgroundId);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.NotNullAboveZero(dto.BackgroundId);
 
         var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NullReferenceException("Background could not be found");
 
@@ -39,7 +39,7 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
         return await repo.CreateAsync(bgFeature);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Background Feature could not be found");
         await repo.DeleteAsync(feature);
@@ -57,8 +57,8 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
 
     public async Task UpdateAsync(BackgroundFeatureDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
 
         var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Background Feature could not be found");
 
@@ -75,7 +75,7 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
         await repo.UpdateAsync(feature);
     }
 
-    public async Task UpdateCollectionsAsync(BackgroundFeatureDto dto)
+    public Task UpdateCollectionsAsync(BackgroundFeatureDto dto)
     {
         throw new NotImplementedException();
     }

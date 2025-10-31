@@ -20,9 +20,9 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
 
     public async Task<Ability> CreateAsync(AbilityDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.FullName);
-        ValidationUtil.ValidateRequiredString(dto.ShortName);
-        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.FullName);
+        ValidationUtil.NotNullOrWhiteSpace(dto.ShortName);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
 
         Ability ability = new()
         {
@@ -36,7 +36,7 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
         return await repo.CreateAsync(ability);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var ability = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Ability could not be found");
         await repo.DeleteAsync(ability);
@@ -54,9 +54,9 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
 
     public async Task UpdateAsync(AbilityDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.FullName);
-        ValidationUtil.ValidateRequiredString(dto.ShortName);
-        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.FullName);
+        ValidationUtil.NotNullOrWhiteSpace(dto.ShortName);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
 
         var ability = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Ability could not be found");
 

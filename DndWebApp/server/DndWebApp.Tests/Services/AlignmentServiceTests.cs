@@ -97,10 +97,10 @@ public class AlignmentServiceTests
 
         // Act
         var id = alignments[0].Id;
-        await service.DeleteClassLevelAsync(id);
+        await service.DeleteAsync(id);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteClassLevelAsync(id));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(id));
         repo.Verify(r => r.DeleteAsync(It.IsAny<Alignment>()), Times.Exactly(1));
     }
 
@@ -120,7 +120,7 @@ public class AlignmentServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(-1));
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteClassLevelAsync(-1));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(-1));
 
         repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
         repo.Verify(r => r.DeleteAsync(It.IsAny<Alignment>()), Times.Exactly(0));

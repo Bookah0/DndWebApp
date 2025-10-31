@@ -101,8 +101,8 @@ public class SkillServiceTests
             .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
             
         // Act & Assert
-        await service.DeleteClassLevelAsync(1);
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteClassLevelAsync(1));
+        await service.DeleteAsync(1);
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(1));
         repo.Verify(r => r.DeleteAsync(It.IsAny<Skill>()), Times.Exactly(1));
     }
 
@@ -125,7 +125,7 @@ public class SkillServiceTests
             
         // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(-1));
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteClassLevelAsync(-1));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(-1));
 
         repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
         repo.Verify(r => r.DeleteAsync(It.IsAny<Skill>()), Times.Exactly(0));

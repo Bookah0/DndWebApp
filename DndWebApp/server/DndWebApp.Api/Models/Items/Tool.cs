@@ -5,6 +5,7 @@ namespace DndWebApp.Api.Models.Items;
 
 public class Tool : Item
 {
+    public required ToolCategory ToolType { get; set; }
     public required ICollection<ToolProperty> Properties { get; set; }
     public ICollection<ToolActivity> Activities { get; set; } = [];
 }
@@ -23,5 +24,4 @@ public class ToolActivity
     public int? SkillId { get; set; }
     public int? AbilityId { get; set; }
     public required string DC { get; set; }
-
 }

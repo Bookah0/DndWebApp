@@ -23,7 +23,7 @@ public class EfService<T> : IService<T, T, T>
         return entity;
     }
 
-    public virtual async Task DeleteClassLevelAsync(int id)
+    public virtual async Task DeleteAsync(int id)
     {
         var entity = await repo.GetByIdAsync(id);
 

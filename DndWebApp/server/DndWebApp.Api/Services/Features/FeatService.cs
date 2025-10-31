@@ -19,8 +19,8 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
 
     public async Task<Feat> CreateAsync(FeatDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
 
         var feat = new Feat
         {
@@ -32,7 +32,7 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
         return await repo.CreateAsync(feat);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var feat = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Feat could not be found");
         await repo.DeleteAsync(feat);
@@ -50,8 +50,8 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
 
     public async Task UpdateAsync(FeatDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
 
         var feat = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Feat could not be found");
 
@@ -60,7 +60,7 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
         await repo.UpdateAsync(feat);
     }
 
-    public async Task UpdateCollectionsAsync(FeatDto dto)
+    public Task UpdateCollectionsAsync(FeatDto dto)
     {
         throw new NotImplementedException();
     }

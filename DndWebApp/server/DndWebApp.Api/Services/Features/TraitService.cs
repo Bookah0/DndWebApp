@@ -22,9 +22,9 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
 
     public async Task<Trait> CreateAsync(TraitDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
-        ValidationUtil.ValidateRequiredNumeric(dto.RaceId);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.NotNullAboveZero(dto.RaceId);
 
         var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NullReferenceException("Trait level could not be found");
 
@@ -40,7 +40,7 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
         return await repo.CreateAsync(trait);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var trait = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Trait could not be found");
         await repo.DeleteAsync(trait);
@@ -58,8 +58,8 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
 
     public async Task UpdateAsync(TraitDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
 
         var trait = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Trait could not be found");
 
@@ -75,7 +75,7 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
         await repo.UpdateAsync(trait);
     }
 
-    public async Task UpdateCollectionsAsync(TraitDto dto)
+    public Task UpdateCollectionsAsync(TraitDto dto)
     {
         throw new NotImplementedException();
     }

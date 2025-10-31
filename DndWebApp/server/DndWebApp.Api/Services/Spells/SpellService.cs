@@ -26,11 +26,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
 
     public async Task<Spell> CreateAsync(SpellDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
-        ValidationUtil.ValidateRequiredString(dto.Duration);
-        ValidationUtil.ValidateRequiredString(dto.CastingTime);
-        ValidationUtil.ValidateRequiredString(dto.MagicSchool);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Duration);
+        ValidationUtil.NotNullOrWhiteSpace(dto.CastingTime);
+        ValidationUtil.NotNullOrWhiteSpace(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
         var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);
@@ -68,7 +68,7 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     }
 
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
         await repo.DeleteAsync(spell);
@@ -90,7 +90,7 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
         if (dto.MaxLevel is not null && dto.MaxLevel < 0)
             throw new ArgumentOutOfRangeException(nameof(dto), "Maximum level must be greater than or equal to zero");
 
-        await ValidationUtil.ValidateIdsExist<IClassRepository, Class>(dto.ClassIds, classRepo);
+        await ValidationUtil.IdsExist<IClassRepository, Class>(dto.ClassIds, classRepo);
 
         var dtoSchools = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchools);
         var dtoTargetTypes = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetTypes);
@@ -133,11 +133,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     {
         var spell = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Spell could not be found");
 
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
-        ValidationUtil.ValidateRequiredString(dto.Duration);
-        ValidationUtil.ValidateRequiredString(dto.CastingTime);
-        ValidationUtil.ValidateRequiredString(dto.MagicSchool);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Duration);
+        ValidationUtil.NotNullOrWhiteSpace(dto.CastingTime);
+        ValidationUtil.NotNullOrWhiteSpace(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
         var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);

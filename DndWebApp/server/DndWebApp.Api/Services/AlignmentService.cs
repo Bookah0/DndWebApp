@@ -19,9 +19,9 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 
     public async Task<Alignment> CreateAsync(AlignmentDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
-        ValidationUtil.ValidateRequiredString(dto.Abbreviation);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Abbreviation);
 
 
         Alignment alignment = new()
@@ -34,7 +34,7 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
         return await repo.CreateAsync(alignment);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var alignment = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Alignment could not be found");
         await repo.DeleteAsync(alignment);
@@ -52,9 +52,9 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 
     public async Task UpdateAsync(AlignmentDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Description);
-        ValidationUtil.ValidateRequiredString(dto.Abbreviation);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Abbreviation);
 
         var alignment = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Alignment could not be found");
 

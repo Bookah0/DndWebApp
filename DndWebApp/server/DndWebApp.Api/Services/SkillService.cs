@@ -23,7 +23,7 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
 
     public async Task<Skill> CreateAsync(SkillDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
         var ability = await abilityRepo.GetByIdAsync(dto.AbilityId) ?? throw new NullReferenceException("Ability could not be found");
 
         Skill skill = new()
@@ -37,7 +37,7 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
         return await repo.CreateAsync(skill);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var skill = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Skill could not be found");
         await repo.DeleteAsync(skill);
@@ -60,8 +60,8 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
 
     public async Task UpdateAsync(SkillDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredNumeric(dto.AbilityId);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullAboveZero(dto.AbilityId);
         var skill = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Skill could not be found");
 
         if (skill.AbilityId != dto.AbilityId)

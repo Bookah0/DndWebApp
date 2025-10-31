@@ -21,9 +21,9 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
 
     public async Task<Language> CreateAsync(LanguageDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Script);
-        ValidationUtil.ValidateRequiredString(dto.Family);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Script);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Family);
 
         Language language = new()
         {
@@ -36,7 +36,7 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
         return await repo.CreateAsync(language);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var language = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Language could not be found");
         await repo.DeleteAsync(language);
@@ -54,9 +54,9 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
 
     public async Task UpdateAsync(LanguageDto dto)
     {
-        ValidationUtil.ValidateRequiredString(dto.Name);
-        ValidationUtil.ValidateRequiredString(dto.Script);
-        ValidationUtil.ValidateRequiredString(dto.Family);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Script);
+        ValidationUtil.NotNullOrWhiteSpace(dto.Family);
 
         var language = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Language could not be found");
 

@@ -2,6 +2,8 @@ using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Classes;
+using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -12,7 +14,8 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var repo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var repo = new ClassRepository(context, baseClassRepo);
         
         // Arrange
         var cls = CreateTestClass();
@@ -40,7 +43,8 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_DeleteDB");
         await using var context = new AppDbContext(options);
-        var repo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var repo = new ClassRepository(context, baseClassRepo);
 
         // Arrange
         var cls = CreateTestClass();
@@ -59,7 +63,8 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var repo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var repo = new ClassRepository(context, baseClassRepo);
         
         // Arrange
         var cls = CreateTestClass();
@@ -87,7 +92,8 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_DtoDataDB");
         await using var context = new AppDbContext(options);
-        var repo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var repo = new ClassRepository(context, baseClassRepo);
 
         // Arrange
         var cls = CreateTestClass();
@@ -109,7 +115,8 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_GetAllDtoDB");
         await using var context = new AppDbContext(options);
-        var repo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var repo = new ClassRepository(context, baseClassRepo);
 
         // Arrange
         var c1 = CreateTestClass();
@@ -131,7 +138,8 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_GetWithAllDataDB");
         await using var context = new AppDbContext(options);
-        var repo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var repo = new ClassRepository(context, baseClassRepo);
         
         // Arrange
         var cls = CreateTestClass();

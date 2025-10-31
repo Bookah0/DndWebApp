@@ -14,10 +14,13 @@ public class ItemRepositoryTests
     {
         var options = GetInMemoryOptions("Items_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var itemRepo = new ItemRepository(context);
+        var efItemRepo = new EfRepository<Item>(context);
+        var efToolRepo = new EfRepository<Tool>(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
-        var toolRepo = new ToolRepository(context);
+        
+        var itemRepo = new ItemRepository(context, efItemRepo);
+        var toolRepo = new ToolRepository(context, efToolRepo);
         
         // Arrange
         var item = CreateTestItem();
@@ -79,10 +82,13 @@ public class ItemRepositoryTests
         var weapon = CreateTestWeapon();
         var tool = CreateTestTool();
 
-        var itemRepo = new ItemRepository(context);
+        var efItemRepo = new EfRepository<Item>(context);
+        var efToolRepo = new EfRepository<Tool>(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
-        var toolRepo = new ToolRepository(context);
+        
+        var itemRepo = new ItemRepository(context, efItemRepo);
+        var toolRepo = new ToolRepository(context, efToolRepo);
 
         await itemRepo.CreateAsync(item);
         await armorRepo.CreateAsync(armor);
@@ -119,10 +125,13 @@ public class ItemRepositoryTests
     {
         var options = GetInMemoryOptions("Items_UpdateDB");
         await using var context = new AppDbContext(options);
-        var itemRepo = new ItemRepository(context);
+        var efItemRepo = new EfRepository<Item>(context);
+        var efToolRepo = new EfRepository<Tool>(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
-        var toolRepo = new ToolRepository(context);
+        
+        var itemRepo = new ItemRepository(context, efItemRepo);
+        var toolRepo = new ToolRepository(context, efToolRepo);
 
         // Arrange
         var item = CreateTestItem();
@@ -179,10 +188,13 @@ public class ItemRepositoryTests
     {
         var options = GetInMemoryOptions("Items_DeleteDB");
         await using var context = new AppDbContext(options);
-        var itemRepo = new ItemRepository(context);
+        var efItemRepo = new EfRepository<Item>(context);
+        var efToolRepo = new EfRepository<Tool>(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
-        var toolRepo = new ToolRepository(context);
+        
+        var itemRepo = new ItemRepository(context, efItemRepo);
+        var toolRepo = new ToolRepository(context, efToolRepo);
 
         // Arrange
         var item = CreateTestItem();
@@ -218,7 +230,8 @@ public class ItemRepositoryTests
     {
         var options = GetInMemoryOptions("Tools_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var repo = new ToolRepository(context);
+        var efRepo = new EfRepository<Tool>(context);
+        var repo = new ToolRepository(context, efRepo);
 
         // Arrange
         var tool = CreateTestTool();

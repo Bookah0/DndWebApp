@@ -39,7 +39,7 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
         return await repo.CreateAsync(trait);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteClassLevelAsync(int id)
     {
         var trait = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Trait could not be found");
         await repo.DeleteAsync(trait);

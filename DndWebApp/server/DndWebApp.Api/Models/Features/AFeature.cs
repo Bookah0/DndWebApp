@@ -30,10 +30,10 @@ public abstract class AFeature
     public List<LanguageType> Languages { get; set; } = [];
 
     // Proficiency choices
-    public ICollection<AbilityIncreaseChoice> AbilityIncreaseChoices { get; set; } = [];
-    public ICollection<SkillProficiencyChoice> SkillProficiencyChoices { get; set; } = [];
-    public ICollection<ToolProficiencyChoice> ToolProficiencyChoices { get; set; } = [];  
-    public ICollection<LanguageChoice> LanguageChoices { get; set; } = []; 
-    public ICollection<ArmorProficiencyChoice> ArmorProficiencyChoices { get; set; } = [];  
-    public ICollection<WeaponProficiencyChoice> WeaponProficiencyChoices { get; set; } = [];  
+    public ICollection<AbilityIncreaseOption> AbilityIncreaseChoices { get; set; } = [];
+    public ICollection<SkillProficiencyOption> SkillProficiencyChoices { get; set; } = [];
+    public ICollection<ToolProficiencyOption> ToolProficiencyChoices { get; set; } = [];  
+    public ICollection<LanguageOption> LanguageChoices { get; set; } = []; 
+    public ICollection<ArmorProficiencyOption> ArmorProficiencyChoices { get; set; } = [];  
+    public ICollection<WeaponProficiencyOption> WeaponProficiencyChoices { get; set; } = [];  
 }

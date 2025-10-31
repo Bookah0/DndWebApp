@@ -32,7 +32,7 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
         return await repo.CreateAsync(alignment);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteClassLevelAsync(int id)
     {
         var alignment = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Alignment could not be found");
         await repo.DeleteAsync(alignment);

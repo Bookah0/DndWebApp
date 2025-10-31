@@ -5,11 +5,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Abilities;
 
-public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(context), IAbilityRepository
+public class AbilityRepository : IAbilityRepository
 {
+    private AppDbContext context;
+    private IRepository<Ability> baseRepo;
+
+    public AbilityRepository(AppDbContext context, IRepository<Ability> baseRepo)
+    {
+        this.context = context;
+        this.baseRepo = baseRepo;
+    }
+
+    public async Task<Ability> CreateAsync(Ability entity) => await baseRepo.CreateAsync(entity);
+    public async Task<Ability?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
+    public async Task<ICollection<Ability>> GetAllAsync() => await baseRepo.GetAllAsync();
+    public async Task UpdateAsync(Ability updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
+    public async Task DeleteAsync(Ability entity) => await baseRepo.DeleteAsync(entity);
+
     public async Task<AbilityDto?> GetDtoAsync(int id)
     {
-        return await dbSet
+        return await context.AbilityScores
             .AsNoTracking()
             .Select(a => new AbilityDto
             {
@@ -23,14 +38,14 @@ public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(con
 
     public async Task<Ability?> GetWithSkillsAsync(int id)
     {
-        return await dbSet
+        return await context.AbilityScores
             .Include(a => a.Skills)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<ICollection<AbilityDto>> GetAllDtosAsync()
     {
-        return await dbSet
+        return await context.AbilityScores
             .AsNoTracking()
             .Select(a => new AbilityDto
             {
@@ -44,8 +59,9 @@ public class AbilityRepository(AppDbContext context) : EfRepository<Ability>(con
 
     public async Task<ICollection<Ability>> GetAllWithSkillsAsync()
     {
-        return await dbSet
+        return await context.AbilityScores
             .Include(a => a.Skills)
             .ToListAsync();
     }
+
 }

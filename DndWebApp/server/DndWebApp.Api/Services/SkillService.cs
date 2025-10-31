@@ -35,7 +35,7 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
         return await repo.CreateAsync(skill);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteClassLevelAsync(int id)
     {
         var skill = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Skill could not be found");
         await repo.DeleteAsync(skill);

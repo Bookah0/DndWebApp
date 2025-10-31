@@ -1,6 +1,8 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Repositories.Species;
+using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -11,7 +13,8 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("Subrace_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var repo = new SubraceRepository(context);
+        var efRepo = new EfRepository<Subrace>(context);
+        var repo = new SubraceRepository(context, efRepo);
 
         // Arrange
         var elfRace = CreateTestRace("Elf");
@@ -19,9 +22,8 @@ public class SubraceRepositoryTests
         var woodElf = CreateTestSubrace("Wood Elf", elfRace, elfRace.Id);
 
         // Act
-        elfRace.SubRaces.Add(highElf);
-        elfRace.SubRaces.Add(woodElf);
-        context.Races.Add(elfRace);
+        await repo.CreateAsync(highElf);
+        await repo.CreateAsync(woodElf);
 
         var savedHighElf = await repo.GetByIdAsync(highElf.Id);
         var savedWoodElf = await repo.GetByIdAsync(woodElf.Id);
@@ -46,7 +48,8 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("Subrace_DeleteDB");
         await using var context = new AppDbContext(options);
-        var repo = new SubraceRepository(context);
+        var efRepo = new EfRepository<Subrace>(context);
+        var repo = new SubraceRepository(context, efRepo);
 
         // Arrange
         var subrace = CreateTestSubrace("High Elf", null!, -1);
@@ -67,7 +70,8 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("Subrace_DeleteDB");
         await using var context = new AppDbContext(options);
-        var repo = new SubraceRepository(context);
+        var efRepo = new EfRepository<Subrace>(context);
+        var repo = new SubraceRepository(context, efRepo);
 
         // Arrange
         var subrace = CreateTestSubrace("High Elf", null!, -1);
@@ -86,7 +90,8 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("PrimitiveSubrace_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var repo = new SubraceRepository(context);
+        var efRepo = new EfRepository<Subrace>(context);
+        var repo = new SubraceRepository(context, efRepo);
 
         // Arrange
         var highElf = CreateTestSubrace("High Elf", null!, 1);
@@ -125,7 +130,8 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("Subrace_RetrieveWithTraitsDB");
         await using var context = new AppDbContext(options);
-        var repo = new SubraceRepository(context);
+        var efRepo = new EfRepository<Subrace>(context);
+        var repo = new SubraceRepository(context, efRepo);
 
         // Arrange
         var elfRace = CreateTestRace("Elf");

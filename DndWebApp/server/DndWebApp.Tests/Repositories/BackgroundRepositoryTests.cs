@@ -2,6 +2,8 @@ using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Backgrounds;
+using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -10,12 +12,13 @@ public class BackgroundRepositoryTests
     [Fact]
     public async Task UpdateBackground_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("BG_UpdateDB");
-        var bg = CreateTestBackground("Outlander");
-
         await using var context = new AppDbContext(options);
-        var repo = new BackgroundRepository(context);
+        var baseBgRepo = new EfRepository<Background>(context);
+        var repo = new BackgroundRepository(context, baseBgRepo);
+
+        // Arrange
+        var bg = CreateTestBackground("Outlander");
         await repo.CreateAsync(bg);
         context.ChangeTracker.Clear();
 
@@ -40,11 +43,12 @@ public class BackgroundRepositoryTests
     public async Task DeleteBackground_ShouldDelete()
     {
         var options = GetInMemoryOptions("BG_DeleteDB");
-
-        var bg = CreateTestBackground("Outlander");
-
         await using var context = new AppDbContext(options);
-        var repo = new BackgroundRepository(context);
+        var baseBgRepo = new EfRepository<Background>(context);
+        var repo = new BackgroundRepository(context, baseBgRepo);
+
+        // Arrange
+        var bg = CreateTestBackground("Outlander");
         await repo.CreateAsync(bg);
         await context.SaveChangesAsync();
 
@@ -60,138 +64,117 @@ public class BackgroundRepositoryTests
     [Fact]
     public async Task AddAndRetrieveBackground_WorksCorrectly()
     {
-        // Arrange
         var options = GetInMemoryOptions("BG_AddRetrieveDB");
+        await using var context = new AppDbContext(options);
+        var baseBgRepo = new EfRepository<Background>(context);
+        var repo = new BackgroundRepository(context, baseBgRepo);
+
+        // Arrange
         var background = CreateTestBackground("Acolyte");
 
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new BackgroundRepository(context);
-            await repo.CreateAsync(background);
-            await context.SaveChangesAsync();
-        }
+        await repo.CreateAsync(background);
+        await context.SaveChangesAsync();
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new BackgroundRepository(context);
-            var savedBackground = await repo.GetByIdAsync(background.Id);
+        var savedBackground = await repo.GetByIdAsync(background.Id);
 
-            // Assert
-            Assert.NotNull(savedBackground);
-            Assert.Equal("Acolyte", savedBackground!.Name);
-            Assert.Equal("Acolyte description", savedBackground.Description);
+        // Assert
+        Assert.NotNull(savedBackground);
+        Assert.Equal("Acolyte", savedBackground!.Name);
+        Assert.Equal("Acolyte description", savedBackground.Description);
 
-            Assert.Empty(savedBackground.StartingItems);        // Default value
-            Assert.Empty(savedBackground.StartingItemsOptions); // Default value
-        }
+        Assert.NotEmpty(savedBackground.StartingItems);
+        Assert.NotEmpty(savedBackground.StartingItemsOptions);
     }
 
     [Fact]
     public async Task GetPrimitiveDataAsync_ReturnsCorrectValues()
     {
-        // Arrange
         var options = GetInMemoryOptions("BG_PrimitiveDataDB");
-        var background = CreateTestBackground("Acolyte");
+        await using var context = new AppDbContext(options);
+        var baseBgRepo = new EfRepository<Background>(context);
+        var repo = new BackgroundRepository(context, baseBgRepo);
 
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new BackgroundRepository(context);
-            await repo.CreateAsync(background);
-            await context.SaveChangesAsync();
-        }
+        // Arrange
+        var background = CreateTestBackground("Acolyte");
+        await repo.CreateAsync(background);
+        await context.SaveChangesAsync();
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new BackgroundRepository(context);
-            var primitive = await repo.GetDtoAsync(background.Id);
+        var primitive = await repo.GetDtoAsync(background.Id);
 
-            // Assert
-            Assert.NotNull(primitive);
-            Assert.Equal("Acolyte", primitive!.Name);
-            Assert.Equal("Acolyte description", primitive.Description);
-            Assert.False(primitive.IsHomebrew);
-        }
+        // Assert
+        Assert.NotNull(primitive);
+        Assert.Equal("Acolyte", primitive!.Name);
+        Assert.Equal("Acolyte description", primitive.Description);
+        Assert.False(primitive.IsHomebrew);
     }
 
     [Fact]
     public async Task GetAllPrimitiveDataAsync_ReturnsAllBackgrounds()
     {
-        // Arrange
         var options = GetInMemoryOptions("BG_GetAllPrimitiveDB");
+        await using var context = new AppDbContext(options);
+        var baseBgRepo = new EfRepository<Background>(context);
+        var repo = new BackgroundRepository(context, baseBgRepo);
+
+        // Arrange
         var bg1 = CreateTestBackground("Acolyte");
         var bg2 = CreateTestBackground("Soldier");
 
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new BackgroundRepository(context);
-            await repo.CreateAsync(bg1);
-            await repo.CreateAsync(bg2);
-            await context.SaveChangesAsync();
-        }
+        await repo.CreateAsync(bg1);
+        await repo.CreateAsync(bg2);
+        await context.SaveChangesAsync();
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new BackgroundRepository(context);
-            var allPrimitives = await repo.GetAllDtosAsync();
+        var allPrimitives = await repo.GetAllDtosAsync();
 
-            // Assert
-            Assert.Equal(2, allPrimitives.Count);
-            Assert.Contains(allPrimitives, b => b.Name == "Acolyte");
-            Assert.Contains(allPrimitives, b => b.Name == "Soldier");
-        }
+        // Assert
+        Assert.Equal(2, allPrimitives.Count);
+        Assert.Contains(allPrimitives, b => b.Name == "Acolyte");
+        Assert.Contains(allPrimitives, b => b.Name == "Soldier");
     }
 
     [Fact]
     public async Task GetWithAllDataAsync_IncludesAllNavigationProperties()
     {
-        // Arrange
         var options = GetInMemoryOptions("BG_GetWithAllDataDB");
+        await using var context = new AppDbContext(options);
+        var baseBgRepo = new EfRepository<Background>(context);
+        var repo = new BackgroundRepository(context, baseBgRepo);
+
+        // Arrange
         var background = CreateTestBackground("Acolyte");
         background.Features.Add(CreateTestFeature());
 
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new BackgroundRepository(context);
-            await repo.CreateAsync(background);
-            await context.SaveChangesAsync();
-        }
+        await repo.CreateAsync(background);
+        await context.SaveChangesAsync();
 
         // Act
-        await using (var context = new AppDbContext(options))
-        {
-            var repo = new BackgroundRepository(context);
-            var fullBackground = await repo.GetWithAllDataAsync(background.Id);
+        var fullBackground = await repo.GetWithAllDataAsync(background.Id);
 
-            // Assert
-            Assert.NotNull(fullBackground);
+        // Assert
+        Assert.NotNull(fullBackground);
 
-            // Starting Items
-            Assert.NotEmpty(fullBackground!.StartingItems);
-            var holySymbol = fullBackground.StartingItems.FirstOrDefault(i => i.Name == "Holy Symbol");
-            Assert.NotNull(holySymbol);
-            Assert.Equal(1, holySymbol!.Quantity);
+        Assert.NotEmpty(fullBackground!.StartingItems);
+        var holySymbol = fullBackground.StartingItems.FirstOrDefault(i => i.Name == "Holy Symbol");
+        Assert.NotNull(holySymbol);
+        Assert.Equal(1, holySymbol!.Quantity);
 
-            var incense = fullBackground.StartingItems.FirstOrDefault(i => i.Name == "Incense Sticks");
-            Assert.NotNull(incense);
-            Assert.Equal(5, incense!.Quantity);
+        var incense = fullBackground.StartingItems.FirstOrDefault(i => i.Name == "Incense Sticks");
+        Assert.NotNull(incense);
+        Assert.Equal(5, incense!.Quantity);
 
-            // Starting Item Choices
-            Assert.NotEmpty(fullBackground.StartingItemsOptions);
-            var prayerChoice = fullBackground.StartingItemsOptions
-                .FirstOrDefault(o => o.Description.Contains("prayer book or prayer wheel"));
-            Assert.NotNull(prayerChoice);
-            Assert.Equal(2, prayerChoice!.Options.Count);
-            Assert.Contains(prayerChoice.Options, c => c.Name == "Prayer Book");
-            Assert.Contains(prayerChoice.Options, c => c.Name == "Prayer Wheel");
+        Assert.NotEmpty(fullBackground.StartingItemsOptions);
+        var prayerChoice = fullBackground.StartingItemsOptions.FirstOrDefault(o => o.Description.Contains("prayer book or prayer wheel"));
+        Assert.NotNull(prayerChoice);
+        Assert.Equal(2, prayerChoice!.Options.Count);
+        Assert.Contains(prayerChoice.Options, c => c.Name == "Prayer Book");
+        Assert.Contains(prayerChoice.Options, c => c.Name == "Prayer Wheel");
 
-            // Features
-            Assert.NotEmpty(fullBackground.Features);
-            var shelter = fullBackground.Features.FirstOrDefault(f => f.Name == "Shelter of the Faithful");
-            Assert.NotNull(shelter);
-            Assert.Equal("As an acolyte...", shelter!.Description);
-        }
+        Assert.NotEmpty(fullBackground.Features);
+        var shelter = fullBackground.Features.FirstOrDefault(f => f.Name == "Shelter of the Faithful");
+        Assert.NotNull(shelter);
+        Assert.Equal("As an acolyte...", shelter!.Description);
     }
 }

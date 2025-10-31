@@ -66,7 +66,7 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     }
 
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteClassLevelAsync(int id)
     {
         var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
         await repo.DeleteAsync(spell);

@@ -36,7 +36,7 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
         return await repo.CreateAsync(classFeature);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteClassLevelAsync(int id)
     {
         var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Class Feature could not be found");
         await repo.DeleteAsync(feature);

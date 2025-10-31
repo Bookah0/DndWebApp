@@ -2,19 +2,22 @@ using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Repositories.Characters;
+using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class CharacterRepositoryTests
 {
-    
+
 
     [Fact]
     public async Task UpdateCharacter_ChangesPersist()
     {
         var options = GetInMemoryOptions("Character_UpdateDB");
         await using var context = new AppDbContext(options);
-        var repo = new CharacterRepository(context);
+        var baseCharacterRepo = new EfRepository<Character>(context);
+        var repo = new CharacterRepository(context, baseCharacterRepo);
 
         // Arrange
         var character = CreateTestCharacter();
@@ -24,7 +27,7 @@ public class CharacterRepositoryTests
         character.Level += 1;
         character.WeaponProficiencies.Add(new() { WeaponTypes = WeaponCategory.MartialMelee, CharacterFeatureId = character.Background.Id });
         character.Languages.Clear();
-        
+
         await repo.UpdateAsync(character);
         var updated = await repo.GetWithAllDataAsync(character.Id);
 
@@ -33,13 +36,14 @@ public class CharacterRepositoryTests
         Assert.Contains(updated!.WeaponProficiencies, p => p.WeaponTypes == WeaponCategory.MartialMelee);
         Assert.Empty(updated!.Languages);
     }
-    
+
     [Fact]
     public async Task DeleteCharacter_ShouldDelete()
     {
         var options = GetInMemoryOptions("Character_DeleteDB");
         await using var context = new AppDbContext(options);
-        var repo = new CharacterRepository(context);
+        var baseCharacterRepo = new EfRepository<Character>(context);
+        var repo = new CharacterRepository(context, baseCharacterRepo);
 
         // Arrange
         var character = CreateTestCharacter();
@@ -58,7 +62,8 @@ public class CharacterRepositoryTests
     {
         var options = GetInMemoryOptions("Character_FullDataDB");
         await using var context = new AppDbContext(options);
-        var repo = new CharacterRepository(context);
+        var baseCharacterRepo = new EfRepository<Character>(context);
+        var repo = new CharacterRepository(context, baseCharacterRepo);
 
         // Arrange
         var character = CreateTestCharacter();
@@ -83,7 +88,8 @@ public class CharacterRepositoryTests
     {
         var options = GetInMemoryOptions("Character_PrimitiveDB");
         await using var context = new AppDbContext(options);
-        var repo = new CharacterRepository(context);
+        var baseCharacterRepo = new EfRepository<Character>(context);
+        var repo = new CharacterRepository(context, baseCharacterRepo);
 
         // Arrange
         var character = CreateTestCharacter();
@@ -104,13 +110,14 @@ public class CharacterRepositoryTests
     {
         // Arrange
         var options = GetInMemoryOptions("Character_AllPrimitiveDB");
+        await using var context = new AppDbContext(options);
+        var baseCharacterRepo = new EfRepository<Character>(context);
+        var repo = new CharacterRepository(context, baseCharacterRepo);
 
         var c1 = CreateTestCharacter();
         var c2 = CreateTestCharacter();
         c2.Name = "Lyra";
 
-        await using var context = new AppDbContext(options);
-        var repo = new CharacterRepository(context);
         await repo.CreateAsync(c1);
         await repo.CreateAsync(c2);
         await context.SaveChangesAsync();
@@ -128,13 +135,16 @@ public class CharacterRepositoryTests
     public async Task GetCharacterDescriptionAsync_ReturnsExpectedDetails()
     {
         var options = GetInMemoryOptions("Character_DescriptionDB");
+        await using var context = new AppDbContext(options);
+        var baseCharacterRepo = new EfRepository<Character>(context);
+        var repo = new CharacterRepository(context, baseCharacterRepo);
+
+        // Arrange
         var character = CreateTestCharacter();
         character.CharacterBuildData.Age = 40;
         character.CharacterBuildData.Hair = "Brown";
         character.CharacterBuildData.Skin = "Hazel";
 
-        await using var context = new AppDbContext(options);
-        var repo = new CharacterRepository(context);
         await repo.CreateAsync(character);
         await context.SaveChangesAsync();
 
@@ -148,24 +158,25 @@ public class CharacterRepositoryTests
         Assert.Equal("Hazel", desc.Skin);
     }
 
-[Fact]
-public async Task GetCurrentSpellSlotsAsync_ReturnsSpellSlots()
-{
-    var options = GetInMemoryOptions("Character_SpellSlotsDB");
-    var character = CreateTestCharacter();
+    [Fact]
+    public async Task GetCurrentSpellSlotsAsync_ReturnsSpellSlots()
+    {
+        var options = GetInMemoryOptions("Character_SpellSlotsDB");
+        await using var context = new AppDbContext(options);
+        var baseCharacterRepo = new EfRepository<Character>(context);
+        var repo = new CharacterRepository(context, baseCharacterRepo);
 
-    await using var context = new AppDbContext(options);
-    var repo = new CharacterRepository(context);
-    await repo.CreateAsync(character);
-    await context.SaveChangesAsync();
+        // Arrange
+        var character = CreateTestCharacter();
+        await repo.CreateAsync(character);
+        await context.SaveChangesAsync();
 
-    // Act
-    var slots = await repo.GetCurrentSpellSlotsAsync(character.Id);
+        // Act
+        var slots = await repo.GetCurrentSpellSlotsAsync(character.Id);
 
-    // Assert
-    Assert.NotNull(slots);
-    Assert.Equal(4, slots!.Lvl1);
-    Assert.Equal(2, slots.Lvl2);
-}
-
+        // Assert
+        Assert.NotNull(slots);
+        Assert.Equal(4, slots!.Lvl1);
+        Assert.Equal(2, slots.Lvl2);
+    }
 }

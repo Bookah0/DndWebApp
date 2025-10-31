@@ -6,11 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Species;
 
-public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(context), ISubraceRepository
+public class SubraceRepository : ISubraceRepository
 {
+    private AppDbContext context;
+    private IRepository<Subrace> baseRepo;
+
+    public SubraceRepository(AppDbContext context, IRepository<Subrace> baseRepo)
+    {
+        this.context = context;
+        this.baseRepo = baseRepo;
+    }
+
+    public async Task<Subrace> CreateAsync(Subrace entity) => await baseRepo.CreateAsync(entity);
+    public async Task<Subrace?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
+    public async Task<ICollection<Subrace>> GetAllAsync() => await baseRepo.GetAllAsync();
+    public async Task UpdateAsync(Subrace updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
+    public async Task DeleteAsync(Subrace entity) => await baseRepo.DeleteAsync(entity);    
+    
     public async Task<SubraceDto?> GetSubraceDtoAsync(int id)
     {
-        return await dbSet
+        return await context.SubRaces
             .AsNoTracking()
             .Select(r => new SubraceDto
             {
@@ -24,7 +39,7 @@ public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(con
 
     public async Task<Subrace?> GetWithAllDataAsync(int id)
     {
-        return await dbSet
+        return await context.SubRaces
         .Include(r => r.Traits)
         .Include(r => r.ParentRace)
         .FirstOrDefaultAsync(x => x.Id == id);
@@ -32,7 +47,7 @@ public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(con
 
     public async Task<ICollection<SubraceDto>> GetAllSubraceDtosAsync()
     {
-        return await dbSet
+        return await context.SubRaces
             .AsNoTracking()
             .Select(r => new SubraceDto
             {
@@ -46,7 +61,7 @@ public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(con
 
     public async Task<ICollection<Subrace>> GetAllSubracesByRaceAsync(int raceId)
     {
-        return await dbSet
+        return await context.SubRaces
         .Where(s => s.ParentRaceId == raceId)
         .Include(r => r.Traits)
         .Include(r => r.ParentRace)
@@ -55,7 +70,7 @@ public class SubraceRepository(AppDbContext context) : EfRepository<Subrace>(con
 
     public async Task<ICollection<Subrace>> GetAllWithAllDataAsync()
     {
-        return await dbSet
+        return await context.SubRaces
         .Include(r => r.Traits)
         .Include(r => r.ParentRace)
         .ToListAsync();

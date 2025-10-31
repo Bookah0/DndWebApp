@@ -3,6 +3,7 @@ using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories.Spells;
+using DndWebApp.Api.Repositories;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -13,7 +14,8 @@ public class SpellRepositoryTests
     {
         var options = GetInMemoryOptions("Spell_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
+        var efRepo = new EfRepository<Spell>(context);
+        var repo = new SpellRepository(context, efRepo);
 
         // Arrange
         var magicMissile = CreateTestSpell("Magic Missile");
@@ -40,7 +42,8 @@ public class SpellRepositoryTests
     {
         var options = GetInMemoryOptions("Spell_UpdateDB");
         await using var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
+        var efRepo = new EfRepository<Spell>(context);
+        var repo = new SpellRepository(context, efRepo);
 
         // Arrange
         var spell = CreateTestSpell("Magic Missile");
@@ -62,7 +65,8 @@ public class SpellRepositoryTests
     {
         var options = GetInMemoryOptions("Spell_DeleteDB");
         await using var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
+        var efRepo = new EfRepository<Spell>(context);
+        var repo = new SpellRepository(context, efRepo);
 
         // Arrange
         var spell = CreateTestSpell("Magic Missile");
@@ -82,7 +86,8 @@ public class SpellRepositoryTests
     {
         var options = GetInMemoryOptions("Spell_FilterDB");
         var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
+        var efRepo = new EfRepository<Spell>(context);
+        var repo = new SpellRepository(context, efRepo);
 
         // Arrange
         var spells = new List<Spell>

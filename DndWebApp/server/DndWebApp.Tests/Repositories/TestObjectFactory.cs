@@ -35,9 +35,9 @@ public static class TestObjectFactory
         return new Item { Name = name, Description = description, Categories = [category], Quantity = quantity };
     }
 
-    internal static ItemChoice CreateTestStartingItemChoice()
+    internal static ItemOption CreateTestStartingItemChoice()
     {
-        var option = new ItemChoice
+        var option = new ItemOption
         {
             Description = "a prayer book or prayer wheel",
             NumberOfChoices = 2,
@@ -132,7 +132,6 @@ public static class TestObjectFactory
             Level = 2,
             Class = cls,
             ClassId = cls.Id,
-            AbilityScoreBonus = 1,
             ProficiencyBonus = 3,
             ClassSpecificSlotsAtLevel = CreateClassSpecificSlots(),
             SpellSlotsAtLevel = CreateTestSpellSlotsAtLevel(),
@@ -153,9 +152,9 @@ public static class TestObjectFactory
         return cls;
     }
 
-    internal static ItemChoice CreateTestStartingEquipmentChoice()
+    internal static ItemOption CreateTestStartingEquipmentChoice()
     {
-        var option = new ItemChoice
+        var option = new ItemOption
         {
             Description = "armor or weapon",
             NumberOfChoices = 2,

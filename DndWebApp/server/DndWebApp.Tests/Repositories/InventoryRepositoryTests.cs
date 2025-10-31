@@ -2,6 +2,8 @@ using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Items;
+using DndWebApp.Api.Models.Items;
+using DndWebApp.Api.Repositories;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -12,7 +14,8 @@ public class InventoryRepositoryTests
     {
         var options = GetInMemoryOptions("Inventory_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var invRepo = new InventoryRepository(context);
+        var efRepo = new EfRepository<Inventory>(context);
+        var invRepo = new InventoryRepository(context, efRepo);
 
         // Arrange
         var inv = CreateTestInventory();

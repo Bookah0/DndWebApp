@@ -71,4 +71,6 @@ public interface IClassRepository : IRepository<Class>
     Task<ICollection<Class>> GetAllWithAllDataAsync();
 
     Task<ICollection<Class>> FilterAllAsync(SpellFilter spellFilter);
+
+    Task<Class?> GetWithClassLevelsAsync(int id);
 }

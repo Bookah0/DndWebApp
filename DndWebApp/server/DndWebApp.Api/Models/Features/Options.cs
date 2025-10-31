@@ -7,45 +7,45 @@ using DndWebApp.Api.Models.World.Enums;
 
 namespace DndWebApp.Api.Models.Features;
 
-public abstract class Choice
+public abstract class Option
 {
     public int Id { get; set; }
     public required string Description { get; set; }
     public required int NumberOfChoices { get; set; }
 }
 
-public class SkillProficiencyChoice : Choice
+public class SkillProficiencyOption : Option
 {
     public required ICollection<SkillType> Options { get; set; }
 }
 
-public class ItemChoice : Choice
+public class ItemOption : Option
 {
     public required ICollection<Item> Options { get; set; }
 }
 
-public class AbilityIncreaseChoice : Choice
+public class AbilityIncreaseOption : Option
 {
     public required ICollection<AbilityValue> Options { get; set; }
 }
 
-public class ToolProficiencyChoice : Choice
+public class ToolProficiencyOption : Option
 {
     public required ICollection<ToolCategory> Options { get; set; }
 }
 
-public class LanguageChoice : Choice
+public class LanguageOption : Option
 {
     public required ICollection<LanguageType> Options { get; set; }
 }
 
-public class WeaponProficiencyChoice : Choice
+public class WeaponProficiencyOption : Option
 {
     public required ICollection<WeaponCategory> CategoryOptions { get; set; }
     public required ICollection<WeaponType> TypeOptions { get; set; }
 }
 
-public class ArmorProficiencyChoice : Choice
+public class ArmorProficiencyOption : Option
 {
     public required ICollection<ArmorCategory> Options { get; set; }
 }

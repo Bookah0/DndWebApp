@@ -36,7 +36,7 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
         return await repo.CreateAsync(bgFeature);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteClassLevelAsync(int id)
     {
         var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Background Feature could not be found");
         await repo.DeleteAsync(feature);

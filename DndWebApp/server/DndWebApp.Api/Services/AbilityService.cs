@@ -34,7 +34,7 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
         return await repo.CreateAsync(ability);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteClassLevelAsync(int id)
     {
         var ability = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Ability could not be found");
         await repo.DeleteAsync(ability);

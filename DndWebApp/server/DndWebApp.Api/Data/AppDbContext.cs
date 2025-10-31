@@ -20,7 +20,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Alignment> Alignments { get; set; }
     public DbSet<Language> Languages { get; set; }
-    public DbSet<Choice> Choices { get; set; }
+    public DbSet<Option> Choices { get; set; }
 
     public DbSet<Class> Classes { get; set; }
     public DbSet<ClassLevel> ClassLevels { get; set; }
@@ -72,12 +72,6 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Character>()
             .OwnsMany(c => c.SkillProficiencies);
-
-        modelBuilder.Entity<Class>()
-            .OwnsMany(c => c.Info);
-
-        modelBuilder.Entity<Class>()
-            .OwnsMany(c => c.Info);
 
         modelBuilder.Entity<Tool>()
             .OwnsMany(t => t.Activities);

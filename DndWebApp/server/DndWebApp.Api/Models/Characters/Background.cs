@@ -15,6 +15,6 @@ public class Background
 
     public ICollection<AFeature> Features { get; set; } = [];
     public ICollection<Item> StartingItems { get; set; } = [];
-    public ICollection<ItemChoice> StartingItemsOptions { get; set; } = [];
+    public ICollection<ItemOption> StartingItemsOptions { get; set; } = [];
     public required Currency StartingCurrency { get; set; }
 }

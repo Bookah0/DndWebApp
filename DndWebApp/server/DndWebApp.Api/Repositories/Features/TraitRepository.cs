@@ -6,11 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Features;
 
-public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context), ITraitRepository
+public class TraitRepository : ITraitRepository
 {
+    private AppDbContext context;
+    private IRepository<Trait> baseRepo;
+
+    public TraitRepository(AppDbContext context, IRepository<Trait> baseRepo)
+    {
+        this.context = context;
+        this.baseRepo = baseRepo;
+    }
+
+    public async Task<Trait> CreateAsync(Trait entity) => await baseRepo.CreateAsync(entity);
+    public async Task<Trait?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
+    public async Task<ICollection<Trait>> GetAllAsync() => await baseRepo.GetAllAsync();
+    public async Task UpdateAsync(Trait updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
+    public async Task DeleteAsync(Trait entity) => await baseRepo.DeleteAsync(entity);
+
     public async Task<TraitDto?> GetDtoAsync(int id)
     {
-        return await dbSet
+        return await context.Traits
             .AsNoTracking()
             .Select(t => new TraitDto
             {
@@ -25,7 +40,7 @@ public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context
 
     public async Task<ICollection<TraitDto>> GetAllDtosAsync()
     {
-        return await dbSet
+        return await context.Traits
             .AsNoTracking()
             .Select(t => new TraitDto
             {
@@ -40,7 +55,7 @@ public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context
 
     public async Task<Trait?> GetWithAllDataAsync(int id)
     {
-        return await dbSet
+        return await context.Traits
             .AsSplitQuery()
             .Include(t => t.FromRace)
             .Include(f => f.AbilityIncreases)
@@ -58,7 +73,7 @@ public class TraitRepository(AppDbContext context) : EfRepository<Trait>(context
 
     public async Task<ICollection<Trait>> GetAllWithAllDataAsync()
     {
-        return await dbSet
+        return await context.Traits
             .AsSplitQuery()
             .Include(t => t.FromRace)
             .Include(f => f.AbilityIncreases)

@@ -6,11 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Classes;
 
-public class ClassRepository(AppDbContext context) : EfRepository<Class>(context), IClassRepository
+public class ClassRepository : IClassRepository
 {
+    private AppDbContext context;
+    private IRepository<Class> baseRepo;
+
+    public ClassRepository(AppDbContext context, IRepository<Class> baseRepo)
+    {
+        this.context = context;
+        this.baseRepo = baseRepo;
+    }
+
+    public async Task<Class> CreateAsync(Class entity) => await baseRepo.CreateAsync(entity);
+    public async Task<Class?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
+    public async Task<ICollection<Class>> GetAllAsync() => await baseRepo.GetAllAsync();
+    public async Task UpdateAsync(Class updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
+    public async Task DeleteAsync(Class entity) => await baseRepo.DeleteAsync(entity);
+
     public async Task<ClassDto?> GetDtoAsync(int id)
     {
-        return await dbSet
+        return await context.Classes
             .AsNoTracking()
             .Select(c => new ClassDto
             {
@@ -25,7 +40,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
 
     public async Task<ICollection<ClassDto>> GetAllDtosAsync()
     {
-        return await dbSet
+        return await context.Classes
             .AsNoTracking()
             .Select(c => new ClassDto
             {
@@ -40,7 +55,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
 
     public async Task<Class?> GetWithAllDataAsync(int id)
     {
-        return await dbSet
+        return await context.Classes
             .AsSplitQuery()
             .Include(b => b.ClassLevels)
             .Include(b => b.StartingEquipment)
@@ -51,7 +66,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
 
     public async Task<Class?> GetWithClassLevelsAsync(int id)
     {
-        return await dbSet
+        return await context.Classes
             .AsSplitQuery()
             .Include(b => b.ClassLevels)
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -59,7 +74,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
 
     public async Task<Class?> GetWithStartingEquipmentAsync(int id)
     {
-        return await dbSet
+        return await context.Classes
             .AsSplitQuery()
             .Include(b => b.StartingEquipment)
             .Include(b => b.StartingEquipmentOptions)
@@ -69,7 +84,7 @@ public class ClassRepository(AppDbContext context) : EfRepository<Class>(context
 
     public async Task<ICollection<Class>> GetAllWithAllDataAsync()
     {
-        return await dbSet
+        return await context.Classes
             .AsSplitQuery()
             .Include(b => b.ClassLevels)
             .Include(b => b.StartingEquipment)

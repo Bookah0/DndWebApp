@@ -4,11 +4,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Items;
 
-public class InventoryRepository(AppDbContext context) : EfRepository<Inventory>(context), IInventoryRepository
+public class InventoryRepository : IInventoryRepository
 {
+    private AppDbContext context;
+    private IRepository<Inventory> baseRepo;
+
+    public InventoryRepository(AppDbContext context, IRepository<Inventory> baseRepo)
+    {
+        this.context = context;
+        this.baseRepo = baseRepo;
+    }
+
+    public async Task<Inventory> CreateAsync(Inventory entity) => await baseRepo.CreateAsync(entity);
+    public async Task<Inventory?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
+    public async Task<ICollection<Inventory>> GetAllAsync() => await baseRepo.GetAllAsync();
+    public async Task UpdateAsync(Inventory updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
+    public async Task DeleteAsync(Inventory entity) => await baseRepo.DeleteAsync(entity);    
+    
     public async Task<Inventory?> GetWithEquippedItemsAsync(int id)
     {
-        return await dbSet
+        return await context.Inventories
         .Include(i => i.Currency)
         .Include(r => r.EquippedMainHand)
         .Include(r => r.EquippedOffHand)
@@ -29,7 +44,7 @@ public class InventoryRepository(AppDbContext context) : EfRepository<Inventory>
 
     public async Task<Inventory?> GetWithStoredItemsAsync(int id)
     {
-        return await dbSet
+        return await context.Inventories
         .Include(i => i.Currency)
         .AsSplitQuery()
         .Include(i => i.Treasures)
@@ -42,7 +57,7 @@ public class InventoryRepository(AppDbContext context) : EfRepository<Inventory>
 
     public async Task<Inventory?> GetWithAllDataAsync(int id)
     {
-        return await dbSet
+        return await context.Inventories
         .Include(i => i.Currency)
         .Include(r => r.EquippedMainHand)
         .Include(r => r.EquippedOffHand)

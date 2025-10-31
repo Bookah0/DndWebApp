@@ -6,11 +6,11 @@ using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Features;
 
-public class FeatService : IService<Feat, FeatDto, FeatDto>
+public class FeatureService : IService<Feat, FeatDto, FeatDto>
 {
     protected IFeatRepository repo;
 
-    public FeatService(IFeatRepository repo)
+    public FeatureService(IFeatRepository repo)
     {
         this.repo = repo;
     }

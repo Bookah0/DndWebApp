@@ -1,50 +1,74 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Repositories.Classes;
+using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Tests.Repositories;
 
 public class ClassLevelRepositoryTests
 {
-    
+
 
     [Fact]
     public async Task UpdateClassLevel_WorksCorrectly()
     {
         var options = GetInMemoryOptions("ClassLevel_UpdateDB");
-        await using var context = new AppDbContext(options);
-        var classRepo = new ClassRepository(context);
+        int levelId;
 
         // Arrange
-        var cls = CreateTestClass();
-        cls.ClassLevels.Add(CreateTestLevel(cls));
-        await classRepo.CreateAsync(cls);
+        await using (var context = new AppDbContext(options))
+        {
+            var baseClassRepo = new EfRepository<Class>(context);
+            var classRepo = new ClassRepository(context, baseClassRepo);
+
+            var cls = CreateTestClass();
+            cls.ClassLevels.Add(CreateTestLevel(cls));
+
+            await classRepo.CreateAsync(cls);
+            levelId = cls.ClassLevels.First().Id;
+        }
 
         // Act
-        var levelRepo = new ClassLevelRepository(context);
-        var levelId = cls.ClassLevels.First().Id;
-        var toUpdate = await levelRepo.GetWithAllDataAsync(levelId);
+        await using (var context = new AppDbContext(options))
+        {
+            var baseLevelRepo = new EfRepository<ClassLevel>(context);
+            var levelRepo = new ClassLevelRepository(context, baseLevelRepo);
 
-        toUpdate!.NewFeatures.Add(CreateTestClassFeature(toUpdate.Id));
-        toUpdate.AbilityScoreBonus = 5;
+            var toUpdate = await levelRepo.GetWithAllDataAsync(levelId);
+            Assert.NotNull(toUpdate);
 
-        await levelRepo.UpdateAsync(toUpdate);
-        var updated = await levelRepo.GetWithAllDataAsync(toUpdate.Id);
-        
+            toUpdate!.NewFeatures.Add(CreateTestClassFeature(toUpdate.Id));
+            toUpdate.ProficiencyBonus = 5;
+
+            await levelRepo.UpdateAsync(toUpdate);
+        }
+
         // Assert
-        Assert.NotNull(updated);
-        Assert.Equal(5, updated.AbilityScoreBonus);
-        Assert.NotNull(updated.NewFeatures);
-        Assert.NotEmpty(updated.NewFeatures);
-        Assert.Equal(2, updated.NewFeatures.Count);
+        await using (var context = new AppDbContext(options))
+        {
+            var baseLevelRepo = new EfRepository<ClassLevel>(context);
+            var levelRepo = new ClassLevelRepository(context, baseLevelRepo);
+
+            var updated = await levelRepo.GetWithAllDataAsync(levelId);
+
+            Assert.NotNull(updated);
+            Assert.Equal(5, updated.ProficiencyBonus);
+            Assert.NotNull(updated.NewFeatures);
+            Assert.NotEmpty(updated.NewFeatures);
+            Assert.Equal(2, updated.NewFeatures.Count);
+        }
     }
-    
+
     [Fact]
     public async Task DeleteClassLevel_ShouldDelete()
     {
         var options = GetInMemoryOptions("ClassLevel_DeleteDB");
         await using var context = new AppDbContext(options);
-        var classRepo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var baseClassLevelRepo = new EfRepository<ClassLevel>(context);
+        var classRepo = new ClassRepository(context, baseClassRepo);
+        var levelRepo = new ClassLevelRepository(context, baseClassLevelRepo);
 
         // Arrange
         var cls = CreateTestClass();
@@ -52,7 +76,6 @@ public class ClassLevelRepositoryTests
         await classRepo.CreateAsync(cls);
 
         // Act
-        var levelRepo = new ClassLevelRepository(context);
         var levelId = cls.ClassLevels.First().Id;
         var toDelete = await levelRepo.GetByIdAsync(levelId);
         await levelRepo.DeleteAsync(toDelete!);
@@ -66,7 +89,10 @@ public class ClassLevelRepositoryTests
     {
         var options = GetInMemoryOptions("ClassLevel_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var classRepo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var baseClassLevelRepo = new EfRepository<ClassLevel>(context);
+        var classRepo = new ClassRepository(context, baseClassRepo);
+        var levelRepo = new ClassLevelRepository(context, baseClassLevelRepo);
 
         // Arrange
         var cls = CreateTestClass();
@@ -74,14 +100,12 @@ public class ClassLevelRepositoryTests
         await classRepo.CreateAsync(cls);
 
         // Act
-        var levelRepo = new ClassLevelRepository(context);
         var levelId = cls.ClassLevels.First().Id;
         var savedLevel = await levelRepo.GetByIdAsync(levelId);
 
         // Assert
         Assert.NotNull(savedLevel);
         Assert.Equal(2, savedLevel!.Level);
-        Assert.Equal(1, savedLevel.AbilityScoreBonus);
         Assert.Equal(3, savedLevel.ProficiencyBonus);
         Assert.Equal(cls.Id, savedLevel.ClassId);
 
@@ -106,7 +130,10 @@ public class ClassLevelRepositoryTests
     {
         var options = GetInMemoryOptions("ClassLevel_GetWithAllDataDB");
         await using var context = new AppDbContext(options);
-        var classRepo = new ClassRepository(context);
+        var baseClassRepo = new EfRepository<Class>(context);
+        var baseClassLevelRepo = new EfRepository<ClassLevel>(context);
+        var classRepo = new ClassRepository(context, baseClassRepo);
+        var levelRepo = new ClassLevelRepository(context, baseClassLevelRepo);
 
         // Arrange
         var cls = CreateTestClass();
@@ -114,7 +141,6 @@ public class ClassLevelRepositoryTests
         await classRepo.CreateAsync(cls);
 
         // Act
-        var levelRepo = new ClassLevelRepository(context);
         var savedLevels = await levelRepo.GetAllWithAllDataAsync();
 
         // Assert
@@ -124,7 +150,6 @@ public class ClassLevelRepositoryTests
 
         Assert.NotNull(savedLevel);
         Assert.Equal(2, savedLevel!.Level);
-        Assert.Equal(1, savedLevel.AbilityScoreBonus);
         Assert.Equal(3, savedLevel.ProficiencyBonus);
         Assert.Equal(cls.Id, savedLevel.ClassId);
 

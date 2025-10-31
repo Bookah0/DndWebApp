@@ -5,25 +5,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Spells;
 
-public class SpellRepository(AppDbContext context) : EfRepository<Spell>(context), ISpellRepository
+public class SpellRepository : ISpellRepository
 {
+    private AppDbContext context;
+    private IRepository<Spell> baseRepo;
+
+    public SpellRepository(AppDbContext context, IRepository<Spell> baseRepo)
+    {
+        this.context = context;
+        this.baseRepo = baseRepo;
+    }
+
+    public async Task<Spell> CreateAsync(Spell entity) => await baseRepo.CreateAsync(entity);
+    public async Task<Spell?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
+    public async Task<ICollection<Spell>> GetAllAsync() => await baseRepo.GetAllAsync();
+    public async Task UpdateAsync(Spell updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
+    public async Task DeleteAsync(Spell entity) => await baseRepo.DeleteAsync(entity);   
+     
     public async Task<Spell?> GetWithClassesAsync(int id)
     {
-        return await dbSet
+        return await context.Spells
             .Include(s => s.Classes)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<ICollection<Spell>> GetAllWithClassesAsync()
     {
-        return await dbSet
+        return await context.Spells
             .Include(s => s.Classes)
             .ToListAsync();
     }
     
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)
     {
-        var query = dbSet.AsQueryable();
+        var query = context.Spells.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(filter.Name))
             query = query.Where(s => s.Name.Contains(filter.Name));

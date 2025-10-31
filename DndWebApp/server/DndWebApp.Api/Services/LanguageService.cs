@@ -33,7 +33,7 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
         return await repo.CreateAsync(language);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteClassLevelAsync(int id)
     {
         var language = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Language could not be found");
         await repo.DeleteAsync(language);

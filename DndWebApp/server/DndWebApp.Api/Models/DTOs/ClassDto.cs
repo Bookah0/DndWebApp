@@ -9,6 +9,5 @@ public class ClassDto
     public required string Description { get; set; }
     public required string HitDie { get; set; }
     public bool IsHomebrew { get; set; }
-    public int? SpellLevel { get; set; }
     public int? SpellcastingAbilityId { get; set; }
 }

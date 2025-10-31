@@ -6,11 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Characters;
 
-public class CharacterRepository(AppDbContext context) : EfRepository<Character>(context), ICharacterRepository
+public class CharacterRepository : ICharacterRepository
 {
+    private AppDbContext context;
+    private IRepository<Character> baseRepo;
+
+    public CharacterRepository(AppDbContext context, IRepository<Character> baseRepo)
+    {
+        this.context = context;
+        this.baseRepo = baseRepo;
+    }
+
+    public async Task<Character> CreateAsync(Character entity) => await baseRepo.CreateAsync(entity);
+    public async Task<Character?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
+    public async Task<ICollection<Character>> GetAllAsync() => await baseRepo.GetAllAsync();
+    public async Task UpdateAsync(Character updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
+    public async Task DeleteAsync(Character entity) => await baseRepo.DeleteAsync(entity);
+
     public async Task<CharacterSpellSlotsDto?> GetCurrentSpellSlotsAsync(int id)
     {
-        return await dbSet
+        return await context.Characters
             .AsNoTracking()
             .Where(x => x.Id == id)
             .Select(r => new CharacterSpellSlotsDto
@@ -31,7 +46,7 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
 
     public async Task<CharacterDescriptionDto?> GetCharacterDescriptionAsync(int id)
     {
-        return await dbSet
+        return await context.Characters
             .AsNoTracking()
             .Where(x => x.Id == id)
             .Select(r => new CharacterDescriptionDto
@@ -56,7 +71,7 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
 
     public async Task<CharacterDto?> GetDtoAsync(int id)
     {
-        return await dbSet
+        return await context.Characters
             .AsNoTracking()
             .Where(x => x.Id == id)
             .Select(r => new CharacterDto
@@ -86,7 +101,7 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
 
     public async Task<ICollection<CharacterDto>> GetAllDtosAsync()
     {
-        return await dbSet
+        return await context.Characters
             .AsNoTracking()
             .Select(r => new CharacterDto
             {
@@ -115,7 +130,7 @@ public class CharacterRepository(AppDbContext context) : EfRepository<Character>
 
     public async Task<Character?> GetWithAllDataAsync(int id)
     {
-        return await dbSet
+        return await context.Characters
             .Include(f => f.Class)
             .Include(f => f.SubClass)
             .Include(f => f.Background)

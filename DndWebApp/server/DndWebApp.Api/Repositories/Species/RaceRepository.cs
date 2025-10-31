@@ -6,11 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Species;
 
-public class RaceRepository(AppDbContext context) : EfRepository<Race>(context), IRaceRepository
+public class RaceRepository : IRaceRepository
 {
+    private AppDbContext context;
+    private IRepository<Race> baseRepo;
+
+    public RaceRepository(AppDbContext context, IRepository<Race> baseRepo)
+    {
+        this.context = context;
+        this.baseRepo = baseRepo;
+    }
+
+    public async Task<Race> CreateAsync(Race entity) => await baseRepo.CreateAsync(entity);
+    public async Task<Race?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
+    public async Task<ICollection<Race>> GetAllAsync() => await baseRepo.GetAllAsync();
+    public async Task UpdateAsync(Race updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
+    public async Task DeleteAsync(Race entity) => await baseRepo.DeleteAsync(entity);    
+    
     public async Task<RaceDto?> GetRaceDtoAsync(int id)
     {
-        return await dbSet
+        return await context.Races
             .AsNoTracking()
             .Select(r => new RaceDto
             {
@@ -23,7 +38,7 @@ public class RaceRepository(AppDbContext context) : EfRepository<Race>(context),
 
     public async Task<Race?> GetWithAllDataAsync(int id)
     {
-        return await dbSet
+        return await context.Races
         .Include(r => r.Traits)
         .Include(r => r.SubRaces)
         .FirstOrDefaultAsync(x => x.Id == id);
@@ -31,7 +46,7 @@ public class RaceRepository(AppDbContext context) : EfRepository<Race>(context),
 
     public async Task<ICollection<RaceDto>> GetAllRaceDtosAsync()
     {
-        return await dbSet
+        return await context.Races
             .AsNoTracking()
             .Select(r => new RaceDto
             {
@@ -44,7 +59,7 @@ public class RaceRepository(AppDbContext context) : EfRepository<Race>(context),
 
     public async Task<ICollection<Race>> GetAllWithAllDataAsync()
     {
-        return await dbSet
+        return await context.Races
         .Include(r => r.Traits)
         .Include(r => r.SubRaces)
         .ToListAsync();

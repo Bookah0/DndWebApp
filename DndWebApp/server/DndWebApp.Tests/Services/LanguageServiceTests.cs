@@ -93,10 +93,10 @@ public class LanguageServiceTests
 
         // Act
         var id = languages.First().Id;
-        await service.DeleteAsync(id);
+        await service.DeleteClassLevelAsync(id);
 
         // Assert
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(id));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteClassLevelAsync(id));
         repo.Verify(r => r.DeleteAsync(It.IsAny<Language>()), Times.Exactly(1));
     }
 
@@ -115,7 +115,7 @@ public class LanguageServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(-1));
-        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(-1));
+        await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteClassLevelAsync(-1));
 
         repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
         repo.Verify(r => r.DeleteAsync(It.IsAny<Language>()), Times.Exactly(0));

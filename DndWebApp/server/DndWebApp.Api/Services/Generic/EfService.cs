@@ -3,11 +3,11 @@ using DndWebApp.Api.Data;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Services.Generic;
 using Microsoft.EntityFrameworkCore;
-namespace DndWebApp.Api.Services;
+namespace DndWebApp.Api.Services.Generic;
 
 public class EfService<T> : IService<T, T, T>
 {
-    protected IRepository<T> repo;
+    private readonly IRepository<T> repo;
 
     public EfService(IRepository<T> repo)
     {

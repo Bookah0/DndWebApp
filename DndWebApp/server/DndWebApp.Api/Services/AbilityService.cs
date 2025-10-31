@@ -9,11 +9,13 @@ namespace DndWebApp.Api.Services;
 
 public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
 {
-    protected IAbilityRepository repo;
+    private readonly IAbilityRepository repo;
+    private readonly ILogger<AbilityService> logger;
 
-    public AbilityService(IAbilityRepository repo)
+    public AbilityService(IAbilityRepository repo, ILogger<AbilityService> logger)
     {
         this.repo = repo;
+        this.logger = logger;
     }
 
     public async Task<Ability> CreateAsync(AbilityDto dto)
@@ -30,7 +32,7 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
             Skills = []
         };
 
-        
+
         return await repo.CreateAsync(ability);
     }
 
@@ -69,11 +71,11 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
     {
         return val.Value - 10 / 2;
     }
-    
+
     public ICollection<Ability> SortBy(ICollection<Ability> abilities)
     {
         var abilityOrder = SortUtil.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
-        
+
         return [.. abilities.OrderBy(a => abilityOrder[a.FullName])];
     }
 }

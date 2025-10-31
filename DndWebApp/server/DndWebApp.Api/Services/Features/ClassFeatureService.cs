@@ -4,16 +4,19 @@ using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
+namespace DndWebApp.Api.Services.Features;
 
 public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, ClassFeatureDto>
 {
-    protected IClassFeatureRepository repo;
-    protected IClassLevelRepository classLevelRepo;
+    private readonly IClassFeatureRepository repo;
+    private readonly IClassLevelRepository classLevelRepo;
+    private readonly ILogger<ClassFeatureService> logger;
 
-    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo)
+    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo, ILogger<ClassFeatureService> logger)
     {
         this.repo = repo;
         this.classLevelRepo = classLevelRepo;
+        this.logger = logger;
     }
 
     public async Task<ClassFeature> CreateAsync(ClassFeatureDto dto)

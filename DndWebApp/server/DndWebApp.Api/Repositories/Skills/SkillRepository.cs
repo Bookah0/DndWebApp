@@ -6,8 +6,8 @@ namespace DndWebApp.Api.Repositories.Skills;
 
 public class SkillRepository : ISkillRepository
 {
-    private AppDbContext context;
-    private IRepository<Skill> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Skill> baseRepo;
 
     public SkillRepository(AppDbContext context, IRepository<Skill> baseRepo)
     {
@@ -20,7 +20,7 @@ public class SkillRepository : ISkillRepository
     public async Task<ICollection<Skill>> GetAllAsync() => await baseRepo.GetAllAsync();
     public async Task UpdateAsync(Skill updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Skill entity) => await baseRepo.DeleteAsync(entity);    
-    
+
     public async Task<Skill?> GetWithAbilityAsync(int id)
     {
         return await context.Skills.Include(s => s.Ability).FirstOrDefaultAsync(x => x.Id == id);

@@ -8,8 +8,8 @@ namespace DndWebApp.Api.Repositories.Classes;
 
 public class ClassRepository : IClassRepository
 {
-    private AppDbContext context;
-    private IRepository<Class> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Class> baseRepo;
 
     public ClassRepository(AppDbContext context, IRepository<Class> baseRepo)
     {
@@ -60,7 +60,7 @@ public class ClassRepository : IClassRepository
             .Include(b => b.ClassLevels)
             .Include(b => b.StartingEquipment)
             .Include(b => b.StartingEquipmentOptions)
-                .ThenInclude(o => o.Options)
+                .ThenInclude(o => o.OptionIds)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
@@ -78,7 +78,7 @@ public class ClassRepository : IClassRepository
             .AsSplitQuery()
             .Include(b => b.StartingEquipment)
             .Include(b => b.StartingEquipmentOptions)
-                .ThenInclude(o => o.Options)
+                .ThenInclude(o => o.OptionIds)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
@@ -89,7 +89,7 @@ public class ClassRepository : IClassRepository
             .Include(b => b.ClassLevels)
             .Include(b => b.StartingEquipment)
             .Include(b => b.StartingEquipmentOptions)
-                .ThenInclude(o => o.Options)
+                .ThenInclude(o => o.OptionIds)
             .ToListAsync();
     }
 

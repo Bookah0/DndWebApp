@@ -6,8 +6,8 @@ namespace DndWebApp.Api.Repositories.Items;
 
 public class InventoryRepository : IInventoryRepository
 {
-    private AppDbContext context;
-    private IRepository<Inventory> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Inventory> baseRepo;
 
     public InventoryRepository(AppDbContext context, IRepository<Inventory> baseRepo)
     {

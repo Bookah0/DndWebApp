@@ -8,8 +8,8 @@ namespace DndWebApp.Api.Repositories.Species;
 
 public class SubraceRepository : ISubraceRepository
 {
-    private AppDbContext context;
-    private IRepository<Subrace> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Subrace> baseRepo;
 
     public SubraceRepository(AppDbContext context, IRepository<Subrace> baseRepo)
     {
@@ -22,7 +22,7 @@ public class SubraceRepository : ISubraceRepository
     public async Task<ICollection<Subrace>> GetAllAsync() => await baseRepo.GetAllAsync();
     public async Task UpdateAsync(Subrace updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Subrace entity) => await baseRepo.DeleteAsync(entity);    
-    
+
     public async Task<SubraceDto?> GetSubraceDtoAsync(int id)
     {
         return await context.SubRaces

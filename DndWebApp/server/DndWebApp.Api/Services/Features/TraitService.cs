@@ -1,6 +1,5 @@
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Repositories.Species;
 using DndWebApp.Api.Services.Generic;
@@ -10,13 +9,15 @@ namespace DndWebApp.Api.Services.Features;
 
 public class TraitService : IService<Trait, TraitDto, TraitDto>
 {
-    protected ITraitRepository repo;
-    protected IRaceRepository raceRepo;
+    private readonly ITraitRepository repo;
+    private readonly IRaceRepository raceRepo;
+    private readonly ILogger<TraitService> logger;
 
-    public TraitService(ITraitRepository repo, IRaceRepository raceRepo)
+    public TraitService(ITraitRepository repo, IRaceRepository raceRepo, ILogger<TraitService> logger)
     {
         this.repo = repo;
         this.raceRepo = raceRepo;
+        this.logger = logger;
     }
 
     public async Task<Trait> CreateAsync(TraitDto dto)
@@ -78,7 +79,7 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
     {
         throw new NotImplementedException();
     }
-    
+
     public enum TraitSortFilter { Name, Race }
     public ICollection<Trait> SortBy(ICollection<Trait> traits, TraitSortFilter sortFilter, bool descending = false)
     {

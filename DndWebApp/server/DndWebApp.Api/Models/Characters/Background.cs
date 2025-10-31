@@ -1,6 +1,7 @@
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.World;
+using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
 
@@ -15,6 +16,13 @@ public class Background
 
     public ICollection<AFeature> Features { get; set; } = [];
     public ICollection<Item> StartingItems { get; set; } = [];
-    public ICollection<ItemOption> StartingItemsOptions { get; set; } = [];
+    public ICollection<StartingItemOption> StartingItemsOptions { get; set; } = [];
     public required Currency StartingCurrency { get; set; }
+}
+
+[Owned]
+public class StartingItemOption
+{
+    public required string Description { get; set; }
+    public required ICollection<int> OptionIds { get; set; }
 }

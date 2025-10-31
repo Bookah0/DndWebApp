@@ -8,8 +8,8 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class ClassFeatureRepository : IClassFeatureRepository
 {
-    private AppDbContext context;
-    private IRepository<ClassFeature> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<ClassFeature> baseRepo;
 
     public ClassFeatureRepository(AppDbContext context, IRepository<ClassFeature> baseRepo)
     {

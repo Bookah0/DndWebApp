@@ -6,8 +6,8 @@ namespace DndWebApp.Api.Repositories.Items;
 
 public class ToolRepository : IToolRepository
 {
-    private AppDbContext context;
-    private IRepository<Tool> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Tool> baseRepo;
 
     public ToolRepository(AppDbContext context, IRepository<Tool> baseRepo)
     {
@@ -20,7 +20,7 @@ public class ToolRepository : IToolRepository
     public async Task<ICollection<Tool>> GetAllAsync() => await baseRepo.GetAllAsync();
     public async Task UpdateAsync(Tool updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Tool entity) => await baseRepo.DeleteAsync(entity);    
-    
+
     public async Task<Tool?> GetWithAllDataAsync(int id)
     {
         return await context.Tools

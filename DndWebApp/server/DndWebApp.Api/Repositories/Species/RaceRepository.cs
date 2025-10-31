@@ -8,8 +8,8 @@ namespace DndWebApp.Api.Repositories.Species;
 
 public class RaceRepository : IRaceRepository
 {
-    private AppDbContext context;
-    private IRepository<Race> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Race> baseRepo;
 
     public RaceRepository(AppDbContext context, IRepository<Race> baseRepo)
     {
@@ -22,7 +22,7 @@ public class RaceRepository : IRaceRepository
     public async Task<ICollection<Race>> GetAllAsync() => await baseRepo.GetAllAsync();
     public async Task UpdateAsync(Race updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Race entity) => await baseRepo.DeleteAsync(entity);    
-    
+
     public async Task<RaceDto?> GetRaceDtoAsync(int id)
     {
         return await context.Races

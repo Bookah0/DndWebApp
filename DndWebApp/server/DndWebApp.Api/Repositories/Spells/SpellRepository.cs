@@ -7,8 +7,8 @@ namespace DndWebApp.Api.Repositories.Spells;
 
 public class SpellRepository : ISpellRepository
 {
-    private AppDbContext context;
-    private IRepository<Spell> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Spell> baseRepo;
 
     public SpellRepository(AppDbContext context, IRepository<Spell> baseRepo)
     {
@@ -21,7 +21,7 @@ public class SpellRepository : ISpellRepository
     public async Task<ICollection<Spell>> GetAllAsync() => await baseRepo.GetAllAsync();
     public async Task UpdateAsync(Spell updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Spell entity) => await baseRepo.DeleteAsync(entity);   
-     
+
     public async Task<Spell?> GetWithClassesAsync(int id)
     {
         return await context.Spells

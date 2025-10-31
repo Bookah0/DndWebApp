@@ -8,8 +8,8 @@ namespace DndWebApp.Api.Repositories.Characters;
 
 public class CharacterRepository : ICharacterRepository
 {
-    private AppDbContext context;
-    private IRepository<Character> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Character> baseRepo;
 
     public CharacterRepository(AppDbContext context, IRepository<Character> baseRepo)
     {

@@ -7,8 +7,8 @@ namespace DndWebApp.Api.Repositories.Backgrounds;
 
 public class BackgroundRepository : IBackgroundRepository
 {
-    private AppDbContext context;
-    private IRepository<Background> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Background> baseRepo;
 
     public BackgroundRepository(AppDbContext context, IRepository<Background> baseRepo)
     {
@@ -57,7 +57,7 @@ public class BackgroundRepository : IBackgroundRepository
             .Include(b => b.Features)
             .Include(b => b.StartingItems)
             .Include(b => b.StartingItemsOptions)
-                .ThenInclude(o => o.Options)
+                .ThenInclude(o => o.OptionIds)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
@@ -68,7 +68,7 @@ public class BackgroundRepository : IBackgroundRepository
             .Include(b => b.Features)
             .Include(b => b.StartingItems)
             .Include(b => b.StartingItemsOptions)
-                .ThenInclude(o => o.Options)
+                .ThenInclude(o => o.OptionIds)
             .ToListAsync();
     }
 }

@@ -6,8 +6,8 @@ namespace DndWebApp.Api.Repositories.Items;
 
 public class ItemRepository : IItemRepository
 {
-    private AppDbContext context;
-    private IRepository<Item> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Item> baseRepo;
 
     public ItemRepository(AppDbContext context, IRepository<Item> baseRepo)
     {

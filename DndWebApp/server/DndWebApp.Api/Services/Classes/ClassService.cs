@@ -1,25 +1,25 @@
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Classes;
-using DndWebApp.Api.Repositories.Items;
+using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
-namespace DndWebApp.Api.Services;
 
-// Class main service
+namespace DndWebApp.Api.Services.Classes;
+
 public partial class ClassService : IService<Class, ClassDto, ClassDto>
 {
-    internal IClassRepository repo;
-    internal IItemRepository itemRepo;
-    internal IRepository<Option> choicesRepo;
+    private readonly IClassRepository repo;
+    private readonly IClassLevelRepository levelRepo;
+    private readonly IClassFeatureRepository featureRepo;
+    private readonly ILogger<ClassService> logger;
 
-    public ClassService(IClassRepository repo, IItemRepository itemRepo, IRepository<Option> choicesRepo)
+    public ClassService(IClassRepository repo, IClassLevelRepository levelRepo, IClassFeatureRepository featureRepo, ILogger<ClassService> logger)
     {
         this.repo = repo;
-        this.itemRepo = itemRepo;
-        this.choicesRepo = choicesRepo;
+        this.levelRepo = levelRepo;
+        this.featureRepo = featureRepo;
+        this.logger = logger;
     }
 
     public async Task<Class> CreateAsync(ClassDto dto)
@@ -68,33 +68,6 @@ public partial class ClassService : IService<Class, ClassDto, ClassDto>
         cls.HitDie = dto.HitDie;
 
         await repo.UpdateAsync(cls);
-    }
-
-    public async Task AddStartingEquipment(int equipmentId, int classId)
-    {
-        var equipment = await itemRepo.GetByIdAsync(equipmentId) ?? throw new NullReferenceException($"Item with id {equipmentId} could not be found");
-        var clss = await repo.GetByIdAsync(classId) ?? throw new NullReferenceException($"Class with id {classId} could not be found");
-
-        clss.StartingEquipment.Add(equipment);
-    }
-
-    public async Task RemoveStartingEquipment(int equipmentId, int classId)
-    {
-        var equipment = await itemRepo.GetByIdAsync(equipmentId) ?? throw new NullReferenceException($"Item with id {equipmentId} could not be found");
-        var clss = await repo.GetByIdAsync(classId) ?? throw new NullReferenceException($"Class with id {classId} could not be found");
-
-        clss.StartingEquipment.Remove(equipment);
-    }
-
-    public async Task AddStartingEquipmentChoice(int choiceId, int classId)
-    {
-        var equipmentOption = await choicesRepo.GetByIdAsync(choiceId) ?? throw new NullReferenceException($"Choice with id {choiceId} could not be found");
-        if (equipmentOption is not ItemOption)
-            throw new ArgumentException($"Option should be of type ItemOptions but was of type {equipmentOption.GetType()} could not be found");
-
-        var clss = await repo.GetByIdAsync(classId) ?? throw new NullReferenceException($"Class with id {classId} could not be found");
-
-        clss.StartingEquipmentOptions.Add((ItemOption)equipmentOption);
     }
 
     public ICollection<Class> SortBy(ICollection<Class> classes, bool descending = false)

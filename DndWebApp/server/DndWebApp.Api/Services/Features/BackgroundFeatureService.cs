@@ -4,16 +4,19 @@ using DndWebApp.Api.Repositories.Backgrounds;
 using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
+namespace DndWebApp.Api.Services.Features;
 
 public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFeatureDto, BackgroundFeatureDto>
 {
-    protected IBackgroundFeatureRepository repo;
-    IBackgroundRepository backgroundRepo;
+    private readonly IBackgroundFeatureRepository repo;
+    private readonly IBackgroundRepository backgroundRepo;
+    private readonly ILogger<BackgroundFeatureService> logger;
 
-    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo)
+    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo, ILogger<BackgroundFeatureService> logger)
     {
         this.repo = repo;
         this.backgroundRepo = backgroundRepo;
+        this.logger = logger;
     }
 
     public async Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)

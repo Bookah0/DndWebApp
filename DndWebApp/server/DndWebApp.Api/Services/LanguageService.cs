@@ -10,10 +10,13 @@ namespace DndWebApp.Api.Services;
 
 public class LanguageService : IService<Language, LanguageDto, LanguageDto>
 {
-    protected IRepository<Language> repo;
-    public LanguageService(IRepository<Language> repo)
+    private readonly IRepository<Language> repo;
+    private readonly ILogger<LanguageService> logger;
+    
+    public LanguageService(IRepository<Language> repo, ILogger<LanguageService> logger)
     {
         this.repo = repo;
+        this.logger = logger;
     }
 
     public async Task<Language> CreateAsync(LanguageDto dto)
@@ -29,7 +32,7 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
             Family = dto.Family,
             IsHomebrew = dto.IsHomebrew,
         };
-        
+
         return await repo.CreateAsync(language);
     }
 
@@ -64,7 +67,7 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
 
         await repo.UpdateAsync(language);
     }
-    
+
     public enum LanguageSortFilter { Name, Family, Script }
     public ICollection<Language> SortBy(ICollection<Language> languages, LanguageSortFilter sortFilter, bool descending = false)
     {

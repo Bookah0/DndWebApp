@@ -6,8 +6,8 @@ namespace DndWebApp.Api.Repositories;
 
 public class EfRepository<T> : IRepository<T> where T : class
 {
-    protected AppDbContext context;
-    protected DbSet<T> dbSet;
+    private readonly AppDbContext context;
+    private readonly DbSet<T> dbSet;
 
     public EfRepository(AppDbContext context)
     {

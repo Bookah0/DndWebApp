@@ -1,23 +1,11 @@
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Repositories.Classes;
-using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
-namespace DndWebApp.Api.Services;
+namespace DndWebApp.Api.Services.Classes;
 
-// Partial service for class levels
 public partial class ClassService : IService<Class, ClassDto, ClassDto>
 {
-    internal IClassLevelRepository levelRepo;
-    internal IClassFeatureRepository featureRepo;
-
-    public ClassService(IClassLevelRepository levelRepo, IClassFeatureRepository featureRepo)
-    {
-        this.levelRepo = levelRepo;
-        this.featureRepo = featureRepo;
-    }
-
     public async Task<ClassLevel> AddLevelToClassAsync(ClassLevelDto dto)
     {
         ValidationUtil.ValidateRequiredNumeric(dto.Level);

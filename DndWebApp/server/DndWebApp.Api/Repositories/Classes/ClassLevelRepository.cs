@@ -8,8 +8,8 @@ namespace DndWebApp.Api.Repositories.Classes;
 
 public class ClassLevelRepository : IClassLevelRepository
 {
-    private AppDbContext context;
-    private IRepository<ClassLevel> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<ClassLevel> baseRepo;
 
     public ClassLevelRepository(AppDbContext context, IRepository<ClassLevel> baseRepo)
     {

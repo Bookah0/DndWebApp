@@ -8,8 +8,8 @@ namespace DndWebApp.Api.Repositories.Features;
 
 public class TraitRepository : ITraitRepository
 {
-    private AppDbContext context;
-    private IRepository<Trait> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Trait> baseRepo;
 
     public TraitRepository(AppDbContext context, IRepository<Trait> baseRepo)
     {

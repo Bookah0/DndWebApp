@@ -17,7 +17,14 @@ public class Class
     public required string HitDie { get; set; }
     public required ICollection<ClassLevel> ClassLevels { get; set; }
     public ICollection<Item> StartingEquipment { get; set; } = [];
-    public ICollection<ItemOption> StartingEquipmentOptions { get; set; } = [];
+    public ICollection<StartingEquipmentOption> StartingEquipmentOptions { get; set; } = [];
     public bool IsHomebrew { get; set; } = false;
     public int? SpellcastingAbilityId { get; set; }
+}
+
+[Owned]
+public class StartingEquipmentOption
+{
+    public required string Description { get; set; }
+    public required ICollection<int> OptionIds { get; set; }
 }

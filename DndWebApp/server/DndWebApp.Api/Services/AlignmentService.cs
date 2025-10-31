@@ -8,11 +8,13 @@ namespace DndWebApp.Api.Services;
 
 public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 {
-    protected IRepository<Alignment> repo;
+    private readonly IRepository<Alignment> repo;
+    private readonly ILogger<AlignmentService> logger;
 
-    public AlignmentService(IRepository<Alignment> repo)
+    public AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentService> logger)
     {
         this.repo = repo;
+        this.logger = logger;
     }
 
     public async Task<Alignment> CreateAsync(AlignmentDto dto)
@@ -73,7 +75,7 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
         ];
 
         var alignmentOrder = SortUtil.CreateOrderLookup(fixedSortOrder);
-        
+
         return [.. alignments.OrderBy(a => alignmentOrder[a.Name])];
     }
 }

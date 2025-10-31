@@ -7,8 +7,8 @@ namespace DndWebApp.Api.Repositories.Abilities;
 
 public class AbilityRepository : IAbilityRepository
 {
-    private AppDbContext context;
-    private IRepository<Ability> baseRepo;
+    private readonly AppDbContext context;
+    private readonly IRepository<Ability> baseRepo;
 
     public AbilityRepository(AppDbContext context, IRepository<Ability> baseRepo)
     {

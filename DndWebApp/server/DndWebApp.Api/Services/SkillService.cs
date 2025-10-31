@@ -10,13 +10,15 @@ namespace DndWebApp.Api.Services;
 
 public class SkillService : IService<Skill, SkillDto, SkillDto>
 {
-    protected ISkillRepository repo;
-    protected IAbilityRepository abilityRepo;
-
-    public SkillService(ISkillRepository repo, IAbilityRepository abilityRepo)
+    private readonly ISkillRepository repo;
+    private readonly IAbilityRepository abilityRepo;
+    private readonly ILogger<SkillService> logger;
+    
+    public SkillService(ISkillRepository repo, IAbilityRepository abilityRepo, ILogger<SkillService> logger)
     {
         this.repo = repo;
         this.abilityRepo = abilityRepo;
+        this.logger = logger;
     }
 
     public async Task<Skill> CreateAsync(SkillDto dto)
@@ -31,7 +33,7 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
             Ability = ability,
             IsHomebrew = dto.IsHomebrew,
         };
-        
+
         return await repo.CreateAsync(skill);
     }
 
@@ -73,7 +75,7 @@ public class SkillService : IService<Skill, SkillDto, SkillDto>
 
         await repo.UpdateAsync(skill);
     }
-    
+
     public enum SkillSorting { Name, Ability }
     public ICollection<Skill> SortBy(ICollection<Skill> skills, SkillSorting SkillSortFilter, bool descending = false)
     {

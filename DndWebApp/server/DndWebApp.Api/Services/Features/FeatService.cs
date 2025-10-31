@@ -8,11 +8,13 @@ namespace DndWebApp.Api.Services.Features;
 
 public class FeatService : IService<Feat, FeatDto, FeatDto>
 {
-    protected IFeatRepository repo;
+    private readonly IFeatRepository repo;
+    private readonly ILogger<FeatService> logger;
 
-    public FeatService(IFeatRepository repo)
+    public FeatService(IFeatRepository repo, ILogger<FeatService> logger)
     {
         this.repo = repo;
+        this.logger = logger;
     }
 
     public async Task<Feat> CreateAsync(FeatDto dto)

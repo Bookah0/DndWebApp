@@ -13,13 +13,15 @@ namespace DndWebApp.Api.Services.Spells;
 
 public class SpellService : IService<Spell, SpellDto, SpellDto>
 {
-    protected ISpellRepository repo;
-    protected IClassRepository classRepo;
+    private readonly ISpellRepository repo;
+    private readonly IClassRepository classRepo;
+    private readonly ILogger<SpellService> logger;
 
-    public SpellService(ISpellRepository repo, IClassRepository classRepo)
+    public SpellService(ISpellRepository repo, IClassRepository classRepo, ILogger<SpellService> logger)
     {
         this.repo = repo;
         this.classRepo = classRepo;
+        this.logger = logger;
     }
 
     public async Task<Spell> CreateAsync(SpellDto dto)

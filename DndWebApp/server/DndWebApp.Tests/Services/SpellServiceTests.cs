@@ -7,6 +7,7 @@ using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Spells;
 
 using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DndWebApp.Tests.Services;
 
@@ -18,7 +19,7 @@ public class SpellServiceTests
         // Arrange
         var repo = new Mock<ISpellRepository>();
         var classRepo = new Mock<IClassRepository>();
-        var service = new SpellService(repo.Object, classRepo.Object);
+        var service = new SpellService(repo.Object, classRepo.Object, NullLogger<SpellService>.Instance);
 
         var fireballDto = CreateTestSpellDto("Fireball");
         var lightningDto = CreateTestSpellDto("Lightning Bolt");
@@ -77,7 +78,7 @@ public class SpellServiceTests
         // Arrange
         var repo = new Mock<ISpellRepository>();
         var classRepo = new Mock<IClassRepository>();
-        var service = new SpellService(repo.Object, classRepo.Object);
+        var service = new SpellService(repo.Object, classRepo.Object, NullLogger<SpellService>.Instance);
 
         List<Spell> spells = [CreateTestSpell("Fireball", 0, 0, 0)];
 
@@ -125,7 +126,7 @@ public class SpellServiceTests
         // Arrange
         var repo = new Mock<ISpellRepository>();
         var classRepo = new Mock<IClassRepository>();
-        var service = new SpellService(repo.Object, classRepo.Object);
+        var service = new SpellService(repo.Object, classRepo.Object, NullLogger<SpellService>.Instance);
 
         List<Spell> spells = [CreateTestSpell("Lightning Bolt", 0, 0, 0)];
 
@@ -153,7 +154,7 @@ public class SpellServiceTests
         // Arrange
         var repo = new Mock<ISpellRepository>();
         var classRepo = new Mock<IClassRepository>();
-        var service = new SpellService(repo.Object, classRepo.Object);
+        var service = new SpellService(repo.Object, classRepo.Object, NullLogger<SpellService>.Instance);
 
         List<Spell> spells = [CreateTestSpell("Lightning Bolt", 0, 0, 0)];
 
@@ -173,7 +174,7 @@ public class SpellServiceTests
     public void SortBy_WorksCorrectly()
     {
         // Arrange
-        var service = new SpellService(null!, null!);
+        var service = new SpellService(null!, null!, NullLogger<SpellService>.Instance);
 
         ICollection<Spell> spells =
         [

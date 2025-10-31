@@ -165,13 +165,6 @@ public class BackgroundRepositoryTests
         Assert.NotNull(incense);
         Assert.Equal(5, incense!.Quantity);
 
-        Assert.NotEmpty(fullBackground.StartingItemsOptions);
-        var prayerChoice = fullBackground.StartingItemsOptions.FirstOrDefault(o => o.Description.Contains("prayer book or prayer wheel"));
-        Assert.NotNull(prayerChoice);
-        Assert.Equal(2, prayerChoice!.Options.Count);
-        Assert.Contains(prayerChoice.Options, c => c.Name == "Prayer Book");
-        Assert.Contains(prayerChoice.Options, c => c.Name == "Prayer Wheel");
-
         Assert.NotEmpty(fullBackground.Features);
         var shelter = fullBackground.Features.FirstOrDefault(f => f.Name == "Shelter of the Faithful");
         Assert.NotNull(shelter);

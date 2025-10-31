@@ -57,7 +57,7 @@ public class BackgroundRepository : IBackgroundRepository
             .Include(b => b.Features)
             .Include(b => b.StartingItems)
             .Include(b => b.StartingItemsOptions)
-                .ThenInclude(o => o.OptionIds)
+                .ThenInclude(o => o.ItemOptionIds)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
@@ -68,7 +68,7 @@ public class BackgroundRepository : IBackgroundRepository
             .Include(b => b.Features)
             .Include(b => b.StartingItems)
             .Include(b => b.StartingItemsOptions)
-                .ThenInclude(o => o.OptionIds)
+                .ThenInclude(o => o.ItemOptionIds)
             .ToListAsync();
     }
 }

@@ -24,5 +24,5 @@ public class Background
 public class StartingItemOption
 {
     public required string Description { get; set; }
-    public required ICollection<int> OptionIds { get; set; }
+    public required ICollection<int> ItemOptionIds { get; set; }
 }

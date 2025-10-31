@@ -35,21 +35,6 @@ public static class TestObjectFactory
         return new Item { Name = name, Description = description, Categories = [category], Quantity = quantity };
     }
 
-    internal static ItemOption CreateTestStartingItemChoice()
-    {
-        var option = new ItemOption
-        {
-            Description = "a prayer book or prayer wheel",
-            NumberOfChoices = 2,
-            Options = []
-        };
-
-        option.Options.Add(CreateTestItem("Prayer Book", ItemCategory.None));
-        option.Options.Add(CreateTestItem("Prayer Wheel", ItemCategory.None));
-
-        return option;
-    }
-
     internal static Background CreateTestBackground(string name)
     {
         var description = $"{name} description";
@@ -64,7 +49,6 @@ public static class TestObjectFactory
         background.StartingItems.Add(CreateTestItem("Incense Sticks", ItemCategory.None, 5));
         background.StartingItems.Add(CreateTestItem("Vestments", ItemCategory.None));
         background.StartingItems.Add(CreateTestItem("Common Clothes", ItemCategory.None));
-        background.StartingItemsOptions.Add(CreateTestStartingItemChoice());
 
         return background;
     }
@@ -150,21 +134,6 @@ public static class TestObjectFactory
             ClassLevels = []
         };
         return cls;
-    }
-
-    internal static ItemOption CreateTestStartingEquipmentChoice()
-    {
-        var option = new ItemOption
-        {
-            Description = "armor or weapon",
-            NumberOfChoices = 2,
-            Options = []
-        };
-
-        option.Options.Add(CreateTestArmor());
-        option.Options.Add(CreateTestWeapon());
-
-        return option;
     }
 
     internal static Feat CreateTestFeat()

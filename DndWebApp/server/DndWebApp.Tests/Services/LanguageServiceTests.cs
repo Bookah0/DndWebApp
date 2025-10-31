@@ -3,6 +3,7 @@ using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Services;
 using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DndWebApp.Tests.Services;
 
@@ -13,7 +14,7 @@ public class LanguageServiceTests
     {
         // Arrange
         var repo = new Mock<IRepository<Language>>();
-        var service = new LanguageService(repo.Object);
+        var service = new LanguageService(repo.Object, NullLogger<LanguageService>.Instance);
 
         List<Language> languages = [];
 
@@ -59,7 +60,7 @@ public class LanguageServiceTests
     {
         // Arrange
         var repo = new Mock<IRepository<Language>>();
-        var service = new LanguageService(repo.Object);
+        var service = new LanguageService(repo.Object, NullLogger<LanguageService>.Instance);
 
         var noName = CreateTestLanguageDto("", "Primordial", "Dwarvish");
         var whitespaceFamily = CreateTestLanguageDto("Auran", "   ", "Dwarvish");
@@ -77,7 +78,7 @@ public class LanguageServiceTests
     {
         // Arrange
         var repo = new Mock<IRepository<Language>>();
-        var service = new LanguageService(repo.Object);
+        var service = new LanguageService(repo.Object, NullLogger<LanguageService>.Instance);
 
         List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
 
@@ -105,7 +106,7 @@ public class LanguageServiceTests
     {
         // Arrange
         var repo = new Mock<IRepository<Language>>();
-        var service = new LanguageService(repo.Object);
+        var service = new LanguageService(repo.Object, NullLogger<LanguageService>.Instance);
 
         List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
 
@@ -125,7 +126,7 @@ public class LanguageServiceTests
     public async Task UpdateLanguage_WorksCorrectly()
     {
         var repo = new Mock<IRepository<Language>>();
-        var service = new LanguageService(repo.Object);
+        var service = new LanguageService(repo.Object, NullLogger<LanguageService>.Instance);
         
         List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
         var updateDto = CreateTestLanguageDto("Auran", "Elvish", "Espruar");
@@ -158,7 +159,7 @@ public class LanguageServiceTests
     public async Task UpdateLanguages_BadInputData_ShouldNotUpdate()
     {
         var repo = new Mock<IRepository<Language>>();
-        var service = new LanguageService(repo.Object);
+        var service = new LanguageService(repo.Object, NullLogger<LanguageService>.Instance);
 
         List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
         var auranDto = CreateTestLanguageDto("Auran", "Primordial", "Dwarvish");
@@ -194,7 +195,7 @@ public class LanguageServiceTests
     public void SortBy_WorksCorrectly()
     {
         // Arrange
-        var service = new LanguageService(null!);
+        var service = new LanguageService(null!, NullLogger<LanguageService>.Instance);
 
         List<Language> languages =
         [

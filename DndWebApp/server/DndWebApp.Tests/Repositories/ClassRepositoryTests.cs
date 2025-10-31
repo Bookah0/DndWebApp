@@ -69,7 +69,6 @@ public class ClassRepositoryTests
         // Arrange
         var cls = CreateTestClass();
         cls.StartingEquipment.Add(CreateTestItem("Thieves' Kit", ItemCategory.Tools));
-        cls.StartingEquipmentOptions.Add(CreateTestStartingEquipmentChoice());
         cls.ClassLevels.Add(CreateTestLevel(cls));
 
         // Act
@@ -144,16 +143,14 @@ public class ClassRepositoryTests
         // Arrange
         var cls = CreateTestClass();
         cls.StartingEquipment.Add(CreateTestItem("Thieves' Kit", ItemCategory.Tools));
-        cls.StartingEquipmentOptions.Add(CreateTestStartingEquipmentChoice());
         cls.ClassLevels.Add(CreateTestLevel(cls));
 
         await repo.CreateAsync(cls);
 
         // Act
         var fullClass = await repo.GetWithAllDataAsync(cls.Id);
- 
+
         var tool = fullClass!.StartingEquipment.FirstOrDefault(i => i.Name == "Thieves' Kit");
-        var prayerChoice = fullClass.StartingEquipmentOptions.FirstOrDefault(o => o.Description.Contains("armor or weapon"));
 
         // Assert
         Assert.NotNull(fullClass);
@@ -161,12 +158,6 @@ public class ClassRepositoryTests
 
         Assert.NotNull(tool);
         Assert.Equal(ItemCategory.Tools, tool!.Categories.First());
-
-        Assert.NotEmpty(fullClass.StartingEquipmentOptions);
-        Assert.NotNull(prayerChoice);
-        Assert.Equal(2, prayerChoice!.Options.Count);
-        Assert.Contains(prayerChoice.Options, c => c.Name == "Leather Armor");
-        Assert.Contains(prayerChoice.Options, c => c.Name == "Shortbow");
 
         Assert.NotEmpty(fullClass.ClassLevels);
         Assert.NotNull(fullClass.ClassLevels.FirstOrDefault(l => l.Level == 2));

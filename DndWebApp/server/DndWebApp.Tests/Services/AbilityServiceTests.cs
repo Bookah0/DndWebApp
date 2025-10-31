@@ -3,6 +3,7 @@ using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Services;
 using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DndWebApp.Tests.Services;
 
@@ -13,7 +14,7 @@ public class AbilityServiceTests
     {
         // Arrange
         var repo = new Mock<IAbilityRepository>();
-        var service = new AbilityService(repo.Object);
+        var service = new AbilityService(repo.Object, NullLogger<AbilityService>.Instance);
 
         ICollection<Ability> abilities = [];
 
@@ -63,7 +64,7 @@ public class AbilityServiceTests
     {
         // Arrange
         var repo = new Mock<IAbilityRepository>();
-        var service = new AbilityService(repo.Object);
+        var service = new AbilityService(repo.Object, NullLogger<AbilityService>.Instance);
 
         var noFullName = CreateTestAbilityDto("", "Str", "Measures bodily power and force.", 1);
         var whitespaceShortName = CreateTestAbilityDto("Strength", "     ", "Measures bodily power and force.", 1);
@@ -82,7 +83,7 @@ public class AbilityServiceTests
     {
         // Arrange
         var repo = new Mock<IAbilityRepository>();
-        var service = new AbilityService(repo.Object);
+        var service = new AbilityService(repo.Object, NullLogger<AbilityService>.Instance);
 
         ICollection<Ability> abilities = [CreateTestAbility("Strength", "Str", "Measures bodily power and force.", 1)];
 
@@ -110,7 +111,7 @@ public class AbilityServiceTests
     {
         // Arrange
         var repo = new Mock<IAbilityRepository>();
-        var service = new AbilityService(repo.Object);
+        var service = new AbilityService(repo.Object, NullLogger<AbilityService>.Instance);
 
         ICollection<Ability> abilities = [CreateTestAbility("Strength", "Str", "Measures bodily power and force.", 1)];
         abilities.First().Id = 1;
@@ -131,7 +132,7 @@ public class AbilityServiceTests
     public async Task UpdateAbility_WorksCorrectly()
     {
         var repo = new Mock<IAbilityRepository>();
-        var service = new AbilityService(repo.Object);
+        var service = new AbilityService(repo.Object, NullLogger<AbilityService>.Instance);
 
         ICollection<Ability> abilities = [CreateTestAbility("Strength", "Str", "Measures bodily power and force.", 1)];
         var updateDto = CreateTestAbilityDto("Dexterity", "Dex", "Measures agility, reflexes, and balance.", 2);
@@ -168,7 +169,7 @@ public class AbilityServiceTests
     public async Task Updateabilities_BadInputData_ShouldNotUpdate()
     {
         var repo = new Mock<IAbilityRepository>();
-        var service = new AbilityService(repo.Object);
+        var service = new AbilityService(repo.Object, NullLogger<AbilityService>.Instance);
 
         ICollection<Ability> abilities = [CreateTestAbility("Strength", "Str", "Measures bodily power and force.", 1)];
 
@@ -187,7 +188,7 @@ public class AbilityServiceTests
     public void SortBy_WorksCorrectly()
     {
         // Arrange
-        var service = new AbilityService(null!);
+        var service = new AbilityService(null!, NullLogger<AbilityService>.Instance);
 
         ICollection<Ability> abilities =
         [

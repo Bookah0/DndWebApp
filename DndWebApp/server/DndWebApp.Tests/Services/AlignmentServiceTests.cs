@@ -3,6 +3,7 @@ using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Services;
 using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DndWebApp.Tests.Services;
 
@@ -13,7 +14,7 @@ public class AlignmentServiceTests
     {
         // Arrange
         var repo = new Mock<IRepository<Alignment>>();
-        var service = new AlignmentService(repo.Object);
+        var service = new AlignmentService(repo.Object, NullLogger<AlignmentService>.Instance);
 
         ICollection<Alignment> alignments = [];
 
@@ -61,7 +62,7 @@ public class AlignmentServiceTests
     {
         // Arrange
         var repo = new Mock<IRepository<Alignment>>();
-        var service = new AlignmentService(repo.Object);
+        var service = new AlignmentService(repo.Object, NullLogger<AlignmentService>.Instance);
 
         var noName = CreateTestAlignmentDto("", "LG", "A lawful good character", 1);
         var whitespaceAberration = CreateTestAlignmentDto("Lawful Good", "   ", "A lawful good character", 2);
@@ -80,7 +81,7 @@ public class AlignmentServiceTests
     {
         // Arrange
         var repo = new Mock<IRepository<Alignment>>();
-        var service = new AlignmentService(repo.Object);
+        var service = new AlignmentService(repo.Object, NullLogger<AlignmentService>.Instance);
 
         List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
 
@@ -108,7 +109,7 @@ public class AlignmentServiceTests
     {
         // Arrange
         var repo = new Mock<IRepository<Alignment>>();
-        var service = new AlignmentService(repo.Object);
+        var service = new AlignmentService(repo.Object, NullLogger<AlignmentService>.Instance);
 
         List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
         alignments[0].Id = 1;
@@ -129,7 +130,7 @@ public class AlignmentServiceTests
     public async Task UpdateAlignment_WorksCorrectly()
     {
         var repo = new Mock<IRepository<Alignment>>();
-        var service = new AlignmentService(repo.Object);
+        var service = new AlignmentService(repo.Object, NullLogger<AlignmentService>.Instance);
 
         List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
         
@@ -166,7 +167,7 @@ public class AlignmentServiceTests
     public async Task UpdateAlignments_BadInputData_ShouldNotUpdate()
     {
         var repo = new Mock<IRepository<Alignment>>();
-        var service = new AlignmentService(repo.Object);
+        var service = new AlignmentService(repo.Object, NullLogger<AlignmentService>.Instance);
 
         List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
 
@@ -186,7 +187,7 @@ public class AlignmentServiceTests
     public void SortBy_WorksCorrectly()
     {
         // Arrange
-        var service = new AlignmentService(null!);
+        var service = new AlignmentService(null!, NullLogger<AlignmentService>.Instance);
 
         List<Alignment> alignments =
         [

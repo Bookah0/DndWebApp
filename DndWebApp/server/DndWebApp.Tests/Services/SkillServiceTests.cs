@@ -4,6 +4,7 @@ using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Repositories.Skills;
 using DndWebApp.Api.Services;
 using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DndWebApp.Tests.Services;
 
@@ -15,7 +16,7 @@ public class SkillServiceTests
         // Arrange
         var repo = new Mock<ISkillRepository>();
         var abilityRepo = new Mock<IAbilityRepository>();
-        var service = new SkillService(repo.Object, abilityRepo.Object);
+        var service = new SkillService(repo.Object, abilityRepo.Object, NullLogger<SkillService>.Instance);
 
         List<Skill> skills = [];
 
@@ -63,7 +64,7 @@ public class SkillServiceTests
         // Arrange
         var repo = new Mock<ISkillRepository>();
         var abilityRepo = new Mock<IAbilityRepository>();
-        var service = new SkillService(repo.Object, abilityRepo.Object);
+        var service = new SkillService(repo.Object, abilityRepo.Object, NullLogger<SkillService>.Instance);
 
         var badAbilityId = CreateTestSkillDto("Fishing", -1);
         var noName = CreateTestSkillDto("", 1);
@@ -82,7 +83,7 @@ public class SkillServiceTests
         // Arrange
         var repo = new Mock<ISkillRepository>();
         var abilityRepo = new Mock<IAbilityRepository>();
-        var service = new SkillService(repo.Object, abilityRepo.Object);
+        var service = new SkillService(repo.Object, abilityRepo.Object, NullLogger<SkillService>.Instance);
 
         List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
@@ -111,7 +112,7 @@ public class SkillServiceTests
         // Arrange
         var repo = new Mock<ISkillRepository>();
         var abilityRepo = new Mock<IAbilityRepository>();
-        var service = new SkillService(repo.Object, abilityRepo.Object);
+        var service = new SkillService(repo.Object, abilityRepo.Object, NullLogger<SkillService>.Instance);
 
         List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
@@ -136,7 +137,7 @@ public class SkillServiceTests
         // Arrange
         var repo = new Mock<ISkillRepository>();
         var abilityRepo = new Mock<IAbilityRepository>();
-        var service = new SkillService(repo.Object, abilityRepo.Object);
+        var service = new SkillService(repo.Object, abilityRepo.Object, NullLogger<SkillService>.Instance);
         
         List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
@@ -176,7 +177,7 @@ public class SkillServiceTests
         // Assert
         var repo = new Mock<ISkillRepository>();
         var abilityRepo = new Mock<IAbilityRepository>();
-        var service = new SkillService(repo.Object, abilityRepo.Object);
+        var service = new SkillService(repo.Object, abilityRepo.Object, NullLogger<SkillService>.Instance);
         
         List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
@@ -218,7 +219,7 @@ public class SkillServiceTests
     public void SortBy_WorksCorrectly()
     {
         // Assert
-        var service = new SkillService(null!, null!);
+        var service = new SkillService(null!, null!, NullLogger<SkillService>.Instance);
 
         var intel = CreateTestAbility("Intelligence", "INT", "Desc..", id: 1);
         var str = CreateTestAbility("Strength", "STR", "Desc..", id: 2);

@@ -1,9 +1,10 @@
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Features;
+using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
+
 namespace DndWebApp.Api.Services.Features;
 
 public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, ClassFeatureDto>

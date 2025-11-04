@@ -6,20 +6,6 @@ namespace DndWebApp.Api.Repositories.Species;
 public interface ISubraceRepository : IRepository<Subrace>
 {
     /// <summary>
-    /// Retrieves primitive data from a <see cref="Subrace"/> by its <paramref name="id"/>,
-    /// excluding related navigation properties: <see cref="Subrace.Traits"/> and <see cref="Subrace.ParentRace"/>.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="Subrace"/> to retrieve.</param>
-    /// <returns>
-    /// A read-only <see cref="SubraceDto"/> containing primitive data (Id, Name, Speed, description strings, and ParentRaceId),
-    /// or <c>null</c> if no subrace with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for simple display of a single subrace.
-    /// </remarks>
-    Task<SubraceDto?> GetSubraceDtoAsync(int id);
-
-    /// <summary>
     /// Retrieves a <see cref="Subrace"/> entity by its <paramref name="id"/>, 
     /// including its related navigation properties: <see cref="Subrace.Traits"/> and <see cref="Subrace.ParentRace"/>.
     /// </summary>
@@ -32,18 +18,6 @@ public interface ISubraceRepository : IRepository<Subrace>
     /// Typically used for detailed display of a single subrace, including its traits and parent race.
     /// </remarks>
     Task<Subrace?> GetWithAllDataAsync(int id);
-
-    /// <summary>
-    /// Retrieves primitive data for all <see cref="Subrace"/> entities in the database,
-    /// excluding their <see cref="Trait"/>s and <see cref="Subrace.ParentRace"/>s.
-    /// </summary>
-    /// <returns>
-    /// A collection of read-only <see cref="SubraceDto"/> entities containing primitive data (Id, Name, Speed, description strings, and ParentRaceId).
-    /// </returns>
-    /// <remarks>
-    /// Typically used for search results, dropdowns, or subrace selection during character creation.
-    /// </remarks>
-    Task<ICollection<SubraceDto>> GetAllSubraceDtosAsync();
 
     Task<ICollection<Subrace>> GetAllSubracesByRaceAsync(int raceId);
 

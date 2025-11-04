@@ -10,10 +10,10 @@ namespace DndWebApp.Api.Services.Items;
 
 public class ToolService : IService<Tool, ToolDto, ToolDto>
 {
-    private readonly ToolRepository repo;
+    private readonly IToolRepository repo;
     private readonly ILogger<ToolService> logger;
 
-    public ToolService(ToolRepository repo, ILogger<ToolService> logger)
+    public ToolService(IToolRepository repo, ILogger<ToolService> logger)
     {
         this.repo = repo;
         this.logger = logger;

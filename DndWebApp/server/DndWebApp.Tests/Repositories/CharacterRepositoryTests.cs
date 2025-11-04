@@ -25,16 +25,16 @@ public class CharacterRepositoryTests
 
         // Act
         character.Level += 1;
-        character.WeaponProficiencies.Add(new() { WeaponTypes = WeaponCategory.MartialMelee, CharacterFeatureId = character.Background.Id });
-        character.Languages.Clear();
+        character.Proficiencies.WeaponProficiencies.Add(new() { WeaponCategory = WeaponCategory.MartialMelee, FeatureId = character.Background.Id });
+        character.Proficiencies.Languages.Clear();
 
         await repo.UpdateAsync(character);
         var updated = await repo.GetWithAllDataAsync(character.Id);
 
         // Assert
         Assert.Equal(6, updated!.Level);
-        Assert.Contains(updated!.WeaponProficiencies, p => p.WeaponTypes == WeaponCategory.MartialMelee);
-        Assert.Empty(updated!.Languages);
+        Assert.Contains(updated!.Proficiencies.WeaponProficiencies, p => p.WeaponCategory == WeaponCategory.MartialMelee);
+        Assert.Empty(updated!.Proficiencies.Languages);
     }
 
     [Fact]
@@ -78,57 +78,9 @@ public class CharacterRepositoryTests
         Assert.Equal("Elf", result.Race!.Name);
         Assert.Equal("Ranger", result.Class!.Name);
         Assert.Equal(14, result.CombatStats!.ArmorClass);
-        Assert.NotEmpty(result.SkillProficiencies);
-        Assert.Contains(result.SkillProficiencies, s => s.SkillType == SkillType.Athletics);
-        Assert.NotEmpty(result.Languages);
-    }
-
-    [Fact]
-    public async Task GetPrimitiveDataAsync_ReturnsMinimalData()
-    {
-        var options = GetInMemoryOptions("Character_PrimitiveDB");
-        await using var context = new AppDbContext(options);
-        var baseCharacterRepo = new EfRepository<Character>(context);
-        var repo = new CharacterRepository(context, baseCharacterRepo);
-
-        // Arrange
-        var character = CreateTestCharacter();
-        await repo.CreateAsync(character);
-
-        // Act
-        var dto = await repo.GetDtoAsync(character.Id);
-
-        // Assert
-        Assert.NotNull(dto);
-        Assert.Equal("Arannis", dto!.Name);
-        Assert.Equal(9, dto.CurrentHP);
-        Assert.Equal(5, dto.Level);
-    }
-
-    [Fact]
-    public async Task GetAllPrimitiveDataAsync_ReturnsAllCharacters()
-    {
-        // Arrange
-        var options = GetInMemoryOptions("Character_AllPrimitiveDB");
-        await using var context = new AppDbContext(options);
-        var baseCharacterRepo = new EfRepository<Character>(context);
-        var repo = new CharacterRepository(context, baseCharacterRepo);
-
-        var c1 = CreateTestCharacter();
-        var c2 = CreateTestCharacter();
-        c2.Name = "Lyra";
-
-        await repo.CreateAsync(c1);
-        await repo.CreateAsync(c2);
-        await context.SaveChangesAsync();
-
-        // Act
-        var allCharacters = await repo.GetAllDtosAsync();
-
-        // Assert
-        Assert.Equal(2, allCharacters.Count);
-        Assert.Contains(allCharacters, c => c.Name == "Arannis");
-        Assert.Contains(allCharacters, c => c.Name == "Lyra");
+        Assert.NotEmpty(result.Proficiencies.SkillProficiencies);
+        Assert.Contains(result.Proficiencies.SkillProficiencies, s => s.SkillType == SkillType.Athletics);
+        Assert.NotEmpty(result.Proficiencies.Languages);
     }
 
     [Fact]

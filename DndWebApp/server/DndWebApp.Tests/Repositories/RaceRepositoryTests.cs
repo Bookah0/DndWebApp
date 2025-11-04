@@ -79,45 +79,6 @@ public class RaceRepositoryTests
     }
 
     [Fact]
-    public async Task RetrieveRacesAsPrimitiveDtos_ShouldHaveCorrectFieldValues()
-    {
-        var options = GetInMemoryOptions("PrimitiveRace_AddRetrieveDB");
-        await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Race>(context);
-        var repo = new RaceRepository(context, efRepo);
-
-        // Arrange
-        var elfRace = CreateTestRace("Elf");
-        var dwarfRace = CreateTestRace("Dwarf");
-
-        elfRace.RaceDescription.GeneralDescription = "Elf description";
-        dwarfRace.RaceDescription.GeneralDescription = "Dwarf description";
-
-        // Act
-        var createdElf = await repo.CreateAsync(elfRace);
-        var createdDwarf = await repo.CreateAsync(dwarfRace);
-
-        var primitiveElf = await repo.GetRaceDtoAsync(createdElf.Id);
-        var primitiveDwarf = await repo.GetRaceDtoAsync(createdDwarf.Id);
-
-        // Assert
-        Assert.NotNull(primitiveElf);
-        Assert.Equal("Elf", primitiveElf!.Name);
-        Assert.NotNull(primitiveElf.GeneralDescription);
-        Assert.Equal("Elf description", primitiveElf.GeneralDescription);
-
-        Assert.NotNull(primitiveDwarf);
-        Assert.Equal("Dwarf", primitiveDwarf!.Name);
-        Assert.NotNull(primitiveDwarf.GeneralDescription);
-        Assert.Equal("Dwarf description", primitiveDwarf.GeneralDescription);
-
-        var allRacesAsPrimitive = await repo.GetAllRaceDtosAsync();
-        Assert.Equal(2, allRacesAsPrimitive.Count);
-        Assert.Contains(allRacesAsPrimitive, r => r.Name == "Dwarf");
-        Assert.Contains(allRacesAsPrimitive, r => r.Name == "Elf");
-    }
-
-    [Fact]
     public async Task RetrieveWithTraitAndSubraces_ShouldHaveCorrectTrait()
     {
         var options = GetInMemoryOptions("GetAllWithCollections_AddRetrieveDB");

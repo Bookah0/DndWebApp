@@ -1,5 +1,4 @@
-using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Models.Spells;
+using DndWebApp.Api.Models.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;

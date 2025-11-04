@@ -14,8 +14,8 @@ public class WeaponDto
     public required string DamageDice { get; set; }
     public required int Range { get; set; }
     public required string MainDamageType { get; set; }
-    public ICollection<string>? OtherDamageTypes { get; set; }
-    public ICollection<string>? Properties { get; set; }
+    public ICollection<string> OtherDamageTypes { get; set; } = [];
+    public ICollection<string> Properties { get; set; } = [];
     public string? VersitileDamageDice { get; set; }
     public int? LongRange { get; set; }
     public string? Rarity { get; set; }

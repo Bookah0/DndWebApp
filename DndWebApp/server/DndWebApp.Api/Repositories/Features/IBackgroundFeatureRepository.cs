@@ -1,42 +1,12 @@
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+
+
+using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
 
 namespace DndWebApp.Api.Repositories.Features;
 
 public interface IBackgroundFeatureRepository : IRepository<BackgroundFeature>
 {
-    /// <summary>
-    /// Retrieves primitive data from a <see cref="BackgroundFeature"/> by its <paramref name="id"/>,
-    /// excluding related navigation properties, for example:
-    /// <see cref="BackgroundFeature.AbilityIncreaseChoices"/>, 
-    /// <see cref="BackgroundFeature.SavingThrows"/>, and 
-    /// <see cref="BackgroundFeature.DamageWeaknessGained"/>.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="BackgroundFeature"/> to retrieve.</param>
-    /// <returns>
-    /// A read-only <see cref="BackgroundFeatureDto"/> containing primitive data,
-    /// or <c>null</c> if no <see cref="BackgroundFeature"/> with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for simple display of a single <see cref="BackgroundFeature"/>.
-    /// </remarks>
-    Task<BackgroundFeatureDto?> GetDtoAsync(int id);
-
-    /// <summary>
-    /// Retrieves primitive data for all <see cref="BackgroundFeature"/> entities in the database,
-    /// excluding related navigation properties, for example:
-    /// <see cref="BackgroundFeature.AbilityIncreaseChoices"/>, 
-    /// <see cref="BackgroundFeature.SavingThrows"/>, and 
-    /// <see cref="BackgroundFeature.DamageWeaknessGained"/>.
-    /// </summary>
-    /// <returns>
-    /// A collection of read-only <see cref="BackgroundFeatureDto"/> entities containing primitive data.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for search results and dropdowns.
-    /// </remarks>
-    Task<ICollection<BackgroundFeatureDto>> GetAllDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="BackgroundFeature"/> entity by its <paramref name="id"/>, 

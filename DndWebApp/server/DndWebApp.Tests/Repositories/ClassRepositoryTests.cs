@@ -87,52 +87,6 @@ public class ClassRepositoryTests
     }
 
     [Fact]
-    public async Task GetDtoDataAsync_ReturnsCorrectValues()
-    {
-        var options = GetInMemoryOptions("Class_DtoDataDB");
-        await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var repo = new ClassRepository(context, baseClassRepo);
-
-        // Arrange
-        var cls = CreateTestClass();
-
-        // Act
-        await repo.CreateAsync(cls);
-        var dto = await repo.GetDtoAsync(cls.Id);
-
-        // Assert
-        Assert.NotNull(dto);
-        Assert.Equal("Ranger", dto!.Name);
-        Assert.Equal("Description", dto.Description);
-        Assert.Equal("1d8", dto.HitDie);
-        Assert.False(dto.IsHomebrew);
-    }
-
-    [Fact]
-    public async Task GetAllDtoDataAsync_ReturnsAllClasss()
-    {
-        var options = GetInMemoryOptions("Class_GetAllDtoDB");
-        await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var repo = new ClassRepository(context, baseClassRepo);
-
-        // Arrange
-        var c1 = CreateTestClass();
-        var c2 = CreateTestClass(name: "Rogue");
-
-        // Act
-        await repo.CreateAsync(c1);
-        await repo.CreateAsync(c2);
-        var allDtos = await repo.GetAllDtosAsync();
-
-        // Assert
-        Assert.Equal(2, allDtos.Count);
-        Assert.Contains(allDtos, b => b.Name == "Ranger");
-        Assert.Contains(allDtos, b => b.Name == "Rogue");
-    }
-
-    [Fact]
     public async Task GetWithAllDataAsync_IncludesAllNavigationProperties()
     {
         var options = GetInMemoryOptions("Class_GetWithAllDataDB");

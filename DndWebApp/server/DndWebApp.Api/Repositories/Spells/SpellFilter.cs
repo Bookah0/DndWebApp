@@ -18,14 +18,4 @@ public class SpellFilter
     public required ICollection<SpellTargetType>? TargetType { get; set; }
     public required ICollection<SpellRange>? Range { get; set; }
     public required ICollection<DamageType>? DamageTypes { get; set; }
-
-    /*
-    Not sure if these should be added:
-    public int? MinRangeValue { get; set; }
-    public int? MaxRangeValue { get; set; }
-    public bool? IsAoe { get; set; }
-    public bool? Verbal { get; set; }
-    public bool? Somatic { get; set; }
-    public bool? Materials { get; set; }
-    */
 }

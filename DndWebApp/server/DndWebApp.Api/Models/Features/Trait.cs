@@ -1,7 +1,7 @@
 
-using DndWebApp.Api.Models.Features;
+using DndWebApp.Api.Models.Characters;
 
-namespace DndWebApp.Api.Models.Characters;
+namespace DndWebApp.Api.Models.Features;
 
 // Based on https://5e-bits.github.io/docs/api/
 public class Trait : AFeature

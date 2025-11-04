@@ -1,6 +1,5 @@
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.World;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;

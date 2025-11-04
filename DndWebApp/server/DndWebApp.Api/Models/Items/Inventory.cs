@@ -39,6 +39,7 @@ public class Inventory
     public Item? EquippedHolySymbol { get; set; }
 }
 
+[Owned]
 public class Currency
 {
     public int Id { get; set; }

@@ -17,7 +17,6 @@ public class AppDbContext : DbContext
     public DbSet<Inventory> Inventories { get; set; }
 
     public DbSet<Ability> AbilityScores { get; set; }
-    public DbSet<AbilityValue> AbilityValues { get; set; }
     public DbSet<Skill> Skills { get; set; }
 
     public DbSet<Alignment> Alignments { get; set; }

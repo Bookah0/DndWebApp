@@ -13,9 +13,9 @@ public class Ability
     public required ICollection<Skill> Skills { get; set; }
 }
 
+[Owned]
 public class AbilityValue
 {
-    public int Id { get; set; }
     public required Ability Ability { get; set; }
     public required int AbilityId { get; set; }
     public required int Value { get; set; }

@@ -55,7 +55,10 @@ public abstract class BaseFeatureService<T> where T : AFeature
                 feature.SkillProficiencies.Add(skillType);
                 break;
             case WeaponCategory weaponCategory:
-                feature.WeaponProficiencies.Add(weaponCategory);
+                feature.WeaponCategoryProficiencies.Add(weaponCategory);
+                break;
+            case WeaponType weaponType:
+                feature.WeaponTypeProficiencies.Add(weaponType);
                 break;
             case ArmorCategory armorCategory:
                 feature.ArmorProficiencies.Add(armorCategory);
@@ -67,7 +70,7 @@ public abstract class BaseFeatureService<T> where T : AFeature
                 feature.Languages.Add(languageType);
                 break;
             case AbilityType savingThrowAbility:
-                feature.SavingThrows.Add(savingThrowAbility);
+                feature.SavingThrowProficiencies.Add(savingThrowAbility);
                 break;
         }
 
@@ -82,11 +85,11 @@ public abstract class BaseFeatureService<T> where T : AFeature
         var wasRemoved = proficiency switch
         {
             SkillType skillType => feature.SkillProficiencies.Remove(skillType),
-            WeaponCategory weaponCategory => feature.WeaponProficiencies.Remove(weaponCategory),
+            WeaponCategory weaponCategory => feature.WeaponCategoryProficiencies.Remove(weaponCategory),
             ArmorCategory armorCategory => feature.ArmorProficiencies.Remove(armorCategory),
             ToolCategory toolCategory => feature.ToolProficiencies.Remove(toolCategory),
             LanguageType languageType => feature.Languages.Remove(languageType),
-            AbilityType savingThrowAbility => feature.SavingThrows.Remove(savingThrowAbility),
+            AbilityType savingThrowAbility => feature.SavingThrowProficiencies.Remove(savingThrowAbility),
             _ => throw new InvalidOperationException($"Unknown proficiency type: {proficiency.GetType().Name}")
         };
 

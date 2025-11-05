@@ -67,24 +67,24 @@ public static class FeatureConfigurationExtensions
 {
     public static void ConfigureProficiencyChoices(this EntityTypeBuilder<AFeature> builder)
     {
-        builder.OwnsMany(f => f.ProficiencyOptions.SkillProficiencyChoices, c => c.ToJson("SkillOptions"));
-        builder.OwnsMany(f => f.ProficiencyOptions.WeaponCategoryProficiencyChoices, c => c.ToJson("WeaponCategoryOptions"));
-        builder.OwnsMany(f => f.ProficiencyOptions.WeaponTypeProficiencyChoices, c => c.ToJson("WeaponTypeOptions"));
-        builder.OwnsMany(f => f.ProficiencyOptions.ToolProficiencyChoices, c => c.ToJson("ToolOptions"));
-        builder.OwnsMany(f => f.ProficiencyOptions.LanguageChoices, c => c.ToJson("LanguageOptions"));
-        builder.OwnsMany(f => f.ProficiencyOptions.ArmorProficiencyChoices, c => c.ToJson("ArmorOptions"));
-        builder.OwnsMany(f => f.ProficiencyOptions.AbilityIncreaseChoices, c => c.ToJson("AbilityOptions"));
+        builder.OwnsMany(f => f.SkillProficiencyChoices, c => c.ToJson("SkillOptions"));
+        builder.OwnsMany(f => f.WeaponCategoryProficiencyChoices, c => c.ToJson("WeaponCategoryOptions"));
+        builder.OwnsMany(f => f.WeaponTypeProficiencyChoices, c => c.ToJson("WeaponTypeOptions"));
+        builder.OwnsMany(f => f.ToolProficiencyChoices, c => c.ToJson("ToolOptions"));
+        builder.OwnsMany(f => f.LanguageChoices, c => c.ToJson("LanguageOptions"));
+        builder.OwnsMany(f => f.ArmorProficiencyChoices, c => c.ToJson("ArmorOptions"));
+        builder.OwnsMany(f => f.AbilityIncreaseChoices, c => c.ToJson("AbilityOptions"));
     }
 
     public static void ConfigureProficiencies(this EntityTypeBuilder<Character> builder)
     {
         builder.OwnsMany(c => c.AbilityScores, s => s.ToJson("AbilityScores"));
-        builder.OwnsMany(c => c.Proficiencies.ArmorProficiencies, p => p.ToJson("ArmorProficiencies"));
-        builder.OwnsMany(c => c.Proficiencies.WeaponProficiencies, p => p.ToJson("WeaponProficiencies"));
-        builder.OwnsMany(c => c.Proficiencies.DamageAffinities, p => p.ToJson("DamageAffinities"));
-        builder.OwnsMany(c => c.Proficiencies.Languages, p => p.ToJson("Languages"));
-        builder.OwnsMany(c => c.Proficiencies.SavingThrows, p => p.ToJson("SavingThrows"));
-        builder.OwnsMany(c => c.Proficiencies.SkillProficiencies, p => p.ToJson("SkillProficiencies"));
-        builder.OwnsMany(c => c.Proficiencies.ToolProficiencies, p => p.ToJson("ToolProficiencies"));
+        builder.OwnsMany(c => c.ArmorProficiencies, p => p.ToJson("ArmorProficiencies"));
+        builder.OwnsMany(c => c.WeaponProficiencies, p => p.ToJson("WeaponProficiencies"));
+        builder.OwnsMany(c => c.DamageAffinities, p => p.ToJson("DamageAffinities"));
+        builder.OwnsMany(c => c.Languages, p => p.ToJson("Languages"));
+        builder.OwnsMany(c => c.SavingThrows, p => p.ToJson("SavingThrows"));
+        builder.OwnsMany(c => c.SkillProficiencies, p => p.ToJson("SkillProficiencies"));
+        builder.OwnsMany(c => c.ToolProficiencies, p => p.ToJson("ToolProficiencies"));
     }
 }

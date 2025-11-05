@@ -40,14 +40,10 @@ public class Character
     // Abilities & Combat
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
-    public Proficiencies Proficiencies { get; set; } = new();
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public CurrentSpellSlots? CurrentSpellSlots { get; set; }
-}
 
-[Owned]
-public class Proficiencies
-{
+    // Proficiencies
     public ICollection<SaveThrowProficiency> SavingThrows { get; set; } = [];
     public ICollection<DamageAffinity> DamageAffinities { get; set; } = [];
     public ICollection<SkillProficiency> SkillProficiencies { get; set; } = [];

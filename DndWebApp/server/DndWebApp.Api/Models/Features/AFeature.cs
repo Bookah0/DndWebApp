@@ -15,22 +15,13 @@ public abstract class AFeature
     public bool IsHomebrew { get; set; } = false;
     public ICollection<AbilityValue> AbilityIncreases { get; set; } = [];
     public ICollection<Spell> SpellsGained { get; set; } = [];
-    public DamageAffinities DamageAffinitiesGained { get; set; } = new();
-    public Proficiencies ProficienciesGained { get; set; } = new();
-    public ProficiencyOptions ProficiencyOptions { get; set; } = new();
-}
 
-[Owned]
-public class DamageAffinities
-{
+    // Damage Affinities
     public ICollection<DamageType> DamageResistanceGained { get; set; } = [];
     public ICollection<DamageType> DamageImmunityGained { get; set; } = [];
     public ICollection<DamageType> DamageWeaknessGained { get; set; } = [];
-}
 
-[Owned]
-public class Proficiencies
-{
+    // Proficiencies
     public ICollection<AbilityType> SavingThrowProficiencies { get; set; } = [];
     public ICollection<SkillType> SkillProficiencies { get; set; } = [];
     public ICollection<WeaponCategory> WeaponCategoryProficiencies { get; set; } = [];
@@ -38,11 +29,8 @@ public class Proficiencies
     public ICollection<ArmorCategory> ArmorProficiencies { get; set; } = [];
     public ICollection<ToolCategory> ToolProficiencies { get; set; } = [];
     public ICollection<LanguageType> Languages { get; set; } = [];
-}
 
-[Owned]
-public class ProficiencyOptions
-{
+    // Proficiency Choices
     public ICollection<AbilityIncreaseOption> AbilityIncreaseChoices { get; set; } = [];
     public ICollection<SkillProficiencyOption> SkillProficiencyChoices { get; set; } = [];
     public ICollection<ToolProficiencyOption> ToolProficiencyChoices { get; set; } = [];

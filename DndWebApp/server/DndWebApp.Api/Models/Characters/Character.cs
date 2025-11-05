@@ -1,43 +1,43 @@
 using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Models.World.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
 
-// TODO:
-// The Character class is too crowded, needs remodeling in the future
 public class Character
 {
     public int Id { get; set; }
     public required string Name { get; set; }
     public required int Level { get; set; }
+    public string PlayerName { get; set; } = "";
 
+    // Races and subraces
     public required Race Race { get; set; }
     public int RaceId { get; set; }
     public required Subrace Subrace { get; set; }
     public int SubraceId { get; set; }
     public ICollection<Race> OtherRaces { get; set; } = [];
 
+    // Classes and subclasses
     public required Class Class { get; set; }
     public required int ClassId { get; set; }
     public Class? SubClass { get; set; }
     public int? SubClassId { get; set; }
 
+    // Background
     public required Background Background { get; set; }
     public int? BackgroundId { get; set; }
 
-    public int? Experience { get; set; }
-    public string PlayerName { get; set; } = "";
+    // Spells
+    public ICollection<Spell> ReadySpells { get; set; } = [];
+    public CurrentSpellSlots? CurrentSpellSlots { get; set; }
 
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public Proficiencies Proficiencies { get; set; } = new();
+    public int? Experience { get; set; }
     public required CombatStats CombatStats { get; set; }
-    public ICollection<Spell> ReadySpells { get; set; } = [];
-    public CurrentSpellSlots? CurrentSpellSlots { get; set; }
     public CharacterBuilding CharacterBuildData { get; set; } = new();
 }
 

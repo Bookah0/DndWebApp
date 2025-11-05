@@ -20,11 +20,11 @@ public class ArmorService : IService<Armor, ArmorDto, ArmorDto>
 
     public async Task<Armor> CreateAsync(ArmorDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullAboveZero(dto.Weight);
-        ValidationUtil.NotNullAboveZero(dto.Value);
-        ValidationUtil.NotNullAboveZero(dto.BaseArmorClass);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.AboveZeroOrThrow(dto.Weight);
+        ValidationUtil.AboveZeroOrThrow(dto.Value);
+        ValidationUtil.AboveZeroOrThrow(dto.BaseArmorClass);
 
         var dtoCategory = ValidationUtil.ParseEnumOrThrow<ArmorCategory>(dto.Category);
         var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
@@ -68,11 +68,11 @@ public class ArmorService : IService<Armor, ArmorDto, ArmorDto>
 
     public async Task UpdateAsync(ArmorDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullAboveZero(dto.Weight);
-        ValidationUtil.NotNullAboveZero(dto.Value);
-        ValidationUtil.NotNullAboveZero(dto.BaseArmorClass);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.AboveZeroOrThrow(dto.Weight);
+        ValidationUtil.AboveZeroOrThrow(dto.Value);
+        ValidationUtil.AboveZeroOrThrow(dto.BaseArmorClass);
 
         var dtoCategory = ValidationUtil.ParseEnumOrThrow<ArmorCategory>(dto.Category);
         var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);

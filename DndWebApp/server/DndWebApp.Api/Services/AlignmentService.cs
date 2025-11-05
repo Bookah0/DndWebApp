@@ -19,9 +19,9 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 
     public async Task<Alignment> CreateAsync(AlignmentDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Abbreviation);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.Abbreviation);
 
 
         Alignment alignment = new()
@@ -52,9 +52,9 @@ public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
 
     public async Task UpdateAsync(AlignmentDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Abbreviation);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.Abbreviation);
 
         var alignment = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Alignment could not be found");
 

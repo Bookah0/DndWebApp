@@ -2,30 +2,27 @@ using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Repositories.Features;
+using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services.Features;
 
-public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, ClassFeatureDto>
+public class ClassFeatureService : BaseFeatureService<ClassFeature>, IService<ClassFeature, ClassFeatureDto, ClassFeatureDto>
 {
-    private readonly IClassFeatureRepository repo;
     private readonly IClassLevelRepository classLevelRepo;
-    private readonly ILogger<ClassFeatureService> logger;
 
-    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo, ILogger<ClassFeatureService> logger)
+    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo, ISpellRepository spellRepo, ILogger<BaseFeatureService<ClassFeature>> logger) : base(repo, spellRepo, logger)
     {
-        this.repo = repo;
         this.classLevelRepo = classLevelRepo;
-        this.logger = logger;
     }
 
     public async Task<ClassFeature> CreateAsync(ClassFeatureDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullAboveZero(dto.ClassLevelId);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.AboveZeroOrThrow(dto.ClassLevelId);
 
-        var classLevel = await classLevelRepo.GetByIdAsync(dto.ClassLevelId) ?? throw new NullReferenceException("Class level could not be found");
+        var classLevel = await classLevelRepo.GetByIdAsync(dto.ClassLevelId) ?? throw new NullReferenceException($"Class level with id {dto.ClassLevelId} could not be found");
 
         var classFeature = new ClassFeature
         {
@@ -41,7 +38,7 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
 
     public async Task DeleteAsync(int id)
     {
-        var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Class Feature could not be found");
+        var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Class Feature with id {id} could not be found");
         await repo.DeleteAsync(feature);
     }
 
@@ -52,20 +49,20 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
 
     public async Task<ClassFeature> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Class Feature could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Class Feature with id {id} could not be found");
     }
 
     public async Task UpdateAsync(ClassFeatureDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullAboveZero(dto.ClassLevelId);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.AboveZeroOrThrow(dto.ClassLevelId);
 
-        var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Class Feature could not be found");
+        var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Class Feature with id {dto.Id} could not be found");
 
         if (feature.ClassLevelId != dto.ClassLevelId)
         {
-            feature.ClassLevel = await classLevelRepo.GetByIdAsync(dto.ClassLevelId) ?? throw new NullReferenceException("Ability could not be found");
+            feature.ClassLevel = await classLevelRepo.GetByIdAsync(dto.ClassLevelId) ?? throw new NullReferenceException($"Class Level with id {dto.ClassLevelId} could not be found");
             feature.ClassLevelId = dto.ClassLevelId;
         }
 
@@ -73,11 +70,6 @@ public class ClassFeatureService : IService<ClassFeature, ClassFeatureDto, Class
         feature.Description = dto.Description;
 
         await repo.UpdateAsync(feature);
-    }
-
-    public Task UpdateCollectionsAsync(ClassFeatureDto dto)
-    {
-        throw new NotImplementedException();
     }
 
     public enum ClassFeatureSortFilter { Name, Class }

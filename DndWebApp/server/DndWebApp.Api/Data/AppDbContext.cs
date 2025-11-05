@@ -70,7 +70,7 @@ public static class FeatureConfigurationExtensions
     public static void ConfigureOptions(this EntityTypeBuilder<AFeature> builder)
     {
         builder.OwnsMany(f => f.SkillProficiencyChoices, c => c.ToJson("SkillOptions"));
-        builder.OwnsMany(f => f.WeaponProficiencyChoices, c => c.ToJson("WeaponOptions"));
+        builder.OwnsMany(f => f.WeaponCategoryProficiencyChoices, c => c.ToJson("WeaponOptions"));
         builder.OwnsMany(f => f.ToolProficiencyChoices, c => c.ToJson("ToolOptions"));
         builder.OwnsMany(f => f.LanguageChoices, c => c.ToJson("LanguageOptions"));
         builder.OwnsMany(f => f.ArmorProficiencyChoices, c => c.ToJson("ArmorOptions"));

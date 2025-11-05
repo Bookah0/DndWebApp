@@ -4,7 +4,7 @@ namespace DndWebApp.Api.Services.Util;
 
 public static class ValidationUtil
 {
-    public static void NotNullOrWhiteSpace(string? str)
+    public static void HasContentOrThrow(string? str)
     {
         if (string.IsNullOrWhiteSpace(str))
         {
@@ -12,7 +12,7 @@ public static class ValidationUtil
         }
     }
 
-    public static void NotNullAboveZero(int? num)
+    public static void AboveZeroOrThrow(int? num)
     {
         if (num == null || num < 0)
         {

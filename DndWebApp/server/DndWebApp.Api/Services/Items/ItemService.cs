@@ -23,10 +23,10 @@ public class ItemService : IService<Item, ItemDto, ItemDto>
 
     public async Task<Item> CreateAsync(ItemDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.MainCategory);
-        ValidationUtil.NotNullAboveZero(dto.Value);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.MainCategory);
+        ValidationUtil.AboveZeroOrThrow(dto.Value);
 
         var dtoMainCategory = ValidationUtil.ParseEnumOrThrow<ItemCategory>(dto.MainCategory);
         var dtoOtherCategories = ValidationUtil.ParseEnumOrThrow<ItemCategory>(dto.OtherCategories);
@@ -65,10 +65,10 @@ public class ItemService : IService<Item, ItemDto, ItemDto>
 
     public async Task UpdateAsync(ItemDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.MainCategory);
-        ValidationUtil.NotNullAboveZero(dto.Value);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.MainCategory);
+        ValidationUtil.AboveZeroOrThrow(dto.Value);
 
         var dtoMainCategory = ValidationUtil.ParseEnumOrThrow<ItemCategory>(dto.MainCategory);
         var dtoOtherCategories = ValidationUtil.ParseEnumOrThrow<ItemCategory>(dto.OtherCategories);

@@ -1,14 +1,8 @@
-using System.Reflection.Metadata.Ecma335;
-using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Repositories.Items;
-using DndWebApp.Api.Repositories.Skills;
 using DndWebApp.Api.Services.Generic;
-using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services.Items;
 
 public class InventoryService : IService<Inventory, CreateInventoryDto, UpdateInventoryDto>
@@ -25,25 +19,6 @@ public class InventoryService : IService<Inventory, CreateInventoryDto, UpdateIn
     }
 
     public async Task<Inventory> CreateAsync(CreateInventoryDto dto)
-    {
-        Inventory inv = new()
-        {
-            CharacterId = dto.CharacterId,
-            Currency = new Currency { Copper = dto.CopperCoins },
-            EquippedItems = InitEquipmentSlots(dto),
-        };
-
-        foreach (var itemId in dto.itemIds)
-        {
-            var item = await itemRepo.GetByIdAsync(itemId) ?? throw new NullReferenceException("Item could not be found");
-            inv.StoredItems.Add(item);
-        }
-            
-        ConvertCurrency(inv.Currency);
-        return await repo.CreateAsync(inv);
-    }
-
-    public ICollection<EquipmentSlot> InitEquipmentSlots(CreateInventoryDto dto)
     {
         ICollection<EquipmentSlot> equipmentSlots = [
                 new EquipmentSlot(){ Slot = EquipSlot.MainHand },
@@ -70,52 +45,88 @@ public class InventoryService : IService<Inventory, CreateInventoryDto, UpdateIn
         {
             equipmentSlots.Add(new EquipmentSlot() { Slot = EquipSlot.Back });
         }
-        return equipmentSlots;
+
+        Inventory inv = new()
+        {
+            CharacterId = dto.CharacterId,
+            Currency = new Currency { Copper = dto.CopperCoins },
+            EquippedItems = equipmentSlots,
+        };
+
+        foreach (var itemId in dto.itemIds)
+        {
+            var item = await itemRepo.GetByIdAsync(itemId)
+                ?? throw new NullReferenceException($"Item with id {dto.Id} could not be found");
+                
+            inv.StoredItems.Add(item);
+        }
+            
+        ConvertCurrency(inv.Currency);
+        return await repo.CreateAsync(inv);
     }
 
     public async Task AddItem(int invId, int itemId)
     {
-        var inv = await repo.GetByIdAsync(invId) ?? throw new NullReferenceException("Inventory could not be found");
-        var item = await itemRepo.GetByIdAsync(itemId) ?? throw new NullReferenceException("Item could not be found");
+        var inv = await repo.GetByIdAsync(invId)
+            ?? throw new NullReferenceException($"Inventory with id {invId} could not be found");
+            
+        var item = await itemRepo.GetByIdAsync(itemId) 
+            ?? throw new NullReferenceException($"Item with id {itemId} could not be found");
 
         inv.StoredItems.Add(item);
+        inv.TotalWeight += item.Weight;
         await repo.UpdateAsync(inv);
     }
 
     public async Task DiscardItem(int invId, int itemId)
     {
-        var inv = await repo.GetByIdAsync(invId) ?? throw new NullReferenceException("Inventory could not be found");
-        var item = await itemRepo.GetByIdAsync(itemId) ?? throw new NullReferenceException("Item could not be found");
+        var inv = await repo.GetByIdAsync(invId)
+            ?? throw new NullReferenceException($"Inventory with id {invId} could not be found");
+        
+        var item = await itemRepo.GetByIdAsync(itemId) 
+            ?? throw new NullReferenceException($"Item with id {itemId} could not be found");
         
         if(inv.StoredItems.FirstOrDefault(i => i.Id == itemId) is null)
-             throw new NullReferenceException("Item could not be found in inventory");
+             throw new NullReferenceException($"Item with id {itemId} could not be found in inventory with id {invId}");
 
         if (inv.StoredItems.FirstOrDefault(i => i.Id == itemId) is null)
-            throw new NullReferenceException("Item could not be found in inventory");
+            throw new NullReferenceException($"Item with id {itemId} could not be found in inventory with id {invId}");
 
         await UnEquip(invId, itemId);
+        inv.StoredItems.Remove(item);
+        inv.TotalWeight -= item.Weight;
         await repo.UpdateAsync(inv);
     }
 
 
-    public async Task<bool> UnEquip(int invId, int itemId)
+    public async Task UnEquip(int invId, int itemId)
     {
-        var inv = await repo.GetByIdAsync(invId) ?? throw new NullReferenceException("Inventory could not be found");
+        var inv = await repo.GetByIdAsync(invId)
+            ?? throw new NullReferenceException($"Inventorywith id {invId} could not be found");
+
+        var item = await itemRepo.GetByIdAsync(itemId)
+            ?? throw new NullReferenceException($"Item with id {itemId} could not be found");
+            
         foreach (var equipmentSlot in inv.EquippedItems)
         {
             if (equipmentSlot.EquipmentId == itemId)
             {
                 equipmentSlot.EquipmentId = null;
-                return true;
+                inv.AttunedItems += item.RequiresAttunement ? 1 : 0;
+                await repo.UpdateAsync(inv);
+                return;
             }
         }
-        throw new NullReferenceException("Item is not equipped");
+        throw new NullReferenceException($"Item with id {itemId} is not equipped in inventory with id {invId}");
     }
 
-    public async Task<bool> Equip(int invId, int itemId, EquipSlot slot)
+    public async Task Equip(int invId, int itemId, EquipSlot slot)
     {
-        var inv = await repo.GetByIdAsync(invId) ?? throw new NullReferenceException("Inventory could not be found");
-        var _ = await itemRepo.GetByIdAsync(itemId) ?? throw new NullReferenceException("Item could not be found");
+        var inv = await repo.GetByIdAsync(invId)
+            ?? throw new NullReferenceException($"Inventory with id {itemId} could not be found");
+        
+        var item = await itemRepo.GetByIdAsync(itemId) 
+            ?? throw new NullReferenceException($"Item with id {itemId} could not be found");
 
         EquipmentSlot? firstSlotFound = null;
 
@@ -127,15 +138,20 @@ public class InventoryService : IService<Inventory, CreateInventoryDto, UpdateIn
                 if (equipmentSlot.EquipmentId == null)
                 {
                     equipmentSlot.EquipmentId = itemId;
-                    return true;
+                    inv.AttunedItems -= item.RequiresAttunement ? 1 : 0;
+                    await repo.UpdateAsync(inv);
+                    return;
                 }
             }
         }
-        if(firstSlotFound is not null)
+        if (firstSlotFound is not null)
         {
             firstSlotFound.EquipmentId = itemId;
+            await repo.UpdateAsync(inv);
+            return;
         }
-        throw new NullReferenceException("Could not find a slot of that type");
+
+        throw new NullReferenceException($"Could not find a slot of that type in the inventory with id {invId}");
     }
 
     public async Task<ICollection<Inventory>> GetAllAsync()
@@ -145,17 +161,15 @@ public class InventoryService : IService<Inventory, CreateInventoryDto, UpdateIn
 
     public async Task<Inventory> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Inventory could not be found");
-    }
-
-    public async Task UpdateAsync(UpdateInventoryDto dto)
-    {
-
+        return await repo.GetByIdAsync(id) 
+            ?? throw new NullReferenceException($"Inventory with id {id} could not be found");
     }
 
     public async Task DeleteAsync(int id)
     {
-        var inv = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Inventory could not be found");
+        var inv = await repo.GetByIdAsync(id)
+            ?? throw new NullReferenceException($"Inventory with id {id} could not be found");
+            
         await repo.DeleteAsync(inv);
     }
     
@@ -168,6 +182,5 @@ public class InventoryService : IService<Inventory, CreateInventoryDto, UpdateIn
         currency.Silver = valueInBrass % 1000 / 100;
         currency.Copper = valueInBrass % 100 / 10;
         currency.Brass = valueInBrass % 10;
-        // await currencyRepo.UpdateAsync(currency);
     }
 }

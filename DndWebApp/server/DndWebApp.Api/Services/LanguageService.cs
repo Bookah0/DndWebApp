@@ -21,9 +21,9 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
 
     public async Task<Language> CreateAsync(LanguageDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Script);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Family);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Script);
+        ValidationUtil.HasContentOrThrow(dto.Family);
 
         Language language = new()
         {
@@ -54,9 +54,9 @@ public class LanguageService : IService<Language, LanguageDto, LanguageDto>
 
     public async Task UpdateAsync(LanguageDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Script);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Family);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Script);
+        ValidationUtil.HasContentOrThrow(dto.Family);
 
         var language = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Language could not be found");
 

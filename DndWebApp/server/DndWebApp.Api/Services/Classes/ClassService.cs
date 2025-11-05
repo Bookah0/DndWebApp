@@ -24,9 +24,9 @@ public partial class ClassService : IService<Class, ClassDto, ClassDto>
 
     public async Task<Class> CreateAsync(ClassDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.HitDie);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.HitDie);
 
         Class cls = new()
         {
@@ -57,9 +57,9 @@ public partial class ClassService : IService<Class, ClassDto, ClassDto>
 
     public async Task UpdateAsync(ClassDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.HitDie);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.HitDie);
 
         var cls = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Class with id {dto.Id} could not be found");
 

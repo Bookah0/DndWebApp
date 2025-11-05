@@ -8,9 +8,9 @@ public partial class ClassService : IService<Class, ClassDto, ClassDto>
 {
     public async Task<ClassLevel> AddLevelToClassAsync(ClassLevelDto dto)
     {
-        ValidationUtil.NotNullAboveZero(dto.Level);
-        ValidationUtil.NotNullAboveZero(dto.ClassId);
-        ValidationUtil.NotNullAboveZero(dto.ProficiencyBonus);
+        ValidationUtil.AboveZeroOrThrow(dto.Level);
+        ValidationUtil.AboveZeroOrThrow(dto.ClassId);
+        ValidationUtil.AboveZeroOrThrow(dto.ProficiencyBonus);
 
         var clss = await repo.GetByIdAsync(dto.ClassId) ?? throw new NullReferenceException($"Class with id {dto.ClassId} could not be found");
 
@@ -57,9 +57,9 @@ public partial class ClassService : IService<Class, ClassDto, ClassDto>
 
     public async Task UpdateClassLevelAsync(ClassLevelDto dto)
     {
-        ValidationUtil.NotNullAboveZero(dto.Level);
-        ValidationUtil.NotNullAboveZero(dto.ClassId);
-        ValidationUtil.NotNullAboveZero(dto.ProficiencyBonus);
+        ValidationUtil.AboveZeroOrThrow(dto.Level);
+        ValidationUtil.AboveZeroOrThrow(dto.ClassId);
+        ValidationUtil.AboveZeroOrThrow(dto.ProficiencyBonus);
 
         var level = await levelRepo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Class level with id {dto.Id} could not be found");
 

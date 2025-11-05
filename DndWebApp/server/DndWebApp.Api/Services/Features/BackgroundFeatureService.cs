@@ -2,30 +2,27 @@ using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Backgrounds;
 using DndWebApp.Api.Repositories.Features;
+using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services.Features;
 
-public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFeatureDto, BackgroundFeatureDto>
+public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, IService<BackgroundFeature, BackgroundFeatureDto, BackgroundFeatureDto>
 {
-    private readonly IBackgroundFeatureRepository repo;
     private readonly IBackgroundRepository backgroundRepo;
-    private readonly ILogger<BackgroundFeatureService> logger;
 
-    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo, ILogger<BackgroundFeatureService> logger)
+    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo, ISpellRepository spellRepo, ILogger<BaseFeatureService<BackgroundFeature>> logger) : base(repo, spellRepo, logger)
     {
-        this.repo = repo;
         this.backgroundRepo = backgroundRepo;
-        this.logger = logger;
     }
 
     public async Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullAboveZero(dto.BackgroundId);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.AboveZeroOrThrow(dto.BackgroundId);
 
-        var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NullReferenceException("Background could not be found");
+        var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NullReferenceException($"Background with id {dto.BackgroundId} could not be found");
 
         var bgFeature = new BackgroundFeature
         {
@@ -41,7 +38,7 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
 
     public async Task DeleteAsync(int id)
     {
-        var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Background Feature could not be found");
+        var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Background Feature with id {id} could not be found");
         await repo.DeleteAsync(feature);
     }
 
@@ -52,19 +49,19 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
 
     public async Task<BackgroundFeature> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Background Feature could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Background Feature with id {id} could not be found");
     }
 
     public async Task UpdateAsync(BackgroundFeatureDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
 
-        var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Background Feature could not be found");
+        var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Background Feature with id {dto.Id} could not be found");
 
         if (feature.BackgroundId != dto.BackgroundId)
         {
-            feature.Background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NullReferenceException("Ability could not be found");
+            feature.Background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NullReferenceException($"Background with id {dto.BackgroundId} could not be found");
             feature.BackgroundId = dto.BackgroundId;
         }
 
@@ -73,11 +70,6 @@ public class BackgroundFeatureService : IService<BackgroundFeature, BackgroundFe
         feature.IsHomebrew = dto.IsHomebrew;
 
         await repo.UpdateAsync(feature);
-    }
-
-    public Task UpdateCollectionsAsync(BackgroundFeatureDto dto)
-    {
-        throw new NotImplementedException();
     }
 
     public enum BackgroundFeatureSortFilter { Name, Background }

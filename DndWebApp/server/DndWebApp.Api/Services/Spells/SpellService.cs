@@ -26,11 +26,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
 
     public async Task<Spell> CreateAsync(SpellDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Duration);
-        ValidationUtil.NotNullOrWhiteSpace(dto.CastingTime);
-        ValidationUtil.NotNullOrWhiteSpace(dto.MagicSchool);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.Duration);
+        ValidationUtil.HasContentOrThrow(dto.CastingTime);
+        ValidationUtil.HasContentOrThrow(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
         var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);
@@ -133,11 +133,11 @@ public class SpellService : IService<Spell, SpellDto, SpellDto>
     {
         var spell = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Spell could not be found");
 
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Duration);
-        ValidationUtil.NotNullOrWhiteSpace(dto.CastingTime);
-        ValidationUtil.NotNullOrWhiteSpace(dto.MagicSchool);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.Duration);
+        ValidationUtil.HasContentOrThrow(dto.CastingTime);
+        ValidationUtil.HasContentOrThrow(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
         var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);

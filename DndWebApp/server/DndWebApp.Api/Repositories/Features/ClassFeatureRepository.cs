@@ -65,7 +65,7 @@ public class ClassFeatureRepository : IClassFeatureRepository
             .Include(f => f.ToolProficiencyChoices)
             .Include(f => f.LanguageChoices)
             .Include(f => f.ArmorProficiencyChoices)
-            .Include(f => f.WeaponProficiencyChoices)
+            .Include(f => f.WeaponCategoryProficiencyChoices)
             .Include(f => f.AbilityIncreaseChoices)
                 .ThenInclude(o => o.Options)
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -83,7 +83,7 @@ public class ClassFeatureRepository : IClassFeatureRepository
             .Include(f => f.ToolProficiencyChoices)
             .Include(f => f.LanguageChoices)
             .Include(f => f.ArmorProficiencyChoices)
-            .Include(f => f.WeaponProficiencyChoices)
+            .Include(f => f.WeaponCategoryProficiencyChoices)
             .Include(f => f.AbilityIncreaseChoices)
                 .ThenInclude(o => o.Options)
             .ToListAsync();

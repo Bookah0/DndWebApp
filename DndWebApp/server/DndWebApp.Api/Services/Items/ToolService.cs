@@ -21,10 +21,10 @@ public class ToolService : IService<Tool, ToolDto, ToolDto>
 
     public async Task<Tool> CreateAsync(ToolDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.ToolCategory);
-        ValidationUtil.NotNullAboveZero(dto.Value);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.ToolCategory);
+        ValidationUtil.AboveZeroOrThrow(dto.Value);
 
         var dtoToolCategory = ValidationUtil.ParseEnumOrThrow<ToolCategory>(dto.ToolCategory);
         var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
@@ -48,8 +48,8 @@ public class ToolService : IService<Tool, ToolDto, ToolDto>
 
     public async Task AddProperty(string title, string description, int toolId)
     {
-        ValidationUtil.NotNullOrWhiteSpace(title);
-        ValidationUtil.NotNullOrWhiteSpace(description);
+        ValidationUtil.HasContentOrThrow(title);
+        ValidationUtil.HasContentOrThrow(description);
 
         var tool = await repo.GetWithAllDataAsync(toolId) ?? throw new NullReferenceException($"Tool with id {toolId} could not be found");
         tool.Properties.Add(new ToolProperty { Title = title, Description = description });
@@ -57,8 +57,8 @@ public class ToolService : IService<Tool, ToolDto, ToolDto>
 
     public async Task AddActivity(string title, int? skillId, int? abilityId, string dc, int toolId)
     {
-        ValidationUtil.NotNullOrWhiteSpace(title);
-        ValidationUtil.NotNullOrWhiteSpace(dc);
+        ValidationUtil.HasContentOrThrow(title);
+        ValidationUtil.HasContentOrThrow(dc);
 
         var tool = await repo.GetWithAllDataAsync(toolId) ?? throw new NullReferenceException($"Tool with id {toolId} could not be found");
 
@@ -83,10 +83,10 @@ public class ToolService : IService<Tool, ToolDto, ToolDto>
 
     public async Task UpdateAsync(ToolDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.ToolCategory);
-        ValidationUtil.NotNullAboveZero(dto.Value);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.ToolCategory);
+        ValidationUtil.AboveZeroOrThrow(dto.Value);
 
         var dtoToolCategory = ValidationUtil.ParseEnumOrThrow<ToolCategory>(dto.ToolCategory);
         var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);

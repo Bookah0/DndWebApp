@@ -20,9 +20,9 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
 
     public async Task<Ability> CreateAsync(AbilityDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.FullName);
-        ValidationUtil.NotNullOrWhiteSpace(dto.ShortName);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.FullName);
+        ValidationUtil.HasContentOrThrow(dto.ShortName);
+        ValidationUtil.HasContentOrThrow(dto.Description);
 
         Ability ability = new()
         {
@@ -54,9 +54,9 @@ public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
 
     public async Task UpdateAsync(AbilityDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.FullName);
-        ValidationUtil.NotNullOrWhiteSpace(dto.ShortName);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.FullName);
+        ValidationUtil.HasContentOrThrow(dto.ShortName);
+        ValidationUtil.HasContentOrThrow(dto.Description);
 
         var ability = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Ability could not be found");
 

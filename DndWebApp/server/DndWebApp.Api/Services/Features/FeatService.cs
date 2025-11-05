@@ -1,26 +1,23 @@
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Features;
+using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Features;
 
-public class FeatService : IService<Feat, FeatDto, FeatDto>
+public class FeatService : BaseFeatureService<Feat>, IService<Feat, FeatDto, FeatDto>
 {
-    private readonly IFeatRepository repo;
-    private readonly ILogger<FeatService> logger;
 
-    public FeatService(IFeatRepository repo, ILogger<FeatService> logger)
+    public FeatService(IFeatRepository repo, ISpellRepository spellRepo, ILogger<BaseFeatureService<Feat>> logger) : base(repo, spellRepo, logger)
     {
-        this.repo = repo;
-        this.logger = logger;
     }
 
     public async Task<Feat> CreateAsync(FeatDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
 
         var feat = new Feat
         {
@@ -34,7 +31,7 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
 
     public async Task DeleteAsync(int id)
     {
-        var feat = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Feat could not be found");
+        var feat = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Feat with id {id} could not be found");
         await repo.DeleteAsync(feat);
     }
 
@@ -45,15 +42,15 @@ public class FeatService : IService<Feat, FeatDto, FeatDto>
 
     public async Task<Feat> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Feat could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Feat with id {id} could not be found");
     }
 
     public async Task UpdateAsync(FeatDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
 
-        var feat = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Feat could not be found");
+        var feat = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Feat with id {dto.Id} could not be found");
 
         feat.Name = dto.Name;
         feat.Description = dto.Description;

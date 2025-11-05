@@ -20,12 +20,12 @@ public class WeaponService : IService<Weapon, WeaponDto, WeaponDto>
 
     public async Task<Weapon> CreateAsync(WeaponDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.DamageDice);
-        ValidationUtil.NotNullAboveZero(dto.Weight);
-        ValidationUtil.NotNullAboveZero(dto.Value);
-        ValidationUtil.NotNullAboveZero(dto.Range);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.DamageDice);
+        ValidationUtil.AboveZeroOrThrow(dto.Weight);
+        ValidationUtil.AboveZeroOrThrow(dto.Value);
+        ValidationUtil.AboveZeroOrThrow(dto.Range);
 
         var dtoCategory = ValidationUtil.ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
         var dtoWeaponType = ValidationUtil.ParseEnumOrThrow<WeaponType>(dto.WeaponType);
@@ -75,12 +75,12 @@ public class WeaponService : IService<Weapon, WeaponDto, WeaponDto>
 
     public async Task UpdateAsync(WeaponDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullOrWhiteSpace(dto.DamageDice);
-        ValidationUtil.NotNullAboveZero(dto.Weight);
-        ValidationUtil.NotNullAboveZero(dto.Weight);
-        ValidationUtil.NotNullAboveZero(dto.Range);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.DamageDice);
+        ValidationUtil.AboveZeroOrThrow(dto.Weight);
+        ValidationUtil.AboveZeroOrThrow(dto.Weight);
+        ValidationUtil.AboveZeroOrThrow(dto.Range);
 
         var dtoCategory = ValidationUtil.ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
         var dtoWeaponType = ValidationUtil.ParseEnumOrThrow<WeaponType>(dto.WeaponType);

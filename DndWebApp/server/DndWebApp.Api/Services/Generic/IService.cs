@@ -1,10 +1,10 @@
 namespace DndWebApp.Api.Services.Generic;
 
-public interface IService<T, CT, UT>
+public interface IService<T, TCreate, TUpdate>
 {
-    Task<T> CreateAsync(CT entity);
+    Task<T> CreateAsync(TCreate entity);
     Task DeleteAsync(int id);
     Task<ICollection<T>> GetAllAsync();
     Task<T> GetByIdAsync(int id);
-    Task UpdateAsync(UT updatedEntity);
+    Task UpdateAsync(TUpdate updatedEntity);
 }

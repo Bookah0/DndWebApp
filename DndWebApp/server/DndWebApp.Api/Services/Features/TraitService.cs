@@ -1,32 +1,31 @@
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.Spells;
+using DndWebApp.Api.Repositories.Abilities;
 using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Repositories.Species;
+using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Features;
 
-public class TraitService : IService<Trait, TraitDto, TraitDto>
+public class TraitService : BaseFeatureService<Trait>, IService<Trait, TraitDto, TraitDto>
 {
-    private readonly ITraitRepository repo;
     private readonly IRaceRepository raceRepo;
-    private readonly ILogger<TraitService> logger;
 
-    public TraitService(ITraitRepository repo, IRaceRepository raceRepo, ILogger<TraitService> logger)
+    public TraitService(ITraitRepository repo, IRaceRepository raceRepo, ISpellRepository spellRepo, ILogger<BaseFeatureService<Trait>> logger) : base(repo, spellRepo, logger)
     {
-        this.repo = repo;
         this.raceRepo = raceRepo;
-        this.logger = logger;
     }
 
     public async Task<Trait> CreateAsync(TraitDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
-        ValidationUtil.NotNullAboveZero(dto.RaceId);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
+        ValidationUtil.AboveZeroOrThrow(dto.RaceId);
 
-        var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NullReferenceException("Trait level could not be found");
+        var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NullReferenceException($"Trait level with id {dto.RaceId} could not be found");
 
         var trait = new Trait
         {
@@ -42,7 +41,7 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
 
     public async Task DeleteAsync(int id)
     {
-        var trait = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Trait could not be found");
+        var trait = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Trait with id {id} could not be found");
         await repo.DeleteAsync(trait);
     }
 
@@ -53,19 +52,19 @@ public class TraitService : IService<Trait, TraitDto, TraitDto>
 
     public async Task<Trait> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Trait could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Trait with id {id} could not be found");
     }
 
     public async Task UpdateAsync(TraitDto dto)
     {
-        ValidationUtil.NotNullOrWhiteSpace(dto.Name);
-        ValidationUtil.NotNullOrWhiteSpace(dto.Description);
+        ValidationUtil.HasContentOrThrow(dto.Name);
+        ValidationUtil.HasContentOrThrow(dto.Description);
 
-        var trait = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Trait could not be found");
+        var trait = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Trait with id {dto.Id} could not be found");
 
         if (trait.RaceId != dto.RaceId)
         {
-            trait.FromRace = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NullReferenceException("Race could not be found");
+            trait.FromRace = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NullReferenceException($"Race with id {dto.RaceId} could not be found");
             trait.RaceId = dto.RaceId;
         }
 

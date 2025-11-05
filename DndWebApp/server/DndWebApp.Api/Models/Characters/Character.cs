@@ -8,36 +8,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
 
-// TODO:
-// The Character class is too crowded, needs remodeling in the future
 public class Character
 {
     public int Id { get; set; }
     public required string Name { get; set; }
     public required int Level { get; set; }
+    public int? Experience { get; set; }
+    public string PlayerName { get; set; } = "";
 
+    // Races & Subraces
     public required Race Race { get; set; }
     public int RaceId { get; set; }
     public required Subrace Subrace { get; set; }
     public int SubraceId { get; set; }
     public ICollection<Race> OtherRaces { get; set; } = [];
 
+    // Classes & Subclasses
     public required Class Class { get; set; }
     public required int ClassId { get; set; }
     public Class? SubClass { get; set; }
     public int? SubClassId { get; set; }
 
+    // Background
     public required Background Background { get; set; }
     public int? BackgroundId { get; set; }
+    public CharacterBuilding CharacterBuildData { get; set; } = new();
 
-    public int? Experience { get; set; }
-    public string PlayerName { get; set; } = "";
-
+    // Inventory
+    public required Inventory Inventory { get; set; }
+    public required int InventoryId { get; set; }
+    
+    // Abilities & Combat
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public CurrentSpellSlots? CurrentSpellSlots { get; set; }
-    public CharacterBuilding CharacterBuildData { get; set; } = new();
 
     // Proficiencies
     public ICollection<SaveThrowProficiency> SavingThrows { get; set; } = [];
@@ -48,7 +53,6 @@ public class Character
     public ICollection<ToolProficiency> ToolProficiencies { get; set; } = [];
     public ICollection<LanguageProficiency> Languages { get; set; } = [];
     public int ProficiencyBonus { get; set; } = 2;
-
 }
 
 

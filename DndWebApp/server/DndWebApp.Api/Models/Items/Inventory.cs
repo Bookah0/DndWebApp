@@ -15,6 +15,7 @@ public class Inventory
     public required ICollection<EquipmentSlot> EquippedItems { get; set; }
 }
 
+[Owned]
 public class Currency
 {
     public int Id { get; set; }

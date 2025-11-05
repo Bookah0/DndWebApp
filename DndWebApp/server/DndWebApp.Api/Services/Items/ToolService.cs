@@ -8,7 +8,7 @@ using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Items;
 
-public class ToolService : IService<Tool, ToolDto, ToolDto>
+public class ToolService : IService<Tool, ToolDto>
 {
     private readonly ToolRepository repo;
     private readonly ILogger<ToolService> logger;

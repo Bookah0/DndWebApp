@@ -7,7 +7,7 @@ using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Items;
 
-public class WeaponService : IService<Weapon, WeaponDto, WeaponDto>
+public class WeaponService : IService<Weapon, WeaponDto>
 {
     private readonly IRepository<Weapon> repo;
     private readonly ILogger<WeaponService> logger;

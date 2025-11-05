@@ -8,7 +8,7 @@ using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
-public class LanguageService : IService<Language, LanguageDto, LanguageDto>
+public class LanguageService : IService<Language, LanguageDto>
 {
     private readonly IRepository<Language> repo;
     private readonly ILogger<LanguageService> logger;

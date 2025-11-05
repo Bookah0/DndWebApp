@@ -6,7 +6,7 @@ using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
-public class AlignmentService : IService<Alignment, AlignmentDto, AlignmentDto>
+public class AlignmentService : IService<Alignment, AlignmentDto>
 {
     private readonly IRepository<Alignment> repo;
     private readonly ILogger<AlignmentService> logger;

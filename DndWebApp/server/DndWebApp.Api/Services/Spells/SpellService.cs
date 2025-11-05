@@ -11,7 +11,7 @@ using DndWebApp.Api.Services.Generic;
 
 namespace DndWebApp.Api.Services.Spells;
 
-public class SpellService : IService<Spell, SpellDto, SpellDto>
+public class SpellService : IService<Spell, SpellDto>
 {
     private readonly ISpellRepository repo;
     private readonly IClassRepository classRepo;

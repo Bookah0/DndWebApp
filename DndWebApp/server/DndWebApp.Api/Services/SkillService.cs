@@ -8,7 +8,7 @@ using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
-public class SkillService : IService<Skill, SkillDto, SkillDto>
+public class SkillService : IService<Skill, SkillDto>
 {
     private readonly ISkillRepository repo;
     private readonly IAbilityRepository abilityRepo;

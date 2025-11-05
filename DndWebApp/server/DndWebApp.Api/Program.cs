@@ -50,16 +50,16 @@ builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
 builder.Services.AddScoped<ISpellRepository, SpellRepository>();
 
 
-builder.Services.AddScoped<IService<Alignment, AlignmentDto, AlignmentDto>, AlignmentService>();
-builder.Services.AddScoped<IService<Skill, SkillDto, SkillDto>, SkillService>();
-builder.Services.AddScoped<IService<Ability, AbilityDto, AbilityDto>, AbilityService>();
-builder.Services.AddScoped<IService<Language, LanguageDto, LanguageDto>, LanguageService>();
-builder.Services.AddScoped<IService<Spell, SpellDto, SpellDto>, SpellService>();
+builder.Services.AddScoped<IService<Alignment, AlignmentDto>, AlignmentService>();
+builder.Services.AddScoped<IService<Skill, SkillDto>, SkillService>();
+builder.Services.AddScoped<IService<Ability, AbilityDto>, AbilityService>();
+builder.Services.AddScoped<IService<Language, LanguageDto>, LanguageService>();
+builder.Services.AddScoped<IService<Spell, SpellDto>, SpellService>();
 
-builder.Services.AddScoped<IService<BackgroundFeature, BackgroundFeatureDto, BackgroundFeatureDto>, BackgroundFeatureService>();
-builder.Services.AddScoped<IService<Feat, FeatDto, FeatDto>, FeatService>();
-builder.Services.AddScoped<IService<Trait, TraitDto, TraitDto>, TraitService>();
-builder.Services.AddScoped<IService<ClassFeature, ClassFeatureDto, ClassFeatureDto>, ClassFeatureService>();
+builder.Services.AddScoped<IService<BackgroundFeature, BackgroundFeatureDto>, BackgroundFeatureService>();
+builder.Services.AddScoped<IService<Feat, FeatDto>, FeatService>();
+builder.Services.AddScoped<IService<Trait, TraitDto>, TraitService>();
+builder.Services.AddScoped<IService<ClassFeature, ClassFeatureDto>, ClassFeatureService>();
 
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();

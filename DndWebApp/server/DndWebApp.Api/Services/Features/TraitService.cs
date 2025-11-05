@@ -10,7 +10,7 @@ using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Features;
 
-public class TraitService : BaseFeatureService<Trait>, IService<Trait, TraitDto, TraitDto>
+public class TraitService : BaseFeatureService<Trait>, IService<Trait, TraitDto>
 {
     private readonly IRaceRepository raceRepo;
 

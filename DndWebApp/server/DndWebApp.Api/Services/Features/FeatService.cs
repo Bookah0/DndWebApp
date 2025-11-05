@@ -7,7 +7,7 @@ using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Features;
 
-public class FeatService : BaseFeatureService<Feat>, IService<Feat, FeatDto, FeatDto>
+public class FeatService : BaseFeatureService<Feat>, IService<Feat, FeatDto>
 {
 
     public FeatService(IFeatRepository repo, ISpellRepository spellRepo, ILogger<BaseFeatureService<Feat>> logger) : base(repo, spellRepo, logger)

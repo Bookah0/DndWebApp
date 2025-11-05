@@ -7,7 +7,7 @@ using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services.Features;
 
-public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, IService<BackgroundFeature, BackgroundFeatureDto, BackgroundFeatureDto>
+public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, IService<BackgroundFeature, BackgroundFeatureDto>
 {
     private readonly IBackgroundRepository backgroundRepo;
 

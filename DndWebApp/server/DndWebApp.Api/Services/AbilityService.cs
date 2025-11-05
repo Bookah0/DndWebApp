@@ -7,7 +7,7 @@ using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services;
 
-public class AbilityService : IService<Ability, AbilityDto, AbilityDto>
+public class AbilityService : IService<Ability, AbilityDto>
 {
     private readonly IAbilityRepository repo;
     private readonly ILogger<AbilityService> logger;

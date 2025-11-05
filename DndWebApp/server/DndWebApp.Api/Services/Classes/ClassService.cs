@@ -7,7 +7,7 @@ using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Classes;
 
-public partial class ClassService : IService<Class, ClassDto, ClassDto>
+public partial class ClassService : IService<Class, ClassDto>
 {
     private readonly IClassRepository repo;
     private readonly IClassLevelRepository levelRepo;

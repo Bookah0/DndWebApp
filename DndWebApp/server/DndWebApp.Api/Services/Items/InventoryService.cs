@@ -5,7 +5,7 @@ using DndWebApp.Api.Repositories.Items;
 using DndWebApp.Api.Services.Generic;
 namespace DndWebApp.Api.Services.Items;
 
-public class InventoryService : IService<Inventory, CreateInventoryDto, UpdateInventoryDto>
+public class InventoryService : IService<Inventory, CreateInventoryDto>
 {
     private readonly IInventoryRepository repo;
     private readonly IItemRepository itemRepo;

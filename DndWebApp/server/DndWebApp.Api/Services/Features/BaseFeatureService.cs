@@ -242,7 +242,7 @@ public abstract class BaseFeatureService<T> where T : AFeature
         await repo.UpdateAsync(feature);
     }
 
-    private static void RemoveChoice<T>(ICollection<T> collection, int choiceId) where T : class
+    private static void RemoveChoice<C>(ICollection<C> collection, int choiceId) where C : class
     {
         var choice = collection.FirstOrDefault(c => (c as dynamic).Id == choiceId)
             ?? throw new NullReferenceException($"Choice with id {choiceId} could not be found");

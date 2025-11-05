@@ -5,7 +5,7 @@ using DndWebApp.Api.Services.Generic;
 using Microsoft.EntityFrameworkCore;
 namespace DndWebApp.Api.Services.Generic;
 
-public class EfService<T> : IService<T, T, T>
+public class EfService<T> : IService<T, T>
 {
     private readonly IRepository<T> repo;
 

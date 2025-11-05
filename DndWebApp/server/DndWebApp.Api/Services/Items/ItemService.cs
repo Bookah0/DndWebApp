@@ -10,7 +10,7 @@ using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Items;
 
-public class ItemService : IService<Item, ItemDto, ItemDto>
+public class ItemService : IService<Item, ItemDto>
 {
     private readonly IItemRepository repo;
     private readonly ILogger<ItemService> logger;

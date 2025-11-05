@@ -7,7 +7,7 @@ using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services.Features;
 
-public class ClassFeatureService : BaseFeatureService<ClassFeature>, IService<ClassFeature, ClassFeatureDto, ClassFeatureDto>
+public class ClassFeatureService : BaseFeatureService<ClassFeature>, IService<ClassFeature, ClassFeatureDto>
 {
     private readonly IClassLevelRepository classLevelRepo;
 

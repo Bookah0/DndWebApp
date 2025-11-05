@@ -4,7 +4,7 @@ using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Util;
 namespace DndWebApp.Api.Services.Classes;
 
-public partial class ClassService : IService<Class, ClassDto, ClassDto>
+public partial class ClassService : IService<Class, ClassDto>
 {
     public async Task<ClassLevel> AddLevelToClassAsync(ClassLevelDto dto)
     {

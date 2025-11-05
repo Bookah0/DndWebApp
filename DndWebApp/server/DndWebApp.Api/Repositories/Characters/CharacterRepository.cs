@@ -1,7 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Repositories.Abilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Characters;
@@ -69,65 +68,6 @@ public class CharacterRepository : ICharacterRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<CharacterDto?> GetDtoAsync(int id)
-    {
-        return await context.Characters
-            .AsNoTracking()
-            .Where(x => x.Id == id)
-            .Select(r => new CharacterDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Level = r.Level,
-                RaceId = r.RaceId,
-                SubraceId = r.SubraceId,
-                ClassId = r.ClassId,
-                SubClassId = r.SubClassId,
-                BackgroundId = r.BackgroundId,
-                Experience = r.Experience,
-                PlayerName = r.PlayerName,
-                ProficiencyBonus = r.ProficiencyBonus,
-                MaxHP = r.CombatStats.MaxHP,
-                CurrentHP = r.CombatStats.CurrentHP,
-                TempHP = r.CombatStats.TempHP,
-                ArmorClass = r.CombatStats.ArmorClass,
-                Initiative = r.CombatStats.Initiative,
-                Speed = r.CombatStats.Speed,
-                MaxHitDice = r.CombatStats.MaxHitDice,
-                CurrentHitDice = r.CombatStats.CurrentHitDice
-            })
-            .FirstOrDefaultAsync();
-    }
-
-    public async Task<ICollection<CharacterDto>> GetAllDtosAsync()
-    {
-        return await context.Characters
-            .AsNoTracking()
-            .Select(r => new CharacterDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Level = r.Level,
-                RaceId = r.RaceId,
-                SubraceId = r.Subrace.Id,
-                ClassId = r.ClassId,
-                SubClassId = r.SubClassId,
-                BackgroundId = r.BackgroundId,
-                Experience = r.Experience,
-                PlayerName = r.PlayerName,
-                ProficiencyBonus = r.ProficiencyBonus,
-                MaxHP = r.CombatStats.MaxHP,
-                CurrentHP = r.CombatStats.CurrentHP,
-                TempHP = r.CombatStats.TempHP,
-                ArmorClass = r.CombatStats.ArmorClass,
-                Initiative = r.CombatStats.Initiative,
-                Speed = r.CombatStats.Speed,
-                MaxHitDice = r.CombatStats.MaxHitDice,
-                CurrentHitDice = r.CombatStats.CurrentHitDice
-            })
-            .ToListAsync();
-    }
-
     public async Task<Character?> GetWithAllDataAsync(int id)
     {
         return await context.Characters
@@ -135,20 +75,9 @@ public class CharacterRepository : ICharacterRepository
             .Include(f => f.SubClass)
             .Include(f => f.Background)
             .Include(f => f.Race)
-            .Include(f => f.AbilityScores)
-            .Include(f => f.CombatStats)
-            .Include(f => f.CurrentSpellSlots)
-            .Include(f => f.CharacterBuildData)
             .AsSplitQuery()
             .Include(f => f.OtherRaces)
             .Include(f => f.ReadySpells)
-            .Include(f => f.SavingThrows)
-            .Include(f => f.DamageAffinities)
-            .Include(f => f.SkillProficiencies)
-            .Include(f => f.WeaponProficiencies)
-            .Include(f => f.ArmorProficiencies)
-            .Include(f => f.ToolProficiencies)
-            .Include(f => f.Languages)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

@@ -14,10 +14,11 @@ using DndWebApp.Api.Services;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Services.Spells;
 using DndWebApp.Api.Services.Generic;
 using DndWebApp.Api.Services.Features;
 using DndWebApp.Api.Models.Features;
+using DndWebApp.Api.Models.DTOs.Features;
+using DndWebApp.Api.Repositories.Backgrounds;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,11 @@ builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 
 builder.Services.AddScoped<IClassLevelRepository, ClassLevelRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<IBackgroundRepository, BackgroundRepository>();
+builder.Services.AddScoped<IRaceRepository, RaceRepository>();
+builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
 
+builder.Services.AddScoped<IBackgroundFeatureRepository, BackgroundFeatureRepository>();
 builder.Services.AddScoped<IFeatRepository, FeatRepository>();
 builder.Services.AddScoped<ITraitRepository, TraitRepository>();
 builder.Services.AddScoped<IClassFeatureRepository, ClassFeatureRepository>();
@@ -43,10 +48,6 @@ builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IToolRepository, ToolRepository>();
-
-builder.Services.AddScoped<IRaceRepository, RaceRepository>();
-builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
-
 builder.Services.AddScoped<ISpellRepository, SpellRepository>();
 
 

@@ -23,40 +23,12 @@ public class SubraceRepository : ISubraceRepository
     public async Task UpdateAsync(Subrace updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Subrace entity) => await baseRepo.DeleteAsync(entity);    
 
-    public async Task<SubraceDto?> GetSubraceDtoAsync(int id)
-    {
-        return await context.SubRaces
-            .AsNoTracking()
-            .Select(r => new SubraceDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                GeneralDescription = r.RaceDescription.GeneralDescription,
-                ParentRaceId = r.ParentRaceId,
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
     public async Task<Subrace?> GetWithAllDataAsync(int id)
     {
         return await context.SubRaces
         .Include(r => r.Traits)
         .Include(r => r.ParentRace)
         .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<ICollection<SubraceDto>> GetAllSubraceDtosAsync()
-    {
-        return await context.SubRaces
-            .AsNoTracking()
-            .Select(r => new SubraceDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                GeneralDescription = r.RaceDescription.GeneralDescription,
-                ParentRaceId = r.ParentRaceId,
-            })
-            .ToListAsync();
     }
 
     public async Task<ICollection<Subrace>> GetAllSubracesByRaceAsync(int raceId)

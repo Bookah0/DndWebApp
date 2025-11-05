@@ -23,36 +23,6 @@ public class ClassRepository : IClassRepository
     public async Task UpdateAsync(Class updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Class entity) => await baseRepo.DeleteAsync(entity);
 
-    public async Task<ClassDto?> GetDtoAsync(int id)
-    {
-        return await context.Classes
-            .AsNoTracking()
-            .Select(c => new ClassDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description,
-                IsHomebrew = c.IsHomebrew,
-                HitDie = c.HitDie
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<ICollection<ClassDto>> GetAllDtosAsync()
-    {
-        return await context.Classes
-            .AsNoTracking()
-            .Select(c => new ClassDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Description = c.Description,
-                IsHomebrew = c.IsHomebrew,
-                HitDie = c.HitDie
-            })
-            .ToListAsync();
-    }
-
     public async Task<Class?> GetWithAllDataAsync(int id)
     {
         return await context.Classes

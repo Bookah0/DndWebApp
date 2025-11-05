@@ -1,6 +1,5 @@
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World.Enums;
@@ -14,24 +13,36 @@ public abstract class AFeature
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;
-    public ICollection<AbilityType> SavingThrows { get; set; } = [];
     public ICollection<AbilityValue> AbilityIncreases { get; set; } = [];
     public ICollection<Spell> SpellsGained { get; set; } = [];
+    public DamageAffinities DamageAffinitiesGained { get; set; } = new();
+    public Proficiencies ProficienciesGained { get; set; } = new();
+    public ProficiencyOptions ProficiencyOptions { get; set; } = new();
+}
 
-    // Damage affinity
+[Owned]
+public class DamageAffinities
+{
     public ICollection<DamageType> DamageResistanceGained { get; set; } = [];
     public ICollection<DamageType> DamageImmunityGained { get; set; } = [];
     public ICollection<DamageType> DamageWeaknessGained { get; set; } = [];
+}
 
-    // Proficiencies
+[Owned]
+public class Proficiencies
+{
+    public ICollection<AbilityType> SavingThrowProficiencies { get; set; } = [];
     public ICollection<SkillType> SkillProficiencies { get; set; } = [];
-    public ICollection<WeaponCategory> WeaponProficiencies { get; set; } = [];
+    public ICollection<WeaponCategory> WeaponCategoryProficiencies { get; set; } = [];
     public ICollection<WeaponType> WeaponTypeProficiencies { get; set; } = [];
     public ICollection<ArmorCategory> ArmorProficiencies { get; set; } = [];
     public ICollection<ToolCategory> ToolProficiencies { get; set; } = [];
     public ICollection<LanguageType> Languages { get; set; } = [];
+}
 
-    // Proficiency choices
+[Owned]
+public class ProficiencyOptions
+{
     public ICollection<AbilityIncreaseOption> AbilityIncreaseChoices { get; set; } = [];
     public ICollection<SkillProficiencyOption> SkillProficiencyChoices { get; set; } = [];
     public ICollection<ToolProficiencyOption> ToolProficiencyChoices { get; set; } = [];

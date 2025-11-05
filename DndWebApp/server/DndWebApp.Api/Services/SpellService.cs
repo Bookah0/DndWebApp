@@ -9,7 +9,7 @@ using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Services.Generic;
 
-namespace DndWebApp.Api.Services.Spells;
+namespace DndWebApp.Api.Services;
 
 public class SpellService : IService<Spell, SpellDto>
 {
@@ -33,8 +33,8 @@ public class SpellService : IService<Spell, SpellDto>
         ValidationUtil.HasContentOrThrow(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
-        var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);
-        var dtoSpellRange = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.Range);
+        var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetingDto.TargetType);
+        var dtoSpellRange = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.TargetingDto.Range);
         var dtoDuration = ValidationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
         var dtoCastTime = ValidationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
         var dtoSpellTypes = ValidationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
@@ -42,29 +42,45 @@ public class SpellService : IService<Spell, SpellDto>
 
         if (dto.Level <= 0)
             throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
-        if (dto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet)
-            throw new ArgumentOutOfRangeException($"Range value is set to {dto.RangeValue} but spell is not of range type SpellRange.Feet.");
-        if (dto.RangeValue % 5 != 0 && dtoSpellRange == SpellRange.Feet)
-            throw new ArgumentOutOfRangeException($"Range value is set to {dto.RangeValue}. It must be 5*n (feet).");
+        if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet)
+            throw new ArgumentOutOfRangeException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
+        if (dto.TargetingDto.RangeValue % 5 != 0 && dtoSpellRange == SpellRange.Feet)
+            throw new ArgumentOutOfRangeException($"Range value is set to {dto.TargetingDto.RangeValue}. It must be 5*n (feet).");
 
-        var factorySpell = SpellFactory.Create(
-            dto.Name,
-            dto.Description,
-            dto.IsHomebrew,
-            dto.Level,
-            dto.EffectsAtHigherLevels,
-            dto.ReactionCondition,
-            SpellFactory.CreateTargeting(dtoTargetType, dtoSpellRange, dto.RangeValue, dto.ShapeType, dto.ShapeWidth, dto.ShapeLength),
-            dto.DamageRoll,
-            dtoDamageTypes,
-            SpellFactory.CreateCastingRequirments(dto.Verbal, dto.Somatic, dto.Materials, dto.MaterialCost, dto.MaterialsConsumed),
-            dtoDuration,
-            dtoCastTime,
-            dtoSchool,
-            dtoSpellTypes
-        );
+        var spell = new Spell()
+        {
+            Name = dto.Name,
+            Description = dto.Description,
+            IsHomebrew = dto.IsHomebrew,
+            Level = dto.Level,
+            EffectsAtHigherLevels = dto.EffectsAtHigherLevels,
+            Duration = dtoDuration,
+            CastingTime = dtoCastTime,
+            ReactionCondition = dto.ReactionCondition,
+            MagicSchool = dtoSchool,
+            SpellTypes = dtoSpellTypes,
+            DamageRoll = dto.DamageRoll,
+            DamageTypes = dtoDamageTypes,
+            SpellTargeting = new SpellTargeting()
+            {
+                TargetType = dtoTargetType,
+                Range = dtoSpellRange,
+                RangeValue = dto.TargetingDto.RangeValue,
+                ShapeLength = dto.TargetingDto.ShapeLength,
+                ShapeType = dto.TargetingDto.ShapeType,
+                ShapeWidth = dto.TargetingDto.ShapeWidth
+            },
+            CastingRequirements = new CastingRequirements
+            {
+                Verbal = dto.CastRequirementsDto.Verbal,
+                Somatic = dto.CastRequirementsDto.Somatic,
+                Materials = dto.CastRequirementsDto.Materials,
+                MaterialCost = dto.CastRequirementsDto.MaterialCost,
+                MaterialsConsumed = dto.CastRequirementsDto.MaterialsConsumed
+            }
+        };
 
-        return await repo.CreateAsync(factorySpell);
+        return await repo.CreateAsync(spell);
     }
 
 
@@ -140,8 +156,8 @@ public class SpellService : IService<Spell, SpellDto>
         ValidationUtil.HasContentOrThrow(dto.MagicSchool);
 
         var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
-        var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetType);
-        var dtoSpellRange = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.Range);
+        var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetingDto.TargetType);
+        var dtoSpellRange = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.TargetingDto.Range);
         var dtoDuration = ValidationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
         var dtoCastTime = ValidationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
         var dtoSpellTypes = ValidationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
@@ -149,10 +165,10 @@ public class SpellService : IService<Spell, SpellDto>
 
         if (dto.Level <= 0)
             throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
-        if (dto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet)
-            throw new ArgumentOutOfRangeException($"Range value is set to {dto.RangeValue} but spell is not of range type SpellRange.Feet.");
-        if (dto.RangeValue % 5 != 0 && dtoSpellRange == SpellRange.Feet)
-            throw new ArgumentOutOfRangeException($"Range value is set to {dto.RangeValue}. It must be 5*n (feet).");
+        if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet)
+            throw new ArgumentOutOfRangeException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
+        if (dto.TargetingDto.RangeValue % 5 != 0 && dtoSpellRange == SpellRange.Feet)
+            throw new ArgumentOutOfRangeException($"Range value is set to {dto.TargetingDto.RangeValue}. It must be 5*n (feet).");
 
         spell.Name = dto.Name;
         spell.Description = dto.Description;
@@ -165,10 +181,21 @@ public class SpellService : IService<Spell, SpellDto>
         spell.MagicSchool = dtoSchool;
         spell.SpellTypes = dtoSpellTypes;
 
-        spell.SpellTargeting = SpellFactory.CreateTargeting(dtoTargetType, dtoSpellRange, dto.RangeValue, dto.ShapeType, dto.ShapeWidth, dto.ShapeLength);
         spell.DamageRoll = dto.DamageRoll;
         spell.DamageTypes = dtoDamageTypes;
-        spell.CastingRequirements = SpellFactory.CreateCastingRequirments(dto.Verbal, dto.Somatic, dto.Materials, dto.MaterialCost, dto.MaterialsConsumed);
+
+        spell.SpellTargeting.TargetType = dtoTargetType;
+        spell.SpellTargeting.Range = dtoSpellRange;
+        spell.SpellTargeting.RangeValue = dto.TargetingDto.RangeValue;
+        spell.SpellTargeting.ShapeLength = dto.TargetingDto.ShapeLength;
+        spell.SpellTargeting.ShapeType = dto.TargetingDto.ShapeType;
+        spell.SpellTargeting.ShapeWidth = dto.TargetingDto.ShapeWidth;
+
+        spell.CastingRequirements.Verbal = dto.CastRequirementsDto.Verbal;
+        spell.CastingRequirements.Somatic = dto.CastRequirementsDto.Somatic;
+        spell.CastingRequirements.Materials = dto.CastRequirementsDto.Materials;
+        spell.CastingRequirements.MaterialCost = dto.CastRequirementsDto.MaterialCost;
+        spell.CastingRequirements.MaterialsConsumed = dto.CastRequirementsDto.MaterialsConsumed;
 
         await repo.UpdateAsync(spell);
     }

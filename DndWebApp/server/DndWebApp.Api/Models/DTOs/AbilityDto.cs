@@ -9,3 +9,9 @@ public class AbilityDto
     public required string FullName { get; set; }
     public required string Description { get; set; }
 }
+
+public class AbilityValueDto
+{
+    public required int AbilityId { get; set; }
+    public required int Value { get; set; }
+}

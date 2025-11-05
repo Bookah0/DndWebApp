@@ -86,40 +86,6 @@ public class AbilityRepositoryTests
     }
 
     [Fact]
-    public async Task RetrieveAbilitiesAsPrimitiveDtos_ShouldHaveCorrectFieldValues()
-    {
-        var options = GetInMemoryOptions("PrimitiveAbility_AddRetrieveDB");
-        await using var context = new AppDbContext(options);
-        var baseAbilityRepo = new EfRepository<Ability>(context);
-        var repo = new AbilityRepository(context, baseAbilityRepo);
-
-        // Arrange
-        var dex = CreateTestAbility("Dexterity", "Dex", "Measures agility, reflexes, and balance.");
-        var con = CreateTestAbility("Constitution", "Con", "Measures health, stamina, and vital force.");
-
-        await repo.CreateAsync(dex);
-        await repo.CreateAsync(con);
-        // Act
-        var savedDex = await repo.GetDtoAsync(dex.Id);
-        var savedCon = await repo.GetDtoAsync(con.Id);
-
-        // Assert
-        Assert.NotNull(savedDex);
-        Assert.Equal("Dexterity", savedDex!.FullName);
-        Assert.Equal("Dex", savedDex.ShortName);
-
-        Assert.NotNull(savedCon);
-        Assert.Equal("Constitution", savedCon!.FullName);
-        Assert.Equal("Con", savedCon.ShortName);
-
-        var allAbilities = await repo.GetAllDtosAsync();
-        Assert.Equal(2, allAbilities.Count);
-        Assert.Contains(allAbilities, a => a.FullName == "Dexterity");
-        Assert.Contains(allAbilities, a => a.FullName == "Constitution");
-
-    }
-
-    [Fact]
     public async Task RetrieveWithSkills_ShouldHaveCorrectSkills()
     {
         var options = GetInMemoryOptions("AbilityWithSkill_GetAllDB");

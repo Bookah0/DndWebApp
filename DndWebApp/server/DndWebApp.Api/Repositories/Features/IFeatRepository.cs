@@ -1,42 +1,11 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
 
 namespace DndWebApp.Api.Repositories.Features;
 
 public interface IFeatRepository : IRepository<Feat>
 {
-    /// <summary>
-    /// Retrieves primitive data from a <see cref="Feat"/> by its <paramref name="id"/>,
-    /// excluding related navigation properties, for example:
-    /// <see cref="Feat.AbilityIncreaseChoices"/>, 
-    /// <see cref="Feat.SavingThrows"/>, and 
-    /// <see cref="Feat.DamageWeaknessGained"/>.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="Feat"/> to retrieve.</param>
-    /// <returns>
-    /// A read-only <see cref="FeatDto"/> containing primitive data,
-    /// or <c>null</c> if no <see cref="Feat"/> with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for simple display of a single <see cref="Feat"/>.
-    /// </remarks>
-    Task<FeatDto?> GetDtoAsync(int id);
-
-    /// <summary>
-    /// Retrieves primitive data for all <see cref="Feat"/> entities in the database,
-    /// excluding related navigation properties, for example:
-    /// <see cref="Feat.AbilityIncreaseChoices"/>, 
-    /// <see cref="Feat.SavingThrows"/>, and 
-    /// <see cref="Feat.DamageWeaknessGained"/>.
-    /// </summary>
-    /// <returns>
-    /// A collection of read-only <see cref="FeatDto"/> entities containing primitive data.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for search results and dropdowns.
-    /// </remarks>
-    Task<ICollection<FeatDto>> GetDtosAsync();
 
     /// <summary>
     /// Retrieves a <see cref="Feat"/> entity by its <paramref name="id"/>, 

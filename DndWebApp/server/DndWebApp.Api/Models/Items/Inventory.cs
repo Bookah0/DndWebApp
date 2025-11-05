@@ -18,7 +18,6 @@ public class Inventory
 [Owned]
 public class Currency
 {
-    public int Id { get; set; }
     public int Brass { get; set; }
     public int Copper { get; set; }
     public int Silver { get; set; }

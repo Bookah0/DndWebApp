@@ -7,38 +7,6 @@ namespace DndWebApp.Api.Repositories.Classes;
 public interface IClassRepository : IRepository<Class>
 {
     /// <summary>
-    /// Retrieves primitive data from a <see cref="Class"/> by its <paramref name="id"/>,
-    /// excluding related navigation properties:
-    /// <see cref="Class.ClassLevels"/>, 
-    /// <see cref="Class.StartingEquipment"/>, and 
-    /// <see cref="Class.StartingEquipmentOptions"/>.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="Class"/> to retrieve.</param>
-    /// <returns>
-    /// A read-only <see cref="ClassDto"/> containing primitive data,
-    /// or <c>null</c> if no <see cref="Class"/> with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for simple display of a single <see cref="Class"/>.
-    /// </remarks>
-    Task<ClassDto?> GetDtoAsync(int id);
-
-    /// <summary>
-    /// Retrieves primitive data for all <see cref="Class"/> entities in the database,
-    /// excluding related navigation properties:
-    /// <see cref="Class.ClassLevels"/>, 
-    /// <see cref="Class.StartingEquipment"/>, and 
-    /// <see cref="Class.StartingEquipmentOptions"/>.
-    /// </summary>
-    /// <returns>
-    /// A collection of read-only <see cref="ClassDto"/> entities containing primitive data.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for search results, dropdowns, or <see cref="Class"/> selection during character creation.
-    /// </remarks>
-    Task<ICollection<ClassDto>> GetAllDtosAsync();
-
-    /// <summary>
     /// Retrieves a <see cref="Class"/> entity by its <paramref name="id"/>, 
     /// including its related navigation properties: 
     /// <see cref="Class.ClassLevels"/>, 

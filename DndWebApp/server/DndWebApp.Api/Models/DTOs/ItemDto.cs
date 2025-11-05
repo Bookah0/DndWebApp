@@ -9,7 +9,7 @@ public class ItemDto
     public required string Description { get; set; }
     public required int Value { get; set; }
     public required string MainCategory { get; set; }
-    public List<string>? OtherCategories { get; set; }
+    public List<string> OtherCategories { get; set; } = [];
     public string? Rarity { get; set; }
     public bool? RequiresAttunement { get; set; }
     public int? Weight { get; set; }

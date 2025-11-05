@@ -17,14 +17,4 @@ public class SpellFilterDto
     public ICollection<string>? TargetTypes { get; set; }
     public ICollection<string>? Range { get; set; }
     public ICollection<string>? DamageTypes { get; set; }
-
-    /*
-    Not sure if these should be added:
-    public int? MinRangeValue { get; set; }
-    public int? MaxRangeValue { get; set; }
-    public bool? IsAoe { get; set; }
-    public bool? Verbal { get; set; }
-    public bool? Somatic { get; set; }
-    public bool? Materials { get; set; }
-    */
 }

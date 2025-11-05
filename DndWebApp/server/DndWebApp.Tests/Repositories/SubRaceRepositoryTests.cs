@@ -86,46 +86,6 @@ public class SubraceRepositoryTests
     }
 
     [Fact]
-    public async Task RetrieveSubracesAsPrimitiveDtos_ShouldHaveCorrectFieldValues()
-    {
-        var options = GetInMemoryOptions("PrimitiveSubrace_AddRetrieveDB");
-        await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Subrace>(context);
-        var repo = new SubraceRepository(context, efRepo);
-
-        // Arrange
-        var highElf = CreateTestSubrace("High Elf", null!, 1);
-        var woodElf = CreateTestSubrace("Wood Elf", null!, 2);
-        highElf.RaceDescription.GeneralDescription = "High elf description";
-        woodElf.RaceDescription.GeneralDescription = "Wood elf description";
-
-        // Act
-        await repo.CreateAsync(highElf);
-        await repo.CreateAsync(woodElf);
-
-        var primitiveHighElf = await repo.GetSubraceDtoAsync(1);
-        var primitiveWoodElf = await repo.GetSubraceDtoAsync(2);
-        var allRacesAsPrimitive = await repo.GetAllSubraceDtosAsync();
-
-        // Assert
-        Assert.NotNull(primitiveHighElf);
-        Assert.Equal("High Elf", primitiveHighElf!.Name);
-        Assert.Equal(1, primitiveHighElf.ParentRaceId);
-        Assert.NotNull(primitiveHighElf.GeneralDescription);
-        Assert.Equal("High elf description", primitiveHighElf.GeneralDescription);
-
-        Assert.NotNull(primitiveWoodElf);
-        Assert.Equal("Wood Elf", primitiveWoodElf!.Name);
-        Assert.Equal(2, primitiveWoodElf.ParentRaceId);
-        Assert.NotNull(primitiveWoodElf.GeneralDescription);
-        Assert.Equal("Wood elf description", primitiveWoodElf.GeneralDescription);
-
-        Assert.Equal(2, allRacesAsPrimitive.Count);
-        Assert.Contains(allRacesAsPrimitive, r => r.Name == "High Elf");
-        Assert.Contains(allRacesAsPrimitive, r => r.Name == "Wood Elf");
-    }
-
-    [Fact]
     public async Task AddAndRetrieveWithTraits_ShouldHaveCorrectTraits()
     {
         var options = GetInMemoryOptions("Subrace_RetrieveWithTraitsDB");

@@ -2,7 +2,6 @@ using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Models.World.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,20 +40,23 @@ public class Character
     // Abilities & Combat
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
+    public Proficiencies Proficiencies { get; set; } = new();
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public CurrentSpellSlots? CurrentSpellSlots { get; set; }
+}
 
-    // Proficiencies
+[Owned]
+public class Proficiencies
+{
     public ICollection<SaveThrowProficiency> SavingThrows { get; set; } = [];
     public ICollection<DamageAffinity> DamageAffinities { get; set; } = [];
     public ICollection<SkillProficiency> SkillProficiencies { get; set; } = [];
-    public ICollection<WeaponProficiency> WeaponProficiencies { get; set; } = [];
+    public ICollection<WeaponCategoryProficiency> WeaponProficiencies { get; set; } = [];
     public ICollection<ArmorProficiency> ArmorProficiencies { get; set; } = [];
     public ICollection<ToolProficiency> ToolProficiencies { get; set; } = [];
     public ICollection<LanguageProficiency> Languages { get; set; } = [];
     public int ProficiencyBonus { get; set; } = 2;
 }
-
 
 [Owned]
 public class CombatStats
@@ -101,12 +103,13 @@ public class CharacterBuilding
     public string Backstory { get; set; } = "";
     public string? CharacterPictureUrl { get; set; }
 }
+
 [Owned]
 public class SaveThrowProficiency
 {
     public required AbilityType AbilityType { get; set; }
     public int AbilityId { get; set; }
-    public required int CharacterFeatureId { get; set; }
+    public required int FeatureId { get; set; }
 }
 
 [Owned]
@@ -114,7 +117,7 @@ public class DamageAffinity
 {
     public required AffinityType AffinityType { get; set; }
     public required DamageType DamageType { get; set; }
-    public required int CharacterFeatureId { get; set; }
+    public required int FeatureId { get; set; }
 }
 
 [Owned]
@@ -123,28 +126,35 @@ public class SkillProficiency
     public required SkillType SkillType { get; set; }
     public int SkillId { get; set; }
     public required bool HasExpertise { get; set; }
-    public required int CharacterFeatureId { get; set; }
+    public required int FeatureId { get; set; }
 }
 
 [Owned]
-public class WeaponProficiency
+public class WeaponCategoryProficiency
 {
-    public required WeaponCategory WeaponTypes { get; set; }
-    public required int CharacterFeatureId { get; set; }
+    public required WeaponCategory WeaponCategory { get; set; }
+    public required int FeatureId { get; set; }
+}
+
+[Owned]
+public class WeaponTypeProficiency
+{
+    public required WeaponCategory WeaponType { get; set; }
+    public required int FeatureId { get; set; }
 }
 
 [Owned]
 public class ArmorProficiency
 {
     public required ArmorCategory ArmorType { get; set; }
-    public required int CharacterFeatureId { get; set; }
+    public required int FeatureId { get; set; }
 }
 
 [Owned]
 public class ToolProficiency
 {
     public required ToolCategory ToolType { get; set; }
-    public required int CharacterFeatureId { get; set; }
+    public required int FeatureId { get; set; }
 }
 
 [Owned]
@@ -152,5 +162,5 @@ public class LanguageProficiency
 {
     public required LanguageType LanguageType { get; set; }
     public int LanguageId { get; set; }
-    public required int CharacterFeatureId { get; set; }
+    public required int FeatureId { get; set; }
 }

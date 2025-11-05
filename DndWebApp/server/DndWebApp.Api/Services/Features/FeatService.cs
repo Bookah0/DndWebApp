@@ -1,4 +1,5 @@
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Features;
 using DndWebApp.Api.Repositories.Spells;

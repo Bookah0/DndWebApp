@@ -22,39 +22,11 @@ public class AbilityRepository : IAbilityRepository
     public async Task UpdateAsync(Ability updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Ability entity) => await baseRepo.DeleteAsync(entity);
 
-    public async Task<AbilityDto?> GetDtoAsync(int id)
-    {
-        return await context.AbilityScores
-            .AsNoTracking()
-            .Select(a => new AbilityDto
-            {
-                Id = a.Id,
-                FullName = a.FullName,
-                ShortName = a.ShortName,
-                Description = a.Description
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
     public async Task<Ability?> GetWithSkillsAsync(int id)
     {
         return await context.AbilityScores
             .Include(a => a.Skills)
             .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<ICollection<AbilityDto>> GetAllDtosAsync()
-    {
-        return await context.AbilityScores
-            .AsNoTracking()
-            .Select(a => new AbilityDto
-            {
-                Id = a.Id,
-                FullName = a.FullName,
-                ShortName = a.ShortName,
-                Description = a.Description
-            })
-            .ToListAsync();
     }
 
     public async Task<ICollection<Ability>> GetAllWithSkillsAsync()

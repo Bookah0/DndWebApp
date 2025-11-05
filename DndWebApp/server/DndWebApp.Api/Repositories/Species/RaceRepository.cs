@@ -23,38 +23,12 @@ public class RaceRepository : IRaceRepository
     public async Task UpdateAsync(Race updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
     public async Task DeleteAsync(Race entity) => await baseRepo.DeleteAsync(entity);    
 
-    public async Task<RaceDto?> GetRaceDtoAsync(int id)
-    {
-        return await context.Races
-            .AsNoTracking()
-            .Select(r => new RaceDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                GeneralDescription = r.RaceDescription.GeneralDescription,
-            })
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
     public async Task<Race?> GetWithAllDataAsync(int id)
     {
         return await context.Races
         .Include(r => r.Traits)
         .Include(r => r.SubRaces)
         .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<ICollection<RaceDto>> GetAllRaceDtosAsync()
-    {
-        return await context.Races
-            .AsNoTracking()
-            .Select(r => new RaceDto
-            {
-                Id = r.Id,
-                Name = r.Name,
-                GeneralDescription = r.RaceDescription.GeneralDescription,
-            })
-            .ToListAsync();
     }
 
     public async Task<ICollection<Race>> GetAllWithAllDataAsync()

@@ -10,4 +10,5 @@ public class ClassDto
     public required string HitDie { get; set; }
     public bool IsHomebrew { get; set; }
     public int? SpellcastingAbilityId { get; set; }
+    public List<int> ClassLevelIds { get; set; } = [];
 }

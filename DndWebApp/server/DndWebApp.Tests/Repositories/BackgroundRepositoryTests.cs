@@ -88,54 +88,6 @@ public class BackgroundRepositoryTests
     }
 
     [Fact]
-    public async Task GetPrimitiveDataAsync_ReturnsCorrectValues()
-    {
-        var options = GetInMemoryOptions("BG_PrimitiveDataDB");
-        await using var context = new AppDbContext(options);
-        var baseBgRepo = new EfRepository<Background>(context);
-        var repo = new BackgroundRepository(context, baseBgRepo);
-
-        // Arrange
-        var background = CreateTestBackground("Acolyte");
-        await repo.CreateAsync(background);
-        await context.SaveChangesAsync();
-
-        // Act
-        var primitive = await repo.GetDtoAsync(background.Id);
-
-        // Assert
-        Assert.NotNull(primitive);
-        Assert.Equal("Acolyte", primitive!.Name);
-        Assert.Equal("Acolyte description", primitive.Description);
-        Assert.False(primitive.IsHomebrew);
-    }
-
-    [Fact]
-    public async Task GetAllPrimitiveDataAsync_ReturnsAllBackgrounds()
-    {
-        var options = GetInMemoryOptions("BG_GetAllPrimitiveDB");
-        await using var context = new AppDbContext(options);
-        var baseBgRepo = new EfRepository<Background>(context);
-        var repo = new BackgroundRepository(context, baseBgRepo);
-
-        // Arrange
-        var bg1 = CreateTestBackground("Acolyte");
-        var bg2 = CreateTestBackground("Soldier");
-
-        await repo.CreateAsync(bg1);
-        await repo.CreateAsync(bg2);
-        await context.SaveChangesAsync();
-
-        // Act
-        var allPrimitives = await repo.GetAllDtosAsync();
-
-        // Assert
-        Assert.Equal(2, allPrimitives.Count);
-        Assert.Contains(allPrimitives, b => b.Name == "Acolyte");
-        Assert.Contains(allPrimitives, b => b.Name == "Soldier");
-    }
-
-    [Fact]
     public async Task GetWithAllDataAsync_IncludesAllNavigationProperties()
     {
         var options = GetInMemoryOptions("BG_GetWithAllDataDB");

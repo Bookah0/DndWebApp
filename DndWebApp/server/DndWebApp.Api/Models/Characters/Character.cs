@@ -18,8 +18,8 @@ public class Character
     // Races & Subraces
     public required Race Race { get; set; }
     public int RaceId { get; set; }
-    public required Subrace Subrace { get; set; }
-    public int SubraceId { get; set; }
+    public Subrace? Subrace { get; set; }
+    public int? SubraceId { get; set; }
     public ICollection<Race> OtherRaces { get; set; } = [];
 
     // Classes & Subclasses
@@ -29,9 +29,9 @@ public class Character
     public int? SubClassId { get; set; }
 
     // Background
-    public required Background Background { get; set; }
+    public Background? Background { get; set; }
     public int? BackgroundId { get; set; }
-    public CharacterBuilding CharacterBuildData { get; set; } = new();
+    public CharacterDescription CharacterDescription { get; set; } = new();
 
     // Inventory
     public required Inventory Inventory { get; set; }
@@ -47,7 +47,8 @@ public class Character
     public ICollection<SaveThrowProficiency> SavingThrows { get; set; } = [];
     public ICollection<DamageAffinity> DamageAffinities { get; set; } = [];
     public ICollection<SkillProficiency> SkillProficiencies { get; set; } = [];
-    public ICollection<WeaponCategoryProficiency> WeaponProficiencies { get; set; } = [];
+    public ICollection<WeaponCategoryProficiency> WeaponCategoryProficiencies { get; set; } = [];
+    public ICollection<WeaponTypeProficiency> WeaponTypeProficiencies { get; set; } = [];
     public ICollection<ArmorProficiency> ArmorProficiencies { get; set; } = [];
     public ICollection<ToolProficiency> ToolProficiencies { get; set; } = [];
     public ICollection<LanguageProficiency> Languages { get; set; } = [];
@@ -82,7 +83,7 @@ public class CurrentSpellSlots
 }
 
 [Owned]
-public class CharacterBuilding
+public class CharacterDescription
 {
     public int? AlignmentId { get; set; }
     public string PersonalityTraits { get; set; } = "";
@@ -135,7 +136,7 @@ public class WeaponCategoryProficiency
 [Owned]
 public class WeaponTypeProficiency
 {
-    public required WeaponCategory WeaponType { get; set; }
+    public required WeaponType WeaponType { get; set; }
     public required int FeatureId { get; set; }
 }
 

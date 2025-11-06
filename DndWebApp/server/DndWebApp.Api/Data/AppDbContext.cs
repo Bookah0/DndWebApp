@@ -80,7 +80,8 @@ public static class FeatureConfigurationExtensions
     {
         builder.OwnsMany(c => c.AbilityScores, s => s.ToJson("AbilityScores"));
         builder.OwnsMany(c => c.ArmorProficiencies, p => p.ToJson("ArmorProficiencies"));
-        builder.OwnsMany(c => c.WeaponProficiencies, p => p.ToJson("WeaponProficiencies"));
+        builder.OwnsMany(c => c.WeaponCategoryProficiencies, p => p.ToJson("WeaponCategoryProficiencies"));
+        builder.OwnsMany(c => c.WeaponTypeProficiencies, p => p.ToJson("WeaponTypeProficiencies"));
         builder.OwnsMany(c => c.DamageAffinities, p => p.ToJson("DamageAffinities"));
         builder.OwnsMany(c => c.Languages, p => p.ToJson("Languages"));
         builder.OwnsMany(c => c.SavingThrows, p => p.ToJson("SavingThrows"));

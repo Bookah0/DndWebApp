@@ -6,32 +6,28 @@ public class CharacterDto
     public required string Name { get; set; }
     public required int Level { get; set; }
     public required int RaceId { get; set; }
-    public required int SubraceId { get; set; }
+    public int? SubraceId { get; set; }
     public required int ClassId { get; set; }
     public required int? SubClassId { get; set; }
     public required int? BackgroundId { get; set; }
-    public required int? Experience { get; set; }
     public required string PlayerName { get; set; }
-    public required int ProficiencyBonus { get; set; }
-    public CombatStatsDto? CombatStats { get; set; }
+    public required AbilityScoresDto AbilityScores { get; set; }
     public CharacterDescriptionDto? CharacterDescription { get; set; }
-    public CharacterSpellSlotsDto? CharacterSpellSlots { get; set; }
 }
 
-public class CombatStatsDto
+public class AbilityScoresDto
 {
-    public required int MaxHP { get; set; }
-    public required int CurrentHP { get; set; }
-    public required int TempHP { get; set; }
-    public required int ArmorClass { get; set; }
-    public required int Initiative { get; set; }
-    public required int Speed { get; set; }
-    public required int MaxHitDice { get; set; }
-    public required int CurrentHitDice { get; set; }
+    public required int Strength { get; set; }
+    public required int Dexterity { get; set; }
+    public required int Constitution { get; set; }
+    public required int Intelligence { get; set; }
+    public required int Wisdom { get; set; }
+    public required int Charisma { get; set; }
 }
 
 public class CharacterDescriptionDto
 {
+    public int Id { get; set; }
     public required int? AlignmentId { get; set; }
     public required string PersonalityTraits { get; set; }
     public required string Ideals { get; set; }
@@ -46,18 +42,4 @@ public class CharacterDescriptionDto
     public required string AlliesAndOrganizations { get; set; }
     public required string Backstory { get; set; }
     public required string CharacterPictureUrl { get; set; }
-}
-
-public class CharacterSpellSlotsDto
-{
-    public required int CharacterId { get; set; }
-    public required int Lvl1 { get; set; }
-    public required int Lvl2 { get; set; }
-    public required int Lvl3 { get; set; }
-    public required int Lvl4 { get; set; }
-    public required int Lvl5 { get; set; }
-    public required int Lvl6 { get; set; }
-    public required int Lvl7 { get; set; }
-    public required int Lvl8 { get; set; }
-    public required int Lvl9 { get; set; }
 }

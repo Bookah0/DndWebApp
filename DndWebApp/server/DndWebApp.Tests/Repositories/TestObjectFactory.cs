@@ -84,14 +84,14 @@ public static class TestObjectFactory
                 Lvl1 = 4,
                 Lvl2 = 2
             },
-            CharacterBuildData = new CharacterBuilding
+            CharacterDescription = new CharacterDescription
             {
                 Eyes = "Brown"
             },
             SkillProficiencies = [new SkillProficiency() { SkillType = SkillType.Athletics, CharacterFeatureId = background.Id, HasExpertise = false }],
             Languages = [new() { LanguageType = LanguageType.Primordial, CharacterFeatureId = background.Id }],
             ToolProficiencies = [new() { ToolType = ToolCategory.HerbalismKit, CharacterFeatureId = background.Id }],
-            WeaponProficiencies = [new() { WeaponTypes = WeaponCategory.MartialRanged, CharacterFeatureId = background.Id }]
+            WeaponTypeProficiencies = [new() { WeaponTypes = WeaponCategory.MartialRanged, CharacterFeatureId = background.Id }]
         };
     }
 

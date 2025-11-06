@@ -93,9 +93,9 @@ public class CharacterRepositoryTests
 
         // Arrange
         var character = CreateTestCharacter();
-        character.CharacterBuildData.Age = 40;
-        character.CharacterBuildData.Hair = "Brown";
-        character.CharacterBuildData.Skin = "Hazel";
+        character.CharacterDescription.Age = 40;
+        character.CharacterDescription.Hair = "Brown";
+        character.CharacterDescription.Skin = "Hazel";
 
         await repo.CreateAsync(character);
         await context.SaveChangesAsync();

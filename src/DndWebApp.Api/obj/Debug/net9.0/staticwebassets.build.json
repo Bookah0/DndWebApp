@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "k0utVTwmnerv4DtlrWf1ESmdUIt3650lWopD1HiawP8=",
+  "Source": "DndWebApp.Api",
+  "BasePath": "_content/DndWebApp.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

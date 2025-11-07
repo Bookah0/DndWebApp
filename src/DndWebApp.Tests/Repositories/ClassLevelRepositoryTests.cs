@@ -61,22 +61,35 @@ public class ClassLevelRepositoryTests
     public async Task DeleteClassLevel_ShouldDelete()
     {
         var options = GetInMemoryOptions("ClassLevel_DeleteDB");
-        await using var context = new AppDbContext(options);
-        var classRepo = new ClassRepository(context);
-        var levelRepo = new ClassLevelRepository(context);
 
         // Arrange
-        var cls = CreateTestClass();
-        cls.ClassLevels.Add(CreateTestLevel(cls));
-        await classRepo.CreateAsync(cls);
+        await using (var context = new AppDbContext(options))
+        {
+            var classRepo = new ClassRepository(context);
 
+            var cls = CreateTestClass();
+            cls.ClassLevels.Add(CreateTestLevel(cls));
+            await classRepo.CreateAsync(cls);
+        };
+        
         // Act
-        var levelId = cls.ClassLevels.First().Id;
-        var toDelete = await levelRepo.GetByIdAsync(levelId);
-        await levelRepo.DeleteAsync(toDelete!);
+        await using (var context = new AppDbContext(options))
+        {    
+            var levelRepo = new ClassLevelRepository(context);
+
+            var toDelete = await levelRepo.GetByIdAsync(10);
+            await levelRepo.DeleteAsync(toDelete!);
+        };
+
 
         // Assert
-        Assert.Null(await levelRepo.GetByIdAsync(levelId));
+        await using (var context = new AppDbContext(options))
+        {    
+            var levelRepo = new ClassLevelRepository(context);
+
+            Assert.Null(await levelRepo.GetByIdAsync(10));
+        };
+        
     }
 
     [Fact]
@@ -93,8 +106,7 @@ public class ClassLevelRepositoryTests
         await classRepo.CreateAsync(cls);
 
         // Act
-        var levelId = cls.ClassLevels.First().Id;
-        var savedLevel = await levelRepo.GetByIdAsync(levelId);
+        var savedLevel = await levelRepo.GetWithFeaturesAsync(10);
 
         // Assert
         Assert.NotNull(savedLevel);
@@ -102,10 +114,9 @@ public class ClassLevelRepositoryTests
         Assert.Equal(3, savedLevel.ProficiencyBonus);
         Assert.Equal(cls.Id, savedLevel.ClassId);
 
-        Assert.NotNull(savedLevel.SpellSlotsAtLevel);
-        Assert.Equal(2, savedLevel.SpellSlotsAtLevel.Lvl1);
-        Assert.Equal(3, savedLevel.SpellSlotsAtLevel.SpellsKnown);
-        Assert.Equal(1, savedLevel.SpellSlotsAtLevel.CantripsKnown);
+        Assert.NotNull(savedLevel.SpellSlots);
+        Assert.Equal(1, savedLevel.SpellSlots[0]);
+        Assert.Equal(0, savedLevel.SpellSlots[4]);
 
         Assert.NotNull(savedLevel.ClassSpecificSlotsAtLevel);
         Assert.NotEmpty(savedLevel.ClassSpecificSlotsAtLevel);
@@ -144,10 +155,9 @@ public class ClassLevelRepositoryTests
         Assert.Equal(3, savedLevel.ProficiencyBonus);
         Assert.Equal(cls.Id, savedLevel.ClassId);
 
-        Assert.NotNull(savedLevel.SpellSlotsAtLevel);
-        Assert.Equal(2, savedLevel.SpellSlotsAtLevel.Lvl1);
-        Assert.Equal(3, savedLevel.SpellSlotsAtLevel.SpellsKnown);
-        Assert.Equal(1, savedLevel.SpellSlotsAtLevel.CantripsKnown);
+        Assert.NotNull(savedLevel.SpellSlots);
+        Assert.Equal(1, savedLevel.SpellSlots[0]);
+        Assert.Equal(0, savedLevel.SpellSlots[4]);
 
         Assert.NotNull(savedLevel.ClassSpecificSlotsAtLevel);
         Assert.NotEmpty(savedLevel.ClassSpecificSlotsAtLevel);

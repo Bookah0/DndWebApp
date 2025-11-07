@@ -36,26 +36,6 @@ public class CharacterRepository : ICharacterRepository
     public async Task<ICollection<Character>> GetAllAsync() => await context.Characters.ToListAsync();
     public async Task<Character?> GetByIdAsync(int id) => await context.Characters.FindAsync(id);
 
-    public async Task<CurrentSpellSlots?> GetCurrentSpellSlotsAsync(int id)
-    {
-        return await context.Characters
-            .AsNoTracking()
-            .Where(x => x.Id == id)
-            .Select(r => new CurrentSpellSlots
-            {
-                Lvl1 = r.CurrentSpellSlots!.Lvl1,
-                Lvl2 = r.CurrentSpellSlots.Lvl2,
-                Lvl3 = r.CurrentSpellSlots.Lvl3,
-                Lvl4 = r.CurrentSpellSlots.Lvl4,
-                Lvl5 = r.CurrentSpellSlots.Lvl5,
-                Lvl6 = r.CurrentSpellSlots.Lvl6,
-                Lvl7 = r.CurrentSpellSlots.Lvl7,
-                Lvl8 = r.CurrentSpellSlots.Lvl8,
-                Lvl9 = r.CurrentSpellSlots.Lvl9
-            })
-            .FirstOrDefaultAsync();
-    }
-
     public async Task<CharacterDescriptionDto?> GetCharacterDescriptionAsync(int id)
     {
         return await context.Characters
@@ -81,6 +61,20 @@ public class CharacterRepository : ICharacterRepository
             .FirstOrDefaultAsync();
     }
 
+    public async Task<Character?> GetWithCombatStatsAsync(int id)
+    {
+        return await context.Characters
+            .Include(c => c.CombatStats)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    public async Task<Character?> GetWithCharacterDescriptionAsync(int id)
+    {
+        return await context.Characters
+            .Include(c => c.CharacterDescription)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<Character?> GetWithAllDataAsync(int id)
     {
         return await context.Characters
@@ -88,7 +82,21 @@ public class CharacterRepository : ICharacterRepository
             .Include(f => f.SubClass)
             .Include(f => f.Background)
             .Include(f => f.Race)
+            .Include(f => f.Subrace)
+            .Include(c => c.Inventory)
+            .Include(c => c.CombatStats)
+            .Include(c => c.CharacterDescription)
             .AsSplitQuery()
+            .Include(c => c.CurrentClassSlots)
+            .Include(c => c.AbilityScores)
+            .Include(c => c.SavingThrows)
+            .Include(c => c.DamageAffinities)
+            .Include(c => c.SkillProficiencies)
+            .Include(c => c.WeaponCategoryProficiencies)
+            .Include(c => c.WeaponTypeProficiencies)
+            .Include(c => c.ArmorProficiencies)
+            .Include(c => c.ToolProficiencies)
+            .Include(c => c.Languages)
             .Include(f => f.OtherRaces)
             .Include(f => f.ReadySpells)
             .FirstOrDefaultAsync(x => x.Id == id);

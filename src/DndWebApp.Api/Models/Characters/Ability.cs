@@ -18,5 +18,6 @@ public class AbilityValue
 {
     public Ability? Ability { get; set; }
     public required int AbilityId { get; set; }
+    public AbilityType Type { get; set; }
     public required int Value { get; set; }
 }

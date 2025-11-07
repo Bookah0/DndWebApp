@@ -26,23 +26,24 @@ public class Character
     // Classes & Subclasses
     public required Class Class { get; set; }
     public required int ClassId { get; set; }
-    public Class? SubClass { get; set; }
+    public Subclass? SubClass { get; set; }
     public int? SubClassId { get; set; }
 
     // Background
     public Background? Background { get; set; }
-    public int? BackgroundId { get; set; }
+    public required int BackgroundId { get; set; }
     public CharacterDescription CharacterDescription { get; set; } = new();
 
     // Inventory
     public required Inventory Inventory { get; set; }
     public required int InventoryId { get; set; }
-    
+
     // Abilities & Combat
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
     public ICollection<Spell> ReadySpells { get; set; } = [];
-    public CurrentSpellSlots? CurrentSpellSlots { get; set; }
+    public int[]? CurrentSpellSlots { get; set; }
+    public ICollection<ClassSpecificSlot> CurrentClassSlots { get; set; } = [];
 
     // Proficiencies
     public ICollection<SaveThrowProficiency> SavingThrows { get; set; } = [];
@@ -67,20 +68,6 @@ public class CombatStats
     public required int Speed { get; set; }
     public required int MaxHitDice { get; set; }
     public required int CurrentHitDice { get; set; }
-}
-
-[Owned]
-public class CurrentSpellSlots
-{
-    public required int Lvl1 { get; set; }
-    public int Lvl2 { get; set; } = 0;
-    public int Lvl3 { get; set; } = 0;
-    public int Lvl4 { get; set; } = 0;
-    public int Lvl5 { get; set; } = 0;
-    public int Lvl6 { get; set; } = 0;
-    public int Lvl7 { get; set; } = 0;
-    public int Lvl8 { get; set; } = 0;
-    public int Lvl9 { get; set; } = 0;
 }
 
 [Owned]

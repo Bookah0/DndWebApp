@@ -50,6 +50,7 @@ public class BackgroundRepository : IBackgroundRepository
             .AsSplitQuery()
             .Include(b => b.Features)
             .Include(b => b.StartingItems)
+            .Include(b => b.StartingItemsOptions)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
@@ -59,6 +60,7 @@ public class BackgroundRepository : IBackgroundRepository
             .AsSplitQuery()
             .Include(b => b.Features)
             .Include(b => b.StartingItems)
+            .Include(b => b.StartingItemsOptions)
             .ToListAsync();
     }
 }

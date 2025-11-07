@@ -6,20 +6,6 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 public interface ICharacterRepository : IRepository<Character>
 {
     /// <summary>
-    /// Retrieves data representing the current spell slots from a <see cref="Character"/> by its <paramref name="id"/>,
-    /// excluding related navigation properties.
-    /// </summary>
-    /// <param name="id">The unique identifier of the <see cref="Character"/>.</param>
-    /// <returns>
-    /// A read-only <see cref="CharacterSpellSlotsDto"/> containing spellslot data,
-    /// or <c>null</c> if no <see cref="Character"/> with the specified <paramref name="id"/> exists.
-    /// </returns>
-    /// <remarks>
-    /// Typically used for displaying <see cref="Character"/>s current spellslots.
-    /// </remarks>
-    Task<CurrentSpellSlots?> GetCurrentSpellSlotsAsync(int id);
-
-    /// <summary>
     /// Retrieves data representing the description of a <see cref="Character"/> by its <paramref name="id"/>,
     /// excluding related navigation properties.
     /// </summary>
@@ -54,4 +40,6 @@ public interface ICharacterRepository : IRepository<Character>
     /// Typically used for setting a <see cref="Character"/> proficiencies and apply changes to the <see cref="Character"/>s stats.
     /// </remarks>
     Task<Character?> GetWithAllDataAsync(int id);
+    Task<Character?> GetWithCombatStatsAsync(int characterId);
+    Task<Character?> GetWithCharacterDescriptionAsync(int characterId);
 }

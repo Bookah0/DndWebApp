@@ -40,27 +40,23 @@ public class ClassRepository : IClassRepository
     public async Task<Class?> GetWithAllDataAsync(int id)
     {
         return await context.Classes
-            .AsSplitQuery()
-            .Include(b => b.ClassLevels)
-            .Include(b => b.StartingEquipment)
-            .Include(b => b.StartingEquipmentOptions)
-                .ThenInclude(o => o.OptionIds)
+            .Include(c => c.ClassLevels)
+            .Include(c => c.StartingEquipment)
+            .Include(c => c.StartingEquipmentOptions)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<Class?> GetWithClassLevelsAsync(int id)
     {
         return await context.Classes
-            .AsSplitQuery()
-            .Include(b => b.ClassLevels)
+            .Include(c => c.ClassLevels)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<Class?> GetWithClassLevelFeaturesAsync(int id)
     {
         return await context.Classes
-            .AsSplitQuery()
-            .Include(b => b.ClassLevels)
+            .Include(c => c.ClassLevels)
                 .ThenInclude(l => l.NewFeatures)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
@@ -68,21 +64,17 @@ public class ClassRepository : IClassRepository
     public async Task<Class?> GetWithStartingEquipmentAsync(int id)
     {
         return await context.Classes
-            .AsSplitQuery()
-            .Include(b => b.StartingEquipment)
-            .Include(b => b.StartingEquipmentOptions)
-                .ThenInclude(o => o.OptionIds)
+            .Include(c => c.StartingEquipment)
+            .Include(c => c.StartingEquipmentOptions)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<ICollection<Class>> GetAllWithAllDataAsync()
     {
         return await context.Classes
-            .AsSplitQuery()
-            .Include(b => b.ClassLevels)
-            .Include(b => b.StartingEquipment)
-            .Include(b => b.StartingEquipmentOptions)
-                .ThenInclude(o => o.OptionIds)
+            .Include(c => c.ClassLevels)
+            .Include(c => c.StartingEquipment)
+            .Include(c => c.StartingEquipmentOptions)
             .ToListAsync();
     }
 

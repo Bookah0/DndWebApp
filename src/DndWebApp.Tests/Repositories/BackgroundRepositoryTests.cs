@@ -73,7 +73,7 @@ public class BackgroundRepositoryTests
         await context.SaveChangesAsync();
 
         // Act
-        var savedBackground = await repo.GetByIdAsync(background.Id);
+        var savedBackground = await repo.GetWithAllDataAsync(background.Id);
 
         // Assert
         Assert.NotNull(savedBackground);

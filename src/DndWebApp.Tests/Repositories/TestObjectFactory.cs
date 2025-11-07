@@ -51,6 +51,7 @@ public static class TestObjectFactory
         background.StartingItems.Add(CreateTestItem("Vestments", ItemCategory.None));
         background.StartingItems.Add(CreateTestItem("Common Clothes", ItemCategory.None));
 
+        background.StartingItemsOptions.Add(new() { Description = "desc", ItemOptionIds = [1, 2] });
         return background;
     }
 
@@ -70,6 +71,7 @@ public static class TestObjectFactory
             Class = cls,
             ClassId = cls.Id,
             Background = background,
+            BackgroundId = background.Id,
             Inventory = new Inventory { Currency = new(), Id = 10, EquippedItems = [] },
             InventoryId = 10,
             AbilityScores = [new AbilityValue() { Ability = str, AbilityId = str.Id, Value = 10 }],
@@ -83,11 +85,7 @@ public static class TestObjectFactory
                 MaxHP = 10,
                 MaxHitDice = 1
             },
-            CurrentSpellSlots = new CurrentSpellSlots
-            {
-                Lvl1 = 4,
-                Lvl2 = 2
-            },
+            CurrentSpellSlots = [4, 2, 0, 0, 0, 0, 0, 0, 0],
             CharacterDescription = new CharacterDescription
             {
                 Eyes = "Brown"
@@ -99,9 +97,8 @@ public static class TestObjectFactory
         };
     }
 
-    internal static SpellSlotsAtLevel CreateTestSpellSlotsAtLevel() { return new() { CantripsKnown = 1, SpellsKnown = 3, Lvl1 = 2 }; }
+    internal static int[] CreateTestSpellSlotsAtLevel() { return [1, 0, 0, 0, 0, 0, 0, 0, 0]; }
     internal static List<ClassSpecificSlot> CreateClassSpecificSlots() { return [new ClassSpecificSlot { Name = "Bardic inspiration", Quantity = 2 }]; }
-
     internal static ClassFeature CreateTestClassFeature(int classLevelId)
     {
         return new()
@@ -122,7 +119,7 @@ public static class TestObjectFactory
             ClassId = cls.Id,
             ProficiencyBonus = 3,
             ClassSpecificSlotsAtLevel = CreateClassSpecificSlots(),
-            SpellSlotsAtLevel = CreateTestSpellSlotsAtLevel(),
+            SpellSlots = CreateTestSpellSlotsAtLevel(),
             NewFeatures = [CreateTestClassFeature(10)]
         };
         return classLvl;
@@ -135,7 +132,8 @@ public static class TestObjectFactory
             Name = name,
             Description = "Description",
             HitDie = "1d8",
-            ClassLevels = []
+            ClassLevels = [],
+            StartingEquipmentOptions = [new() { Description = "desc", OptionIds = [1, 2] }]
         };
         return cls;
     }

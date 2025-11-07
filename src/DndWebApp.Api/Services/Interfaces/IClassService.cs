@@ -11,10 +11,4 @@ public interface IClassService
     Task<Class> GetByIdAsync(int id);
     Task UpdateAsync(ClassDto dto);
     ICollection<Class> SortBy(ICollection<Class> classes, bool descending = false);
-    Task<ClassLevel> AddLevelToClassAsync(ClassLevelDto dto);
-    Task UpdateClassLevelAsync(ClassLevelDto dto);
-    Task DeleteClassLevelAsync(int id);
-    Task<ICollection<ClassLevel>> GetAllLevelsAsync(int classId);
-    Task<ClassLevel> GetLevelByIdAsync(int id);
-    ICollection<ClassLevel> SortLevels(ICollection<ClassLevel> levels, bool descending = false);
 }

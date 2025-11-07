@@ -94,7 +94,7 @@ public class SubraceRepositoryTests
 
         var highElf = CreateTestSubrace("High Elf", elfRace, elfRace.Id);
         var woodElf = CreateTestSubrace("Wood Elf", elfRace, elfRace.Id);
-        context.SubRaces.AddRange(highElf, woodElf);
+        context.Subraces.AddRange(highElf, woodElf);
 
         var trait1 = CreateTestTrait("Trait 1", "Desc 1", highElf, highElf.Id);
         var trait2 = CreateTestTrait("Trait 2", "Desc 2", highElf, highElf.Id);

@@ -22,10 +22,11 @@ public class AppDbContext : DbContext
     public DbSet<Language> Languages { get; set; }
 
     public DbSet<Class> Classes { get; set; }
+    public DbSet<Subclass> Subclasses { get; set; }
     public DbSet<ClassLevel> ClassLevels { get; set; }
 
     public DbSet<Race> Races { get; set; }
-    public DbSet<Subrace> SubRaces { get; set; }
+    public DbSet<Subrace> Subraces { get; set; }
     public DbSet<Background> Backgrounds { get; set; }
 
     public DbSet<Trait> Traits { get; set; }
@@ -40,6 +41,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Spell> Spells { get; set; }
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -47,15 +49,25 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<AFeature>().ConfigureProficiencyChoices();
         modelBuilder.Entity<Character>().ConfigureProficiencies();
 
-        modelBuilder.Entity<Class>().OwnsMany(c => c.StartingEquipmentOptions, o => o.ToJson("StartingEquipment"));
-
-        modelBuilder.Entity<Background>().OwnsMany(c => c.StartingItemsOptions, o => o.ToJson("StartingItemOptions"));
-
         modelBuilder.Entity<ClassLevel>()
             .OwnsMany(c => c.ClassSpecificSlotsAtLevel, slot =>
             {
+                slot.HasKey(s => s.Id);
                 slot.WithOwner().HasForeignKey("ClassLevelId");
-                slot.HasKey(s => s.Id); // Shadow keys messed with test
+            });
+
+        modelBuilder.Entity<Class>()
+            .OwnsMany(c => c.StartingEquipmentOptions, opt =>
+            {
+                opt.HasKey(o => o.Id);
+                opt.WithOwner().HasForeignKey("ClassId");
+            });
+
+        modelBuilder.Entity<Background>()
+            .OwnsMany(b => b.StartingItemsOptions, opt =>
+            {
+                opt.HasKey(o => o.Id);
+                opt.WithOwner().HasForeignKey("BackgroundId");
             });
 
         modelBuilder.Entity<Tool>().OwnsMany(t => t.Activities);
@@ -67,13 +79,54 @@ public static class FeatureConfigurationExtensions
 {
     public static void ConfigureProficiencyChoices(this EntityTypeBuilder<AFeature> builder)
     {
-        builder.OwnsMany(f => f.SkillProficiencyChoices, c => c.ToJson("SkillOptions"));
-        builder.OwnsMany(f => f.WeaponCategoryProficiencyChoices, c => c.ToJson("WeaponCategoryOptions"));
-        builder.OwnsMany(f => f.WeaponTypeProficiencyChoices, c => c.ToJson("WeaponTypeOptions"));
-        builder.OwnsMany(f => f.ToolProficiencyChoices, c => c.ToJson("ToolOptions"));
-        builder.OwnsMany(f => f.LanguageChoices, c => c.ToJson("LanguageOptions"));
-        builder.OwnsMany(f => f.ArmorProficiencyChoices, c => c.ToJson("ArmorOptions"));
-        builder.OwnsMany(f => f.AbilityIncreaseChoices, c => c.ToJson("AbilityOptions"));
+        builder.OwnsMany(c => c.ArmorProficiencyChoices, ch =>
+            {
+                ch.HasKey(f => f.Id);
+                ch.WithOwner().HasForeignKey("FeatureId");
+                ch.ToJson("ArmorOptions");
+            });
+
+        builder.OwnsMany(c => c.WeaponTypeProficiencyChoices, ch =>
+            {
+                ch.HasKey(f => f.Id);
+                ch.WithOwner().HasForeignKey("FeatureId");
+                ch.ToJson("WeaponTypeOptions");
+            });
+
+        builder.OwnsMany(c => c.WeaponCategoryProficiencyChoices, ch =>
+            {
+                ch.HasKey(f => f.Id);
+                ch.WithOwner().HasForeignKey("FeatureId");
+                ch.ToJson("WeaponCategoryOptions");
+            });
+
+        builder.OwnsMany(c => c.LanguageChoices, ch =>
+            {
+                ch.HasKey(f => f.Id);
+                ch.WithOwner().HasForeignKey("FeatureId");
+                ch.ToJson("LanguageOptions");
+            });
+
+        builder.OwnsMany(c => c.ToolProficiencyChoices, ch =>
+            {
+                ch.HasKey(f => f.Id);
+                ch.WithOwner().HasForeignKey("FeatureId");
+                ch.ToJson("ToolOptions");
+            });
+
+        builder.OwnsMany(c => c.AbilityIncreaseChoices, ch =>
+            {
+                ch.HasKey(f => f.Id);
+                ch.WithOwner().HasForeignKey("FeatureId");
+                ch.ToJson("AbilityOptions");
+            });
+
+        builder.OwnsMany(c => c.SkillProficiencyChoices, ch =>
+            {
+                ch.HasKey(f => f.Id);
+                ch.WithOwner().HasForeignKey("FeatureId");
+                ch.ToJson("SkillOptions");
+            });
     }
 
     public static void ConfigureProficiencies(this EntityTypeBuilder<Character> builder)

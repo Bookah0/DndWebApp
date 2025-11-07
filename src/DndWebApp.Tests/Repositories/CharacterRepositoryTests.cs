@@ -9,8 +9,6 @@ namespace DndWebApp.Tests.Repositories;
 
 public class CharacterRepositoryTests
 {
-
-
     [Fact]
     public async Task UpdateCharacter_ChangesPersist()
     {
@@ -24,7 +22,7 @@ public class CharacterRepositoryTests
 
         // Act
         character.Level += 1;
-        character.WeaponCategoryProficiencies.Add(new() { WeaponCategory = WeaponCategory.MartialMelee, FeatureId = character.Background.Id });
+        character.WeaponCategoryProficiencies.Add(new() { WeaponCategory = WeaponCategory.MartialMelee, FeatureId = character.Background!.Id });
         character.Languages.Clear();
 
         await repo.UpdateAsync(character);
@@ -49,7 +47,7 @@ public class CharacterRepositoryTests
 
         // Act
         await repo.DeleteAsync(character);
-        var deleted = await repo.GetWithAllDataAsync(character.Id);
+        var deleted = await repo.GetByIdAsync(character.Id);
 
         // Assert
         Assert.Null(deleted);
@@ -104,26 +102,5 @@ public class CharacterRepositoryTests
         Assert.Equal(40, desc!.Age);
         Assert.Equal("Brown", desc.Hair);
         Assert.Equal("Hazel", desc.Skin);
-    }
-
-    [Fact]
-    public async Task GetCurrentSpellSlotsAsync_ReturnsSpellSlots()
-    {
-        var options = GetInMemoryOptions("Character_SpellSlotsDB");
-        await using var context = new AppDbContext(options);
-        var repo = new CharacterRepository(context);
-
-        // Arrange
-        var character = CreateTestCharacter();
-        await repo.CreateAsync(character);
-        await context.SaveChangesAsync();
-
-        // Act
-        var slots = await repo.GetCurrentSpellSlotsAsync(character.Id);
-
-        // Assert
-        Assert.NotNull(slots);
-        Assert.Equal(4, slots!.Lvl1);
-        Assert.Equal(2, slots.Lvl2);
     }
 }

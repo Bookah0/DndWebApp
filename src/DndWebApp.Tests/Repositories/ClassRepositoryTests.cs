@@ -70,7 +70,7 @@ public class ClassRepositoryTests
 
         // Act
         await repo.CreateAsync(cls);
-        var savedClass = await repo.GetByIdAsync(cls.Id);
+        var savedClass = await repo.GetWithAllDataAsync(cls.Id);
 
         // Assert
         Assert.NotNull(savedClass);

@@ -22,6 +22,7 @@ public class Background
 [Owned]
 public class StartingItemOption
 {
+    public int Id { get; set; }
     public required string Description { get; set; }
     public required ICollection<int> ItemOptionIds { get; set; }
 }

@@ -2354,11 +2354,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\DndWebApp\\server\\DndWebApp.Tests\\DndWebApp.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Tests\\DndWebApp.Tests.csproj",
       "projectName": "DndWebApp.Tests",
-      "projectPath": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\DndWebApp\\server\\DndWebApp.Tests\\DndWebApp.Tests.csproj",
+      "projectPath": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Tests\\DndWebApp.Tests.csproj",
       "packagesPath": "C:\\Users\\Antho\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\DndWebApp\\server\\DndWebApp.Tests\\obj\\",
+      "outputPath": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2380,8 +2380,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\DndWebApp\\server\\DndWebApp.Api\\DndWebApp.Api.csproj": {
-              "projectPath": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\DndWebApp\\server\\DndWebApp.Api\\DndWebApp.Api.csproj"
+            "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Api\\DndWebApp.Api.csproj": {
+              "projectPath": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Api\\DndWebApp.Api.csproj"
             }
           }
         }

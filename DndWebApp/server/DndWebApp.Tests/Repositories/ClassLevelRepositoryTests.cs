@@ -1,8 +1,8 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Repositories.Implemented.Classes;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -19,8 +19,7 @@ public class ClassLevelRepositoryTests
         // Arrange
         await using (var context = new AppDbContext(options))
         {
-            var baseClassRepo = new EfRepository<Class>(context);
-            var classRepo = new ClassRepository(context, baseClassRepo);
+            var classRepo = new ClassRepository(context);
 
             var cls = CreateTestClass();
             cls.ClassLevels.Add(CreateTestLevel(cls));
@@ -32,8 +31,7 @@ public class ClassLevelRepositoryTests
         // Act
         await using (var context = new AppDbContext(options))
         {
-            var baseLevelRepo = new EfRepository<ClassLevel>(context);
-            var levelRepo = new ClassLevelRepository(context, baseLevelRepo);
+            var levelRepo = new ClassLevelRepository(context);
 
             var toUpdate = await levelRepo.GetWithAllDataAsync(levelId);
             Assert.NotNull(toUpdate);
@@ -47,8 +45,7 @@ public class ClassLevelRepositoryTests
         // Assert
         await using (var context = new AppDbContext(options))
         {
-            var baseLevelRepo = new EfRepository<ClassLevel>(context);
-            var levelRepo = new ClassLevelRepository(context, baseLevelRepo);
+            var levelRepo = new ClassLevelRepository(context);
 
             var updated = await levelRepo.GetWithAllDataAsync(levelId);
 
@@ -65,10 +62,8 @@ public class ClassLevelRepositoryTests
     {
         var options = GetInMemoryOptions("ClassLevel_DeleteDB");
         await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var baseClassLevelRepo = new EfRepository<ClassLevel>(context);
-        var classRepo = new ClassRepository(context, baseClassRepo);
-        var levelRepo = new ClassLevelRepository(context, baseClassLevelRepo);
+        var classRepo = new ClassRepository(context);
+        var levelRepo = new ClassLevelRepository(context);
 
         // Arrange
         var cls = CreateTestClass();
@@ -89,10 +84,8 @@ public class ClassLevelRepositoryTests
     {
         var options = GetInMemoryOptions("ClassLevel_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var baseClassLevelRepo = new EfRepository<ClassLevel>(context);
-        var classRepo = new ClassRepository(context, baseClassRepo);
-        var levelRepo = new ClassLevelRepository(context, baseClassLevelRepo);
+        var classRepo = new ClassRepository(context);
+        var levelRepo = new ClassLevelRepository(context);
 
         // Arrange
         var cls = CreateTestClass();
@@ -130,10 +123,8 @@ public class ClassLevelRepositoryTests
     {
         var options = GetInMemoryOptions("ClassLevel_GetWithAllDataDB");
         await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var baseClassLevelRepo = new EfRepository<ClassLevel>(context);
-        var classRepo = new ClassRepository(context, baseClassRepo);
-        var levelRepo = new ClassLevelRepository(context, baseClassLevelRepo);
+        var classRepo = new ClassRepository(context);
+        var levelRepo = new ClassLevelRepository(context);
 
         // Arrange
         var cls = CreateTestClass();

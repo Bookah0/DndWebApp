@@ -17,26 +17,17 @@ public static class TestObjectFactory
             Description = "A powerful spell",
             IsHomebrew = isHomebrew,
             ClassIds = [1],
-            ShapeLength = "0",
-            ShapeType = "0",
-            ShapeWidth = "0",
+            TargetingDto = new() { ShapeLength = "0", ShapeType = "0", ShapeWidth = "0", TargetType = "Creature", Range = "Feet", RangeValue = 10 },
             Level = 3,
             EffectsAtHigherLevels = "Extra effect",
             ReactionCondition = "",
             Duration = "Minute",
             CastingTime = "Action",
             MagicSchool = "Evocation",
-            TargetType = "Creature",
-            Range = "Feet",
-            RangeValue = 10,
             Types = ["Buff"],
             DamageRoll = "2d6",
             DamageTypes = ["Fire"],
-            Verbal = true,
-            Somatic = true,
-            Materials = "Bat guano",
-            MaterialCost = 5,
-            MaterialsConsumed = false
+            CastRequirementsDto = new() { Verbal = true, Somatic = true, Materials = "Bat guano", MaterialCost = 5, MaterialsConsumed = false }
         };
     }
 

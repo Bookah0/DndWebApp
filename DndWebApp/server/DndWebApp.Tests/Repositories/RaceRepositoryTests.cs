@@ -1,8 +1,7 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Repositories.Species;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Repositories.Implemented.Species;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -13,8 +12,7 @@ public class RaceRepositoryTests
     {
         var options = GetInMemoryOptions("Race_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Race>(context);
-        var repo = new RaceRepository(context, efRepo);
+        var repo = new RaceRepository(context);
 
         // Arrange
         var elfRace = CreateTestRace("Elf");
@@ -41,8 +39,7 @@ public class RaceRepositoryTests
     {
         var options = GetInMemoryOptions("Race_UpdateDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Race>(context);
-        var repo = new RaceRepository(context, efRepo);
+        var repo = new RaceRepository(context);
 
         // Arrange
         var race = CreateTestRace("Elf");
@@ -63,8 +60,7 @@ public class RaceRepositoryTests
     {
         var options = GetInMemoryOptions("Race_DeleteDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Race>(context);
-        var repo = new RaceRepository(context, efRepo);
+        var repo = new RaceRepository(context);
 
         // Arrange
         var race = CreateTestRace("Elf");
@@ -83,8 +79,7 @@ public class RaceRepositoryTests
     {
         var options = GetInMemoryOptions("GetAllWithCollections_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Race>(context);
-        var repo = new RaceRepository(context, efRepo);
+        var repo = new RaceRepository(context);
 
         // Arrange
         var elfRace = CreateTestRace("Elf");

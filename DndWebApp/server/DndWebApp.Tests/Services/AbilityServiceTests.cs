@@ -1,9 +1,9 @@
 using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Repositories.Abilities;
-using DndWebApp.Api.Services;
 using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
+using DndWebApp.Api.Repositories.Interfaces;
+using DndWebApp.Api.Services.Implemented;
 
 namespace DndWebApp.Tests.Services;
 

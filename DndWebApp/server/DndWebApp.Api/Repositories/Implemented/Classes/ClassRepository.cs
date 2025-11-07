@@ -1,7 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Repositories.Spells;
 using DndWebApp.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +10,31 @@ public class ClassRepository : IClassRepository
 {
     private readonly AppDbContext context;
 
-    public ClassRepository(AppDbContext context, IRepository<Class> baseRepo)
+    public ClassRepository(AppDbContext context)
     {
         this.context = context;
+    }
+
+    public async Task<Class> CreateAsync(Class entity)
+    {
+        await context.Classes.AddAsync(entity);
+        await context.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task<ICollection<Class>> GetAllAsync() => await context.Classes.ToListAsync();
+    public async Task<Class?> GetByIdAsync(int id) => await context.Classes.FirstOrDefaultAsync(c => c.Id == id);
+
+    public async Task DeleteAsync(Class entity)
+    {
+        context.Classes.Remove(entity);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Class updatedEntity)
+    {
+        context.Classes.Update(updatedEntity);
+        await context.SaveChangesAsync();
     }
 
     public async Task<Class?> GetWithAllDataAsync(int id)
@@ -65,8 +86,4 @@ public class ClassRepository : IClassRepository
             .ToListAsync();
     }
 
-    public Task<ICollection<Class>> FilterAllAsync(SpellFilter spellFilter)
-    {
-        throw new NotImplementedException();
-    }
 }

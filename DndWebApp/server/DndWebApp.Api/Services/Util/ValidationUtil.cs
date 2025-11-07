@@ -1,4 +1,5 @@
 using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Interfaces;
 
 namespace DndWebApp.Api.Services.Util;
 

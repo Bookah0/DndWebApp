@@ -2,12 +2,11 @@ using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
-using DndWebApp.Api.Repositories.Classes;
-using DndWebApp.Api.Repositories.Spells;
-using DndWebApp.Api.Services.Spells;
-
-using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
+using DndWebApp.Api.Repositories.Interfaces;
+using DndWebApp.Api.Services.Implemented;
+using Moq;
+using DndWebApp.Api.Services.Enums;
 
 namespace DndWebApp.Tests.Services;
 
@@ -23,13 +22,13 @@ public class SpellServiceTests
 
         var fireballDto = CreateTestSpellDto("Fireball");
         var lightningDto = CreateTestSpellDto("Lightning Bolt");
-        
+
         List<Spell> spells = [];
 
         repo.Setup(r => r.CreateAsync(It.IsAny<Spell>()))
             .ReturnsAsync((Spell s) =>
             {
-                s.Id = spells.Count+1;
+                s.Id = spells.Count + 1;
                 spells.Add(s);
                 return s;
             });
@@ -96,9 +95,9 @@ public class SpellServiceTests
 
         var fireballDto = CreateTestSpellDto("Mega Fireball", true);
         fireballDto.Level = 5;
-        fireballDto.RangeValue = 20;
+        fireballDto.TargetingDto.RangeValue = 20;
         fireballDto.DamageRoll = "4d6";
-        fireballDto.Materials = "Dragon scale";
+        fireballDto.CastRequirementsDto.Materials = "Dragon scale";
         fireballDto.Id = spells.First().Id;
 
         // Act
@@ -185,19 +184,19 @@ public class SpellServiceTests
         ];
 
         // Act & Assert
-        var sorted = service.SortBy(spells, SpellService.SpellSortFilter.Name);
+        var sorted = service.SortBy(spells, SpellSortFilter.Name);
         string[] expectedOrder = ["Flame Bolt", "Ice Bolt", "Lightning Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellService.SpellSortFilter.Name, true);
+        sorted = service.SortBy(spells, SpellSortFilter.Name, true);
         expectedOrder = ["Rock Bolt", "Lightning Bolt", "Ice Bolt", "Flame Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellService.SpellSortFilter.Level);
+        sorted = service.SortBy(spells, SpellSortFilter.Level);
         expectedOrder = ["Ice Bolt", "Lightning Bolt", "Flame Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellService.SpellSortFilter.Duration);
+        sorted = service.SortBy(spells, SpellSortFilter.Duration);
         expectedOrder = ["Lightning Bolt", "Flame Bolt", "Ice Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }

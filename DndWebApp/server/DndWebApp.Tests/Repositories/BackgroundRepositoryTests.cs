@@ -1,9 +1,9 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Repositories.Backgrounds;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Repositories.Implemented;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -14,8 +14,7 @@ public class BackgroundRepositoryTests
     {
         var options = GetInMemoryOptions("BG_UpdateDB");
         await using var context = new AppDbContext(options);
-        var baseBgRepo = new EfRepository<Background>(context);
-        var repo = new BackgroundRepository(context, baseBgRepo);
+        var repo = new BackgroundRepository(context);
 
         // Arrange
         var bg = CreateTestBackground("Outlander");
@@ -44,8 +43,7 @@ public class BackgroundRepositoryTests
     {
         var options = GetInMemoryOptions("BG_DeleteDB");
         await using var context = new AppDbContext(options);
-        var baseBgRepo = new EfRepository<Background>(context);
-        var repo = new BackgroundRepository(context, baseBgRepo);
+        var repo = new BackgroundRepository(context);
 
         // Arrange
         var bg = CreateTestBackground("Outlander");
@@ -66,8 +64,7 @@ public class BackgroundRepositoryTests
     {
         var options = GetInMemoryOptions("BG_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var baseBgRepo = new EfRepository<Background>(context);
-        var repo = new BackgroundRepository(context, baseBgRepo);
+        var repo = new BackgroundRepository(context);
 
         // Arrange
         var background = CreateTestBackground("Acolyte");
@@ -92,8 +89,7 @@ public class BackgroundRepositoryTests
     {
         var options = GetInMemoryOptions("BG_GetWithAllDataDB");
         await using var context = new AppDbContext(options);
-        var baseBgRepo = new EfRepository<Background>(context);
-        var repo = new BackgroundRepository(context, baseBgRepo);
+        var repo = new BackgroundRepository(context);
 
         // Arrange
         var background = CreateTestBackground("Acolyte");

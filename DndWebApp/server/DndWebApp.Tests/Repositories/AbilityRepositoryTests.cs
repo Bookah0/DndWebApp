@@ -1,8 +1,7 @@
 ﻿using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Repositories.Abilities;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Repositories.Implemented;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -13,8 +12,7 @@ public class AbilityRepositoryTests
     {
         var options = GetInMemoryOptions("Ability_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var baseAbilityRepo = new EfRepository<Ability>(context);
-        var repo = new AbilityRepository(context, baseAbilityRepo);
+        var repo = new AbilityRepository(context);
 
         // Arrange
         var str = CreateTestAbility("Strength", "Str", "Measures bodily power and force.");
@@ -42,8 +40,7 @@ public class AbilityRepositoryTests
     {
         var options = GetInMemoryOptions("Ability_UpdateDB");
         await using var context = new AppDbContext(options);
-        var baseAbilityRepo = new EfRepository<Ability>(context);
-        var repo = new AbilityRepository(context, baseAbilityRepo);
+        var repo = new AbilityRepository(context);
 
         // Arrange
         var ability = CreateTestAbility("Strength", "Str", "Measures bodily power and force.");
@@ -67,8 +64,7 @@ public class AbilityRepositoryTests
     {
         var options = GetInMemoryOptions("Ability_DeleteDB");
         await using var context = new AppDbContext(options);
-        var baseAbilityRepo = new EfRepository<Ability>(context);
-        var repo = new AbilityRepository(context, baseAbilityRepo);
+        var repo = new AbilityRepository(context);
 
         // Arrange
         var ability = CreateTestAbility("Strength", "Str", "Measures bodily power and force.");
@@ -90,8 +86,7 @@ public class AbilityRepositoryTests
     {
         var options = GetInMemoryOptions("AbilityWithSkill_GetAllDB");
         await using var context = new AppDbContext(options);
-        var baseAbilityRepo = new EfRepository<Ability>(context);
-        var repo = new AbilityRepository(context, baseAbilityRepo);
+        var repo = new AbilityRepository(context);
 
         // Arrange
         var sleightOfHand = CreateSkill("Sleight of Hand", 0);

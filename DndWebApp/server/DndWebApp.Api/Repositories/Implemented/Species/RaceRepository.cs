@@ -2,6 +2,7 @@ using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented.Species;
@@ -14,13 +15,28 @@ public class RaceRepository : IRaceRepository
     {
         this.context = context;
     }
+    public async Task<Race> CreateAsync(Race entity)
+    {
+        await context.Races.AddAsync(entity);
+        await context.SaveChangesAsync();
+        return entity;
+    }
 
-    public async Task<Race> CreateAsync(Race entity) => await baseRepo.CreateAsync(entity);
-    public async Task<Race?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
-    public async Task<ICollection<Race>> GetAllAsync() => await baseRepo.GetAllAsync();
-    public async Task UpdateAsync(Race updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
-    public async Task DeleteAsync(Race entity) => await baseRepo.DeleteAsync(entity);
+    public async Task<ICollection<Race>> GetAllAsync() => await context.Races.ToListAsync();
+    public async Task<Race?> GetByIdAsync(int id) => await context.Races.FirstOrDefaultAsync(r => r.Id == id);
 
+    public async Task DeleteAsync(Race entity)
+    {
+        context.Races.Remove(entity);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Race updatedEntity)
+    {
+        context.Races.Update(updatedEntity);
+        await context.SaveChangesAsync();
+    }
+    
     public async Task<Race?> GetWithTraitsAsync(int id)
     {
         return await context.Races

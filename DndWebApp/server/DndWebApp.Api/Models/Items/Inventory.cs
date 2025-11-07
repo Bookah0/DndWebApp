@@ -12,7 +12,7 @@ public class Inventory
     public int MaxWeight { get; set; }
     public int AttunedItems { get; set; } = 0;
     public ICollection<Item> StoredItems { get; set; } = [];
-    public required ICollection<EquipmentSlot> EquippedItems { get; set; }
+    public ICollection<EquipmentSlot> EquippedItems { get; set; } = [];
 }
 
 [Owned]

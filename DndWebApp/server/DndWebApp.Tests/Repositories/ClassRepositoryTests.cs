@@ -1,9 +1,9 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Repositories.Classes;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Repositories.Implemented.Classes;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -14,9 +14,8 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var repo = new ClassRepository(context, baseClassRepo);
-        
+        var repo = new ClassRepository(context);
+
         // Arrange
         var cls = CreateTestClass();
         await repo.CreateAsync(cls);
@@ -43,8 +42,7 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_DeleteDB");
         await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var repo = new ClassRepository(context, baseClassRepo);
+        var repo = new ClassRepository(context);
 
         // Arrange
         var cls = CreateTestClass();
@@ -57,15 +55,14 @@ public class ClassRepositoryTests
         // Assert
         Assert.Null(deleted);
     }
-    
+
     [Fact]
     public async Task AddAndRetrieveClass_WorksCorrectly()
     {
         var options = GetInMemoryOptions("Class_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var repo = new ClassRepository(context, baseClassRepo);
-        
+        var repo = new ClassRepository(context);
+
         // Arrange
         var cls = CreateTestClass();
         cls.StartingEquipment.Add(CreateTestItem("Thieves' Kit", ItemCategory.Tools));
@@ -91,9 +88,8 @@ public class ClassRepositoryTests
     {
         var options = GetInMemoryOptions("Class_GetWithAllDataDB");
         await using var context = new AppDbContext(options);
-        var baseClassRepo = new EfRepository<Class>(context);
-        var repo = new ClassRepository(context, baseClassRepo);
-        
+        var repo = new ClassRepository(context);
+
         // Arrange
         var cls = CreateTestClass();
         cls.StartingEquipment.Add(CreateTestItem("Thieves' Kit", ItemCategory.Tools));

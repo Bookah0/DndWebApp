@@ -1,10 +1,9 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Repositories.Features;
-using DndWebApp.Api.Repositories.Backgrounds;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Implemented.Features;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -15,16 +14,12 @@ public class FeatureRepositoryTests
     {
         var options = GetInMemoryOptions("Feature_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var baseTraitRepo = new EfRepository<Trait>(context);
-        var baseClassFeatureRepo = new EfRepository<ClassFeature>(context);
-        var baseBgFeatureRepo = new EfRepository<BackgroundFeature>(context);
-        var baseFeatRepo = new EfRepository<Feat>(context);
 
-        var traitRepo = new TraitRepository(context, baseTraitRepo);
-        var classFeatureRepo = new ClassFeatureRepository(context, baseClassFeatureRepo);
-        var featRepo = new FeatRepository(context, baseFeatRepo);
-        var bgFeatureRepo = new BackgroundFeatureRepository(context, baseBgFeatureRepo);
-        
+        var traitRepo = new TraitRepository(context);
+        var classFeatureRepo = new ClassFeatureRepository(context);
+        var featRepo = new FeatRepository(context);
+        var bgFeatureRepo = new BackgroundFeatureRepository(context);
+
         // Arrange
         var species = CreateTestRace("Elf");
         var cls = CreateTestClass();

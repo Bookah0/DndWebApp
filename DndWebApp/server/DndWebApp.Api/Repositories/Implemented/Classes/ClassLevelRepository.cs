@@ -9,19 +9,33 @@ namespace DndWebApp.Api.Repositories.Implemented.Classes;
 public class ClassLevelRepository : IClassLevelRepository
 {
     private readonly AppDbContext context;
-    private readonly IRepository<ClassLevel> baseRepo;
 
-    public ClassLevelRepository(AppDbContext context, IRepository<ClassLevel> baseRepo)
+    public ClassLevelRepository(AppDbContext context)
     {
         this.context = context;
-        this.baseRepo = baseRepo;
     }
 
-    public async Task<ClassLevel> CreateAsync(ClassLevel entity) => await baseRepo.CreateAsync(entity);
-    public async Task<ClassLevel?> GetByIdAsync(int id) => await baseRepo.GetByIdAsync(id);
-    public async Task<ICollection<ClassLevel>> GetAllAsync() => await baseRepo.GetAllAsync();
-    public async Task UpdateAsync(ClassLevel updatedEntity) => await baseRepo.UpdateAsync(updatedEntity);
-    public async Task DeleteAsync(ClassLevel entity) => await baseRepo.DeleteAsync(entity);
+    public async Task<ClassLevel> CreateAsync(ClassLevel entity)
+    {
+        await context.ClassLevels.AddAsync(entity);
+        await context.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task<ICollection<ClassLevel>> GetAllAsync() => await context.ClassLevels.ToListAsync();
+    public async Task<ClassLevel?> GetByIdAsync(int id) => await context.ClassLevels.FirstOrDefaultAsync(c => c.Id == id);
+
+    public async Task DeleteAsync(ClassLevel entity)
+    {
+        context.ClassLevels.Remove(entity);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(ClassLevel updatedEntity)
+    {
+        context.ClassLevels.Update(updatedEntity);
+        await context.SaveChangesAsync();
+    }
 
     public async Task<ClassLevel?> GetWithFeaturesByClassIdAsync(int classId, int level)
     {

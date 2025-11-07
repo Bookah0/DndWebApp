@@ -1,9 +1,11 @@
 using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Services;
+using DndWebApp.Api.Services.Implemented;
 using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
+using DndWebApp.Api.Repositories.Interfaces;
+using DndWebApp.Api.Services.Enums;
 
 namespace DndWebApp.Tests.Services;
 
@@ -21,7 +23,7 @@ public class LanguageServiceTests
         repo.Setup(r => r.CreateAsync(It.IsAny<Language>()))
             .ReturnsAsync((Language l) =>
             {
-                l.Id = languages.Count+1;
+                l.Id = languages.Count + 1;
                 languages.Add(l);
                 return l;
             });
@@ -101,7 +103,7 @@ public class LanguageServiceTests
         repo.Verify(r => r.DeleteAsync(It.IsAny<Language>()), Times.Exactly(1));
     }
 
-        [Fact]
+    [Fact]
     public async Task GetAndDeleteSkill_BadId_ShouldNotGetOrDelete()
     {
         // Arrange
@@ -121,13 +123,13 @@ public class LanguageServiceTests
         repo.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Exactly(2));
         repo.Verify(r => r.DeleteAsync(It.IsAny<Language>()), Times.Exactly(0));
     }
-    
+
     [Fact]
     public async Task UpdateLanguage_WorksCorrectly()
     {
         var repo = new Mock<IRepository<Language>>();
         var service = new LanguageService(repo.Object, NullLogger<LanguageService>.Instance);
-        
+
         List<Language> languages = [CreateTestLanguage("Auran", "Primordial", "Dwarvish")];
         var updateDto = CreateTestLanguageDto("Auran", "Elvish", "Espruar");
 
@@ -205,16 +207,16 @@ public class LanguageServiceTests
         ];
 
         // Act & Assert
-        var sorted = service.SortBy(languages, LanguageService.LanguageSortFilter.Name);
-        string[] expectedOrder =["Auran","Dethek","Elvish",];
+        var sorted = service.SortBy(languages, LanguageSortFilter.Name);
+        string[] expectedOrder = ["Auran", "Dethek", "Elvish",];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(languages, LanguageService.LanguageSortFilter.Family, true);
-        expectedOrder =["Primordial","Elven","Dwarvish",];
+        sorted = service.SortBy(languages, LanguageSortFilter.Family, true);
+        expectedOrder = ["Primordial", "Elven", "Dwarvish",];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Family));
 
-        sorted = service.SortBy(languages, LanguageService.LanguageSortFilter.Script);
-        expectedOrder =["Auran","Dethek","Elvish"];
+        sorted = service.SortBy(languages, LanguageSortFilter.Script);
+        expectedOrder = ["Auran", "Dethek", "Elvish"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }
 }

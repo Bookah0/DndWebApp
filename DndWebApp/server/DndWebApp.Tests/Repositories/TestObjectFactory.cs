@@ -10,6 +10,7 @@ using DndWebApp.Api.Models.World.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
+
 public static class TestObjectFactory
 {
     internal static DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
@@ -63,11 +64,14 @@ public static class TestObjectFactory
         {
             Name = "Arannis",
             Level = 5,
+            TimeCreated = DateTime.UtcNow,
             Race = new Race { Name = "Elf", Speed = 30 },
             Subrace = new Subrace { Name = "HighElf", ParentRace = null!, ParentRaceId = -1, Speed = 30 },
             Class = cls,
             ClassId = cls.Id,
             Background = background,
+            Inventory = new Inventory { Currency = new(), Id = 10, EquippedItems = [] },
+            InventoryId = 10,
             AbilityScores = [new AbilityValue() { Ability = str, AbilityId = str.Id, Value = 10 }],
             CombatStats = new CombatStats
             {
@@ -88,10 +92,10 @@ public static class TestObjectFactory
             {
                 Eyes = "Brown"
             },
-            SkillProficiencies = [new SkillProficiency() { SkillType = SkillType.Athletics, CharacterFeatureId = background.Id, HasExpertise = false }],
-            Languages = [new() { LanguageType = LanguageType.Primordial, CharacterFeatureId = background.Id }],
-            ToolProficiencies = [new() { ToolType = ToolCategory.HerbalismKit, CharacterFeatureId = background.Id }],
-            WeaponTypeProficiencies = [new() { WeaponTypes = WeaponCategory.MartialRanged, CharacterFeatureId = background.Id }]
+            SkillProficiencies = [new SkillProficiency() { SkillType = SkillType.Athletics, FeatureId = background.Id, HasExpertise = false }],
+            Languages = [new() { LanguageType = LanguageType.Primordial, FeatureId = background.Id }],
+            ToolProficiencies = [new() { ToolType = ToolCategory.HerbalismKit, FeatureId = background.Id }],
+            WeaponCategoryProficiencies = [new() { WeaponCategory = WeaponCategory.MartialRanged, FeatureId = background.Id }]
         };
     }
 
@@ -174,11 +178,9 @@ public static class TestObjectFactory
         var inv = new Inventory
         {
             Currency = new(),
-            EquippedArmor = CreateTestArmor()
+            StoredItems = [CreateTestArmor(), CreateTestWeapon(), CreateTestTool()]
         };
 
-        inv.Equipment.Add(CreateTestWeapon());
-        inv.Gear.Add(CreateTestTool());
         return inv;
     }
 

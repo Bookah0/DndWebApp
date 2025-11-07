@@ -1,8 +1,7 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Repositories.Species;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Repositories.Implemented.Species;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -13,8 +12,7 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("Subrace_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Subrace>(context);
-        var repo = new SubraceRepository(context, efRepo);
+        var repo = new SubraceRepository(context);
 
         // Arrange
         var elfRace = CreateTestRace("Elf");
@@ -48,8 +46,7 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("Subrace_DeleteDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Subrace>(context);
-        var repo = new SubraceRepository(context, efRepo);
+        var repo = new SubraceRepository(context);
 
         // Arrange
         var subrace = CreateTestSubrace("High Elf", null!, -1);
@@ -70,8 +67,7 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("Subrace_DeleteDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Subrace>(context);
-        var repo = new SubraceRepository(context, efRepo);
+        var repo = new SubraceRepository(context);
 
         // Arrange
         var subrace = CreateTestSubrace("High Elf", null!, -1);
@@ -90,8 +86,7 @@ public class SubraceRepositoryTests
     {
         var options = GetInMemoryOptions("Subrace_RetrieveWithTraitsDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Subrace>(context);
-        var repo = new SubraceRepository(context, efRepo);
+        var repo = new SubraceRepository(context);
 
         // Arrange
         var elfRace = CreateTestRace("Elf");

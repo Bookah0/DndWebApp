@@ -1,5 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items;
+using DndWebApp.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented.Items;
@@ -11,6 +12,28 @@ public class InventoryRepository : IInventoryRepository
     public InventoryRepository(AppDbContext context)
     {
         this.context = context;
+    }
+
+    public async Task<Inventory> CreateAsync(Inventory entity)
+    {
+        await context.Inventories.AddAsync(entity);
+        await context.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task<ICollection<Inventory>> GetAllAsync() => await context.Inventories.ToListAsync();
+    public async Task<Inventory?> GetByIdAsync(int id) => await context.Inventories.FirstOrDefaultAsync(i => i.Id == id);
+
+    public async Task DeleteAsync(Inventory entity)
+    {
+        context.Inventories.Remove(entity);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Inventory updatedEntity)
+    {
+        context.Inventories.Update(updatedEntity);
+        await context.SaveChangesAsync();
     }
 
     public async Task<Inventory?> GetWithCurrencyAsync(int id)

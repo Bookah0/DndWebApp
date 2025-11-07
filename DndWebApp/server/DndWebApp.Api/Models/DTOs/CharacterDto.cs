@@ -8,8 +8,8 @@ public class CharacterDto
     public required int RaceId { get; set; }
     public int? SubraceId { get; set; }
     public required int ClassId { get; set; }
-    public required int? SubClassId { get; set; }
-    public required int? BackgroundId { get; set; }
+    public int? SubClassId { get; set; }
+    public required int BackgroundId { get; set; }
     public required string PlayerName { get; set; }
     public required AbilityScoresDto AbilityScores { get; set; }
     public CharacterDescriptionDto? CharacterDescription { get; set; }

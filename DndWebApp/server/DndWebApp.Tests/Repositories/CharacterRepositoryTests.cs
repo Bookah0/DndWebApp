@@ -1,9 +1,9 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Repositories.Characters;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Repositories.Implemented;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -16,8 +16,7 @@ public class CharacterRepositoryTests
     {
         var options = GetInMemoryOptions("Character_UpdateDB");
         await using var context = new AppDbContext(options);
-        var baseCharacterRepo = new EfRepository<Character>(context);
-        var repo = new CharacterRepository(context, baseCharacterRepo);
+        var repo = new CharacterRepository(context);
 
         // Arrange
         var character = CreateTestCharacter();
@@ -25,16 +24,16 @@ public class CharacterRepositoryTests
 
         // Act
         character.Level += 1;
-        character.Proficiencies.WeaponProficiencies.Add(new() { WeaponCategory = WeaponCategory.MartialMelee, FeatureId = character.Background.Id });
-        character.Proficiencies.Languages.Clear();
+        character.WeaponCategoryProficiencies.Add(new() { WeaponCategory = WeaponCategory.MartialMelee, FeatureId = character.Background.Id });
+        character.Languages.Clear();
 
         await repo.UpdateAsync(character);
         var updated = await repo.GetWithAllDataAsync(character.Id);
 
         // Assert
         Assert.Equal(6, updated!.Level);
-        Assert.Contains(updated!.Proficiencies.WeaponProficiencies, p => p.WeaponCategory == WeaponCategory.MartialMelee);
-        Assert.Empty(updated!.Proficiencies.Languages);
+        Assert.Contains(updated!.WeaponCategoryProficiencies, p => p.WeaponCategory == WeaponCategory.MartialMelee);
+        Assert.Empty(updated!.Languages);
     }
 
     [Fact]
@@ -42,8 +41,7 @@ public class CharacterRepositoryTests
     {
         var options = GetInMemoryOptions("Character_DeleteDB");
         await using var context = new AppDbContext(options);
-        var baseCharacterRepo = new EfRepository<Character>(context);
-        var repo = new CharacterRepository(context, baseCharacterRepo);
+        var repo = new CharacterRepository(context);
 
         // Arrange
         var character = CreateTestCharacter();
@@ -62,8 +60,7 @@ public class CharacterRepositoryTests
     {
         var options = GetInMemoryOptions("Character_FullDataDB");
         await using var context = new AppDbContext(options);
-        var baseCharacterRepo = new EfRepository<Character>(context);
-        var repo = new CharacterRepository(context, baseCharacterRepo);
+        var repo = new CharacterRepository(context);
 
         // Arrange
         var character = CreateTestCharacter();
@@ -78,9 +75,9 @@ public class CharacterRepositoryTests
         Assert.Equal("Elf", result.Race!.Name);
         Assert.Equal("Ranger", result.Class!.Name);
         Assert.Equal(14, result.CombatStats!.ArmorClass);
-        Assert.NotEmpty(result.Proficiencies.SkillProficiencies);
-        Assert.Contains(result.Proficiencies.SkillProficiencies, s => s.SkillType == SkillType.Athletics);
-        Assert.NotEmpty(result.Proficiencies.Languages);
+        Assert.NotEmpty(result.SkillProficiencies);
+        Assert.Contains(result.SkillProficiencies, s => s.SkillType == SkillType.Athletics);
+        Assert.NotEmpty(result.Languages);
     }
 
     [Fact]
@@ -88,8 +85,7 @@ public class CharacterRepositoryTests
     {
         var options = GetInMemoryOptions("Character_DescriptionDB");
         await using var context = new AppDbContext(options);
-        var baseCharacterRepo = new EfRepository<Character>(context);
-        var repo = new CharacterRepository(context, baseCharacterRepo);
+        var repo = new CharacterRepository(context);
 
         // Arrange
         var character = CreateTestCharacter();
@@ -115,8 +111,7 @@ public class CharacterRepositoryTests
     {
         var options = GetInMemoryOptions("Character_SpellSlotsDB");
         await using var context = new AppDbContext(options);
-        var baseCharacterRepo = new EfRepository<Character>(context);
-        var repo = new CharacterRepository(context, baseCharacterRepo);
+        var repo = new CharacterRepository(context);
 
         // Arrange
         var character = CreateTestCharacter();

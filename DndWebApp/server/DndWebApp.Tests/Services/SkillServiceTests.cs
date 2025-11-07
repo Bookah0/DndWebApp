@@ -1,10 +1,10 @@
 using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Repositories.Abilities;
-using DndWebApp.Api.Repositories.Skills;
-using DndWebApp.Api.Services;
+using DndWebApp.Api.Services.Implemented;
 using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
+using DndWebApp.Api.Repositories.Interfaces;
+using DndWebApp.Api.Services.Enums;
 
 namespace DndWebApp.Tests.Services;
 
@@ -23,7 +23,7 @@ public class SkillServiceTests
         repo.Setup(r => r.CreateAsync(It.IsAny<Skill>()))
             .ReturnsAsync((Skill s) =>
             {
-                s.Id = skills.Count+1;
+                s.Id = skills.Count + 1;
                 skills.Add(s);
                 return s;
             });
@@ -31,9 +31,9 @@ public class SkillServiceTests
         repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => skills
             .FirstOrDefault(s => s.Id == id));
-        
+
         abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync((int id) => new Ability{ Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
+            .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
 
         repo.Setup(r => r.GetAllAsync())
             .ReturnsAsync(() => [.. skills]);
@@ -99,7 +99,7 @@ public class SkillServiceTests
 
         abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
-            
+
         // Act & Assert
         await service.DeleteAsync(1);
         await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(1));
@@ -122,7 +122,7 @@ public class SkillServiceTests
 
         abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
-            
+
         // Act & Assert
         await Assert.ThrowsAsync<NullReferenceException>(() => service.GetByIdAsync(-1));
         await Assert.ThrowsAsync<NullReferenceException>(() => service.DeleteAsync(-1));
@@ -138,7 +138,7 @@ public class SkillServiceTests
         var repo = new Mock<ISkillRepository>();
         var abilityRepo = new Mock<IAbilityRepository>();
         var service = new SkillService(repo.Object, abilityRepo.Object, NullLogger<SkillService>.Instance);
-        
+
         List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
         repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
@@ -154,10 +154,10 @@ public class SkillServiceTests
             });
 
         abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync((int id) => new Ability{ Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
+            .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
 
         var fishingDto = CreateTestSkillDto("Driving", 0, id: 1, isHomebrew: true);
-        
+
         // Act
         await service.UpdateAsync(fishingDto);
         var drivingSkill = await service.GetByIdAsync(1);
@@ -178,7 +178,7 @@ public class SkillServiceTests
         var repo = new Mock<ISkillRepository>();
         var abilityRepo = new Mock<IAbilityRepository>();
         var service = new SkillService(repo.Object, abilityRepo.Object, NullLogger<SkillService>.Instance);
-        
+
         List<Skill> skills = [CreateTestSkill("Fishing", 1)];
 
         repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
@@ -201,7 +201,7 @@ public class SkillServiceTests
             });
 
         abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync((int id) => new Ability{ Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
+            .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
 
         var badId = CreateTestSkillDto("Fishing", 2, id: -1);
         var noName = CreateTestSkillDto("", 2, id: 1);
@@ -237,15 +237,15 @@ public class SkillServiceTests
         ];
 
         // Act & Assert
-        var sorted = service.SortBy(skills, SkillService.SkillSorting.Name);
+        var sorted = service.SortBy(skills, SkillSortFilter.Name);
         string[] expectedOrder = ["Arcana", "Athletics", "History", "Insight", "Medicine", "Nature", "Religion"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(skills, SkillService.SkillSorting.Ability);
+        sorted = service.SortBy(skills, SkillSortFilter.Ability);
         expectedOrder = ["Athletics", "Arcana", "History", "Nature", "Religion", "Insight", "Medicine"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(skills, SkillService.SkillSorting.Ability, true);
+        sorted = service.SortBy(skills, SkillSortFilter.Ability, true);
         expectedOrder = ["Medicine", "Insight", "Religion", "Nature", "History", "Arcana", "Athletics"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }

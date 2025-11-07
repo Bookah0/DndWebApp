@@ -2,8 +2,7 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
-using DndWebApp.Api.Repositories.Spells;
-using DndWebApp.Api.Repositories;
+using DndWebApp.Api.Repositories.Implemented.Spells;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -14,8 +13,7 @@ public class SpellRepositoryTests
     {
         var options = GetInMemoryOptions("Spell_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Spell>(context);
-        var repo = new SpellRepository(context, efRepo);
+        var repo = new SpellRepository(context);
 
         // Arrange
         var magicMissile = CreateTestSpell("Magic Missile");
@@ -42,8 +40,7 @@ public class SpellRepositoryTests
     {
         var options = GetInMemoryOptions("Spell_UpdateDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Spell>(context);
-        var repo = new SpellRepository(context, efRepo);
+        var repo = new SpellRepository(context);
 
         // Arrange
         var spell = CreateTestSpell("Magic Missile");
@@ -65,8 +62,7 @@ public class SpellRepositoryTests
     {
         var options = GetInMemoryOptions("Spell_DeleteDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Spell>(context);
-        var repo = new SpellRepository(context, efRepo);
+        var repo = new SpellRepository(context);
 
         // Arrange
         var spell = CreateTestSpell("Magic Missile");
@@ -85,9 +81,8 @@ public class SpellRepositoryTests
     public async Task FilterAllAsync_WithMatchingFilter_ReturnsExpectedSpells()
     {
         var options = GetInMemoryOptions("Spell_FilterDB");
-        var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Spell>(context);
-        var repo = new SpellRepository(context, efRepo);
+        await using var context = new AppDbContext(options);
+        var repo = new SpellRepository(context);
 
         // Arrange
         var spells = new List<Spell>

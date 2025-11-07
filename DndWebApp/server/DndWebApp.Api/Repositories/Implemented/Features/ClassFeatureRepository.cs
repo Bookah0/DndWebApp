@@ -15,6 +15,28 @@ public class ClassFeatureRepository : IClassFeatureRepository
         this.context = context;
     }
 
+    public async Task<ClassFeature> CreateAsync(ClassFeature entity)
+    {
+        await context.ClassFeatures.AddAsync(entity);
+        await context.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task<ICollection<ClassFeature>> GetAllAsync() => await context.ClassFeatures.ToListAsync();
+    public async Task<ClassFeature?> GetByIdAsync(int id) => await context.ClassFeatures.FirstOrDefaultAsync(f => f.Id == id);
+
+    public async Task DeleteAsync(ClassFeature entity)
+    {
+        context.ClassFeatures.Remove(entity);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(ClassFeature updatedEntity)
+    {
+        context.ClassFeatures.Update(updatedEntity);
+        await context.SaveChangesAsync();
+    }
+
     public async Task<ClassFeature?> GetWithAllDataAsync(int id)
     {
         return await context.ClassFeatures

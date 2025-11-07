@@ -2,7 +2,7 @@ namespace DndWebApp.Api.Models.Characters.Enums;
 
 public enum AbilityType
 {
-    Strenght,
+    Strength,
     Dexterity,
     Intelligence,
     Wisdom,

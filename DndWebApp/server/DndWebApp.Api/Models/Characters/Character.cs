@@ -14,6 +14,7 @@ public class Character
     public required int Level { get; set; }
     public int? Experience { get; set; }
     public string PlayerName { get; set; } = "";
+    public required DateTime TimeCreated { get; set; }
 
     // Races & Subraces
     public required Race Race { get; set; }

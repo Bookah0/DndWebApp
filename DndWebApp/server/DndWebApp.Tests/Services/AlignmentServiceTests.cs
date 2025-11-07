@@ -1,9 +1,9 @@
 using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Services;
+using DndWebApp.Api.Services.Implemented;
 using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
+using DndWebApp.Api.Repositories.Interfaces;
 
 namespace DndWebApp.Tests.Services;
 
@@ -21,7 +21,7 @@ public class AlignmentServiceTests
         repo.Setup(r => r.CreateAsync(It.IsAny<Alignment>()))
             .ReturnsAsync((Alignment a) =>
             {
-                a.Id = alignments.Count+1;
+                a.Id = alignments.Count + 1;
                 alignments.Add(a);
                 return a;
             });
@@ -133,7 +133,7 @@ public class AlignmentServiceTests
         var service = new AlignmentService(repo.Object, NullLogger<AlignmentService>.Instance);
 
         List<Alignment> alignments = [CreateTestAlignment("Lawful Good", "LG", "A lawful good character", 1)];
-        
+
         var updateDto = CreateTestAlignmentDto("Lawful bad", "LB", "A lawful bad character", 1);
 
         repo.Setup(r => r.UpdateAsync(It.IsAny<Alignment>()))

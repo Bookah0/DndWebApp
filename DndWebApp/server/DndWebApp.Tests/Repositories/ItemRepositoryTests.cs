@@ -2,8 +2,8 @@ using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Repositories.Items;
+using DndWebApp.Api.Repositories.Implemented.Items;
+using DndWebApp.Api.Repositories.Implemented;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -14,14 +14,12 @@ public class ItemRepositoryTests
     {
         var options = GetInMemoryOptions("Items_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var efItemRepo = new EfRepository<Item>(context);
-        var efToolRepo = new EfRepository<Tool>(context);
+
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
-        
-        var itemRepo = new ItemRepository(context, efItemRepo);
-        var toolRepo = new ToolRepository(context, efToolRepo);
-        
+        var itemRepo = new ItemRepository(context);
+        var toolRepo = new ToolRepository(context);
+
         // Arrange
         var item = CreateTestItem();
         var armor = CreateTestArmor();
@@ -82,13 +80,10 @@ public class ItemRepositoryTests
         var weapon = CreateTestWeapon();
         var tool = CreateTestTool();
 
-        var efItemRepo = new EfRepository<Item>(context);
-        var efToolRepo = new EfRepository<Tool>(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
-        
-        var itemRepo = new ItemRepository(context, efItemRepo);
-        var toolRepo = new ToolRepository(context, efToolRepo);
+        var itemRepo = new ItemRepository(context);
+        var toolRepo = new ToolRepository(context);
 
         await itemRepo.CreateAsync(item);
         await armorRepo.CreateAsync(armor);
@@ -125,13 +120,10 @@ public class ItemRepositoryTests
     {
         var options = GetInMemoryOptions("Items_UpdateDB");
         await using var context = new AppDbContext(options);
-        var efItemRepo = new EfRepository<Item>(context);
-        var efToolRepo = new EfRepository<Tool>(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
-        
-        var itemRepo = new ItemRepository(context, efItemRepo);
-        var toolRepo = new ToolRepository(context, efToolRepo);
+        var itemRepo = new ItemRepository(context);
+        var toolRepo = new ToolRepository(context);
 
         // Arrange
         var item = CreateTestItem();
@@ -188,13 +180,10 @@ public class ItemRepositoryTests
     {
         var options = GetInMemoryOptions("Items_DeleteDB");
         await using var context = new AppDbContext(options);
-        var efItemRepo = new EfRepository<Item>(context);
-        var efToolRepo = new EfRepository<Tool>(context);
         var armorRepo = new EfRepository<Armor>(context);
         var weaponRepo = new EfRepository<Weapon>(context);
-        
-        var itemRepo = new ItemRepository(context, efItemRepo);
-        var toolRepo = new ToolRepository(context, efToolRepo);
+        var itemRepo = new ItemRepository(context);
+        var toolRepo = new ToolRepository(context);
 
         // Arrange
         var item = CreateTestItem();
@@ -230,8 +219,7 @@ public class ItemRepositoryTests
     {
         var options = GetInMemoryOptions("Tools_AddRetrieveDB");
         await using var context = new AppDbContext(options);
-        var efRepo = new EfRepository<Tool>(context);
-        var repo = new ToolRepository(context, efRepo);
+        var repo = new ToolRepository(context);
 
         // Arrange
         var tool = CreateTestTool();

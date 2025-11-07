@@ -1,24 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Repositories.Features;
-using DndWebApp.Api.Repositories.Characters;
-using DndWebApp.Api.Repositories.Abilities;
-using DndWebApp.Api.Repositories.Skills;
-using DndWebApp.Api.Repositories.Items;
-using DndWebApp.Api.Repositories.Species;
-using DndWebApp.Api.Repositories.Spells;
-using DndWebApp.Api.Repositories.Classes;
-using DndWebApp.Api.Services;
-using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Services.Generic;
-using DndWebApp.Api.Services.Features;
-using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Models.DTOs.Features;
-using DndWebApp.Api.Repositories.Backgrounds;
+using DndWebApp.Api.Repositories.Interfaces;
+using DndWebApp.Api.Repositories.Implemented;
+using DndWebApp.Api.Repositories.Implemented.Classes;
+using DndWebApp.Api.Repositories.Implemented.Species;
+using DndWebApp.Api.Repositories.Implemented.Features;
+using DndWebApp.Api.Repositories.Implemented.Items;
+using DndWebApp.Api.Repositories.Implemented.Spells;
+using DndWebApp.Api.Services.Interfaces;
+using DndWebApp.Api.Services.Implemented;
+using DndWebApp.Api.Services.Implemented.Features;
+using DndWebApp.Api.Services.Interfaces.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,16 +43,17 @@ builder.Services.AddScoped<IToolRepository, ToolRepository>();
 builder.Services.AddScoped<ISpellRepository, SpellRepository>();
 
 
-builder.Services.AddScoped<IService<Alignment, AlignmentDto>, AlignmentService>();
-builder.Services.AddScoped<IService<Skill, SkillDto>, SkillService>();
-builder.Services.AddScoped<IService<Ability, AbilityDto>, AbilityService>();
-builder.Services.AddScoped<IService<Language, LanguageDto>, LanguageService>();
-builder.Services.AddScoped<IService<Spell, SpellDto>, SpellService>();
+builder.Services.AddScoped<IAlignmentService, AlignmentService>();
+builder.Services.AddScoped<ISkillService, SkillService>();
+builder.Services.AddScoped<IAbilityService, AbilityService>();
+builder.Services.AddScoped<ILanguageService, LanguageService>();
+builder.Services.AddScoped<ISpellService, SpellService>();
 
-builder.Services.AddScoped<IService<BackgroundFeature, BackgroundFeatureDto>, BackgroundFeatureService>();
-builder.Services.AddScoped<IService<Feat, FeatDto>, FeatService>();
-builder.Services.AddScoped<IService<Trait, TraitDto>, TraitService>();
-builder.Services.AddScoped<IService<ClassFeature, ClassFeatureDto>, ClassFeatureService>();
+builder.Services.AddScoped(typeof(IBaseFeatureService<>), typeof(BaseFeatureService<>));
+builder.Services.AddScoped<IBackgroundFeatureService, BackgroundFeatureService>();
+builder.Services.AddScoped<IFeatService, FeatService>();
+builder.Services.AddScoped<ITraitService, TraitService>();
+builder.Services.AddScoped<IClassFeatureService, ClassFeatureService>();
 
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();

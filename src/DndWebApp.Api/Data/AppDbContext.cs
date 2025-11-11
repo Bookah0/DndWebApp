@@ -5,6 +5,7 @@ using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.World;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DndWebApp.Api.Data;
 
@@ -72,6 +73,13 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Tool>().OwnsMany(t => t.Activities);
         modelBuilder.Entity<Tool>().OwnsMany(t => t.Properties);
+
+        modelBuilder.Entity<Spell>()
+            .HasMany(s => s.Classes)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("SpellClasses"));
+
+        modelBuilder.Entity<Ability>().ToTable("AbilityScores");
     }
 }
 
@@ -79,59 +87,47 @@ public static class FeatureConfigurationExtensions
 {
     public static void ConfigureProficiencyChoices(this EntityTypeBuilder<AFeature> builder)
     {
+        builder.HasMany(f => f.AbilityIncreases)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("AbilityIncreases"));
+
+        builder.HasMany(f => f.AbilityIncreaseOptions)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("AbilityIncreaseOptions"));
+
+        builder.HasMany(c => c.SpellsGained)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("SpellsGained"));
+
         builder.OwnsMany(c => c.ArmorProficiencyChoices, ch =>
-            {
-                ch.HasKey(f => f.Id);
-                ch.WithOwner().HasForeignKey("FeatureId");
-                ch.ToJson("ArmorOptions");
-            });
+            ch.ToJson("ArmorOptions"));
 
         builder.OwnsMany(c => c.WeaponTypeProficiencyChoices, ch =>
-            {
-                ch.HasKey(f => f.Id);
-                ch.WithOwner().HasForeignKey("FeatureId");
-                ch.ToJson("WeaponTypeOptions");
-            });
+            ch.ToJson("WeaponTypeOptions"));
 
         builder.OwnsMany(c => c.WeaponCategoryProficiencyChoices, ch =>
-            {
-                ch.HasKey(f => f.Id);
-                ch.WithOwner().HasForeignKey("FeatureId");
-                ch.ToJson("WeaponCategoryOptions");
-            });
+                ch.ToJson("WeaponCategoryOptions"));
 
         builder.OwnsMany(c => c.LanguageChoices, ch =>
-            {
-                ch.HasKey(f => f.Id);
-                ch.WithOwner().HasForeignKey("FeatureId");
-                ch.ToJson("LanguageOptions");
-            });
+                ch.ToJson("LanguageOptions"));
 
         builder.OwnsMany(c => c.ToolProficiencyChoices, ch =>
-            {
-                ch.HasKey(f => f.Id);
-                ch.WithOwner().HasForeignKey("FeatureId");
-                ch.ToJson("ToolOptions");
-            });
-
-        builder.OwnsMany(c => c.AbilityIncreaseChoices, ch =>
-            {
-                ch.HasKey(f => f.Id);
-                ch.WithOwner().HasForeignKey("FeatureId");
-                ch.ToJson("AbilityOptions");
-            });
+                ch.ToJson("ToolOptions"));
 
         builder.OwnsMany(c => c.SkillProficiencyChoices, ch =>
-            {
-                ch.HasKey(f => f.Id);
-                ch.WithOwner().HasForeignKey("FeatureId");
-                ch.ToJson("SkillOptions");
-            });
+                ch.ToJson("SkillOptions"));
     }
 
     public static void ConfigureProficiencies(this EntityTypeBuilder<Character> builder)
     {
-        builder.OwnsMany(c => c.AbilityScores, s => s.ToJson("AbilityScores"));
+        builder.HasMany(c => c.ReadySpells)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("CharacterSpells"));
+        
+        builder.HasMany(c => c.AbilityScores)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("CharacterAbilityScores"));
+        
         builder.OwnsMany(c => c.ArmorProficiencies, p => p.ToJson("ArmorProficiencies"));
         builder.OwnsMany(c => c.WeaponCategoryProficiencies, p => p.ToJson("WeaponCategoryProficiencies"));
         builder.OwnsMany(c => c.WeaponTypeProficiencies, p => p.ToJson("WeaponTypeProficiencies"));

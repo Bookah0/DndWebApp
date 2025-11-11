@@ -11,7 +11,7 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
 {
     private readonly IRaceRepository raceRepo;
 
-    public TraitService(ITraitRepository repo, IRaceRepository raceRepo, ISpellRepository spellRepo, ILogger<BaseFeatureService<Trait>> logger) : base(repo, spellRepo, logger)
+    public TraitService(ITraitRepository repo, IRaceRepository raceRepo, ISpellRepository spellRepo, ILogger<TraitService> logger) : base(repo, spellRepo, logger)
     {
         this.raceRepo = raceRepo;
     }

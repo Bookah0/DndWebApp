@@ -10,7 +10,7 @@ namespace DndWebApp.Api.Services.Implemented.Features;
 public class FeatService : BaseFeatureService<Feat>, IFeatService
 {
 
-    public FeatService(IFeatRepository repo, ISpellRepository spellRepo, ILogger<BaseFeatureService<Feat>> logger) : base(repo, spellRepo, logger)
+    public FeatService(IFeatRepository repo, ISpellRepository spellRepo, ILogger<FeatService> logger) : base(repo, spellRepo, logger)
     {
     }
 

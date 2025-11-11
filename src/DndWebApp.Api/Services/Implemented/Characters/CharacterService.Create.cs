@@ -171,7 +171,8 @@ public partial class CharacterService : ICharacterService
             .Select(kvp => new AbilityValue
             {
                 AbilityId = repoDict[kvp.Key].Id,
-                Ability = repoDict[kvp.Key],
+                Type = ValidationUtil.ParseEnumOrThrow<AbilityType>(repoDict[kvp.Key].FullName),
+                //Ability = repoDict[kvp.Key],
                 Value = kvp.Value
             })];
         return abilityScores;

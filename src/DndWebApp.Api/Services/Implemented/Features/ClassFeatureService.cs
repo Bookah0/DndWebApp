@@ -11,7 +11,7 @@ public class ClassFeatureService : BaseFeatureService<ClassFeature>, IClassFeatu
 {
     private readonly IClassLevelRepository classLevelRepo;
 
-    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo, ISpellRepository spellRepo, ILogger<BaseFeatureService<ClassFeature>> logger) : base(repo, spellRepo, logger)
+    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo, ISpellRepository spellRepo, ILogger<ClassFeatureService> logger) : base(repo, spellRepo, logger)
     {
         this.classLevelRepo = classLevelRepo;
     }

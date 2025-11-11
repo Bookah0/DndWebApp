@@ -74,7 +74,7 @@ public static class TestObjectFactory
             BackgroundId = background.Id,
             Inventory = new Inventory { Currency = new(), Id = 10, EquippedItems = [] },
             InventoryId = 10,
-            AbilityScores = [new AbilityValue() { Ability = str, AbilityId = str.Id, Value = 10 }],
+            AbilityScores = [new AbilityValue() { Type = AbilityType.Strength, AbilityId = str.Id, Value = 10 }],
             CombatStats = new CombatStats
             {
                 ArmorClass = 14,

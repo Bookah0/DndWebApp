@@ -15,7 +15,7 @@ public interface IBaseFeatureService<T> where T : AFeature
     Task AddAbilityIncrease(int abilityId, int value, int featureId);
     Task RemoveAbilityIncrease(int abilityId, int featureId);
     Task AddAbilityIncreaseChoice(List<AbilityValue> options, string description, int featureId);
-    Task RemoveAbilityIncreaseChoice(int choiceId, int featureId);
+    Task ClearAbilityIncreaseOptions(int featureId);
     Task AddProficiencyChoice<TEnum>(List<TEnum> options, string description, int featureId) where TEnum : struct, Enum;
     Task RemoveProficiencyChoice<TEnum>(int choiceId, int featureId) where TEnum : struct, Enum;
 }

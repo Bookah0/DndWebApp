@@ -11,6 +11,8 @@ using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Implemented;
 using DndWebApp.Api.Services.Implemented.Features;
 using DndWebApp.Api.Services.Interfaces.Features;
+using DndWebApp.Api.Services.External.Interfaces;
+using DndWebApp.Api.Services.External.Implemented;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +24,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
 builder.Services.AddScoped<IAbilityRepository, AbilityRepository>();
+builder.Services.AddScoped<IAlignmentRepository, AlignmentRepository>();
 builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 
 builder.Services.AddScoped<IClassLevelRepository, ClassLevelRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
+
 builder.Services.AddScoped<IBackgroundRepository, BackgroundRepository>();
+
 builder.Services.AddScoped<IRaceRepository, RaceRepository>();
 builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
 
@@ -42,18 +47,20 @@ builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IToolRepository, ToolRepository>();
 builder.Services.AddScoped<ISpellRepository, SpellRepository>();
 
-
 builder.Services.AddScoped<IAlignmentService, AlignmentService>();
 builder.Services.AddScoped<ISkillService, SkillService>();
 builder.Services.AddScoped<IAbilityService, AbilityService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<ISpellService, SpellService>();
 
-builder.Services.AddScoped(typeof(IBaseFeatureService<>), typeof(BaseFeatureService<>));
+//builder.Services.AddScoped(typeof(IBaseFeatureService<>), typeof(BaseFeatureService<>));
 builder.Services.AddScoped<IBackgroundFeatureService, BackgroundFeatureService>();
 builder.Services.AddScoped<IFeatService, FeatService>();
 builder.Services.AddScoped<ITraitService, TraitService>();
 builder.Services.AddScoped<IClassFeatureService, ClassFeatureService>();
+
+builder.Services.AddScoped<IExternalAbilityService, ExternalAbilityService>();
+builder.Services.AddScoped<IExternalAlignmentService, ExternalAlignmentService>();
 
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
@@ -61,10 +68,16 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    // app.UseSwagger();
-    // app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+    
+    if (app.Environment.IsDevelopment())
+    {
+        var alignmentService = scope.ServiceProvider.GetRequiredService<IExternalAlignmentService>();
+        await alignmentService.FetchExternalAlignmentsAsync();
+    }
 }
 
 app.UseHttpsRedirection();

@@ -12,7 +12,7 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
 {
     private readonly IBackgroundRepository backgroundRepo;
 
-    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo, ISpellRepository spellRepo, ILogger<BaseFeatureService<BackgroundFeature>> logger) : base(repo, spellRepo, logger)
+    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo, ISpellRepository spellRepo, ILogger<BackgroundFeatureService> logger) : base(repo, spellRepo, logger)
     {
         this.backgroundRepo = backgroundRepo;
     }

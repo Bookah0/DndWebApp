@@ -35,12 +35,7 @@ public class AbilityRepository : IAbilityRepository
 
     public async Task<ICollection<Ability>> GetAllAsync() => await context.AbilityScores.ToListAsync();
     public async Task<Ability?> GetByIdAsync(int id) => await context.AbilityScores.FindAsync(id);
-
-    public async Task<Ability?> GetByNameAsync(string fullName)
-    {
-        return await context.AbilityScores
-            .FirstOrDefaultAsync(x => x.FullName == fullName);
-    }
+    public async Task<Ability?> GetByNameAsync(string fullName) => await context.AbilityScores.FirstOrDefaultAsync(x => x.FullName == fullName);
 
     public async Task<Ability?> GetWithSkillsAsync(int id)
     {

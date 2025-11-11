@@ -12,7 +12,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
 {
     internal readonly IRepository<T> repo;
     internal readonly ISpellRepository spellRepo;
-    internal readonly ILogger<BaseFeatureService<T>> logger;
+    internal readonly ILogger<IBaseFeatureService<T>> logger;
 
     public BaseFeatureService(IRepository<T> repo, ISpellRepository spellRepo, ILogger<BaseFeatureService<T>> logger)
     {
@@ -167,18 +167,16 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
 
-        feature.AbilityIncreaseChoices.Add(new() { Description = description, Options = options });
+        ((List<AbilityValue>)feature.AbilityIncreaseOptions).AddRange(options);
+        await repo.UpdateAsync(feature);
     }
 
-    public async Task RemoveAbilityIncreaseChoice(int choiceId, int featureId)
+    public async Task ClearAbilityIncreaseOptions(int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
 
-        var choice = feature.AbilityIncreaseChoices.FirstOrDefault(a => a.Id == choiceId)
-            ?? throw new NullReferenceException($"AbilityIncreaseChoice with id {choiceId} was not in the list of choices");
-
-        feature.AbilityIncreaseChoices.Remove(choice);
+        feature.AbilityIncreaseOptions.Clear();
         await repo.UpdateAsync(feature);
     }
 

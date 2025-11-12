@@ -44,7 +44,7 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
 
     public async Task<ICollection<Trait>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<Trait> GetByIdAsync(int id)

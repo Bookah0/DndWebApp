@@ -22,7 +22,7 @@ public class BackgroundFeatureRepository : IBackgroundFeatureRepository
         return entity;
     }
 
-    public async Task<ICollection<BackgroundFeature>> GetAllAsync() => await context.BackgroundFeatures.ToListAsync();
+    public async Task<ICollection<BackgroundFeature>> GetMiscellaneousItemsAsync() => await context.BackgroundFeatures.ToListAsync();
     public async Task<BackgroundFeature?> GetByIdAsync(int id) => await context.BackgroundFeatures.FirstOrDefaultAsync(f => f.Id == id);
 
     public async Task DeleteAsync(BackgroundFeature entity)

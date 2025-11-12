@@ -37,7 +37,7 @@ public class SpellServiceTests
             .ReturnsAsync((int id) => spells
             .FirstOrDefault(s => s.Id == id));
 
-        repo.Setup(r => r.GetAllAsync())
+        repo.Setup(r => r.GetMiscellaneousItemsAsync())
             .ReturnsAsync(() => [.. spells]);
 
         // Act

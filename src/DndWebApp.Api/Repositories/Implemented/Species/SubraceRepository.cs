@@ -34,7 +34,7 @@ public class SubraceRepository : ISubraceRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Subrace>> GetAllAsync() => await context.Subraces.ToListAsync();
+    public async Task<ICollection<Subrace>> GetMiscellaneousItemsAsync() => await context.Subraces.ToListAsync();
     public async Task<Subrace?> GetByIdAsync(int id) => await context.Subraces.FindAsync(id);
 
     public async Task<Subrace?> GetWithTraitsAsync(int id)

@@ -21,7 +21,7 @@ public class InventoryRepository : IInventoryRepository
         return entity;
     }
 
-    public async Task<ICollection<Inventory>> GetAllAsync() => await context.Inventories.ToListAsync();
+    public async Task<ICollection<Inventory>> GetMiscellaneousItemsAsync() => await context.Inventories.ToListAsync();
     public async Task<Inventory?> GetByIdAsync(int id) => await context.Inventories.FirstOrDefaultAsync(i => i.Id == id);
 
     public async Task DeleteAsync(Inventory entity)

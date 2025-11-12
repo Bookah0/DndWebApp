@@ -59,7 +59,7 @@ public class ArmorService
 
     public async Task<ICollection<Armor>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<Armor> GetByIdAsync(int id)

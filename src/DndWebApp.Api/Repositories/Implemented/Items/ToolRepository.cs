@@ -21,7 +21,7 @@ public class ToolRepository : IToolRepository
         return entity;
     }
 
-    public async Task<ICollection<Tool>> GetAllAsync() => await context.Tools.ToListAsync();
+    public async Task<ICollection<Tool>> GetMiscellaneousItemsAsync() => await context.Tools.ToListAsync();
     public async Task<Tool?> GetByIdAsync(int id) => await context.Tools.FirstOrDefaultAsync(t => t.Id == id);
 
     public async Task DeleteAsync(Tool entity)

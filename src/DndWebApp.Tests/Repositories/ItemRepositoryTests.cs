@@ -92,10 +92,10 @@ public class ItemRepositoryTests
         await context.SaveChangesAsync();
 
         // Act
-        var allItems = await itemRepo.GetAllAsync();
-        var allArmor = await armorRepo.GetAllAsync();
-        var allWeapons = await weaponRepo.GetAllAsync();
-        var allTools = await toolRepo.GetAllAsync();
+        var allItems = await itemRepo.GetMiscellaneousItemsAsync();
+        var allArmor = await armorRepo.GetMiscellaneousItemsAsync();
+        var allWeapons = await weaponRepo.GetMiscellaneousItemsAsync();
+        var allTools = await toolRepo.GetMiscellaneousItemsAsync();
 
         // Assert
         Assert.NotNull(allItems);

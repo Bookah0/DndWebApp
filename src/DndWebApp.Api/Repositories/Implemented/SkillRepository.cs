@@ -32,7 +32,7 @@ public class SkillRepository : ISkillRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Skill>> GetAllAsync() => await context.Skills.ToListAsync();
+    public async Task<ICollection<Skill>> GetMiscellaneousItemsAsync() => await context.Skills.ToListAsync();
     public async Task<Skill?> GetByIdAsync(int id) => await context.Skills.FindAsync(id);
     public async Task<Skill?> GetByNameAsync(string name) => await context.Skills.FirstOrDefaultAsync(l => l.Name == name);
 

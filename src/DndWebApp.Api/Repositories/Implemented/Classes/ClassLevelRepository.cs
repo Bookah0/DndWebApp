@@ -22,7 +22,7 @@ public class ClassLevelRepository : IClassLevelRepository
         return entity;
     }
 
-    public async Task<ICollection<ClassLevel>> GetAllAsync() => await context.ClassLevels.ToListAsync();
+    public async Task<ICollection<ClassLevel>> GetMiscellaneousItemsAsync() => await context.ClassLevels.ToListAsync();
     public async Task<ClassLevel?> GetByIdAsync(int id) => await context.ClassLevels.FirstOrDefaultAsync(c => c.Id == id);
 
     public async Task DeleteAsync(ClassLevel entity)

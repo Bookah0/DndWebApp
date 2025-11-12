@@ -279,7 +279,7 @@ public partial class CharacterService : ICharacterService
 
     private async Task<Dictionary<AbilityType, Ability>> GetAllAbilitiesAsDictionaryAsync()
     {
-        var abilities = await abilityRepo.GetAllAsync();
+        var abilities = await abilityRepo.GetMiscellaneousItemsAsync();
         if (abilities.Count == 0)
             throw new ArgumentException("Ability list can't be empty");
 
@@ -288,7 +288,7 @@ public partial class CharacterService : ICharacterService
 
     private async Task<Dictionary<LanguageType, Language>> GetAllLanguagesAsDictionaryAsync()
     {
-        var languages = await languageRepo.GetAllAsync();
+        var languages = await languageRepo.GetMiscellaneousItemsAsync();
         if (languages.Count == 0)
             throw new ArgumentException("Language list can't be empty");
 
@@ -297,7 +297,7 @@ public partial class CharacterService : ICharacterService
 
     private async Task<Dictionary<SkillType, Skill>> GetAllSkillsAsDictionaryAsync()
     {
-        var skills = await skillRepo.GetAllAsync();
+        var skills = await skillRepo.GetMiscellaneousItemsAsync();
         if (skills.Count == 0)
             throw new ArgumentException("Skill list can't be empty");
 

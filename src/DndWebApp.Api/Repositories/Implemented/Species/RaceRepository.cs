@@ -22,7 +22,7 @@ public class RaceRepository : IRaceRepository
         return entity;
     }
 
-    public async Task<ICollection<Race>> GetAllAsync() => await context.Races.ToListAsync();
+    public async Task<ICollection<Race>> GetMiscellaneousItemsAsync() => await context.Races.ToListAsync();
     public async Task<Race?> GetByIdAsync(int id) => await context.Races.FirstOrDefaultAsync(r => r.Id == id);
 
     public async Task DeleteAsync(Race entity)

@@ -155,7 +155,7 @@ public class InventoryService
 
     public async Task<ICollection<Inventory>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<Inventory> GetByIdAsync(int id)

@@ -51,9 +51,9 @@ public class ItemService
         await repo.DeleteAsync(item);
     }
 
-    public async Task<ICollection<Item>> GetAllAsync()
+    public async Task<ICollection<Item>> GetMiscellaneousItemsAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<Item> GetByIdAsync(int id)

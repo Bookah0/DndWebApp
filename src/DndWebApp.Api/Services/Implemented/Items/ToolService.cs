@@ -73,7 +73,7 @@ public class ToolService
 
     public async Task<ICollection<Tool>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<Tool> GetByIdAsync(int id)

@@ -45,7 +45,7 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
 
     public async Task<ICollection<BackgroundFeature>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<BackgroundFeature> GetByIdAsync(int id)

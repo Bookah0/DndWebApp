@@ -22,7 +22,7 @@ public class ClassFeatureRepository : IClassFeatureRepository
         return entity;
     }
 
-    public async Task<ICollection<ClassFeature>> GetAllAsync() => await context.ClassFeatures.ToListAsync();
+    public async Task<ICollection<ClassFeature>> GetMiscellaneousItemsAsync() => await context.ClassFeatures.ToListAsync();
     public async Task<ClassFeature?> GetByIdAsync(int id) => await context.ClassFeatures.FirstOrDefaultAsync(f => f.Id == id);
 
     public async Task DeleteAsync(ClassFeature entity)

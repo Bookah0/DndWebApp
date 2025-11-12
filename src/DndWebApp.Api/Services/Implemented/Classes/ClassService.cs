@@ -42,7 +42,7 @@ public partial class ClassService : IClassService
 
     public async Task<ICollection<Class>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<ICollection<ClassLevel>> GetAllLevelsAsync(int classId)

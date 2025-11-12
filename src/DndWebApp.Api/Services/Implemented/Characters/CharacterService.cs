@@ -52,7 +52,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task<ICollection<Character>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<Character> GetByIdAsync(int id)

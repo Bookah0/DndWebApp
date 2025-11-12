@@ -28,7 +28,7 @@ public class ItemRepository : IItemRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<ICollection<Item>> GetAllAsync()
+    public async Task<ICollection<Item>> GetMiscellaneousItemsAsync()
     {
         return await context.Items
             .Where(i => !(i is Weapon) && !(i is Armor) && !(i is Tool))

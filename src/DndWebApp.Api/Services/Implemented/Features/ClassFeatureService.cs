@@ -44,7 +44,7 @@ public class ClassFeatureService : BaseFeatureService<ClassFeature>, IClassFeatu
 
     public async Task<ICollection<ClassFeature>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<ClassFeature> GetByIdAsync(int id)

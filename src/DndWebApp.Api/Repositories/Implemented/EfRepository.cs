@@ -30,7 +30,7 @@ public class EfRepository<T> : IRepository<T> where T : class
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<T>> GetAllAsync() => await dbSet.ToListAsync();
+    public async Task<ICollection<T>> GetMiscellaneousItemsAsync() => await dbSet.ToListAsync();
     public async Task<T?> GetByIdAsync(int id) => await dbSet.FindAsync(id);
 
     public async Task UpdateAsync(T updatedEntity)

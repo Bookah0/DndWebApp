@@ -23,7 +23,7 @@ public class AbilityRepositoryTests
 
         // Act
         var savedStr = await repo.GetByIdAsync(str.Id);
-        var allAbilities = await repo.GetAllAsync();
+        var allAbilities = await repo.GetMiscellaneousItemsAsync();
 
         // Assert
         Assert.NotNull(savedStr);

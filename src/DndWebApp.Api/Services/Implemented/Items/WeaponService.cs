@@ -66,7 +66,7 @@ public class WeaponService
 
     public async Task<ICollection<Weapon>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<Weapon> GetByIdAsync(int id)

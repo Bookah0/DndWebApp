@@ -42,7 +42,7 @@ public class AlignmentService : IAlignmentService
 
     public async Task<ICollection<Alignment>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return await repo.GetMiscellaneousItemsAsync();
     }
 
     public async Task<Alignment> GetByIdAsync(int id)

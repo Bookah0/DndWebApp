@@ -27,7 +27,7 @@ public class AlignmentRepository : IAlignmentRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Alignment>> GetMiscellaneousItemsAsync() => await context.Alignments.ToListAsync();
+    public async Task<ICollection<Alignment>> GetAllAsync() => await context.Alignments.ToListAsync();
     public async Task<Alignment?> GetByIdAsync(int id) => await context.Alignments.FindAsync(id);
     public async Task<Alignment?> GetByNameAsync(string fullName) => await context.Alignments.FirstOrDefaultAsync(x => x.Name == fullName);
 

@@ -28,7 +28,7 @@ public class RaceRepositoryTests
         Assert.NotNull(savedElf);
         Assert.Equal("Elf", savedElf!.Name);
 
-        var allRaces = await repo.GetMiscellaneousItemsAsync();
+        var allRaces = await repo.GetAllAsync();
         Assert.Equal(2, allRaces.Count);
         Assert.Contains(allRaces, r => r.Name == "Elf");
         Assert.Contains(allRaces, r => r.Name == "Dwarf");

@@ -33,7 +33,7 @@ public class CharacterRepository : ICharacterRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Character>> GetMiscellaneousItemsAsync() => await context.Characters.ToListAsync();
+    public async Task<ICollection<Character>> GetAllAsync() => await context.Characters.ToListAsync();
     public async Task<Character?> GetByIdAsync(int id) => await context.Characters.FindAsync(id);
 
     public async Task<CharacterDescriptionDto?> GetCharacterDescriptionAsync(int id)

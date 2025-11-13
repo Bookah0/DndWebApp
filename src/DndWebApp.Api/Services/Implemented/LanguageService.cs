@@ -42,7 +42,7 @@ public class LanguageService : ILanguageService
 
     public async Task<ICollection<Language>> GetAllAsync()
     {
-        return await repo.GetMiscellaneousItemsAsync();
+        return await repo.GetAllAsync();
     }
 
     public async Task<Language> GetByIdAsync(int id)

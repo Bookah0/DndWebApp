@@ -30,7 +30,7 @@ public class AbilityServiceTests
             .ReturnsAsync((int id) => abilities
             .FirstOrDefault(a => a.Id == id));
 
-        repo.Setup(r => r.GetMiscellaneousItemsAsync())
+        repo.Setup(r => r.GetAllAsync())
             .ReturnsAsync(() => [.. abilities]);
 
         // Act

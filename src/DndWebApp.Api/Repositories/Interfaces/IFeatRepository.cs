@@ -8,4 +8,5 @@ public interface IFeatRepository : IRepository<Feat>
 {
     Task<Feat?> GetWithAllDataAsync(int id);
     Task<ICollection<Feat>> GetAllWithAllDataAsync();
+    Task<Feat?> GetByNameAsync(string name);
 }

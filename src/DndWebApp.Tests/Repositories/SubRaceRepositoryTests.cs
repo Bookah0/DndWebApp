@@ -35,7 +35,7 @@ public class SubraceRepositoryTests
         Assert.Equal("Wood Elf", savedWoodElf!.Name);
         Assert.Equal(elfRace.Id, savedWoodElf.ParentRaceId);
 
-        var allSubraces = await repo.GetMiscellaneousItemsAsync();
+        var allSubraces = await repo.GetAllAsync();
         Assert.Equal(2, allSubraces.Count);
         Assert.Contains(allSubraces, s => s.Name == "High Elf");
         Assert.Contains(allSubraces, s => s.Name == "Wood Elf");
@@ -106,7 +106,7 @@ public class SubraceRepositoryTests
         // Act
         var fetchedHighElf = await repo.GetWithAllDataAsync(highElf.Id);
         var fetchedWoodElf = await repo.GetWithAllDataAsync(woodElf.Id);
-        var allSubraces = await repo.GetMiscellaneousItemsAsync();
+        var allSubraces = await repo.GetAllAsync();
 
         // Assert
         Assert.NotNull(fetchedHighElf);

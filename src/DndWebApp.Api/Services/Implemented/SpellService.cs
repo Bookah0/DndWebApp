@@ -92,7 +92,7 @@ public class SpellService : ISpellService
 
     public async Task<ICollection<Spell>> GetAllAsync()
     {
-        return await repo.GetMiscellaneousItemsAsync();
+        return await repo.GetAllAsync();
     }
 
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto)

@@ -22,7 +22,7 @@ public class SubclassRepository : ISubclassRepository
         return entity;
     }
 
-    public async Task<ICollection<Subclass>> GetMiscellaneousItemsAsync() => await context.Subclasses.ToListAsync();
+    public async Task<ICollection<Subclass>> GetAllAsync() => await context.Subclasses.ToListAsync();
     public async Task<Subclass?> GetByIdAsync(int id) => await context.Subclasses.FirstOrDefaultAsync(c => c.Id == id);
 
     public async Task DeleteAsync(Subclass entity)

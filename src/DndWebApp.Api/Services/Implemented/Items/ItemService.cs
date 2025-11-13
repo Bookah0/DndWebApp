@@ -53,7 +53,7 @@ public class ItemService
 
     public async Task<ICollection<Item>> GetMiscellaneousItemsAsync()
     {
-        return await repo.GetMiscellaneousItemsAsync();
+        return await repo.GetAllAsync();
     }
 
     public async Task<Item> GetByIdAsync(int id)

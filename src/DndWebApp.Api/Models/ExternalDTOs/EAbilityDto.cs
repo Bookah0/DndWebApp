@@ -1,14 +1,19 @@
+using System.Text.Json.Serialization;
 using DndWebApp.Api.Models.ExternalDTOs;
 
 namespace DndWebApp.Api.Models.DTOs.ExternalDtos;
 
 public class EAbilityDto
 {
-    public required string index { get; set; }
-    public required string name { get; set; }
-    public required string full_name { get; set; }
-    public required List<string> desc { get; set; }
-    public required List<EIndexDto> skills { get; set; }
-    public required string url { get; set; }
-    public required DateTime updated_at { get; set; }
+    [JsonPropertyName("name")]
+    public required string Name { get; set; }
+    
+    [JsonPropertyName("full_name")]
+    public required string FullName { get; set; }
+    
+    [JsonPropertyName("desc")]
+    public required List<string> Description { get; set; }
+    
+    [JsonPropertyName("skills")]
+    public required List<EIndexDto> Skills { get; set; }
 }

@@ -43,7 +43,7 @@ public partial class SubclassService : ISubclassService
 
     public async Task<ICollection<Subclass>> GetAllAsync()
     {
-        return await repo.GetMiscellaneousItemsAsync();
+        return await repo.GetAllAsync();
     }
 
     public async Task<Subclass> GetByIdAsync(int id)

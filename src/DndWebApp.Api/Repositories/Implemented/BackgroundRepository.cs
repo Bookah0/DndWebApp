@@ -33,7 +33,7 @@ public class BackgroundRepository : IBackgroundRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Background>> GetMiscellaneousItemsAsync() => await context.Backgrounds.ToListAsync();
+    public async Task<ICollection<Background>> GetAllAsync() => await context.Backgrounds.ToListAsync();
     public async Task<Background?> GetByIdAsync(int id) => await context.Backgrounds.FindAsync(id);
 
     public async Task<Background?> GetWithFeaturesAsync(int id)

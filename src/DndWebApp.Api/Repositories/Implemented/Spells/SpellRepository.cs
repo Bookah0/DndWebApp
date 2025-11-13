@@ -32,7 +32,7 @@ public class SpellRepository : ISpellRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Spell>> GetMiscellaneousItemsAsync() => await context.Spells.ToListAsync();
+    public async Task<ICollection<Spell>> GetAllAsync() => await context.Spells.ToListAsync();
     public async Task<Spell?> GetByIdAsync(int id) => await context.Spells.FindAsync(id);
 
     public async Task<Spell?> GetWithClassesAsync(int id)

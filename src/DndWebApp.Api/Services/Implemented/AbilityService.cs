@@ -43,7 +43,7 @@ public class AbilityService : IAbilityService
 
     public async Task<ICollection<Ability>> GetAllAsync()
     {
-        return await repo.GetMiscellaneousItemsAsync();
+        return await repo.GetAllAsync();
     }
 
     public async Task<Ability> GetByIdAsync(int id)

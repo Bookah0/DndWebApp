@@ -43,7 +43,7 @@ public class SkillService : ISkillService
 
     public async Task<ICollection<Skill>> GetAllAsync()
     {
-        return await repo.GetMiscellaneousItemsAsync();
+        return await repo.GetAllAsync();
     }
 
     public async Task<ICollection<Skill>> GetAllWithAbilityAsync()

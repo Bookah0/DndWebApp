@@ -33,9 +33,10 @@ public class AbilityRepository : IAbilityRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Ability>> GetMiscellaneousItemsAsync() => await context.AbilityScores.ToListAsync();
+    public async Task<ICollection<Ability>> GetAllAsync() => await context.AbilityScores.ToListAsync();
     public async Task<Ability?> GetByIdAsync(int id) => await context.AbilityScores.FindAsync(id);
-    public async Task<Ability?> GetByNameAsync(string fullName) => await context.AbilityScores.FirstOrDefaultAsync(x => x.FullName == fullName);
+    public async Task<Ability?> GetByFullNameAsync(string fullName) => await context.AbilityScores.FirstOrDefaultAsync(x => x.FullName == fullName);
+    public async Task<Ability?> GetByShortNameAsync(string shortName) => await context.AbilityScores.FirstOrDefaultAsync(x => x.ShortName == shortName);
 
     public async Task<Ability?> GetWithSkillsAsync(int id)
     {

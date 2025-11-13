@@ -22,7 +22,7 @@ public class TraitRepository : ITraitRepository
         return entity;
     }
 
-    public async Task<ICollection<Trait>> GetMiscellaneousItemsAsync() => await context.Traits.ToListAsync();
+    public async Task<ICollection<Trait>> GetAllAsync() => await context.Traits.ToListAsync();
     public async Task<Trait?> GetByIdAsync(int id) => await context.Traits.FirstOrDefaultAsync(t => t.Id == id);
 
     public async Task DeleteAsync(Trait entity)

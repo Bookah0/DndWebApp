@@ -32,7 +32,7 @@ public class LanguageServiceTests
             .ReturnsAsync((int id) => languages
             .FirstOrDefault(l => l.Id == id));
 
-        repo.Setup(r => r.GetMiscellaneousItemsAsync())
+        repo.Setup(r => r.GetAllAsync())
             .ReturnsAsync(() => [.. languages]);
 
         // Act

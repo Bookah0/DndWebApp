@@ -10,44 +10,55 @@ namespace DndWebApp.Api.Services.External.Implemented;
 
 public class ExternalAlignmentService : IExternalAlignmentService
 {
-    private readonly IAlignmentRepository alignmentRepository;
+    private readonly IAlignmentRepository repo;
     private readonly HttpClient client = new();
     
-    public ExternalAlignmentService(IAlignmentRepository alignmentRepository)
+    public ExternalAlignmentService(IAlignmentRepository repo)
     {
-        this.alignmentRepository = alignmentRepository;
+        this.repo = repo;
     }
 
     public async Task FetchExternalAlignmentsAsync(CancellationToken cancellationToken = default)
     {
+        if ((await repo.GetAllAsync()).Count > 0)
+        {
+            Console.WriteLine("Alignments already exist in the database. Skipping fetch.");
+            return;
+        }
+        
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/alignments/", cancellationToken);
-        var result = await JsonSerializer.DeserializeAsync<EListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
+        var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
-        if (result is null || result.results.Count == 0)
+        if (result is null || result.Results.Count == 0)
         {
             Console.WriteLine("No alignment found in external API.");
             return;
         }
 
-        foreach (var item in result.results)
+        foreach (var item in result.Results)
         {
-            var getResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/alignments/{item.index}", cancellationToken);
+            var getResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/alignments/{item.Index}", cancellationToken);
             var eAlignment = await JsonSerializer.DeserializeAsync<EAlignmentDto>(getResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
-            if (eAlignment is not null && await alignmentRepository.GetByNameAsync(eAlignment.name) is not null)
+            if (eAlignment is null)
             {
-                Console.WriteLine($"Alignment {eAlignment.name} already exists. Skipping.");
+                Console.WriteLine($"Failed to deserialize alignment {item.Index}.");
+                continue;
+            }
+            if (await repo.GetByNameAsync(eAlignment.Name) is not null)
+            {
+                Console.WriteLine($"Alignment {eAlignment.Name} already exists. Skipping.");
                 continue;
             }
 
             var alignment = new Alignment
             {
-                Name = eAlignment!.name,
-                Abbreviation = eAlignment.abbreviation,
-                Description = eAlignment.desc
+                Name = eAlignment.Name,
+                Abbreviation = eAlignment.Abbreviation,
+                Description = eAlignment.Description
             };
 
-            await alignmentRepository.CreateAsync(alignment);
+            await repo.CreateAsync(alignment);
         }
     }
 }

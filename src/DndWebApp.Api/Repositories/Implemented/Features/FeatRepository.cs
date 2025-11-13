@@ -22,8 +22,10 @@ public class FeatRepository : IFeatRepository
         return entity;
     }
 
-    public async Task<ICollection<Feat>> GetMiscellaneousItemsAsync() => await context.Feats.ToListAsync();
+    public async Task<ICollection<Feat>> GetAllAsync() => await context.Feats.ToListAsync();
     public async Task<Feat?> GetByIdAsync(int id) => await context.Feats.FirstOrDefaultAsync(f => f.Id == id);
+    public async Task<Feat?> GetByNameAsync(string name) => await context.Feats.FirstOrDefaultAsync(f => f.Name == name);
+
 
     public async Task DeleteAsync(Feat entity)
     {

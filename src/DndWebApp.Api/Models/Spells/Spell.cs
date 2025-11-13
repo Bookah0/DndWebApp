@@ -32,7 +32,7 @@ public class Spell
 [Owned]
 public class SpellTargeting
 {
-    public required SpellTargetType TargetType { get; set; }
+    public SpellTargetType TargetType { get; set; }
     public required SpellRange Range { get; set; }
     public int RangeValue { get; set; } = 0;
     public string? ShapeType { get; set; }

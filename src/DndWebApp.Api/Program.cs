@@ -62,6 +62,8 @@ builder.Services.AddScoped<IClassFeatureService, ClassFeatureService>();
 builder.Services.AddScoped<IExternalAbilityService, ExternalAbilityService>();
 builder.Services.AddScoped<IExternalAlignmentService, ExternalAlignmentService>();
 
+builder.Services.AddScoped<IExternalFeatService, ExternalFeatService>();
+
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
 

@@ -1,11 +1,15 @@
+using System.Text.Json.Serialization;
+
 namespace  DndWebApp.Api.Models.ExternalDTOs;
 
 public class EAlignmentDto
 {
-    public required string index { get; set; }
-    public required string name { get; set; }
-    public required string abbreviation { get; set; }
-    public required string desc { get; set; }
-    public required string url { get; set; }
-    public required DateTime updated_at { get; set; }
+    [JsonPropertyName("name")]
+    public required string Name { get; set; }
+    
+    [JsonPropertyName("abbreviation")]
+    public required string Abbreviation { get; set; }
+    
+    [JsonPropertyName("desc")]
+    public required string Description { get; set; }
 }

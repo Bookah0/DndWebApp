@@ -24,7 +24,7 @@ public class SpellRepositoryTests
         await repo.CreateAsync(fireball);
 
         var savedMagicMissile = await repo.GetByIdAsync(magicMissile.Id);
-        var allSpells = await repo.GetMiscellaneousItemsAsync();
+        var allSpells = await repo.GetAllAsync();
 
         // Assert
         Assert.NotNull(savedMagicMissile);

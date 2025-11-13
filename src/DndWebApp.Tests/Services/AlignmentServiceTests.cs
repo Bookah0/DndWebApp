@@ -30,7 +30,7 @@ public class AlignmentServiceTests
             .ReturnsAsync((int id) => alignments
             .FirstOrDefault(a => a.Id == id));
 
-        repo.Setup(r => r.GetMiscellaneousItemsAsync())
+        repo.Setup(r => r.GetAllAsync())
             .ReturnsAsync(() => [.. alignments]);
 
         // Act

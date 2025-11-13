@@ -22,7 +22,7 @@ public class ClassRepository : IClassRepository
         return entity;
     }
 
-    public async Task<ICollection<Class>> GetMiscellaneousItemsAsync() => await context.Classes.ToListAsync();
+    public async Task<ICollection<Class>> GetAllAsync() => await context.Classes.ToListAsync();
     public async Task<Class?> GetByIdAsync(int id) => await context.Classes.FirstOrDefaultAsync(c => c.Id == id);
 
     public async Task DeleteAsync(Class entity)

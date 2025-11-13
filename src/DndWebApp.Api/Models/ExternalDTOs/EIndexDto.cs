@@ -1,8 +1,15 @@
+using System.Text.Json.Serialization;
+
 namespace DndWebApp.Api.Models.ExternalDTOs;
 
 public class EIndexDto
 {
-    public required string index { get; set; }
-    public required string name { get; set; }
-    public required string url { get; set; }
+    [JsonPropertyName("index")]
+    public required string Index { get; set; }
+
+    [JsonPropertyName("name")]
+    public required string Name { get; set; }
+    
+    [JsonPropertyName("url")]
+    public required string Url { get; set; }
 }

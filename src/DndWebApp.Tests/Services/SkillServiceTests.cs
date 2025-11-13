@@ -35,7 +35,7 @@ public class SkillServiceTests
         abilityRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => new Ability { Id = id, FullName = "Luck", ShortName = "LK", Description = "", Skills = [] });
 
-        repo.Setup(r => r.GetMiscellaneousItemsAsync())
+        repo.Setup(r => r.GetAllAsync())
             .ReturnsAsync(() => [.. skills]);
 
         // Act

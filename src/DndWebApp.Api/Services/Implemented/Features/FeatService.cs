@@ -37,7 +37,7 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
 
     public async Task<ICollection<Feat>> GetAllAsync()
     {
-        return await repo.GetMiscellaneousItemsAsync();
+        return await repo.GetAllAsync();
     }
 
     public async Task<Feat> GetByIdAsync(int id)

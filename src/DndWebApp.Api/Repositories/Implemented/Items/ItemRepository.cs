@@ -20,15 +20,11 @@ public class ItemRepository : IItemRepository
         await context.SaveChangesAsync();
         return entity;
     }
+    public async Task<Item?> GetByIdAsync(int id) => await context.Items.FirstOrDefaultAsync(i => i.Id == id);
+    public async Task<Item?> GetByNameAsync(string name) => await context.Items.FirstOrDefaultAsync(i => i.Name == name);
+    public async Task<ICollection<Item>> GetAllAsync() => await context.Items.ToListAsync();
 
-    public async Task<Item?> GetByIdAsync(int id)
-    {
-        return await context.Items
-            .Where(i => i.Id == id && !(i is Weapon) && !(i is Armor) && !(i is Tool))
-            .FirstOrDefaultAsync();
-    }
-
-    public async Task<ICollection<Item>> GetAllAsync()
+    public async Task<ICollection<Item>> GetAllMiscItemsAsync()
     {
         return await context.Items
             .Where(i => !(i is Weapon) && !(i is Armor) && !(i is Tool))

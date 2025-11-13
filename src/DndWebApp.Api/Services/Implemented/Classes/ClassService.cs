@@ -21,7 +21,7 @@ public partial class ClassService : IClassService
     {
         ValidationUtil.HasContentOrThrow(dto.Name);
         ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.HasContentOrThrow(dto.HitDie);
+        ValidationUtil.AboveZeroOrThrow(dto.HitDie);
 
         Class cls = new()
         {
@@ -60,7 +60,7 @@ public partial class ClassService : IClassService
     {
         ValidationUtil.HasContentOrThrow(dto.Name);
         ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.HasContentOrThrow(dto.HitDie);
+        ValidationUtil.AboveZeroOrThrow(dto.HitDie);
 
         var cls = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Class with id {dto.Id} could not be found");
 

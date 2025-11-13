@@ -2,7 +2,6 @@ using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDtos;
-using DndWebApp.Api.Models.ExternalDTOs;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
@@ -98,7 +97,7 @@ public class ExternalSpellService : IExternalSpellService
                 DurationValue = durationValue,
                 CastingTime = castingTime,
                 CastingTimeValue = timeValue,
-                MagicSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(e5eSpell?.School.Name ?? eOpenSpell?.School),
+                MagicSchool = NormalizationUtil.ParseEnumOrThrow<MagicSchool>(e5eSpell?.School.Name ?? eOpenSpell?.School),
                 SpellTargeting = spellTargeting,
                 SpellTypes = spellTypes,
                 CastingRequirements = castingRequirements

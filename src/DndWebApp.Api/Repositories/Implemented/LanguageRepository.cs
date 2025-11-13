@@ -1,6 +1,7 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.World;
+using DndWebApp.Api.Models.World.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,5 +36,5 @@ public class LanguageRepository : ILanguageRepository
 
     public async Task<ICollection<Language>> GetAllAsync() => await context.Languages.ToListAsync();
     public async Task<Language?> GetByIdAsync(int id) => await context.Languages.FindAsync(id);
-    public async Task<Language?> GetByNameAsync(string name) => await context.Languages.FirstOrDefaultAsync(l => l.Name == name);
+    public async Task<Language?> GetByTypeAsync(LanguageType type) => await context.Languages.FirstOrDefaultAsync(l => l.Type == type);
 }

@@ -32,13 +32,13 @@ public class SpellService : ISpellService
         ValidationUtil.HasContentOrThrow(dto.CastingTime);
         ValidationUtil.HasContentOrThrow(dto.MagicSchool);
 
-        var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
-        var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetingDto.TargetType);
-        var dtoSpellRange = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.TargetingDto.Range);
-        var dtoDuration = ValidationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
-        var dtoCastTime = ValidationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
-        var dtoSpellTypes = ValidationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
-        var dtoDamageTypes = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+        var dtoSchool = NormalizationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
+        var dtoTargetType = NormalizationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetingDto.TargetType);
+        var dtoSpellRange = NormalizationUtil.ParseEnumOrThrow<SpellRange>(dto.TargetingDto.Range);
+        var dtoDuration = NormalizationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
+        var dtoCastTime = NormalizationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
+        var dtoSpellTypes = NormalizationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
+        var dtoDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
 
         if (dto.Level <= 0)
             throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
@@ -108,13 +108,13 @@ public class SpellService : ISpellService
 
         await ValidationUtil.IdsExist<IClassRepository, Class>(dto.ClassIds, classRepo);
 
-        var dtoSchools = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchools);
-        var dtoTargetTypes = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetTypes);
-        var dtoSpellRanges = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.Range);
-        var dtoDurations = ValidationUtil.ParseEnumOrThrow<SpellDuration>(dto.Durations);
-        var dtoCastTimes = ValidationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTimes);
-        var dtoSpellTypes = ValidationUtil.ParseEnumOrThrow<SpellType>(dto.SpellTypes);
-        var dtoDamageTypes = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+        var dtoSchools = NormalizationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchools);
+        var dtoTargetTypes = NormalizationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetTypes);
+        var dtoSpellRanges = NormalizationUtil.ParseEnumOrThrow<SpellRange>(dto.Range);
+        var dtoDurations = NormalizationUtil.ParseEnumOrThrow<SpellDuration>(dto.Durations);
+        var dtoCastTimes = NormalizationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTimes);
+        var dtoSpellTypes = NormalizationUtil.ParseEnumOrThrow<SpellType>(dto.SpellTypes);
+        var dtoDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
 
         var filter = new SpellFilter()
         {
@@ -155,13 +155,13 @@ public class SpellService : ISpellService
         ValidationUtil.HasContentOrThrow(dto.CastingTime);
         ValidationUtil.HasContentOrThrow(dto.MagicSchool);
 
-        var dtoSchool = ValidationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
-        var dtoTargetType = ValidationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetingDto.TargetType);
-        var dtoSpellRange = ValidationUtil.ParseEnumOrThrow<SpellRange>(dto.TargetingDto.Range);
-        var dtoDuration = ValidationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
-        var dtoCastTime = ValidationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
-        var dtoSpellTypes = ValidationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
-        var dtoDamageTypes = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+        var dtoSchool = NormalizationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
+        var dtoTargetType = NormalizationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetingDto.TargetType);
+        var dtoSpellRange = NormalizationUtil.ParseEnumOrThrow<SpellRange>(dto.TargetingDto.Range);
+        var dtoDuration = NormalizationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
+        var dtoCastTime = NormalizationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
+        var dtoSpellTypes = NormalizationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
+        var dtoDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
 
         if (dto.Level <= 0)
             throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");

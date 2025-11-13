@@ -28,12 +28,12 @@ public class WeaponService
         ValidationUtil.AboveZeroOrThrow(dto.Value);
         ValidationUtil.AboveZeroOrThrow(dto.Range);
 
-        var dtoCategory = ValidationUtil.ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
-        var dtoWeaponType = ValidationUtil.ParseEnumOrThrow<WeaponType>(dto.WeaponType);
-        var dtoMainDamageType = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.MainDamageType);
-        var dtoOtherDamageTypes = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
-        var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
-        var dtoProperties = ValidationUtil.ParseEnumOrThrow<WeaponProperty>(dto.Properties);
+        var dtoCategory = NormalizationUtil.ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
+        var dtoWeaponType = NormalizationUtil.ParseEnumOrThrow<WeaponType>(dto.WeaponType);
+        var dtoMainDamageType = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.MainDamageType);
+        var dtoOtherDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
+        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoProperties = NormalizationUtil.ParseEnumOrThrow<WeaponProperty>(dto.Properties);
 
         Weapon weapon = new()
         {
@@ -83,12 +83,12 @@ public class WeaponService
         ValidationUtil.AboveZeroOrThrow(dto.Weight);
         ValidationUtil.AboveZeroOrThrow(dto.Range);
 
-        var dtoCategory = ValidationUtil.ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
-        var dtoWeaponType = ValidationUtil.ParseEnumOrThrow<WeaponType>(dto.WeaponType);
-        var dtoMainDamageType = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.MainDamageType);
-        var dtoOtherDamageTypes = ValidationUtil.ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
-        var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
-        var dtoProperties = ValidationUtil.ParseEnumOrThrow<WeaponProperty>(dto.Properties);
+        var dtoCategory = NormalizationUtil.ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
+        var dtoWeaponType = NormalizationUtil.ParseEnumOrThrow<WeaponType>(dto.WeaponType);
+        var dtoMainDamageType = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.MainDamageType);
+        var dtoOtherDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
+        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoProperties = NormalizationUtil.ParseEnumOrThrow<WeaponProperty>(dto.Properties);
 
         var weapon = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Weapon with id {dto.Id} could not be found");
 

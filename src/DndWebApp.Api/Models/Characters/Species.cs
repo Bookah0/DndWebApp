@@ -19,6 +19,7 @@ public class Species
 
 public class Race : Species
 {
+    public RaceType? Type { get; set; }
     public ICollection<Subrace> SubRaces { get; set; } = [];
 }
 

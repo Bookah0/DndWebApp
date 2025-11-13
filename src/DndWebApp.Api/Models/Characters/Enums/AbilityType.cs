@@ -9,3 +9,13 @@ public enum AbilityType
     Charisma,
     Constitution
 }
+
+public enum AbilityShortType
+{
+    Str,
+    Dex,
+    Int,
+    Wis,
+    Cha,
+    Con
+}

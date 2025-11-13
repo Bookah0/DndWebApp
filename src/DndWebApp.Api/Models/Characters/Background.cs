@@ -9,6 +9,7 @@ namespace DndWebApp.Api.Models.Characters;
 public class Background
 {
     public int Id { get; set; }
+    public BackgroundType? Type { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public bool IsHomebrew { get; set; } = false;

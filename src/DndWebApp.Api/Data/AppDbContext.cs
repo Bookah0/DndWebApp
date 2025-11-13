@@ -58,7 +58,7 @@ public class AppDbContext : DbContext
             });
 
         modelBuilder.Entity<Class>()
-            .OwnsMany(c => c.StartingEquipmentOptions, opt =>
+            .OwnsMany(c => c.StartingEquipmentChoices, opt =>
             {
                 opt.HasKey(o => o.Id);
                 opt.WithOwner().HasForeignKey("ClassId");

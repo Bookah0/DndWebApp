@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using DndWebApp.Api.Models.ExternalDTOs;
 
 namespace DndWebApp.Api.Models.DTOs.ExternalDtos;
 

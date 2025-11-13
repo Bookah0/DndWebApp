@@ -27,8 +27,8 @@ public class ArmorService
         ValidationUtil.AboveZeroOrThrow(dto.Value);
         ValidationUtil.AboveZeroOrThrow(dto.BaseArmorClass);
 
-        var dtoCategory = ValidationUtil.ParseEnumOrThrow<ArmorCategory>(dto.Category);
-        var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoCategory = NormalizationUtil.ParseEnumOrThrow<ArmorCategory>(dto.Category);
+        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
 
         Armor armor = new()
         {
@@ -75,8 +75,8 @@ public class ArmorService
         ValidationUtil.AboveZeroOrThrow(dto.Value);
         ValidationUtil.AboveZeroOrThrow(dto.BaseArmorClass);
 
-        var dtoCategory = ValidationUtil.ParseEnumOrThrow<ArmorCategory>(dto.Category);
-        var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoCategory = NormalizationUtil.ParseEnumOrThrow<ArmorCategory>(dto.Category);
+        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
 
         var armor = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Armor with id {dto.Id} could not be found");
 

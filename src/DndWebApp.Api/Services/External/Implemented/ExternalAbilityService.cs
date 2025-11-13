@@ -1,11 +1,12 @@
 using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDtos;
-using DndWebApp.Api.Models.ExternalDTOs;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
+using DndWebApp.Api.Services.Util;
 
 public class ExternalAbilityService : IExternalAbilityService
 {
@@ -44,14 +45,10 @@ public class ExternalAbilityService : IExternalAbilityService
                 Console.WriteLine($"Failed to deserialize ability {item.Index}.");
                 continue;
             }
-            if (await repo.GetByShortNameAsync(eAbility.FullName) is not null)
-            {
-                Console.WriteLine($"Ability {eAbility.FullName} already exists. Skipping.");
-                continue;
-            }
 
             var ability = new Ability
             {
+                Type = NormalizationUtil.ParseEnumOrThrow<AbilityType>(eAbility.FullName),
                 FullName = eAbility.FullName,
                 ShortName = eAbility.Name,
                 Description = string.Join("\n", eAbility.Description),

@@ -7,6 +7,8 @@ namespace DndWebApp.Api.Models.Characters;
 public class Ability
 {
     public int Id { get; set; }
+    public AbilityType? Type { get; set; }
+    public AbilityShortType? ShortType { get; set; }
     public required string ShortName { get; set; }
     public required string FullName { get; set; }
     public required string Description { get; set; }

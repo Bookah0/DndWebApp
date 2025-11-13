@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace DndWebApp.Api.Models.ExternalDTOs;
+namespace DndWebApp.Api.Models.DTOs.ExternalDtos;
 
 public class EFeatDto
 {

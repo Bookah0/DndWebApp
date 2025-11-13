@@ -5,7 +5,7 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface IRaceRepository : IRepository<Race>
 {
-    Task<Race?> GetByNameAsync(string name);
+    Task<Race?> GetByTypeAsync(RaceType type);
     Task<Race?> GetWithAllDataAsync(int id);
     Task<Race?> GetWithTraitsAsync(int id);
 }

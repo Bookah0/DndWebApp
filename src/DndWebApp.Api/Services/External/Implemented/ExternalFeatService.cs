@@ -2,7 +2,6 @@ using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDtos;
-using DndWebApp.Api.Models.ExternalDTOs;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
@@ -27,20 +26,18 @@ public class ExternalFeatService : IExternalFeatService
         }
         
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/feats/", cancellationToken);
-        var listResult = await JsonSerializer.DeserializeAsync<EFeatListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
-        var featResults = listResult?.Results ?? [];
+        var featResults = await JsonSerializer.DeserializeAsync<List<EFeatDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
         
-        if (featResults.Count == 0)
+        if (featResults is null || featResults.Count == 0)
         {
-            Console.WriteLine("No feats found in external API.");
+            Console.WriteLine("No feats found on page 1 in external API.");
             return;
         }
 
         getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/feats/?page=2", cancellationToken);
-        listResult = await JsonSerializer.DeserializeAsync<EFeatListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
-        var featResults2 = listResult?.Results ?? [];
+        var featResults2 = await JsonSerializer.DeserializeAsync<List<EFeatDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
-        if (featResults.Count == 0)
+        if (featResults2 is null || featResults2.Count == 0)
         {
             Console.WriteLine("No feats found on page 2 in external API.");
             return;
@@ -55,11 +52,6 @@ public class ExternalFeatService : IExternalFeatService
                 Console.WriteLine($"Failed to deserialize feat.");
                 continue;
             }
-            if (await repo.GetByNameAsync(eFeat.Name) is not null)
-            {
-                Console.WriteLine($"Feat {eFeat.Name} already exists. Skipping.");
-                continue;
-            }
 
             var feat = new Feat
             {
@@ -67,12 +59,14 @@ public class ExternalFeatService : IExternalFeatService
                 Description = string.Join("\n", eFeat.Description),
                 Prerequisite = eFeat.Prerequisite ?? "",
             };
-
-            // TODO: Parse feat effects
-            // feat.AbilityIncreases, feat.Languages, feat.WeaponProficiencyChoices, ..... = ParseBenefits(eFeat.Benefits);
-
             await repo.CreateAsync(feat);
         }
+    }
+
+    // TODO: Parses Features
+    private static void ParseFeatBenefits(Feat feat)
+    {
+        
     }
 }
 

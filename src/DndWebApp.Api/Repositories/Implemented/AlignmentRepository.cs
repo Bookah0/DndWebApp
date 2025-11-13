@@ -1,5 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.World;
+using DndWebApp.Api.Models.World.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +30,7 @@ public class AlignmentRepository : IAlignmentRepository
 
     public async Task<ICollection<Alignment>> GetAllAsync() => await context.Alignments.ToListAsync();
     public async Task<Alignment?> GetByIdAsync(int id) => await context.Alignments.FindAsync(id);
-    public async Task<Alignment?> GetByNameAsync(string fullName) => await context.Alignments.FirstOrDefaultAsync(x => x.Name == fullName);
+    public async Task<Alignment?> GetByTypeAsync(AlignmentType type) => await context.Alignments.FirstOrDefaultAsync(a => a.Type == type);
 
     public async Task UpdateAsync(Alignment updatedEntity)
     {

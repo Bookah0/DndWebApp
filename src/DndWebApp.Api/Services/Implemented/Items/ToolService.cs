@@ -26,8 +26,8 @@ public class ToolService
         ValidationUtil.HasContentOrThrow(dto.ToolCategory);
         ValidationUtil.AboveZeroOrThrow(dto.Value);
 
-        var dtoToolCategory = ValidationUtil.ParseEnumOrThrow<ToolCategory>(dto.ToolCategory);
-        var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoToolCategory = NormalizationUtil.ParseEnumOrThrow<ToolCategory>(dto.ToolCategory);
+        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
 
         Tool tool = new()
         {
@@ -88,8 +88,8 @@ public class ToolService
         ValidationUtil.HasContentOrThrow(dto.ToolCategory);
         ValidationUtil.AboveZeroOrThrow(dto.Value);
 
-        var dtoToolCategory = ValidationUtil.ParseEnumOrThrow<ToolCategory>(dto.ToolCategory);
-        var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoToolCategory = NormalizationUtil.ParseEnumOrThrow<ToolCategory>(dto.ToolCategory);
+        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
 
         var tool = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Tool with id {dto.Id} could not be found"); ;
 

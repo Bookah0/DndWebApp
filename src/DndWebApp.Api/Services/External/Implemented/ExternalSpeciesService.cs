@@ -2,7 +2,6 @@ using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.DTOs.ExternalDtos;
-using DndWebApp.Api.Models.ExternalDTOs;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
@@ -49,11 +48,6 @@ public class ExternalSpeciesService : IExternalSpeciesService
                 Console.WriteLine($"Failed to deserialize race {item.Index}.");
                 continue;
             }
-            if (await raceRepo.GetByNameAsync(eRace.Name) is not null)
-            {
-                Console.WriteLine($"Race {eRace.Name} already exists. Skipping.");
-                continue;
-            }
 
             var description = new RaceDescription
             {
@@ -69,7 +63,7 @@ public class ExternalSpeciesService : IExternalSpeciesService
                 Name = eRace.Name,
                 Speed = eRace.Speed,
                 RaceDescription = description,
-                Size = ValidationUtil.ParseEnumOrThrow<CreatureSize>(eRace.Size),
+                Size = NormalizationUtil.ParseEnumOrThrow<CreatureSize>(eRace.Size),
                 Traits = [],
                 SubRaces = []
             };
@@ -77,6 +71,7 @@ public class ExternalSpeciesService : IExternalSpeciesService
             await raceRepo.CreateAsync(race);
 
             await AddAbilityScoreBonusesAsTraitAsync(eRace, race, raceRepo);
+            ParseTraits(race);
             await FetchExternalSubracesAsync(race, eRace.Subraces, cancellationToken);
         }
     }
@@ -121,6 +116,7 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
             await subraceRepo.CreateAsync(subrace);
             await AddAbilityScoreBonusesAsTraitAsync(eSubrace, subrace, subraceRepo);
+            ParseTraits(subrace);
         }
     }
     
@@ -139,14 +135,15 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
         foreach (var abilityIncrease in eSpecies.AbilityBonuses)
         {
-            var ability = await abilityRepo.GetByShortNameAsync(abilityIncrease.AbilityScore.Index)
-                ?? throw new ArgumentException($"Ability with short name {abilityIncrease.AbilityScore.Index} not found.");
+            var abilityType = NormalizationUtil.ParseEnumOrThrow<AbilityShortType>(abilityIncrease.AbilityScore.Index);
 
+            var ability = await abilityRepo.GetByTypeAsync(abilityType)
+                ?? throw new ArgumentException($"Ability with short name {abilityIncrease.AbilityScore.Index} not found.");
             abilityIncreases.Add(new AbilityValue
             {
                 AbilityId = ability.Id,
                 Value = abilityIncrease.Bonus,
-                Type = ValidationUtil.ParseEnumOrThrow<AbilityType>(ability.FullName)
+                Type = NormalizationUtil.ParseEnumOrThrow<AbilityType>(ability.FullName)
             });
 
             if (eSpecies.AbilityBonuses.Count == 1)
@@ -171,5 +168,11 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
         species.Traits.Add(increaseTrait);
         await speciesRepo.UpdateAsync(species);
+    }
+
+    // TODO: Parses Traits
+    private static void ParseTraits(Species species)
+    {
+        
     }
 }

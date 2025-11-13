@@ -63,8 +63,8 @@ public partial class CharacterService : ICharacterService
 
         var characterStats = new CombatStats()
         {
-            MaxHP = 10 + int.Parse(clss.HitDie[2..^1]) * dto.Level,
-            CurrentHP = 10 + int.Parse(clss.HitDie[2..^1]) * dto.Level,
+            MaxHP = 10 + clss.HitDie * dto.Level,
+            CurrentHP = 10 + clss.HitDie * dto.Level,
             TempHP = 0,
             ArmorClass = 10 + dexScore / 2,
             Initiative = dexScore / 2,
@@ -171,7 +171,7 @@ public partial class CharacterService : ICharacterService
             .Select(kvp => new AbilityValue
             {
                 AbilityId = repoDict[kvp.Key].Id,
-                Type = ValidationUtil.ParseEnumOrThrow<AbilityType>(repoDict[kvp.Key].FullName),
+                Type = NormalizationUtil.ParseEnumOrThrow<AbilityType>(repoDict[kvp.Key].FullName),
                 //Ability = repoDict[kvp.Key],
                 Value = kvp.Value
             })];
@@ -283,7 +283,7 @@ public partial class CharacterService : ICharacterService
         if (abilities.Count == 0)
             throw new ArgumentException("Ability list can't be empty");
 
-        return abilities.ToDictionary(a => ValidationUtil.ParseEnumOrThrow<AbilityType>(a.FullName), a => a);
+        return abilities.ToDictionary(a => NormalizationUtil.ParseEnumOrThrow<AbilityType>(a.FullName), a => a);
     }
 
     private async Task<Dictionary<LanguageType, Language>> GetAllLanguagesAsDictionaryAsync()
@@ -292,7 +292,7 @@ public partial class CharacterService : ICharacterService
         if (languages.Count == 0)
             throw new ArgumentException("Language list can't be empty");
 
-        return languages.ToDictionary(l => ValidationUtil.ParseEnumOrThrow<LanguageType>(l.Name), l => l);
+        return languages.ToDictionary(l => NormalizationUtil.ParseEnumOrThrow<LanguageType>(l.Name), l => l);
     }
 
     private async Task<Dictionary<SkillType, Skill>> GetAllSkillsAsDictionaryAsync()
@@ -301,6 +301,6 @@ public partial class CharacterService : ICharacterService
         if (skills.Count == 0)
             throw new ArgumentException("Skill list can't be empty");
 
-        return skills.ToDictionary(s => ValidationUtil.ParseEnumOrThrow<SkillType>(s.Name), s => s);
+        return skills.ToDictionary(s => NormalizationUtil.ParseEnumOrThrow<SkillType>(s.Name), s => s);
     }
 }

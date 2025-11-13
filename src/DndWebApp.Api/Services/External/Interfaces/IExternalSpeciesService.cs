@@ -1,5 +1,5 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.ExternalDTOs;
+using DndWebApp.Api.Models.DTOs.ExternalDtos;
 using DndWebApp.Api.Repositories.Interfaces;
 
 namespace DndWebApp.Api.Services.External.Interfaces;

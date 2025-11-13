@@ -1,10 +1,11 @@
 using System.Globalization;
 using System.Text.Json;
 using DndWebApp.Api.Models.DTOs.ExternalDtos;
-using DndWebApp.Api.Models.ExternalDTOs;
 using DndWebApp.Api.Models.World;
+using DndWebApp.Api.Models.World.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
+using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.External.Implemented;
 
@@ -45,14 +46,10 @@ public class ExternalAlignmentService : IExternalAlignmentService
                 Console.WriteLine($"Failed to deserialize alignment {item.Index}.");
                 continue;
             }
-            if (await repo.GetByNameAsync(eAlignment.Name) is not null)
-            {
-                Console.WriteLine($"Alignment {eAlignment.Name} already exists. Skipping.");
-                continue;
-            }
 
             var alignment = new Alignment
             {
+                Type = NormalizationUtil.ParseEnumOrThrow<AlignmentType>(eAlignment.Name),
                 Name = eAlignment.Name,
                 Abbreviation = eAlignment.Abbreviation,
                 Description = eAlignment.Description

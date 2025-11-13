@@ -26,9 +26,9 @@ public class ItemService
         ValidationUtil.HasContentOrThrow(dto.MainCategory);
         ValidationUtil.AboveZeroOrThrow(dto.Value);
 
-        var dtoMainCategory = ValidationUtil.ParseEnumOrThrow<ItemCategory>(dto.MainCategory);
-        var dtoOtherCategories = ValidationUtil.ParseEnumOrThrow<ItemCategory>(dto.OtherCategories);
-        var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoMainCategory = NormalizationUtil.ParseEnumOrThrow<ItemCategory>(dto.MainCategory);
+        var dtoOtherCategories = NormalizationUtil.ParseEnumOrThrow<ItemCategory>(dto.OtherCategories);
+        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
 
         Item item = new()
         {
@@ -68,9 +68,9 @@ public class ItemService
         ValidationUtil.HasContentOrThrow(dto.MainCategory);
         ValidationUtil.AboveZeroOrThrow(dto.Value);
 
-        var dtoMainCategory = ValidationUtil.ParseEnumOrThrow<ItemCategory>(dto.MainCategory);
-        var dtoOtherCategories = ValidationUtil.ParseEnumOrThrow<ItemCategory>(dto.OtherCategories);
-        var dtoRarity = ValidationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoMainCategory = NormalizationUtil.ParseEnumOrThrow<ItemCategory>(dto.MainCategory);
+        var dtoOtherCategories = NormalizationUtil.ParseEnumOrThrow<ItemCategory>(dto.OtherCategories);
+        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
 
         var item = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Item with id {dto.Id} could not be found");
 

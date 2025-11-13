@@ -2,11 +2,12 @@ using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDtos;
-using DndWebApp.Api.Models.ExternalDTOs;
 using DndWebApp.Api.Models.World;
+using DndWebApp.Api.Models.World.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
+using DndWebApp.Api.Services.Util;
 
 public class ExternalLanguageService : IExternalLanguageService
 {
@@ -45,14 +46,10 @@ public class ExternalLanguageService : IExternalLanguageService
                 Console.WriteLine($"Failed to deserialize language {item.Index}.");
                 continue;
             }
-            if (await repo.GetByNameAsync(eLanguage.Name) is not null)
-            {
-                Console.WriteLine($"Language {eLanguage.Name} already exists. Skipping.");
-                continue;
-            }
 
             var language = new Language
             {
+                Type = NormalizationUtil.ParseEnumOrThrow<LanguageType>(eLanguage.Type),
                 Name = eLanguage.Name,
                 Family = eLanguage.Type,
                 Script = eLanguage.Script,

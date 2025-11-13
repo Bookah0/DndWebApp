@@ -1,5 +1,6 @@
-namespace DndWebApp.Api.Models.ExternalDTOs;
 using System.Text.Json.Serialization;
+
+namespace DndWebApp.Api.Models.DTOs.ExternalDtos;
 
 public class EOpen5eSpellDto
 {

@@ -32,7 +32,19 @@ public class EClassDto
     public required List<EIndexDto> Subclasses { get; set; }
 
     [JsonPropertyName("spellcasting")]
-    public ESpellcastingDto? Spellcasting { get; set; }
+    public ESpellcastingLevelDto? SpellcastingAbility { get; set; }
+}
+
+public class ESubclassDto
+{
+    [JsonPropertyName("name")]
+    public required string Name { get; set; }  
+
+    [JsonPropertyName("class")]
+    public required EIndexDto Class { get; set; }
+
+    [JsonPropertyName("description")]
+    public required List<string> Description { get; set; }
 }
 
 public class EProficiencyChoiceDto
@@ -125,7 +137,7 @@ public class ESpellcastingInfoDto
     public required List<string> Description { get; set; }
 }
 
-public class ESpellcastingDto
+public class ESpellcastingLevelDto
 {
     [JsonPropertyName("level")]
     public required int Level { get; set; }

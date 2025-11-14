@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Xml.Serialization;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Enums;
+using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
@@ -55,12 +56,12 @@ public class ExternalClassService : IExternalClassService
 
             Ability? spellcastingAbility = null;
 
-            if (eClass.Spellcasting is not null)
+            if (eClass.SpellcastingAbility is not null)
             {
-                var abilityType = NormalizationUtil.ParseEnumOrThrow<AbilityShortType>(eClass.Spellcasting.SpellcastingAbility.Index);
+                var abilityType = NormalizationUtil.ParseEnumOrThrow<AbilityShortType>(eClass.SpellcastingAbility.SpellcastingAbility.Index);
 
                 spellcastingAbility = await abilityRepo.GetByTypeAsync(abilityType)
-                    ?? throw new ArgumentException($"Ability with short name {eClass.Spellcasting.SpellcastingAbility.Index} not found.");
+                    ?? throw new ArgumentException($"Ability with short name {eClass.SpellcastingAbility.SpellcastingAbility.Index} not found.");
             }
 
             var clss = new Class
@@ -81,8 +82,127 @@ public class ExternalClassService : IExternalClassService
 
             await AddStartingEquipmentAsync(eClass, clss, classRepo);
             await AddEquipmentChoicesAsync(eClass, clss, classRepo);
+            await FetchExternalClassFeaturesAsync(cancellationToken);
+            await FetchExternalClassLevelsAsync(clss, cancellationToken);
             await FetchExternalSubclassesAsync(clss, eClass.Subclasses, cancellationToken);
+
+            await classRepo.UpdateAsync(clss);
         }
+    }
+
+    // Class levels based on https://www.dnd5eapi.co/api/2014/classes/{class}/levels and https://www.dnd5eapi.co/api/2014/subclasses/{subclass}/levels 
+    public async Task FetchExternalClassLevelsAsync(AClass clss, CancellationToken cancellationToken = default)
+    {
+        HttpResponseMessage getListResponse;
+
+        if (clss is Class)
+        {
+            getListResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/classes/{clss.Name}/levels", cancellationToken);
+        }
+        else
+        {
+            getListResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/subclasses/{clss.Name}/levels", cancellationToken);
+        }
+
+        var result = await JsonSerializer.DeserializeAsync<List<EClassLevelDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
+
+        if (result is null || result.Count == 0)
+        {
+            Console.WriteLine("No classes found in external API.");
+            return;
+        }
+
+        var abilityScoreIncreaseChoiceList = await CreateAbilityIncreaseChoiceList();
+        var currentAbilityScoreBonuses = 0;
+
+        foreach (var level in result)
+        {
+            int[]? spellSlots = null;
+
+            if (level.Spellcasting is not null)
+            {
+                spellSlots = [
+                    level.Spellcasting.SpellSlotsLevel1 ?? 0,
+                    level.Spellcasting.SpellSlotsLevel2 ?? 0,
+                    level.Spellcasting.SpellSlotsLevel3 ?? 0,
+                    level.Spellcasting.SpellSlotsLevel4 ?? 0,
+                    level.Spellcasting.SpellSlotsLevel5 ?? 0,
+                    level.Spellcasting.SpellSlotsLevel6 ?? 0,
+                    level.Spellcasting.SpellSlotsLevel7 ?? 0,
+                    level.Spellcasting.SpellSlotsLevel8 ?? 0,
+                    level.Spellcasting.SpellSlotsLevel9 ?? 0
+                ];
+            }
+
+            var ClassSpecificSlots = new List<ClassSpecificSlot>();
+
+            var curClassLevel = new ClassLevel
+            {
+                Level = level.Level,
+                ProficiencyBonus = level.ProficiencyBonus,
+                CantripsKnown = level.Spellcasting?.CantripsKnown ?? 0,
+                SpellSlots = spellSlots,
+                Class = clss,
+                ClassId = clss.Id,
+            };
+
+            PopulateClassSpecificSlotList(level, curClassLevel);
+
+            currentAbilityScoreBonuses = level.AbilityScoreBonuses - currentAbilityScoreBonuses;
+
+            if (currentAbilityScoreBonuses > 0)
+            {
+                curClassLevel.NewFeatures.Add(new ClassFeature
+                {
+                    Name = "Ability Score Improvement",
+                    Description = $"When you reach {level.Level}th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
+                    ClassLevel = curClassLevel,
+                    ClassLevelId = curClassLevel.Id,
+                    AbilityIncreaseChoices = abilityScoreIncreaseChoiceList
+                });
+            }
+        }
+    }
+
+    // Subclasses based on https://www.dnd5eapi.co/api/2014/subclasses/
+    public async Task FetchExternalSubclassesAsync(Class clss, List<EIndexDto> subclassIndexList, CancellationToken cancellationToken = default)
+    {
+        foreach (var item in subclassIndexList)
+        {
+            var getListResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/subclasses/{item.Index}", cancellationToken);
+            var result = await JsonSerializer.DeserializeAsync<List<ESubclassDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
+
+            if (result is null || result.Count == 0)
+            {
+                Console.WriteLine("No subclasses found in external API.");
+                return;
+            }
+
+            foreach (var eSubclass in result)
+            {
+                var subclass = new Subclass
+                {
+                    Name = eSubclass.Name,
+                    Description = string.Join("\n", eSubclass.Description),
+                    HitDie = clss.HitDie,
+                    ClassLevels = [],
+                    ParentClass = clss,
+                    ParentClassId = clss.Id
+                };
+
+                await subclassRepo.CreateAsync(subclass);
+                await FetchExternalClassLevelsAsync(subclass, cancellationToken);
+                await FetchExternalClassFeaturesAsync(cancellationToken);
+                await subclassRepo.UpdateAsync(subclass);
+
+                clss.Subclasses.Add(subclass);
+            }
+        }
+    }
+
+    public Task FetchExternalClassFeaturesAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 
     private async Task AddStartingEquipmentAsync(EClassDto eClass, Class clss, IClassRepository classRepo)
@@ -161,71 +281,6 @@ public class ExternalClassService : IExternalClassService
         }
     }
 
-    // Class levels based on https://www.dnd5eapi.co/api/2014/classes/{class}/levels and https://www.dnd5eapi.co/api/2014/subclasses/{subclass}/levels 
-    public async Task FetchExternalClassLevelsAsync(Class clss, CancellationToken cancellationToken = default)
-    {
-        var getListResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/classes/{clss.Name}/levels", cancellationToken);
-        var result = await JsonSerializer.DeserializeAsync<List<EClassLevelDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
-
-        if (result is null || result.Count == 0)
-        {
-            Console.WriteLine("No classes found in external API.");
-            return;
-        }
-
-        var abilityScoreIncreaseChoiceList = await CreateAbilityIncreaseChoiceList();
-        var currentAbilityScoreBonuses = 0;
-
-        foreach (var level in result)
-        {
-            var curClassLevel = new ClassLevel
-            {
-                Level = level.Level,
-                ProficiencyBonus = level.ProficiencyBonus,
-                SpellSlotsLevel1 = level.ClassSpecific.SpellSlotsLevel1,
-                SpellSlotsLevel2 = level.ClassSpecific.SpellSlotsLevel2,
-                SpellSlotsLevel3 = level.ClassSpecific.SpellSlotsLevel3,
-                SpellSlotsLevel4 = level.ClassSpecific.SpellSlotsLevel4,
-                SpellSlotsLevel5 = level.ClassSpecific.SpellSlotsLevel5,
-                SpellSlotsLevel6 = level.ClassSpecific.SpellSlotsLevel6,
-                SpellSlotsLevel7 = level.ClassSpecific.SpellSlotsLevel7,
-                SpellSlotsLevel8 = level.ClassSpecific.SpellSlotsLevel8,
-                SpellSlotsLevel9 = level.ClassSpecific.SpellSlotsLevel9,
-                ActionSurges = level.ClassSpecific.ActionSurges,
-                IndomitableUses = level.ClassSpecific.IndomitableUses,
-                ExtraAttacks = level.ClassSpecific.ExtraAttacks
-            });
-
-            currentAbilityScoreBonuses += level.AbilityScoreBonuses;
-
-            if (currentAbilityScoreBonuses > 0)
-            {
-                for (int i = 0; i < currentAbilityScoreBonuses; i++)
-                {
-                    curClassLevel.NewFeatures.Add(new ClassFeature
-                    {
-                        Name = "Ability Score Improvement",
-                        Description = $"When you reach {level.Level}th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
-                        ClassLevel = curClassLevel,
-                        ClassLevelId = curClassLevel.Id,
-                        AbilityIncreaseChoices = abilityScoreIncreaseChoiceList
-                    });
-                }
-            }
-        }
-    }
-
-    // Subclasses based on https://www.dnd5eapi.co/api/2014/subclasses/
-    public Task FetchExternalSubclassesAsync(CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task FetchExternalClassFeaturesAsync(CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
     private async Task<List<AbilityIncreaseChoice>> CreateAbilityIncreaseChoiceList()
     {
         var abilities = await abilityRepo.GetAllAsync();
@@ -275,5 +330,97 @@ public class ExternalClassService : IExternalClassService
         }
 
         return abilityIncreaseChoices;
+    }
+
+    private static void PopulateClassSpecificSlotList(EClassLevelDto eLevel, ClassLevel classLevel)
+    {
+        var cs = eLevel.ClassSpecific;
+
+        var toMap = new List<(int? value, string name)>
+        {
+            (cs.ActionSurges, "Action Surges"),
+            (cs.IndomitableUses, "Indomitable Uses"),
+            (cs.ExtraAttacks, "Extra Attacks"),
+            (cs.ArcaneRecoveryLevels, "Arcane Recovery Levels"),
+            (cs.RageCount, "Rage Count"),
+            (cs.RageDamageBonus, "Rage Damage Bonus"),
+            (cs.KiPoints, "Ki Points"),
+            (cs.UnarmoredMovement, "Unarmored Movement Bonus"),
+            (cs.FavoredEnemies, "Favored Enemies"),
+            (cs.FavoredTerrain, "Favored Terrain"),
+            (cs.InvocationsKnown, "Invocations Known"),
+            (cs.MysticArcanumLevel6, "Mystic Arcanum Level 6"),
+            (cs.MysticArcanumLevel7, "Mystic Arcanum Level 7"),
+            (cs.MysticArcanumLevel8, "Mystic Arcanum Level 8"),
+            (cs.MysticArcanumLevel9, "Mystic Arcanum Level 9"),
+            (cs.SorceryPoints, "Sorcery Points"),
+            (cs.MetamagicKnown, "Metamagic Known"),
+            (cs.AuraRange, "Aura Range"),
+            (cs.BrutalCriticalDice, "Brutal Critical Dice"),
+            (cs.BardicInspirationDie, "Bardic Inspiration Die"),
+            (cs.SongOfRestDie, "Song of Rest Die"),
+            (cs.MagicalSecretsMax5, "Magical Secrets Max 5"),
+            (cs.MagicalSecretsMax7, "Magical Secrets Max 7"),
+            (cs.MagicalSecretsMax9, "Magical Secrets Max 9"),
+            (cs.ChannelDivinityCharges, "Channel Divinity Charges"),
+            ((int?)cs.DestroyUndeadCr, "Destroy Undead CR"),
+            ((int?)cs.WildShapeMaxCr, "Wild Shape Max CR"),
+            (cs.WildShapeFly == true ? 1 : 0, "Wild Shape Fly"),
+            (cs.WildShapeSwim == true ? 1 : 0 , "Wild Shape Swim")
+        };
+
+        foreach (var (value, name) in toMap)
+        {
+            if (value.HasValue)
+            {
+                classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+                {
+                    Name = name,
+                    Quantity = value.Value
+                });
+            }
+        }
+
+        // Nested objects
+        if (cs.SneakAttack is not null)
+        {
+            classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+            {
+                Name = "Sneak Attack Dice Count",
+                Quantity = cs.SneakAttack.DiceCount
+            });
+            classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+            {
+                Name = "Sneak Attack Dice Value",
+                Quantity = cs.SneakAttack.DiceValue
+            });
+        }
+
+        if (cs.MartialArts is not null)
+        {
+            classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+            {
+                Name = "Martial Arts Dice Count",
+                Quantity = cs.MartialArts.DiceCount
+            });
+            classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+            {
+                Name = "Martial Arts Dice Value",
+                Quantity = cs.MartialArts.DiceValue
+            });
+        }
+
+        // Collections
+        if (cs.CreatingSpellSlots is not null)
+        {
+            foreach (var spellSlot in cs.CreatingSpellSlots)
+            {
+                classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+                {
+                    Name = $"Creating Spell Slot Level {spellSlot.SpellSlotLevel}",
+                    Quantity = spellSlot.SorceryPointCost
+                });
+            }
+        }
     }
 }

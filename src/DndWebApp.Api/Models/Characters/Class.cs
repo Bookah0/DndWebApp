@@ -24,7 +24,7 @@ public class AClass
 
 public class Class : AClass
 {
-    public ICollection<Class> Subclasses { get; set; } = [];
+    public ICollection<Subclass> Subclasses { get; set; } = [];
     public ICollection<Item> StartingEquipment { get; set; } = [];
     public ICollection<StartingEquipmentChoice> StartingEquipmentChoices { get; set; } = [];
 }

@@ -18,11 +18,19 @@ public class EClassLevelDto
 
     [JsonPropertyName("class_specific")]
     public required EClassSpecificDto ClassSpecific { get; set; }
+    
+    [JsonPropertyName("spellcasting")]
+    public required ESpellcastingDto? Spellcasting { get; set; }
+
+    [JsonPropertyName("subclasses")]
+    public required List<EIndexDto>? Subclasses { get; set; }
 }
 
-public class EClassSpecificDto
+public class ESpellcastingDto
 {
-    // For spellcasting classes
+    [JsonPropertyName("cantrips_known")]
+    public int? CantripsKnown { get; set; }
+    
     [JsonPropertyName("spell_slots_level_1")]
     public int? SpellSlotsLevel1 { get; set; }
 
@@ -49,7 +57,10 @@ public class EClassSpecificDto
 
     [JsonPropertyName("spell_slots_level_9")]
     public int? SpellSlotsLevel9 { get; set; }
+}
 
+public class EClassSpecificDto
+{
     // Fighter
     [JsonPropertyName("action_surges")]
     public int? ActionSurges { get; set; }

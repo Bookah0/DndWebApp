@@ -91,7 +91,7 @@ public static class FeatureConfigurationExtensions
             .WithMany()
             .UsingEntity(j => j.ToTable("AbilityIncreases"));
 
-        builder.HasMany(f => f.AbilityIncreaseOptions)
+        builder.HasMany(f => f.AbilityIncreaseChoices)
             .WithMany()
             .UsingEntity(j => j.ToTable("AbilityIncreaseOptions"));
 

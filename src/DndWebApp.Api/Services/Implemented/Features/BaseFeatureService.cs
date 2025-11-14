@@ -167,7 +167,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
 
-        ((List<AbilityValue>)feature.AbilityIncreaseOptions).AddRange(options);
+        ((List<AbilityValue>)feature.AbilityIncreaseChoices).AddRange(options);
         await repo.UpdateAsync(feature);
     }
 
@@ -176,7 +176,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
 
-        feature.AbilityIncreaseOptions.Clear();
+        feature.AbilityIncreaseChoices.Clear();
         await repo.UpdateAsync(feature);
     }
 

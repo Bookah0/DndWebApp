@@ -31,52 +31,59 @@ public abstract class AFeature
     public ICollection<LanguageType> Languages { get; set; } = [];
 
     // Proficiency Choices
-    public ICollection<AbilityValue> AbilityIncreaseOptions { get; set; } = [];
-    public ICollection<SkillProficiencyOption> SkillProficiencyChoices { get; set; } = [];
-    public ICollection<ToolProficiencyOption> ToolProficiencyChoices { get; set; } = [];
-    public ICollection<LanguageOption> LanguageChoices { get; set; } = [];
-    public ICollection<ArmorProficiencyOption> ArmorProficiencyChoices { get; set; } = [];
-    public ICollection<WeaponCategoryProficiencyOption> WeaponCategoryProficiencyChoices { get; set; } = [];
-    public ICollection<WeaponTypeProficiencyOption> WeaponTypeProficiencyChoices { get; set; } = [];
+    public ICollection<AbilityIncreaseChoice> AbilityIncreaseChoices { get; set; } = [];
+    public ICollection<SkillProficiencyChoice> SkillProficiencyChoices { get; set; } = [];
+    public ICollection<ToolProficiencyChoice> ToolProficiencyChoices { get; set; } = [];
+    public ICollection<LanguageChoice> LanguageChoices { get; set; } = [];
+    public ICollection<ArmorProficiencyChoice> ArmorProficiencyChoices { get; set; } = [];
+    public ICollection<WeaponCategoryProficiencyChoice> WeaponCategoryProficiencyChoices { get; set; } = [];
+    public ICollection<WeaponTypeProficiencyChoice> WeaponTypeProficiencyChoices { get; set; } = [];
 }
 
 [Owned]
-public class SkillProficiencyOption
+public class AbilityIncreaseChoice
+{
+    public required string Description { get; set; }
+    public required ICollection<AbilityValue> Options { get; set; }
+}
+
+[Owned]
+public class SkillProficiencyChoice
 {
     public required string Description { get; set; }
     public required ICollection<SkillType> Options { get; set; }
 }
 
 [Owned]
-public class ToolProficiencyOption
+public class ToolProficiencyChoice
 {
     public required string Description { get; set; }
     public required ICollection<ToolCategory> Options { get; set; }
 }
 
 [Owned]
-public class LanguageOption
+public class LanguageChoice
 {
     public required string Description { get; set; }
     public required ICollection<LanguageType> Options { get; set; }
 }
 
 [Owned]
-public class WeaponCategoryProficiencyOption
+public class WeaponCategoryProficiencyChoice
 {
     public required string Description { get; set; }
     public required ICollection<WeaponCategory> Options { get; set; }
 }
 
 [Owned]
-public class WeaponTypeProficiencyOption
+public class WeaponTypeProficiencyChoice
 {
     public required string Description { get; set; }
     public required ICollection<WeaponType> Options { get; set; }
 }
 
 [Owned]
-public class ArmorProficiencyOption
+public class ArmorProficiencyChoice
 {
     public required string Description { get; set; }
     public required ICollection<ArmorCategory> Options { get; set; }

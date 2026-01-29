@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace DndWebApp.Api.Models.DTOs.ExternalDtos;
+namespace DndWebApp.Api.Models.DTOs.ExternalDTOs;
 
 public class EAbilityDto
 {

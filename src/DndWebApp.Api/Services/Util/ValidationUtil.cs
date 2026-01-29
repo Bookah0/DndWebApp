@@ -13,6 +13,14 @@ public static class ValidationUtil
         }
     }
 
+    public static void HasContentOrThrow(int? num)
+    {
+        if (num == null)
+        {
+            throw new ArgumentException($"{nameof(num)} cannot be null.");
+        }
+    }
+
     public static void AboveZeroOrThrow(int? num)
     {
         if (num == null || num < 0)

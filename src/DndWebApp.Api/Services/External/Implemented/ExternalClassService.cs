@@ -1,9 +1,11 @@
+namespace DndWebApp.Api.Services.External.Implemented;
+
 using System.Text.Json;
 using System.Xml.Serialization;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Models.DTOs.ExternalDtos;
+using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;

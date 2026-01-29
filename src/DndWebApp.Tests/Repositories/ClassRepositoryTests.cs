@@ -78,7 +78,6 @@ public class ClassRepositoryTests
         Assert.Equal("Description", savedClass.Description);
 
         Assert.Equal("Thieves' Kit", savedClass.StartingEquipment.First().Name);
-        Assert.NotEmpty(savedClass.StartingEquipmentChoices);
         Assert.NotEmpty(savedClass.ClassLevels);
         Assert.Equal(savedClass.Id, savedClass.ClassLevels.First().ClassId);
     }

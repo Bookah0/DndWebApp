@@ -3046,11 +3046,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Api\\DndWebApp.Api.csproj",
+      "projectUniqueName": "c:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Api\\DndWebApp.Api.csproj",
       "projectName": "DndWebApp.Api",
-      "projectPath": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Api\\DndWebApp.Api.csproj",
+      "projectPath": "c:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Api\\DndWebApp.Api.csproj",
       "packagesPath": "C:\\Users\\Antho\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Api\\obj\\",
+      "outputPath": "c:\\Users\\Antho\\Documents\\GitHub\\DndWebApp\\src\\DndWebApp.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

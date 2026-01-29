@@ -1,13 +1,13 @@
+namespace DndWebApp.Api.Services.External.Implemented;
+
 using System.Globalization;
 using System.Text.Json;
-using DndWebApp.Api.Models.DTOs.ExternalDtos;
+using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Models.World.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Util;
-
-namespace DndWebApp.Api.Services.External.Implemented;
 
 public class ExternalAlignmentService : IExternalAlignmentService
 {

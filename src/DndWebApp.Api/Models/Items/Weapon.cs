@@ -12,7 +12,6 @@ public class Weapon : Item
     public required ICollection<DamageType> DamageTypes { get; set; }
     public required string DamageDice { get; set; }
     public required int Range { get; set; }
-
-    public string VersitileDamageDice { get; set; } = "";
+    public string? VersitileDamageDice { get; set; } = "";
     public int? LongRange { get; set; }
 }

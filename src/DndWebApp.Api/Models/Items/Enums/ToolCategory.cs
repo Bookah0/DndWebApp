@@ -3,7 +3,7 @@ public enum ToolCategory
     AlchemistsSupplies,
     BrewersSupplies,
     CalligraphersSupplies,
-    CarpenterTools,
+    CarpentersTools,
     CartographersTools,
     CobblersTools,
     CooksUtensils,
@@ -15,7 +15,7 @@ public enum ToolCategory
     HerbalismKit,
     JewelersTools,
     LandVehicles,
-    LeatherworkerTools,
+    LeatherworkersTools,
     MasonsTools,
     NavigatorsTools,
     Net,
@@ -29,5 +29,11 @@ public enum ToolCategory
     TinkersTools,
     WaterVehicles,
     WeaversTools,
-    WoodcarversTools
+    WoodcarversTools,
+    GamingSet,
+    MusicalInstrument,
+    ArtisansTools,
+    DragonscaleSmithingTools,
+    DungeoneersPack,
+    FletchingTools
 }

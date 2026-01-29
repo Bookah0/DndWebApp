@@ -131,9 +131,8 @@ public static class TestObjectFactory
         {
             Name = name,
             Description = "Description",
-            HitDie = "1d8",
-            ClassLevels = [],
-            StartingEquipmentChoices = [new() { Description = "desc", OptionIds = [1, 2] }]
+            HitDie = 8,
+            ClassLevels = []
         };
         return cls;
     }

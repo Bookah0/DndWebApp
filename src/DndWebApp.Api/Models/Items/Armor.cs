@@ -9,7 +9,7 @@ public class Armor : Item
     public required ArmorCategory Category { get; set; }
     public required int BaseArmorClass { get; set; }
     public required bool PlusDexMod { get; set; }
-    public int ModCap { get; set; } = 0;
+    public int? ModCap { get; set; }
     public int? StrengthScoreRequired { get; set; }
     public bool StealthDisadvantage { get; set; } = false;
 }

@@ -4,3 +4,4 @@
 /DndWebApp/server/DndWebApp.Tests/obj
 
 *.cache
+src/DndWebApp.Api/obj/Debug/net9.0/DndWebApp.Api.AssemblyInfo.cs

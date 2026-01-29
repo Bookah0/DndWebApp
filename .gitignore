@@ -4,3 +4,4 @@
 /DndWebApp/server/DndWebApp.Tests/obj
 
 *.cache
+/src/DndWebApp.Api/obj

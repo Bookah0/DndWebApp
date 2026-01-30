@@ -1,10 +1,11 @@
 
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Services.Interfaces.Features;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
@@ -19,11 +20,7 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
 
     public async Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.AboveZeroOrThrow(dto.BackgroundId);
-
-        var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NullReferenceException($"Background with id {dto.BackgroundId} could not be found");
+        var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
 
         var bgFeature = new BackgroundFeature
         {
@@ -39,7 +36,7 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
 
     public async Task DeleteAsync(int id)
     {
-        var feature = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Background Feature with id {id} could not be found");
+        var feature = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
         await repo.DeleteAsync(feature);
     }
 
@@ -50,19 +47,16 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
 
     public async Task<BackgroundFeature> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Background Feature with id {id} could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
     }
 
     public async Task UpdateAsync(BackgroundFeatureDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-
-        var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Background Feature with id {dto.Id} could not be found");
+        var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Background Feature with id {dto.Id} could not be found");
 
         if (feature.BackgroundId != dto.BackgroundId)
         {
-            feature.Background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NullReferenceException($"Background with id {dto.BackgroundId} could not be found");
+            feature.Background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
             feature.BackgroundId = dto.BackgroundId;
         }
 
@@ -77,8 +71,8 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
     {
         return sortFilter switch
         {
-            BackgroundFeatureSortFilter.Name => SortUtil.OrderByMany(features, [(l => l.Name)], descending),
-            BackgroundFeatureSortFilter.Background => SortUtil.OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),
+            BackgroundFeatureSortFilter.Name => OrderByMany(features, [(l => l.Name)], descending),
+            BackgroundFeatureSortFilter.Background => OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),
             _ => features,
         };
     }

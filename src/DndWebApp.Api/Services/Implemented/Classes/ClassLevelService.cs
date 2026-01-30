@@ -1,8 +1,9 @@
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.SortUtil;
 namespace DndWebApp.Api.Services.Implemented.Classes;
 
 public partial class ClassLevelService : IClassLevelService
@@ -24,18 +25,18 @@ public partial class ClassLevelService : IClassLevelService
 
     public async Task<ClassLevel> AddLevelToClassAsync(ClassLevelDto dto)
     {
-        ValidationUtil.AboveZeroOrThrow(dto.Level);
-        ValidationUtil.AboveZeroOrThrow(dto.ClassId);
-        ValidationUtil.AboveZeroOrThrow(dto.ProficiencyBonus);
-
         AClass? clss;
 
-        if (!dto.isSubclassLevel)
+        if (!dto.IsSubclassLevel)
+        {
             clss = await classRepo.GetByIdAsync(dto.ClassId)
-            ?? throw new NullReferenceException($"No class with id {dto.ClassId} can be found");
-        else
+                ?? throw new NotFoundException($"No class with id {dto.ClassId} can be found");
+        }
+        else 
+        {
             clss = await subclassRepo.GetByIdAsync(dto.ClassId)
-            ?? throw new NullReferenceException($"No subclass with id {dto.ClassId} can be found");
+                ?? throw new NotFoundException($"No subclass with id {dto.ClassId} can be found");
+        }
 
         ClassLevel level = new()
         {
@@ -50,7 +51,7 @@ public partial class ClassLevelService : IClassLevelService
 
         foreach (var featureId in dto.NewFeatureIds)
         {
-            var feature = await featureRepo.GetByIdAsync(featureId) ?? throw new NullReferenceException($"Feature with id {featureId} could not be found");
+            var feature = await featureRepo.GetByIdAsync(featureId) ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
             level.NewFeatures.Add(feature);
         }
 
@@ -65,11 +66,8 @@ public partial class ClassLevelService : IClassLevelService
 
     public async Task EditClassLevelAsync(ClassLevelDto dto)
     {
-        ValidationUtil.AboveZeroOrThrow(dto.Level);
-        ValidationUtil.AboveZeroOrThrow(dto.ClassId);
-        ValidationUtil.AboveZeroOrThrow(dto.ProficiencyBonus);
-
-        var level = await levelRepo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Class level with id {dto.Id} could not be found");
+        var level = await levelRepo.GetByIdAsync(dto.Id) 
+            ?? throw new NotFoundException($"Class level with id {dto.Id} could not be found");
 
         level.Level = dto.Level;
         level.ClassId = dto.ClassId;
@@ -79,16 +77,16 @@ public partial class ClassLevelService : IClassLevelService
         {
             AClass? newClass;
 
-            if (!dto.isSubclassLevel)
+            if (!dto.IsSubclassLevel)
             {
-                newClass = await classRepo.GetByIdAsync(dto.ClassId) ?? throw new NullReferenceException($"No class with id {dto.ClassId} can be found");
+                newClass = await classRepo.GetByIdAsync(dto.ClassId) ?? throw new NotFoundException($"No class with id {dto.ClassId} can be found");
                 level.Class = newClass;
                 newClass.ClassLevels.Add(level);
                 await classRepo.UpdateAsync((Class)newClass);
             }
             else
             {
-                newClass = await subclassRepo.GetByIdAsync(dto.ClassId) ?? throw new NullReferenceException($"No subclass with id {dto.ClassId} can be found");
+                newClass = await subclassRepo.GetByIdAsync(dto.ClassId) ?? throw new NotFoundException($"No subclass with id {dto.ClassId} can be found");
                 level.Class = newClass;
                 newClass.ClassLevels.Add(level);
                 await subclassRepo.UpdateAsync((Subclass)newClass);
@@ -106,7 +104,7 @@ public partial class ClassLevelService : IClassLevelService
 
     public async Task DeleteClassLevelAsync(int id)
     {
-        var level = await levelRepo.GetByIdAsync(id) ?? throw new NullReferenceException($"Class level with id {id} could not be found");
+        var level = await levelRepo.GetByIdAsync(id) ?? throw new NotFoundException($"Class level with id {id} could not be found");
         await levelRepo.DeleteAsync(level);
     }
 
@@ -114,23 +112,23 @@ public partial class ClassLevelService : IClassLevelService
     {
         if (isSubclass)
         {
-            var classWithLevels = await subclassRepo.GetByIdAsync(classId) ?? throw new NullReferenceException($"No subclass with id {classId} can be found");
+            var classWithLevels = await subclassRepo.GetByIdAsync(classId) ?? throw new NotFoundException($"No subclass with id {classId} can be found");
             return classWithLevels.ClassLevels;
         }
         else
         {
-            var classWithLevels = await classRepo.GetByIdAsync(classId) ?? throw new NullReferenceException($"No class with id {classId} can be found");
+            var classWithLevels = await classRepo.GetByIdAsync(classId) ?? throw new NotFoundException($"No class with id {classId} can be found");
             return classWithLevels.ClassLevels;
         }
     }
 
     public async Task<ClassLevel> GetLevelByIdAsync(int id)
     {
-        return await levelRepo.GetByIdAsync(id) ?? throw new NullReferenceException($"Class level with id {id} could not be found");
+        return await levelRepo.GetByIdAsync(id) ?? throw new NotFoundException($"Class level with id {id} could not be found");
     }
 
     public ICollection<ClassLevel> SortByLevel(ICollection<ClassLevel> levels, bool descending = false)
     {
-        return SortUtil.OrderByMany(levels, [(l => l.Level)], descending);
+        return OrderByMany(levels, [(l => l.Level)], descending);
     }
 }

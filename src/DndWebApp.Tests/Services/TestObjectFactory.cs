@@ -1,5 +1,6 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.Spells;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Models.World;

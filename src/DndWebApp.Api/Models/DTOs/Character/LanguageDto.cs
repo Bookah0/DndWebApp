@@ -1,10 +1,26 @@
-namespace DndWebApp.Api.Models.DTOs;
+using System.ComponentModel.DataAnnotations;
+
+namespace DndWebApp.Api.Models.DTOs.Character;
 
 public class LanguageDto
 {
     public int Id { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(100)]
     public required string Name { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(100)]
     public required string Family { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(100)]
     public required string Script { get; set; }
+
+    [Required]
     public required bool IsHomebrew { get; set; }
 }

@@ -1,10 +1,11 @@
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
+using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.NormalizationUtil;
+using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
@@ -21,19 +22,12 @@ public class WeaponService
 
     public async Task<Weapon> CreateAsync(WeaponDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.HasContentOrThrow(dto.DamageDice);
-        ValidationUtil.AboveZeroOrThrow(dto.Weight);
-        ValidationUtil.AboveZeroOrThrow(dto.Value);
-        ValidationUtil.AboveZeroOrThrow(dto.Range);
-
-        var dtoCategory = NormalizationUtil.ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
-        var dtoWeaponType = NormalizationUtil.ParseEnumOrThrow<WeaponType>(dto.WeaponType);
-        var dtoMainDamageType = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.MainDamageType);
-        var dtoOtherDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
-        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
-        var dtoProperties = NormalizationUtil.ParseEnumOrThrow<WeaponProperty>(dto.Properties);
+        var dtoCategory = ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
+        var dtoWeaponType = ParseEnumOrThrow<WeaponType>(dto.WeaponType);
+        var dtoMainDamageType = ParseEnumOrThrow<DamageType>(dto.MainDamageType);
+        var dtoOtherDamageTypes = ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
+        var dtoRarity = ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoProperties = ParseEnumOrThrow<WeaponProperty>(dto.Properties);
 
         Weapon weapon = new()
         {
@@ -60,7 +54,7 @@ public class WeaponService
 
     public async Task DeleteAsync(int id)
     {
-        var weapon = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Weapon with id {id} could not be found");
+        var weapon = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
         await repo.DeleteAsync(weapon);
     }
 
@@ -71,26 +65,19 @@ public class WeaponService
 
     public async Task<Weapon> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Weapon with id {id} could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
     }
 
     public async Task UpdateAsync(WeaponDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.HasContentOrThrow(dto.DamageDice);
-        ValidationUtil.AboveZeroOrThrow(dto.Weight);
-        ValidationUtil.AboveZeroOrThrow(dto.Weight);
-        ValidationUtil.AboveZeroOrThrow(dto.Range);
+        var dtoCategory = ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
+        var dtoWeaponType = ParseEnumOrThrow<WeaponType>(dto.WeaponType);
+        var dtoMainDamageType = ParseEnumOrThrow<DamageType>(dto.MainDamageType);
+        var dtoOtherDamageTypes = ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
+        var dtoRarity = ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoProperties = ParseEnumOrThrow<WeaponProperty>(dto.Properties);
 
-        var dtoCategory = NormalizationUtil.ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
-        var dtoWeaponType = NormalizationUtil.ParseEnumOrThrow<WeaponType>(dto.WeaponType);
-        var dtoMainDamageType = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.MainDamageType);
-        var dtoOtherDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
-        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
-        var dtoProperties = NormalizationUtil.ParseEnumOrThrow<WeaponProperty>(dto.Properties);
-
-        var weapon = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Weapon with id {dto.Id} could not be found");
+        var weapon = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Weapon with id {dto.Id} could not be found");
 
         weapon.Name = dto.Name;
         weapon.Description = dto.Description;
@@ -116,12 +103,12 @@ public class WeaponService
     {
         return sortFilter switch
         {
-            WeaponSortFilter.Name => SortUtil.OrderByMany(weapons, [(i => i.Name)], descending),
-            WeaponSortFilter.Category => SortUtil.OrderByMany(weapons, [(i => i.WeaponCategory), (i => i.Name)], descending),
-            WeaponSortFilter.Type => SortUtil.OrderByMany(weapons, [(i => i.WeaponType), (i => i.Name)], descending),
-            WeaponSortFilter.Value => SortUtil.OrderByMany(weapons, [(i => i.Value), (i => i.Name)], descending),
-            WeaponSortFilter.Weight => SortUtil.OrderByMany(weapons, [(i => i.Weight), (i => i.Name)], descending),
-            WeaponSortFilter.Rarity => SortUtil.OrderByMany(weapons, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
+            WeaponSortFilter.Name => OrderByMany(weapons, [(i => i.Name)], descending),
+            WeaponSortFilter.Category => OrderByMany(weapons, [(i => i.WeaponCategory), (i => i.Name)], descending),
+            WeaponSortFilter.Type => OrderByMany(weapons, [(i => i.WeaponType), (i => i.Name)], descending),
+            WeaponSortFilter.Value => OrderByMany(weapons, [(i => i.Value), (i => i.Name)], descending),
+            WeaponSortFilter.Weight => OrderByMany(weapons, [(i => i.Weight), (i => i.Name)], descending),
+            WeaponSortFilter.Rarity => OrderByMany(weapons, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
             _ => weapons,
         };
     }

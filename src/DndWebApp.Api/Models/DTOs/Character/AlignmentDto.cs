@@ -1,11 +1,23 @@
-using DndWebApp.Api.Models.World.Enums;
+using System.ComponentModel.DataAnnotations;
 
-namespace DndWebApp.Api.Models.DTOs;
+namespace DndWebApp.Api.Models.DTOs.Character;
 
 public class AlignmentDto
 {
     public int Id { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(50)]
     public required string Name { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(10)]
     public required string Abbreviation { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(1000)]
     public required string Description { get; set; }
 }

@@ -22,27 +22,18 @@ public class ExternalBackgroundService : IExternalBackgroundService
     public async Task FetchExternalBackgroundsAsync(CancellationToken cancellationToken = default)
     {
         if ((await repo.GetAllAsync()).Count > 0)
-        {
-            Console.WriteLine("Backgrounds already exist in the database. Skipping fetch.");
-            return;
-        }
+            return; // Abilities already exist in the database. Skipping fetch.
 
         var getListResponse = await client.GetAsync("https://api.open5e.com/v2/backgrounds/", cancellationToken);
         var backgroundResults = await JsonSerializer.DeserializeAsync<List<EBackgroundDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
         if (backgroundResults is null || backgroundResults.Count == 0)
-        {
-            Console.WriteLine("No backgrounds found in external API.");
-            return;
-        }
+            throw new InvalidOperationException("No backgrounds found in external API.");
 
         foreach (var eBackground in backgroundResults)
         {
             if (eBackground is null)
-            {
-                Console.WriteLine($"Failed to deserialize background.");
-                continue;
-            }
+                throw new InvalidOperationException($"Failed to deserialize background.");
 
             var background = new Background
             {

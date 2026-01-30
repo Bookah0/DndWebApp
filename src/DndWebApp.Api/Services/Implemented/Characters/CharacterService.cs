@@ -1,16 +1,11 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
-using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Services.Util;
-using DndWebApp.Api.Models.Items.Enums;
+using static DndWebApp.Api.Services.Util.SortUtil;
+using static DndWebApp.Api.Services.Util.ValidationUtil;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.World.Enums;
-using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Models.Spells;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -57,7 +52,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task<Character> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new ArgumentException($"Character with id {id} could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Character with id {id} could not be found");
     }
 
     public async Task LevelUpAsync(ICollection<Spell> chosenSpells, int characterId)
@@ -66,7 +61,7 @@ public partial class CharacterService : ICharacterService
         var newLvl = character.Level + 1;
 
         var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(character.ClassId, newLvl)
-            ?? throw new ArgumentException($"Class level with classId {character.ClassId} at level {newLvl} could not be found");
+            ?? throw new NotFoundException($"Class level with classId {character.ClassId} at level {newLvl} could not be found");
 
         character.ProficiencyBonus = 1 + (int)Math.Ceiling((double)newLvl / 4);
         character.CurrentSpellSlots = latestLevel.SpellSlots;
@@ -88,10 +83,10 @@ public partial class CharacterService : ICharacterService
         var character = await GetByIdAsync(characterId);
 
         var subclass = await subclassRepo.GetByIdAsync(subclassId)
-            ?? throw new ArgumentException($"Subclass with id {subclassId} could not be found");
+            ?? throw new NotFoundException($"Subclass with id {subclassId} could not be found");
 
         if (character.SubClassId is not null)
-            throw new ArgumentException($"Character already has a subclass with id {character.SubClassId}");
+            throw new ValidationException($"Character already has a subclass with id {character.SubClassId}");
 
         character.SubClassId = subclassId;
         character.SubClass = subclass;
@@ -107,11 +102,11 @@ public partial class CharacterService : ICharacterService
 
     public async Task SpendHitDice(int nDice, int characterId)
     {
-        ValidationUtil.AboveZeroOrThrow(nDice);
+        AboveZeroOrThrow(nDice);
         var character = await GetByIdAsync(characterId);
 
         if (character.CombatStats.CurrentHitDice - nDice < 0)
-            throw new ArgumentException($"Character has {character.CombatStats.CurrentHitDice} hit dice to spend, cant spend {nDice}");
+            throw new ValidationException($"Character has {character.CombatStats.CurrentHitDice} hit dice to spend, cant spend {nDice}");
 
         character.CombatStats.CurrentHitDice -= nDice;
         await repo.UpdateAsync(character);
@@ -122,7 +117,7 @@ public partial class CharacterService : ICharacterService
         var character = await GetByIdAsync(characterId);
 
         var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(character.ClassId, character.Level)
-            ?? throw new ArgumentException($"Class level with classId {character.ClassId} at level {character.Level} could not be found");
+            ?? throw new NotFoundException($"Class level with classId {character.ClassId} at level {character.Level} could not be found");
             
         character.CombatStats.CurrentHitDice = character.CombatStats.MaxHitDice;
         character.CombatStats.CurrentHP = character.CombatStats.MaxHP;
@@ -134,7 +129,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task TakeDamage(int characterId, int change)
     {
-        ValidationUtil.AboveZeroOrThrow(change);
+        AboveZeroOrThrow(change);
 
         var character = await GetByIdAsync(characterId);
         character.CombatStats.TempHP -= change;
@@ -149,7 +144,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task HealDamage(int characterId, int change)
     {
-        ValidationUtil.AboveZeroOrThrow(change);
+        AboveZeroOrThrow(change);
 
         var character = await GetByIdAsync(characterId);
         character.CombatStats.CurrentHP += change;
@@ -163,10 +158,10 @@ public partial class CharacterService : ICharacterService
         var character = await GetByIdAsync(characterId);
 
         if (character.CurrentSpellSlots is null)
-            throw new ArgumentException($"Character has no class specific slots");
+            throw new ValidationException($"Character has no class specific slots");
 
         var slot = character.CurrentClassSlots.FirstOrDefault(s => s.Name == slotName) 
-            ?? throw new ArgumentException($"Could not find slot with name {slotName}");
+            ?? throw new NotFoundException($"Could not find slot with name {slotName}");
 
         slot.Quantity += change;
         await repo.UpdateAsync(character);
@@ -177,7 +172,7 @@ public partial class CharacterService : ICharacterService
         var character = await GetByIdAsync(characterId);
 
         if (character.CurrentSpellSlots is null)
-            throw new ArgumentException($"Character has no spellcasting");
+            throw new ValidationException($"Character has no spellcasting");
 
         character.CurrentSpellSlots[slotLevel - 1] += change;
         await repo.UpdateAsync(character);
@@ -187,9 +182,9 @@ public partial class CharacterService : ICharacterService
     {
         return sortFilter switch
         {
-            CharacterSortFilter.Name => SortUtil.OrderByMany(characters, [(c => c.Name)], descending),
-            CharacterSortFilter.Level => SortUtil.OrderByMany(characters, [(c => c.Level), (c => c.Name)], descending),
-            CharacterSortFilter.TimeCreated => SortUtil.OrderByMany(characters, [(c => c.TimeCreated), (c => c.Name)], descending),
+            CharacterSortFilter.Name => OrderByMany(characters, [(c => c.Name)], descending),
+            CharacterSortFilter.Level => OrderByMany(characters, [(c => c.Level), (c => c.Name)], descending),
+            CharacterSortFilter.TimeCreated => OrderByMany(characters, [(c => c.TimeCreated), (c => c.Name)], descending),
             _ => characters,
         };
     }

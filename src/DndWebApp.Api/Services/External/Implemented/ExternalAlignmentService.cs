@@ -22,19 +22,13 @@ public class ExternalAlignmentService : IExternalAlignmentService
     public async Task FetchExternalAlignmentsAsync(CancellationToken cancellationToken = default)
     {
         if ((await repo.GetAllAsync()).Count > 0)
-        {
-            Console.WriteLine("Alignments already exist in the database. Skipping fetch.");
-            return;
-        }
+            return; // Abilities already exist in the database. Skipping fetch.
         
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/alignments/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
         if (result is null || result.Results.Count == 0)
-        {
-            Console.WriteLine("No alignment found in external API.");
-            return;
-        }
+            throw new InvalidOperationException("No alignment found in external API.");
 
         foreach (var item in result.Results)
         {
@@ -42,10 +36,7 @@ public class ExternalAlignmentService : IExternalAlignmentService
             var eAlignment = await JsonSerializer.DeserializeAsync<EAlignmentDto>(getResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
             if (eAlignment is null)
-            {
-                Console.WriteLine($"Failed to deserialize alignment {item.Index}.");
-                continue;
-            }
+                throw new InvalidOperationException($"Failed to deserialize alignment {item.Index}.");
 
             var alignment = new Alignment
             {

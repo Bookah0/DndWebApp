@@ -1,8 +1,10 @@
-using DndWebApp.Api.Models.DTOs;
+
+using DndWebApp.Api.Middlewares.ExceptionHandling;
+using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -19,11 +21,6 @@ public class AlignmentService : IAlignmentService
 
     public async Task<Alignment> CreateAsync(AlignmentDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.HasContentOrThrow(dto.Abbreviation);
-
-
         Alignment alignment = new()
         {
             Name = dto.Name,
@@ -36,7 +33,7 @@ public class AlignmentService : IAlignmentService
 
     public async Task DeleteAsync(int id)
     {
-        var alignment = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Alignment could not be found");
+        var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
         await repo.DeleteAsync(alignment);
     }
 
@@ -47,16 +44,12 @@ public class AlignmentService : IAlignmentService
 
     public async Task<Alignment> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Alignment could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
     }
 
     public async Task UpdateAsync(AlignmentDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.HasContentOrThrow(dto.Abbreviation);
-
-        var alignment = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Alignment could not be found");
+        var alignment = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException("Alignment could not be found");
 
         alignment.Name = dto.Name;
         alignment.Description = dto.Description;
@@ -74,7 +67,7 @@ public class AlignmentService : IAlignmentService
             "Lawful Evil", "Neutral Evil", "Chaotic Evil"
         ];
 
-        var alignmentOrder = SortUtil.CreateOrderLookup(fixedSortOrder);
+        var alignmentOrder = CreateOrderLookup(fixedSortOrder);
 
         return [.. alignments.OrderBy(a => alignmentOrder[a.Name])];
     }

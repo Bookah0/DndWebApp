@@ -31,19 +31,13 @@ public class ExternalClassService : IExternalClassService
     public async Task FetchExternalClassesAsync(CancellationToken cancellationToken = default)
     {
         if ((await classRepo.GetAllAsync()).Count > 0)
-        {
-            Console.WriteLine("Classes already exist in the database. Skipping fetch.");
-            return;
-        }
+            throw new InvalidOperationException("Classes already exist in the database. Skipping fetch.");
 
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/classes/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
         if (result is null || result.Results.Count == 0)
-        {
-            Console.WriteLine("No classes found in external API.");
-            return;
-        }
+            throw new InvalidOperationException("No classes found in external API.");
 
         foreach (var item in result.Results)
         {
@@ -51,10 +45,7 @@ public class ExternalClassService : IExternalClassService
             var eClass = await JsonSerializer.DeserializeAsync<EClassDto>(getResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
             if (eClass is null)
-            {
-                Console.WriteLine($"Failed to deserialize class {item.Index}.");
-                continue;
-            }
+                throw new InvalidOperationException($"Failed to deserialize class {item.Index}.");
 
             Ability? spellcastingAbility = null;
 
@@ -109,10 +100,7 @@ public class ExternalClassService : IExternalClassService
         var result = await JsonSerializer.DeserializeAsync<List<EClassLevelDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
         if (result is null || result.Count == 0)
-        {
-            Console.WriteLine("No classes found in external API.");
-            return;
-        }
+            throw new InvalidOperationException("No classes found in external API.");
 
         var abilityScoreIncreaseChoiceList = await CreateAbilityIncreaseChoiceList();
         var currentAbilityScoreBonuses = 0;
@@ -175,10 +163,7 @@ public class ExternalClassService : IExternalClassService
             var result = await JsonSerializer.DeserializeAsync<List<ESubclassDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
             if (result is null || result.Count == 0)
-            {
-                Console.WriteLine("No subclasses found in external API.");
-                return;
-            }
+                throw new InvalidOperationException("No subclasses found in external API.");
 
             foreach (var eSubclass in result)
             {

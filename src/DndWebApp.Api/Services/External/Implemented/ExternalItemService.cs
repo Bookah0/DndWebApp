@@ -32,7 +32,7 @@ public class ExternalItemService : IExternalItemService
     {
         if ((await repo.GetAllAsync()).Count > 0)
         {
-            Console.WriteLine("Items already exist in the database. Skipping fetch.");
+            throw new InvalidOperationException("Items already exist in the database. Skipping fetch.");
             return;
         }
 
@@ -41,7 +41,7 @@ public class ExternalItemService : IExternalItemService
 
         if (result is null || result.Results.Count == 0)
         {
-            Console.WriteLine("No items found in external API.");
+            throw new InvalidOperationException("No items found in external API.");
             return;
         }
 

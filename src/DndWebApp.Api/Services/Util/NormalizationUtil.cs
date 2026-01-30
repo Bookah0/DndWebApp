@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace DndWebApp.Api.Services.Util;
@@ -11,7 +12,7 @@ public static class NormalizationUtil
 
         if (!Enum.TryParse<TEnum>(enumAsString, ignoreCase, out var result))
         {
-            throw new InvalidOperationException($"Could not convert {enumAsString} to Enum of type {typeof(TEnum).Name}.");
+            throw new ValidationException($"Could not convert {enumAsString} to Enum of type {typeof(TEnum).Name}.");
         }
         return result;
     }

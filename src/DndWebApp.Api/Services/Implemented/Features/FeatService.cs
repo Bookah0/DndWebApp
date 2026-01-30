@@ -1,9 +1,9 @@
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
@@ -16,9 +16,6 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
 
     public async Task<Feat> CreateAsync(FeatDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-
         var feat = new Feat
         {
             Name = dto.Name,
@@ -31,7 +28,7 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
 
     public async Task DeleteAsync(int id)
     {
-        var feat = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Feat with id {id} could not be found");
+        var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
         await repo.DeleteAsync(feat);
     }
 
@@ -42,15 +39,12 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
 
     public async Task<Feat> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Feat with id {id} could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
     }
 
     public async Task UpdateAsync(FeatDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-
-        var feat = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Feat with id {dto.Id} could not be found");
+        var feat = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Feat with id {dto.Id} could not be found");
 
         feat.Name = dto.Name;
         feat.Description = dto.Description;
@@ -64,6 +58,6 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
 
     public ICollection<Feat> SortBy(ICollection<Feat> feats, bool descending = false)
     {
-        return SortUtil.OrderByMany(feats, [(f => f.Name)], descending);
+        return OrderByMany(feats, [(f => f.Name)], descending);
     }
 }

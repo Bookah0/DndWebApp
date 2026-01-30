@@ -1,10 +1,11 @@
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
+using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.NormalizationUtil;
+using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
@@ -21,14 +22,8 @@ public class ArmorService
 
     public async Task<Armor> CreateAsync(ArmorDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.AboveZeroOrThrow(dto.Weight);
-        ValidationUtil.AboveZeroOrThrow(dto.Value);
-        ValidationUtil.AboveZeroOrThrow(dto.BaseArmorClass);
-
-        var dtoCategory = NormalizationUtil.ParseEnumOrThrow<ArmorCategory>(dto.Category);
-        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoCategory = ParseEnumOrThrow<ArmorCategory>(dto.Category);
+        var dtoRarity = ParseEnumOrThrow<ItemRarity>(dto.Rarity);
 
         Armor armor = new()
         {
@@ -53,7 +48,7 @@ public class ArmorService
 
     public async Task DeleteAsync(int id)
     {
-        var armor = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Armor with id {id} could not be found");
+        var armor = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
         await repo.DeleteAsync(armor);
     }
 
@@ -64,21 +59,15 @@ public class ArmorService
 
     public async Task<Armor> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Armor with id {id} could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
     }
 
     public async Task UpdateAsync(ArmorDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.AboveZeroOrThrow(dto.Weight);
-        ValidationUtil.AboveZeroOrThrow(dto.Value);
-        ValidationUtil.AboveZeroOrThrow(dto.BaseArmorClass);
+        var dtoCategory = ParseEnumOrThrow<ArmorCategory>(dto.Category);
+        var dtoRarity = ParseEnumOrThrow<ItemRarity>(dto.Rarity);
 
-        var dtoCategory = NormalizationUtil.ParseEnumOrThrow<ArmorCategory>(dto.Category);
-        var dtoRarity = NormalizationUtil.ParseEnumOrThrow<ItemRarity>(dto.Rarity);
-
-        var armor = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Armor with id {dto.Id} could not be found");
+        var armor = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Armor with id {dto.Id} could not be found");
 
         armor.Name = dto.Name;
         armor.Description = dto.Description;
@@ -101,12 +90,12 @@ public class ArmorService
     {
         return sortFilter switch
         {
-            ArmorSortFilter.Name => SortUtil.OrderByMany(armors, [(i => i.Name)], descending),
-            ArmorSortFilter.Category => SortUtil.OrderByMany(armors, [(i => i.Category), (i => i.Name)], descending),
-            ArmorSortFilter.AC => SortUtil.OrderByMany(armors, [(i => i.BaseArmorClass), (i => i.Name)], descending),
-            ArmorSortFilter.Value => SortUtil.OrderByMany(armors, [(i => i.Value), (i => i.Name)], descending),
-            ArmorSortFilter.Weight => SortUtil.OrderByMany(armors, [(i => i.Weight), (i => i.Name)], descending),
-            ArmorSortFilter.Rarity => SortUtil.OrderByMany(armors, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
+            ArmorSortFilter.Name => OrderByMany(armors, [(i => i.Name)], descending),
+            ArmorSortFilter.Category => OrderByMany(armors, [(i => i.Category), (i => i.Name)], descending),
+            ArmorSortFilter.AC => OrderByMany(armors, [(i => i.BaseArmorClass), (i => i.Name)], descending),
+            ArmorSortFilter.Value => OrderByMany(armors, [(i => i.Value), (i => i.Name)], descending),
+            ArmorSortFilter.Weight => OrderByMany(armors, [(i => i.Weight), (i => i.Name)], descending),
+            ArmorSortFilter.Rarity => OrderByMany(armors, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
             _ => armors,
         };
     }

@@ -1,9 +1,10 @@
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Services.Interfaces.Features;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
@@ -18,11 +19,7 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
 
     public async Task<Trait> CreateAsync(TraitDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.AboveZeroOrThrow(dto.RaceId);
-
-        var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NullReferenceException($"Trait level with id {dto.RaceId} could not be found");
+        var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NotFoundException($"Trait level with id {dto.RaceId} could not be found");
 
         var trait = new Trait
         {
@@ -38,7 +35,7 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
 
     public async Task DeleteAsync(int id)
     {
-        var trait = await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Trait with id {id} could not be found");
+        var trait = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Trait with id {id} could not be found");
         await repo.DeleteAsync(trait);
     }
 
@@ -49,19 +46,16 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
 
     public async Task<Trait> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException($"Trait with id {id} could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Trait with id {id} could not be found");
     }
 
     public async Task UpdateAsync(TraitDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-
-        var trait = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException($"Trait with id {dto.Id} could not be found");
+        var trait = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Trait with id {dto.Id} could not be found");
 
         if (trait.RaceId != dto.RaceId)
         {
-            trait.FromRace = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NullReferenceException($"Race with id {dto.RaceId} could not be found");
+            trait.FromRace = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NotFoundException($"Race with id {dto.RaceId} could not be found");
             trait.RaceId = dto.RaceId;
         }
 
@@ -81,8 +75,8 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
     {
         return sortFilter switch
         {
-            TraitSortFilter.Name => SortUtil.OrderByMany(traits, [(t => t.Name)], descending),
-            TraitSortFilter.Race => SortUtil.OrderByMany(traits, [(t => t!.Name), (t => t.Name)], descending),
+            TraitSortFilter.Name => OrderByMany(traits, [(t => t.Name)], descending),
+            TraitSortFilter.Race => OrderByMany(traits, [(t => t!.Name), (t => t.Name)], descending),
             _ => traits,
         };
     }

@@ -24,7 +24,7 @@ public class ExternalFeatService : IExternalFeatService
     {
         if ((await repo.GetAllAsync()).Count > 0)
         {
-            Console.WriteLine("Feats already exist in the database. Skipping fetch.");
+            throw new InvalidOperationException("Feats already exist in the database. Skipping fetch.");
             return;
         }
         
@@ -33,7 +33,7 @@ public class ExternalFeatService : IExternalFeatService
         
         if (featResults is null || featResults.Count == 0)
         {
-            Console.WriteLine("No feats found on page 1 in external API.");
+            throw new InvalidOperationException("No feats found on page 1 in external API.");
             return;
         }
 
@@ -42,7 +42,7 @@ public class ExternalFeatService : IExternalFeatService
 
         if (featResults2 is null || featResults2.Count == 0)
         {
-            Console.WriteLine("No feats found on page 2 in external API.");
+            throw new InvalidOperationException("No feats found on page 2 in external API.");
             return;
         }
 
@@ -52,7 +52,7 @@ public class ExternalFeatService : IExternalFeatService
         {
             if (eFeat is null)
             {
-                Console.WriteLine($"Failed to deserialize feat.");
+                throw new InvalidOperationException($"Failed to deserialize feat.");
                 continue;
             }
 

@@ -26,7 +26,7 @@ public class ExternalSpellService : IExternalSpellService
     {
         if ((await repo.GetAllAsync()).Count > 0)
         {
-            Console.WriteLine("Spells already exist in the database. Skipping fetch.");
+            throw new InvalidOperationException("Spells already exist in the database. Skipping fetch.");
             return;
         }
 
@@ -35,7 +35,7 @@ public class ExternalSpellService : IExternalSpellService
 
         if (resultOpen is null || resultOpen.Count == 0)
         {
-            Console.WriteLine("No spells found in external APIs.");
+            throw new InvalidOperationException("No spells found in external APIs.");
             return;
         }
 
@@ -54,7 +54,7 @@ public class ExternalSpellService : IExternalSpellService
 
             if (e5eSpell is null)
             {
-                Console.WriteLine($"Failed to deserialize spell from https://www.dnd5eapi.co/api/2014/spells/{eOpenSpell.Index}");
+                throw new InvalidOperationException($"Failed to deserialize spell from https://www.dnd5eapi.co/api/2014/spells/{eOpenSpell.Index}");
             }
 
             var (range, rangeValue) = e5eSpell != null ? ParseSpellRange(e5eSpell.Range) : ParseSpellRange(eOpenSpell!.Range);

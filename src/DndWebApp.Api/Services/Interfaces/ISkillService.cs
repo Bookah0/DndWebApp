@@ -1,5 +1,5 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Services.Enums;
 
 namespace DndWebApp.Api.Services.Interfaces;

@@ -27,7 +27,7 @@ public class ExternalSpeciesService : IExternalSpeciesService
     {
         if ((await raceRepo.GetAllAsync()).Count > 0)
         {
-            Console.WriteLine("Races already exist in the database. Skipping fetch.");
+            throw new InvalidOperationException("Races already exist in the database. Skipping fetch.");
             return;
         }
         
@@ -36,7 +36,7 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
         if (result is null || result.Results.Count == 0)
         {
-            Console.WriteLine("No races found in external API.");
+            throw new InvalidOperationException("No races found in external API.");
             return;
         }
 
@@ -47,7 +47,7 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
             if (eRace is null)
             {
-                Console.WriteLine($"Failed to deserialize race {item.Index}.");
+                throw new InvalidOperationException($"Failed to deserialize race {item.Index}.");
                 continue;
             }
 
@@ -91,12 +91,12 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
             if (eSubrace is null)
             {
-                Console.WriteLine($"Failed to deserialize subrace {item.Index}.");
+                throw new InvalidOperationException($"Failed to deserialize subrace {item.Index}.");
                 continue;
             }
             if (await subraceRepo.GetByNameAsync(eSubrace.Name) is not null)
             {
-                Console.WriteLine($"Subrace {eSubrace.Name} already exists. Skipping.");
+                throw new InvalidOperationException($"Subrace {eSubrace.Name} already exists. Skipping.");
                 continue;
             }
 

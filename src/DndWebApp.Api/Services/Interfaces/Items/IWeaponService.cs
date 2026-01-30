@@ -1,4 +1,4 @@
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Services.Enums;
 

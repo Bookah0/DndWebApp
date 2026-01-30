@@ -1,3 +1,4 @@
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Repositories.Interfaces;
 
@@ -9,7 +10,7 @@ public static class ValidationUtil
     {
         if (string.IsNullOrWhiteSpace(str))
         {
-            throw new ArgumentException($"{nameof(str)} cannot be null, empty, or whitespace.");
+            throw new ValidationException($"{nameof(str)} cannot be null, empty, or whitespace.");
         }
     }
 
@@ -17,7 +18,7 @@ public static class ValidationUtil
     {
         if (num == null)
         {
-            throw new ArgumentException($"{nameof(num)} cannot be null.");
+            throw new ValidationException($"{nameof(num)} cannot be null.");
         }
     }
 
@@ -25,14 +26,14 @@ public static class ValidationUtil
     {
         if (num == null || num < 0)
         {
-            throw new ArgumentException($"{nameof(num)} cannot be null, zero or negative.");
+            throw new ValidationException($"{nameof(num)} cannot be null, zero or negative.");
         }
     }
 
     public static async Task IdExist<T, C>(int id, T repo) where T : IRepository<C>
     {
         if (await repo.GetByIdAsync(id) == null)
-            throw new ArgumentOutOfRangeException(nameof(id), $"Entity of type {typeof(T).Name} with id {id} does not exist.");
+            throw new NotFoundException($"Entity of type {typeof(T).Name} with id {id} does not exist.");
     }
 
     public static async Task IdsExist<T, C>(ICollection<int>? ids, T repo) where T : IRepository<C>
@@ -43,7 +44,7 @@ public static class ValidationUtil
         foreach (var id in ids)
         {
             if (await repo.GetByIdAsync(id) is null)
-                throw new ArgumentOutOfRangeException(nameof(ids), $"Entity of type {typeof(T).Name} with id {id} does not exist.");
+                throw new NotFoundException($"Entity of type {typeof(T).Name} with id {id} does not exist.");
         }
     }
 }

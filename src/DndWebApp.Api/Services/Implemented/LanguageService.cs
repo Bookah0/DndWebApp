@@ -1,9 +1,12 @@
-using DndWebApp.Api.Models.DTOs;
+
+using DndWebApp.Api.Middlewares.ExceptionHandling;
+using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.SortUtil;
+
 namespace DndWebApp.Api.Services.Implemented;
 
 public class LanguageService : ILanguageService
@@ -19,10 +22,6 @@ public class LanguageService : ILanguageService
 
     public async Task<Language> CreateAsync(LanguageDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Script);
-        ValidationUtil.HasContentOrThrow(dto.Family);
-
         Language language = new()
         {
             Name = dto.Name,
@@ -36,7 +35,7 @@ public class LanguageService : ILanguageService
 
     public async Task DeleteAsync(int id)
     {
-        var language = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Language could not be found");
+        var language = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found");
         await repo.DeleteAsync(language);
     }
 
@@ -47,16 +46,12 @@ public class LanguageService : ILanguageService
 
     public async Task<Language> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Language could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found");
     }
 
     public async Task UpdateAsync(LanguageDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Script);
-        ValidationUtil.HasContentOrThrow(dto.Family);
-
-        var language = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Language could not be found");
+        var language = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException("Language could not be found");
 
         language.Name = dto.Name;
         language.Script = dto.Script;
@@ -70,9 +65,9 @@ public class LanguageService : ILanguageService
     {
         return sortFilter switch
         {
-            LanguageSortFilter.Name => SortUtil.OrderByMany(languages, [(l => l.Name)], descending),
-            LanguageSortFilter.Family => SortUtil.OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
-            LanguageSortFilter.Script => SortUtil.OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
+            LanguageSortFilter.Name => OrderByMany(languages, [(l => l.Name)], descending),
+            LanguageSortFilter.Family => OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
+            LanguageSortFilter.Script => OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
             _ => languages,
         };
     }

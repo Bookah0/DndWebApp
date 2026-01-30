@@ -1,3 +1,4 @@
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Features;
@@ -24,10 +25,10 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task AddSpell(int spellId, int featureId)
     {
         var spell = await spellRepo.GetByIdAsync(spellId)
-            ?? throw new NullReferenceException($"Spell with id {spellId} could not be found");
+            ?? throw new NotFoundException($"Spell with id {spellId} could not be found");
 
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         feature.SpellsGained.Add(spell);
         await repo.UpdateAsync(feature);
@@ -36,10 +37,10 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task RemoveSpell(int spellId, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         var spell = feature.SpellsGained.FirstOrDefault(s => s.Id == spellId)
-            ?? throw new NullReferenceException($"Spell with id {spellId} was not in the list of spells");
+            ?? throw new NotFoundException($"Spell with id {spellId} was not in the list of spells");
 
         feature.SpellsGained.Remove(spell);
         await repo.UpdateAsync(feature);
@@ -48,7 +49,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task AddProficiency<TEnum>(TEnum proficiency, int featureId) where TEnum : struct, Enum
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         switch (proficiency)
         {
@@ -81,7 +82,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task RemoveProficiency<TEnum>(TEnum proficiency, int featureId) where TEnum : struct, Enum
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         var wasRemoved = proficiency switch
         {
@@ -95,7 +96,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         };
 
         if (!wasRemoved)
-            throw new NullReferenceException($"Proificiency {proficiency} could not be found in the list of type {proficiency.GetType().Name}");
+            throw new NotFoundException($"Proificiency {proficiency} could not be found in the list of type {proficiency.GetType().Name}");
 
         await repo.UpdateAsync(feature);
     }
@@ -103,7 +104,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task AddDamageAffinity(AffinityType affinityType, DamageType damageType, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         switch (affinityType)
         {
@@ -126,7 +127,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task RemoveDamageAffinity(AffinityType affinityType, DamageType damageType, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         var wasRemoved = affinityType switch
         {
@@ -137,7 +138,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         };
 
         if (!wasRemoved)
-            throw new NullReferenceException($"Damage type {damageType} could not be found in the list of type {affinityType}");
+            throw new NotFoundException($"Damage type {damageType} could not be found in the list of type {affinityType}");
 
         await repo.UpdateAsync(feature);
     }
@@ -145,7 +146,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task AddAbilityIncrease(int abilityId, int value, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         feature.AbilityIncreases.Add(new() { AbilityId = abilityId, Value = value });
     }
@@ -153,10 +154,10 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task RemoveAbilityIncrease(int abilityId, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         var abilityIncrease = feature.AbilityIncreases.FirstOrDefault(a => a.AbilityId == abilityId)
-            ?? throw new NullReferenceException($"AbilityIncrease with Ability id {abilityId} was not in the list of Ability Increases");
+            ?? throw new NotFoundException($"AbilityIncrease with Ability id {abilityId} was not in the list of Ability Increases");
 
         feature.AbilityIncreases.Remove(abilityIncrease);
         await repo.UpdateAsync(feature);
@@ -165,7 +166,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task AddAbilityIncreaseChoice(List<AbilityValue> options, string description, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         ((List<AbilityValue>)feature.AbilityIncreaseChoices).AddRange(options);
         await repo.UpdateAsync(feature);
@@ -174,7 +175,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task ClearAbilityIncreaseOptions(int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         feature.AbilityIncreaseChoices.Clear();
         await repo.UpdateAsync(feature);
@@ -183,7 +184,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task AddProficiencyChoice<TEnum>(List<TEnum> options, string description, int featureId) where TEnum : struct, Enum
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         switch (options[0])
         {
@@ -215,7 +216,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task RemoveProficiencyChoice<TEnum>(int choiceId, int featureId) where TEnum : struct, Enum
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NullReferenceException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
         switch (typeof(TEnum).Name)
         {
@@ -247,7 +248,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     private static void RemoveChoice<C>(ICollection<C> collection, int choiceId) where C : class
     {
         var choice = collection.FirstOrDefault(c => (c as dynamic).Id == choiceId)
-            ?? throw new NullReferenceException($"Choice with id {choiceId} could not be found");
+            ?? throw new NotFoundException($"Choice with id {choiceId} could not be found");
         collection.Remove(choice);
     }
 }

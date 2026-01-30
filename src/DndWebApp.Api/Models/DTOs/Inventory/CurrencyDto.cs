@@ -1,4 +1,4 @@
-namespace DndWebApp.Api.Models.DTOs;
+namespace DndWebApp.Api.Models.DTOs.Inventory;
 
 public class CurrencyDto
 {

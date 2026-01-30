@@ -26,7 +26,7 @@ public class ExternalSkillService : IExternalSkillService
     {
         if ((await repo.GetAllAsync()).Count > 0)
         {
-            Console.WriteLine("Skills already exist in the database. Skipping fetch.");
+            throw new InvalidOperationException("Skills already exist in the database. Skipping fetch.");
             return;
         }
         
@@ -35,7 +35,7 @@ public class ExternalSkillService : IExternalSkillService
 
         if (result is null || result.Results.Count == 0)
         {
-            Console.WriteLine("No skills found in external API.");
+            throw new InvalidOperationException("No skills found in external API.");
             return;
         }
 
@@ -46,7 +46,7 @@ public class ExternalSkillService : IExternalSkillService
 
             if (eSkill is null)
             {
-                Console.WriteLine($"Failed to deserialize skill {item.Index}.");
+                throw new InvalidOperationException($"Failed to deserialize skill {item.Index}.");
                 continue;
             }
 

@@ -1,13 +1,14 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Services.Util;
 using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.World.Enums;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Services.Interfaces;
+using static DndWebApp.Api.Services.Util.NormalizationUtil;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -15,44 +16,20 @@ public partial class CharacterService : ICharacterService
 {
     public async Task<Character> CreateAsync(CharacterDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.PlayerName);
-        ValidationUtil.AboveZeroOrThrow(dto.Level);
-        ValidationUtil.AboveZeroOrThrow(dto.RaceId);
-        ValidationUtil.AboveZeroOrThrow(dto.ClassId);
-        ValidationUtil.AboveZeroOrThrow(dto.BackgroundId);
-
-        if (dto.SubraceId is not null)
-            ValidationUtil.AboveZeroOrThrow(dto.SubraceId);
-        if (dto.SubClassId is not null)
-            ValidationUtil.AboveZeroOrThrow(dto.SubClassId);
-
-        if (dto.CharacterDescription is not null)
-        {
-            if (dto.CharacterDescription.AlignmentId is not null)
-                ValidationUtil.AboveZeroOrThrow(dto.CharacterDescription.AlignmentId);
-            if (dto.CharacterDescription.Age is not null)
-                ValidationUtil.AboveZeroOrThrow(dto.CharacterDescription.Age);
-            if (dto.CharacterDescription.Height is not null)
-                ValidationUtil.AboveZeroOrThrow(dto.CharacterDescription.Height);
-            if (dto.CharacterDescription.Weight is not null)
-                ValidationUtil.AboveZeroOrThrow(dto.CharacterDescription.Weight);
-        }
-
         var race = await raceRepo.GetWithTraitsAsync(dto.RaceId)
-            ?? throw new ArgumentException($"Race with id {dto.RaceId} could not be found");
+            ?? throw new NotFoundException($"Race with id {dto.RaceId} could not be found");
 
         var clss = await classRepo.GetWithClassLevelFeaturesAsync(dto.ClassId)
-            ?? throw new ArgumentException($"Class with id {dto.ClassId} could not be found");
+            ?? throw new NotFoundException($"Class with id {dto.ClassId} could not be found");
 
         var background = await backgroundRepo.GetWithFeaturesAsync(dto.BackgroundId)
-            ?? throw new ArgumentException($"Background with id {dto.BackgroundId} could not be found");
+            ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
 
         var subrace = dto.SubraceId is not null ? await subraceRepo.GetWithTraitsAsync((int)dto.SubraceId!)
-            ?? throw new ArgumentException($"Subrace with id {dto.SubraceId} could not be found") : null;
+            ?? throw new NotFoundException($"Subrace with id {dto.SubraceId} could not be found") : null;
 
         var subclass = dto.SubClassId is not null ? await subclassRepo.GetWithClassLevelFeaturesAsync((int)dto.SubClassId!)
-            ?? throw new ArgumentException($"Subclass with id {dto.SubClassId} could not be found") : null;
+            ?? throw new NotFoundException($"Subclass with id {dto.SubClassId} could not be found") : null;
 
         var abilityDict = await GetAllAbilitiesAsDictionaryAsync();
         var languageDict = await GetAllLanguagesAsDictionaryAsync();
@@ -150,7 +127,7 @@ public partial class CharacterService : ICharacterService
     public async Task<int[]?> GetSpellSlotsOfLatestLevel(int classId, int level)
     {
         var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(classId, level)
-            ?? throw new ArgumentException($"Class level with classId {classId} at level {level} could not be found");
+            ?? throw new NotFoundException($"Class level with classId {classId} at level {level} could not be found");
 
         return latestLevel.SpellSlots;
     }
@@ -171,7 +148,7 @@ public partial class CharacterService : ICharacterService
             .Select(kvp => new AbilityValue
             {
                 AbilityId = repoDict[kvp.Key].Id,
-                Type = NormalizationUtil.ParseEnumOrThrow<AbilityType>(repoDict[kvp.Key].FullName),
+                Type = ParseEnumOrThrow<AbilityType>(repoDict[kvp.Key].FullName),
                 //Ability = repoDict[kvp.Key],
                 Value = kvp.Value
             })];
@@ -190,14 +167,14 @@ public partial class CharacterService : ICharacterService
         for (int l = 1; l <= dto.Level; l++)
         {
             var classLevel = await levelRepo.GetWithFeaturesByClassIdAsync(clss.Id, l)
-                ?? throw new ArgumentException($"Class level with id {clss.Id} at level {l} could not be found");
+                ?? throw new NotFoundException($"Class level with id {clss.Id} at level {l} could not be found");
 
             allFeatures.AddRange(classLevel.NewFeatures);
 
             if (dto.SubClassId is not null && subclass is not null)
             {
                 var subclassLevel = await levelRepo.GetWithFeaturesByClassIdAsync(subclass.Id, l)
-                    ?? throw new ArgumentException($"Subclass level with id {subclass.Id} at level {l} could not be found");
+                    ?? throw new NotFoundException($"Subclass level with id {subclass.Id} at level {l} could not be found");
 
                 allFeatures.AddRange(subclassLevel.NewFeatures);
             }
@@ -265,14 +242,14 @@ public partial class CharacterService : ICharacterService
         foreach (var abilityType in feature.SavingThrowProficiencies)
         {
             if (!abilityDict.TryGetValue(abilityType, out Ability? ability))
-                throw new ArgumentException($"Ability with name {abilityType} could not be found");
+                throw new NotFoundException($"Ability with name {abilityType} could not be found");
             character.SavingThrows.Add(new SaveThrowProficiency { AbilityType = abilityType, AbilityId = ability.Id, FeatureId = feature.Id });
         }
 
         foreach (var type in feature.Languages)
         {
             if (!languageDict.TryGetValue(type, out Language? lang))
-                throw new ArgumentException($"Language with name {type} could not be found");
+                throw new NotFoundException($"Language with name {type} could not be found");
             character.Languages.Add(new LanguageProficiency { LanguageType = type, LanguageId = lang.Id, FeatureId = feature.Id });
         }
     }
@@ -281,26 +258,26 @@ public partial class CharacterService : ICharacterService
     {
         var abilities = await abilityRepo.GetAllAsync();
         if (abilities.Count == 0)
-            throw new ArgumentException("Ability list can't be empty");
+            throw new InvalidOperationException("Ability list can't be empty");
 
-        return abilities.ToDictionary(a => NormalizationUtil.ParseEnumOrThrow<AbilityType>(a.FullName), a => a);
+        return abilities.ToDictionary(a => ParseEnumOrThrow<AbilityType>(a.FullName), a => a);
     }
 
     private async Task<Dictionary<LanguageType, Language>> GetAllLanguagesAsDictionaryAsync()
     {
         var languages = await languageRepo.GetAllAsync();
         if (languages.Count == 0)
-            throw new ArgumentException("Language list can't be empty");
+            throw new InvalidOperationException("Language list can't be empty");
 
-        return languages.ToDictionary(l => NormalizationUtil.ParseEnumOrThrow<LanguageType>(l.Name), l => l);
+        return languages.ToDictionary(l => ParseEnumOrThrow<LanguageType>(l.Name), l => l);
     }
 
     private async Task<Dictionary<SkillType, Skill>> GetAllSkillsAsDictionaryAsync()
     {
         var skills = await skillRepo.GetAllAsync();
         if (skills.Count == 0)
-            throw new ArgumentException("Skill list can't be empty");
+            throw new InvalidOperationException("Skill list can't be empty");
 
-        return skills.ToDictionary(s => NormalizationUtil.ParseEnumOrThrow<SkillType>(s.Name), s => s);
+        return skills.ToDictionary(s => ParseEnumOrThrow<SkillType>(s.Name), s => s);
     }
 }

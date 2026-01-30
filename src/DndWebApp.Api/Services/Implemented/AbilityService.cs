@@ -1,8 +1,9 @@
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -19,10 +20,6 @@ public class AbilityService : IAbilityService
 
     public async Task<Ability> CreateAsync(AbilityDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.FullName);
-        ValidationUtil.HasContentOrThrow(dto.ShortName);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-
         Ability ability = new()
         {
             FullName = dto.FullName,
@@ -37,7 +34,7 @@ public class AbilityService : IAbilityService
 
     public async Task DeleteAsync(int id)
     {
-        var ability = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Ability could not be found");
+        var ability = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Ability could not be found");
         await repo.DeleteAsync(ability);
     }
 
@@ -48,16 +45,12 @@ public class AbilityService : IAbilityService
 
     public async Task<Ability> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Ability could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Ability could not be found");
     }
 
     public async Task UpdateAsync(AbilityDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.FullName);
-        ValidationUtil.HasContentOrThrow(dto.ShortName);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-
-        var ability = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Ability could not be found");
+        var ability = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException("Ability could not be found");
 
         ability.FullName = dto.FullName;
         ability.ShortName = dto.ShortName;
@@ -73,7 +66,7 @@ public class AbilityService : IAbilityService
 
     public ICollection<Ability> SortBy(ICollection<Ability> abilities)
     {
-        var abilityOrder = SortUtil.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
+        var abilityOrder = CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
 
         return [.. abilities.OrderBy(a => abilityOrder[a.FullName])];
     }

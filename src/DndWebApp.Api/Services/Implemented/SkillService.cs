@@ -1,9 +1,12 @@
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
+using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.SortUtil;
+
 namespace DndWebApp.Api.Services.Implemented;
 
 public class SkillService : ISkillService
@@ -21,8 +24,7 @@ public class SkillService : ISkillService
 
     public async Task<Skill> CreateAsync(SkillDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        var ability = await abilityRepo.GetByIdAsync(dto.AbilityId) ?? throw new NullReferenceException("Ability could not be found");
+        var ability = await abilityRepo.GetByIdAsync(dto.AbilityId) ?? throw new NotFoundException("Ability could not be found");
 
         Skill skill = new()
         {
@@ -37,7 +39,7 @@ public class SkillService : ISkillService
 
     public async Task DeleteAsync(int id)
     {
-        var skill = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Skill could not be found");
+        var skill = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Skill could not be found");
         await repo.DeleteAsync(skill);
     }
 
@@ -53,21 +55,18 @@ public class SkillService : ISkillService
 
     public async Task<Skill> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Skill could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Skill could not be found");
     }
 
     public async Task UpdateAsync(SkillDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.AboveZeroOrThrow(dto.AbilityId);
-        
         var skill = await repo.GetByIdAsync(dto.Id) 
-            ?? throw new NullReferenceException("Skill could not be found");
+            ?? throw new NotFoundException("Skill could not be found");
 
         if (skill.AbilityId != dto.AbilityId)
         {
             skill.Ability = await abilityRepo.GetByIdAsync(dto.AbilityId)
-                ?? throw new NullReferenceException("Ability could not be found");
+                ?? throw new NotFoundException("Ability could not be found");
             skill.AbilityId = dto.AbilityId;
         }
 
@@ -80,12 +79,12 @@ public class SkillService : ISkillService
     
     public ICollection<Skill> SortBy(ICollection<Skill> skills, SkillSortFilter SortFilter, bool descending = false)
     {
-        var abilityOrder = SortUtil.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
+        var abilityOrder = CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
 
         return SortFilter switch
         {
-            SkillSortFilter.Name => SortUtil.OrderByMany(skills, [(s => s.Name)], descending),
-            SkillSortFilter.Ability => SortUtil.OrderByMany(skills, [(s => abilityOrder[s.Ability!.FullName]), (s => s.Name)], descending),
+            SkillSortFilter.Name => OrderByMany(skills, [(s => s.Name)], descending),
+            SkillSortFilter.Ability => OrderByMany(skills, [(s => abilityOrder[s.Ability!.FullName]), (s => s.Name)], descending),
             _ => skills,
         };
     }

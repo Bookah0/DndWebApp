@@ -13,6 +13,7 @@ using DndWebApp.Api.Services.Implemented.Features;
 using DndWebApp.Api.Services.Interfaces.Features;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.External.Implemented;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,9 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandler>();
+
+app.Run();
 
 using (var scope = app.Services.CreateScope())
 {

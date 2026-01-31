@@ -2,12 +2,9 @@ namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
-using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Services.Util;
 
 public class ExternalBackgroundService : IExternalBackgroundService
 {
@@ -37,7 +34,6 @@ public class ExternalBackgroundService : IExternalBackgroundService
 
             var background = new Background
             {
-                Type = NormalizationUtil.ParseEnumOrThrow<BackgroundType>(eBackground.Name),
                 Name = eBackground.Name,
                 Description = string.Join("\n", eBackground.Description),
                 StartingCurrency = new()

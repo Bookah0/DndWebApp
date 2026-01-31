@@ -1,4 +1,3 @@
-using DndWebApp.Api.Models.Items.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Items;
@@ -30,5 +29,5 @@ public class Currency
 public class EquipmentSlot
 {
     public int? EquipmentId { get; set; }
-    public required EquipSlot Slot { get; set; }
+    public required string Slot { get; set; }
 }

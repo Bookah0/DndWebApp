@@ -4,9 +4,10 @@ using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Services.Interfaces.Features;
+using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
@@ -14,7 +15,16 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
 {
     private readonly IRaceRepository raceRepo;
 
-    public TraitService(ITraitRepository repo, IRaceRepository raceRepo, ISpellRepository spellRepo, ILogger<TraitService> logger, IMapper mapper) : base(repo, spellRepo, logger, mapper)
+    public TraitService(
+        ITraitRepository repo, 
+        IRaceRepository raceRepo, 
+        ISpellRepository spellRepo,        
+        ISkillRepository skillRepo, 
+        IAbilityRepository abilityRepo, 
+        ILanguageRepository languageRepo,  
+        ILogger<TraitService> logger, 
+        IMapper mapper) 
+        : base(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger, mapper)
     {
         this.raceRepo = raceRepo;
     }
@@ -73,14 +83,16 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
         throw new NotImplementedException();
     }
 
-    
-    public ICollection<Trait> SortBy(ICollection<Trait> traits, TraitSortFilter sortFilter, bool descending = false)
+    public ICollection<Trait> SortBy(ICollection<Trait> traits, string sortFilter, bool descending = false)
     {
-        return sortFilter switch
+        if(!TryResolveOption(sortFilter, SortTraitOption.AllowedValues, out string? resolved))
+            return traits;
+
+        return resolved switch
         {
-            TraitSortFilter.Name => OrderByMany(traits, [(t => t.Name)], descending),
-            TraitSortFilter.Race => OrderByMany(traits, [(t => t!.Name), (t => t.Name)], descending),
-            _ => traits,
+            SortTraitOption.Name => OrderByMany(traits, [(t => t.Name)], descending),
+            SortTraitOption.Race => OrderByMany(traits, [(t => t!.Name), (t => t.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

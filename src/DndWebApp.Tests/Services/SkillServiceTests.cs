@@ -4,7 +4,7 @@ using DndWebApp.Api.Services.Implemented;
 using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Tests.Services;
 
@@ -237,15 +237,15 @@ public class SkillServiceTests
         ];
 
         // Act & Assert
-        var sorted = service.SortBy(skills, SkillSortFilter.Name);
+        var sorted = service.SortBy(skills, SortSkillOption.Name);
         string[] expectedOrder = ["Arcana", "Athletics", "History", "Insight", "Medicine", "Nature", "Religion"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(skills, SkillSortFilter.Ability);
+        sorted = service.SortBy(skills, SortSkillOption.Ability);
         expectedOrder = ["Athletics", "Arcana", "History", "Nature", "Religion", "Insight", "Medicine"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(skills, SkillSortFilter.Ability, true);
+        sorted = service.SortBy(skills, SortSkillOption.Ability, true);
         expectedOrder = ["Medicine", "Insight", "Religion", "Nature", "History", "Arcana", "Athletics"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }

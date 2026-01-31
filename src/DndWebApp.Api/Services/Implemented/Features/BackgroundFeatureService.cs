@@ -5,9 +5,10 @@ using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Services.Interfaces.Features;
+using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
@@ -15,7 +16,16 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
 {
     private readonly IBackgroundRepository backgroundRepo;
 
-    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo, ISpellRepository spellRepo, ILogger<BackgroundFeatureService> logger, IMapper mapper) : base(repo, spellRepo, logger, mapper)
+    public BackgroundFeatureService(
+        IBackgroundFeatureRepository repo, 
+        IBackgroundRepository backgroundRepo, 
+        ISpellRepository spellRepo, 
+        ISkillRepository skillRepo, 
+        IAbilityRepository abilityRepo, 
+        ILanguageRepository languageRepo, 
+        ILogger<BackgroundFeatureService> logger,
+        IMapper mapper) 
+        : base(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger, mapper)
     {
         this.backgroundRepo = backgroundRepo;
     }
@@ -70,13 +80,16 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
         await repo.UpdateAsync(feature);
     }
 
-    public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, BackgroundFeatureSortFilter sortFilter, bool descending = false)
+    public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, string sortFilter, bool descending = false)
     {
-        return sortFilter switch
+        if(!TryResolveOption(sortFilter, SortBackgroundFeatureOption.AllowedValues, out string? resolved))
+            return features;
+
+        return resolved switch
         {
-            BackgroundFeatureSortFilter.Name => OrderByMany(features, [(l => l.Name)], descending),
-            BackgroundFeatureSortFilter.Background => OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),
-            _ => features,
+            SortBackgroundFeatureOption.Name => OrderByMany(features, [(l => l.Name)], descending),
+            SortBackgroundFeatureOption.Background => OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

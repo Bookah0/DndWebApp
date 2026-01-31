@@ -1,6 +1,4 @@
-using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
@@ -12,14 +10,13 @@ namespace DndWebApp.Api.Models.Characters;
 public class AClass
 {
     public int Id { get; set; }
-    public ClassType? Type { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required int HitDie { get; set; }
     public required ICollection<ClassLevel> ClassLevels { get; set; }
     public bool IsHomebrew { get; set; } = false;
     public int? SpellcastingAbilityId { get; set; }
-    public AbilityType? SpellcastingAbilityType { get; set; }
+    public string? SpellcastingAbility { get; set; }
 }
 
 public class Class : AClass
@@ -49,8 +46,8 @@ public class StartingEquipmentOption
 {
     public int Id { get; set; }
     public Item? Equipment { get; set; }
-    public ArmorCategory? AnyOfArmorCategory { get; set; }
-    public WeaponCategory? AnyOfWeaponCategory { get; set; }
-    public WeaponType? AnyOfWeaponType { get; set; }
+    public string? AnyOfArmorCategory { get; set; }
+    public string? AnyOfWeaponCategory { get; set; }
+    public string? AnyOfWeaponType { get; set; }
     public int Quantity { get; set; } = 1;
 }

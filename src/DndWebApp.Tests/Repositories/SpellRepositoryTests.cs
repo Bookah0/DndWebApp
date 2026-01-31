@@ -1,8 +1,8 @@
 ﻿using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Repositories.Implemented.Spells;
+using DndWebApp.Api.Models.Spells.Constants;
 
 namespace DndWebApp.Tests.Repositories;
 

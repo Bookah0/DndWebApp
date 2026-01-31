@@ -1,6 +1,4 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Models.Spells.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Spells;
@@ -15,15 +13,15 @@ public class Spell
     public required int Level { get; set; }
     public string EffectsAtHigherLevels { get; set; } = "";
     public ICollection<Class> Classes { get; set; } = [];
-    public required SpellDuration Duration { get; set; }
+    public required string Duration { get; set; }
     public int DurationValue { get; set; }
-    public required CastingTime CastingTime { get; set; }
+    public required string CastingTime { get; set; }
     public int CastingTimeValue { get; set; }
     public string ReactionCondition { get; set; } = "";
-    public required MagicSchool MagicSchool { get; set; }
+    public required string MagicSchool { get; set; }
     public string DamageRoll { get; set; } = "";
-    public ICollection<DamageType> DamageTypes { get; set; } = [];
-    public ICollection<SpellType> SpellTypes { get; set; } = [];
+    public ICollection<string> DamageTypes { get; set; } = [];
+    public ICollection<string> SpellTypes { get; set; } = [];
     
     public required SpellTargeting SpellTargeting { get; set; }  
     public CastingRequirements CastingRequirements { get; set; } = new();  
@@ -32,8 +30,8 @@ public class Spell
 [Owned]
 public class SpellTargeting
 {
-    public SpellTargetType TargetType { get; set; }
-    public required SpellRange Range { get; set; }
+    public required string TargetType { get; set; }
+    public required string Range { get; set; }
     public int RangeValue { get; set; } = 0;
     public string? ShapeType { get; set; }
     public string? ShapeWidth { get; set; }

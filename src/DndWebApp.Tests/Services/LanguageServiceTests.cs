@@ -1,11 +1,10 @@
 using static DndWebApp.Tests.Services.TestObjectFactory;
-using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Services.Implemented;
 using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Models.Characters;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Tests.Services;
 
@@ -207,15 +206,15 @@ public class LanguageServiceTests
         ];
 
         // Act & Assert
-        var sorted = service.SortBy(languages, LanguageSortFilter.Name);
+        var sorted = service.SortBy(languages, SortLanguageOption.Name);
         string[] expectedOrder = ["Auran", "Dethek", "Elvish",];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(languages, LanguageSortFilter.Family, true);
+        sorted = service.SortBy(languages, SortLanguageOption.Family, true);
         expectedOrder = ["Primordial", "Elven", "Dwarvish",];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Family));
 
-        sorted = service.SortBy(languages, LanguageSortFilter.Script);
+        sorted = service.SortBy(languages, SortLanguageOption.Script);
         expectedOrder = ["Auran", "Dethek", "Elvish"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }

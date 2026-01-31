@@ -22,7 +22,6 @@ public class RaceRepository : IRaceRepository
 
     public async Task<ICollection<Race>> GetAllAsync() => await context.Races.ToListAsync();
     public async Task<Race?> GetByIdAsync(int id) => await context.Races.FirstOrDefaultAsync(r => r.Id == id);
-    public async Task<Race?> GetByTypeAsync(RaceType type) => await context.Races.FirstOrDefaultAsync(r => r.Type == type);
 
     public async Task DeleteAsync(Race entity)
     {

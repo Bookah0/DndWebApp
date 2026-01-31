@@ -1,12 +1,15 @@
 using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
+using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Models.World.Enums;
+using DndWebApp.Api.Models.Items;
+using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Repositories.Implemented;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
+using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
@@ -14,13 +17,26 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
 {
     internal readonly IRepository<T> repo;
     internal readonly ISpellRepository spellRepo;
+    internal readonly ISkillRepository skillRepo;
+    internal readonly IAbilityRepository abilityRepo;
+    internal readonly ILanguageRepository languageRepo;
     internal readonly ILogger<IBaseFeatureService<T>> logger;
     internal readonly IMapper mapper;
 
-    public BaseFeatureService(IRepository<T> repo, ISpellRepository spellRepo, ILogger<BaseFeatureService<T>> logger, IMapper mapper)
+    public BaseFeatureService(
+        IRepository<T> repo, 
+        ISpellRepository spellRepo, 
+        ISkillRepository skillRepo, 
+        IAbilityRepository abilityRepo, 
+        ILanguageRepository languageRepo, 
+        ILogger<BaseFeatureService<T>> logger,
+        IMapper mapper)
     {
         this.repo = repo;
         this.spellRepo = spellRepo;
+        this.skillRepo = skillRepo;
+        this.abilityRepo = abilityRepo;
+        this.languageRepo = languageRepo;
         this.logger = logger;
         this.mapper = mapper;
     }
@@ -31,7 +47,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
             ?? throw new NotFoundException($"Spell with id {spellId} could not be found");
 
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
         feature.SpellsGained.Add(spell);
         await repo.UpdateAsync(feature);
@@ -40,7 +56,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     public async Task RemoveSpell(int spellId, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
         var spell = feature.SpellsGained.FirstOrDefault(s => s.Id == spellId)
             ?? throw new NotFoundException($"Spell with id {spellId} was not in the list of spells");
@@ -49,115 +65,151 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         await repo.UpdateAsync(feature);
     }
 
-    public async Task AddProficiency<TEnum>(ProficiencyDto dto, int featureId)
+    public async Task AddProficiency(ProficiencyDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
-        switch (proficiency)
+        switch (dto.Type)
         {
-            case SkillType skillType:
-                feature.SkillProficiencies.Add(skillType);
-                break;
-            case WeaponCategory weaponCategory:
+            case "WeaponCategory":
+                var weaponCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, WeaponCategory.AllowedValues, "Weapon Category");
                 feature.WeaponCategoryProficiencies.Add(weaponCategory);
                 break;
-            case WeaponType weaponType:
+            case "WeaponType":
+                var weaponType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, WeaponType.AllowedValues, "Weapon Type");
                 feature.WeaponTypeProficiencies.Add(weaponType);
                 break;
-            case ArmorCategory armorCategory:
+            case "ArmorCategory":
+                var armorCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, ArmorCategory.AllowedValues, "Armor Category");
                 feature.ArmorProficiencies.Add(armorCategory);
                 break;
-            case ToolCategory toolCategory:
+            case "ToolCategory":
+                var toolCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, ToolCategory.AllowedValues, "Tool Category");
                 feature.ToolProficiencies.Add(toolCategory);
                 break;
-            case LanguageType languageType:
-                feature.Languages.Add(languageType);
+            case "Skill":
+                var skill = await GetProficiencyById(dto, skillRepo);
+                feature.SkillProficiencies.Add(skill);
                 break;
-            case AbilityType savingThrowAbility:
-                feature.SavingThrowProficiencies.Add(savingThrowAbility);
+            case "Language":
+                var language = await GetProficiencyById(dto, languageRepo);
+                feature.Languages.Add(language);
                 break;
-        }
-
-        await repo.UpdateAsync(feature);
-    }
-
-    public async Task RemoveProficiency<TEnum>(TEnum proficiency, int featureId) where TEnum : struct, Enum
-    {
-        var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
-
-        var wasRemoved = proficiency switch
-        {
-            SkillType skillType => feature.SkillProficiencies.Remove(skillType),
-            WeaponCategory weaponCategory => feature.WeaponCategoryProficiencies.Remove(weaponCategory),
-            ArmorCategory armorCategory => feature.ArmorProficiencies.Remove(armorCategory),
-            ToolCategory toolCategory => feature.ToolProficiencies.Remove(toolCategory),
-            LanguageType languageType => feature.Languages.Remove(languageType),
-            AbilityType savingThrowAbility => feature.SavingThrowProficiencies.Remove(savingThrowAbility),
-            _ => throw new InvalidOperationException($"Unknown proficiency type: {proficiency.GetType().Name}")
-        };
-
-        if (!wasRemoved)
-            throw new NotFoundException($"Proificiency {proficiency} could not be found in the list of type {proficiency.GetType().Name}");
-
-        await repo.UpdateAsync(feature);
-    }
-
-    public async Task AddDamageAffinity(AffinityType affinityType, DamageType damageType, int featureId)
-    {
-        var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
-
-        switch (affinityType)
-        {
-            case AffinityType.Resistant:
+            case "SavingThrow":
+            case "Ability":
+                var ability = await GetProficiencyById(dto, abilityRepo);
+                feature.SavingThrowProficiencies.Add(ability);
+                break;
+            case "Resistance":
+                var damageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues, "Damage Type");
                 feature.DamageResistanceGained.Add(damageType);
                 break;
-            case AffinityType.Immune:
-                feature.DamageImmunityGained.Add(damageType);
+            case "Immunity":
+                var immuneDamageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues, "Damage Type");
+                feature.DamageImmunityGained.Add(immuneDamageType);
                 break;
-            case AffinityType.Weakness:
-                feature.DamageWeaknessGained.Add(damageType);
+            case "Weakness":
+                var weaknessDamageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues, "Damage Type");
+                feature.DamageWeaknessGained.Add(weaknessDamageType);
                 break;
             default:
-                throw new InvalidOperationException($"Unknown Affinity type: {affinityType.GetType().Name}");
+                throw new InvalidOperationException($"Unknown Proficiency type: {dto.Type}");
         }
 
         await repo.UpdateAsync(feature);
     }
 
-    public async Task RemoveDamageAffinity(AffinityType affinityType, DamageType damageType, int featureId)
+    private async Task<P> GetProficiencyById<P>(ProficiencyDto dto, IRepository<P> repository) where P : class
+    {
+        if (!int.TryParse(dto.Value, out var id))
+            throw new ValidationException($"{dto.Type} id {dto.Value} is not a valid integer");
+
+        return await repository.GetByIdAsync(id)
+            ?? throw new NotFoundException($"{dto.Type} with id {dto.Value} could not be found");
+    }
+
+    public async Task RemoveProficiency(ProficiencyDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
-        var wasRemoved = affinityType switch
+        switch (dto.Type)
         {
-            AffinityType.Resistant => feature.DamageResistanceGained.Remove(damageType),
-            AffinityType.Immune => feature.DamageImmunityGained.Remove(damageType),
-            AffinityType.Weakness => feature.DamageWeaknessGained.Remove(damageType),
-            _ => throw new InvalidOperationException($"Unknown Affinity type: {affinityType.GetType().Name}"),
-        };
-
-        if (!wasRemoved)
-            throw new NotFoundException($"Damage type {damageType} could not be found in the list of type {affinityType}");
+            case "WeaponCategory":
+                var weaponCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, WeaponCategory.AllowedValues, "Weapon Category");
+                feature.WeaponCategoryProficiencies.Remove(weaponCategory);
+                break;
+            case "WeaponType":
+                var weaponType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, WeaponType.AllowedValues, "Weapon Type");
+                feature.WeaponTypeProficiencies.Remove(weaponType);
+                break;
+            case "ArmorCategory":
+                var armorCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, ArmorCategory.AllowedValues, "Armor Category");
+                feature.ArmorProficiencies.Remove(armorCategory);
+                break;
+            case "ToolCategory":
+                var toolCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, ToolCategory.AllowedValues, "Tool Category");
+                feature.ToolProficiencies.Remove(toolCategory);
+                break;
+            case "Resistance":
+                var damageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues, "Damage Type");
+                feature.DamageResistanceGained.Remove(damageType);
+                break;
+            case "Immunity":
+                var immuneDamageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues, "Damage Type");
+                feature.DamageImmunityGained.Remove(immuneDamageType);
+                break;
+            case "Weakness":
+                var weaknessDamageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues, "Damage Type");
+                feature.DamageWeaknessGained.Remove(weaknessDamageType);
+                break;
+            case "Skill":
+                var skill = await GetProficiencyById(dto, feature.SkillProficiencies);
+                feature.SkillProficiencies.Remove(skill);
+                break;
+            case "Language":
+                var language = await GetProficiencyById(dto, feature.Languages);
+                feature.Languages.Remove(language);
+                break;
+            case "SavingThrow":
+            case "Ability":
+                var ability = await GetProficiencyById(dto, feature.SavingThrowProficiencies);
+                feature.SavingThrowProficiencies.Remove(ability);
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown Proficiency type: {dto.Type}");
+        }
 
         await repo.UpdateAsync(feature);
+    }
+
+    private async Task<P> GetProficiencyById<P>(ProficiencyDto dto, ICollection<P> collection) where P : class
+    {
+        if (!int.TryParse(dto.Value, out var id))
+            throw new ValidationException($"{dto.Type} id {dto.Value} is not a valid integer");
+
+        var proficiency = collection.FirstOrDefault(s => s.Equals(id))
+            ?? throw new NotFoundException($"{dto.Type} with id {dto.Value} was not in the list of proficiencies");
+        return proficiency;
     }
 
     public async Task AddAbilityIncrease(int abilityId, int value, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
-        feature.AbilityIncreases.Add(new() { AbilityId = abilityId, Value = value });
+        var ability = await abilityRepo.GetByIdAsync(abilityId)
+            ?? throw new NotFoundException($"Ability with id {abilityId} could not be found");
+
+        feature.AbilityIncreases.Add(new() { Ability = ability, AbilityId = abilityId, Value = value });
+        await repo.UpdateAsync(feature);
     }
 
     public async Task RemoveAbilityIncrease(int abilityId, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
         var abilityIncrease = feature.AbilityIncreases.FirstOrDefault(a => a.AbilityId == abilityId)
             ?? throw new NotFoundException($"AbilityIncrease with Ability id {abilityId} was not in the list of Ability Increases");
@@ -166,92 +218,118 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         await repo.UpdateAsync(feature);
     }
 
-    public async Task AddAbilityIncreaseChoice(List<AbilityValue> options, string description, int featureId)
+    public async Task ClearAbilityIncreaseChoices(int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
-
-        ((List<AbilityValue>)feature.AbilityIncreaseChoices).AddRange(options);
-        await repo.UpdateAsync(feature);
-    }
-
-    public async Task ClearAbilityIncreaseOptions(int featureId)
-    {
-        var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
         feature.AbilityIncreaseChoices.Clear();
         await repo.UpdateAsync(feature);
     }
 
-    public async Task AddProficiencyChoice<TEnum>(List<TEnum> options, string description, int featureId) where TEnum : struct, Enum
+    public async Task AddProficiencyChoice(ProficiencyChoiceDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
-        switch (options[0])
+        switch (dto.Type)
         {
-            case SkillType:
-                feature.SkillProficiencyChoices.Add(new() { Description = description, Options = (ICollection<SkillType>)options });
+            case "Weapon Category":
+                var weaponCategories = ConstantsUtil.ResolveOptionOrThrow(dto.Options, WeaponCategory.AllowedValues, "Weapon Category");
+                feature.WeaponCategoryProficiencyChoices.Add(new() { Description = dto.Description, Options = weaponCategories });
                 break;
-            case WeaponCategory:
-                feature.WeaponCategoryProficiencyChoices.Add(new() { Description = description, Options = (ICollection<WeaponCategory>)options });
+            case "Weapon Type":
+                var weaponType = ConstantsUtil.ResolveOptionOrThrow(dto.Options, WeaponType.AllowedValues, "Weapon Type");
+                feature.WeaponTypeProficiencyChoices.Add(new() { Description = dto.Description, Options = weaponType });
                 break;
-            case WeaponType:
-                feature.WeaponTypeProficiencyChoices.Add(new() { Description = description, Options = (ICollection<WeaponType>)options });
+            case "Armor Category":
+                var armorCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Options, ArmorCategory.AllowedValues, "Armor Category");
+                feature.ArmorProficiencyChoices.Add(new() { Description = dto.Description, Options = armorCategory });
                 break;
-            case ArmorCategory:
-                feature.ArmorProficiencyChoices.Add(new() { Description = description, Options = (ICollection<ArmorCategory>)options });
+            case "Tool Category":
+                var toolCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Options, ToolCategory.AllowedValues, "Tool Category");
+                feature.ToolProficiencyChoices.Add(new() { Description = dto.Description, Options = toolCategory });
                 break;
-            case ToolCategory:
-                feature.ToolProficiencyChoices.Add(new() { Description = description, Options = (ICollection<ToolCategory>)options });
+            case "Skill":
+                var skillOptions = await GetProficiencyOptionsById(dto, skillRepo);
+                feature.SkillProficiencyChoices.Add(new() { Description = dto.Description, Options = skillOptions });
                 break;
-            case LanguageType:
-                feature.LanguageChoices.Add(new() { Description = description, Options = (ICollection<LanguageType>)options });
+            case "Language":
+                var languageOptions = await GetProficiencyOptionsById(dto, languageRepo);
+                feature.LanguageChoices.Add(new() { Description = dto.Description, Options = languageOptions });
                 break;
-            default:
-                throw new InvalidOperationException($"Unknown Choice type: {options[0].GetType().Name}");
         }
 
         await repo.UpdateAsync(feature);
     }
 
-    public async Task RemoveProficiencyChoice<TEnum>(int choiceId, int featureId) where TEnum : struct, Enum
+    public async Task AddProficiencyChoice(AbilityIncreaseChoiceDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+        
+        ICollection<AbilityValue> options = [];
 
-        switch (typeof(TEnum).Name)
+        foreach (var abilityValueDto in dto.Options)
         {
-            case nameof(SkillType):
-                RemoveChoice(feature.SkillProficiencyChoices, choiceId);
+            var option = new AbilityValue
+            {
+                Ability = await abilityRepo.GetByIdAsync(abilityValueDto.AbilityId)
+                    ?? throw new NotFoundException($"Ability with id {abilityValueDto.AbilityId} could not be found"),
+                AbilityId = abilityValueDto.AbilityId,
+                Value = abilityValueDto.Value
+            };
+
+            options.Add(option);
+        }
+        feature.AbilityIncreaseChoices.Add(new() { Description = dto.Description, Options = options });
+        await repo.UpdateAsync(feature);
+    }
+
+    private async Task<ICollection<P>> GetProficiencyOptionsById<P>(ProficiencyChoiceDto dto, IRepository<P> repository) where P : class
+    {
+        ICollection<P> options = [];
+
+        foreach (var optionId in dto.Options)
+        {
+            if (!int.TryParse(optionId, out var id))
+                throw new ValidationException($"{dto.Type} id {optionId} is not a valid integer");
+
+            options.Add(await repository.GetByIdAsync(id)
+                ?? throw new NotFoundException($"{dto.Type} with id {optionId} could not be found"));
+        }
+        return options;
+    }
+
+    public async Task RemoveProficiencyChoice(string type, int choiceIndex, int featureId)
+    {
+        var feature = await repo.GetByIdAsync(featureId)
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+
+        switch (type)
+        {
+            case "Skill":
+                feature.SkillProficiencyChoices.RemoveAt(choiceIndex);
                 break;
-            case nameof(WeaponCategory):
-                RemoveChoice(feature.WeaponCategoryProficiencyChoices, choiceId);
+            case "Weapon Category":
+                feature.WeaponCategoryProficiencyChoices.RemoveAt(choiceIndex);
                 break;
-            case nameof(WeaponType):
-                RemoveChoice(feature.WeaponTypeProficiencyChoices, choiceId);
+            case "Weapon Type"   :
+                feature.WeaponTypeProficiencyChoices.RemoveAt(choiceIndex);
                 break;
-            case nameof(ArmorCategory):
-                RemoveChoice(feature.ArmorProficiencyChoices, choiceId);
+            case "Armor Category":
+                feature.ArmorProficiencyChoices.RemoveAt(choiceIndex);
                 break;
-            case nameof(ToolCategory):
-                RemoveChoice(feature.ToolProficiencyChoices, choiceId);
+            case "Tool Category":
+                feature.ToolProficiencyChoices.RemoveAt(choiceIndex);
                 break;
-            case nameof(LanguageType):
-                RemoveChoice(feature.LanguageChoices, choiceId);
+            case "Language":
+                feature.LanguageChoices.RemoveAt(choiceIndex);
                 break;
             default:
                 throw new InvalidOperationException($"Unknown Choice type");
         }
 
         await repo.UpdateAsync(feature);
-    }
-
-    private static void RemoveChoice<C>(ICollection<C> collection, int choiceId) where C : class
-    {
-        var choice = collection.FirstOrDefault(c => (c as dynamic).Id == choiceId)
-            ?? throw new NotFoundException($"Choice with id {choiceId} could not be found");
-        collection.Remove(choice);
     }
 }

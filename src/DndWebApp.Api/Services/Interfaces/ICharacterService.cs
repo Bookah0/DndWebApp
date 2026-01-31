@@ -1,7 +1,7 @@
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Api.Services.Interfaces;
 
@@ -20,5 +20,5 @@ public interface ICharacterService
     Task HealDamage(int characterId, int change);
     Task EditCurrentClassSlotAsync(string slotName, int change, int characterId);
     Task EditCurrentSpellSlotAsync(int slotLevel, int change, int characterId);
-    ICollection<Character> SortBy(ICollection<Character> characters, CharacterSortFilter sortFilter, bool descending = false);
+    ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false);
 }

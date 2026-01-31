@@ -1,7 +1,7 @@
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Api.Services.Interfaces.Features;
 
@@ -13,5 +13,5 @@ public interface ITraitService : IBaseFeatureService<Trait>
     Task<TraitResponseDto> GetByIdAsync(int id);
     Task UpdateAsync(int id, TraitDto dto);
     Task UpdateCollectionsAsync(int id, TraitDto dto);
-    ICollection<Trait> SortBy(ICollection<Trait> traits, TraitSortFilter sortFilter, bool descending = false);
+    ICollection<Trait> SortBy(ICollection<Trait> traits, string sortFilter, bool descending = false);
 }

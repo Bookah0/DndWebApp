@@ -1,12 +1,12 @@
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
-using static DndWebApp.Api.Services.Util.NormalizationUtil;
+using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
 using static DndWebApp.Api.Services.Util.ValidationUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
+using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
@@ -23,8 +23,8 @@ public class ToolService
 
     public async Task<Tool> CreateAsync(ToolDto dto)
     {
-        var dtoToolCategory = ParseEnumOrThrow<ToolCategory>(dto.ToolCategory);
-        var dtoRarity = ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
         Tool tool = new()
         {
@@ -80,8 +80,8 @@ public class ToolService
 
     public async Task UpdateAsync(ToolDto dto)
     {
-        var dtoToolCategory = ParseEnumOrThrow<ToolCategory>(dto.ToolCategory);
-        var dtoRarity = ParseEnumOrThrow<ItemRarity>(dto.Rarity);
+        var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
         var tool = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Tool with id {dto.Id} could not be found"); ;
 
@@ -97,16 +97,18 @@ public class ToolService
         await repo.UpdateAsync(tool);
     }
 
-    
-    public ICollection<Tool> SortBy(ICollection<Tool> tools, ToolSortFilter sortFilter, bool descending = false)
+    public ICollection<Tool> SortBy(ICollection<Tool> tools, string sortFilter, bool descending = false)
     {
-        return sortFilter switch
+        if(!TryResolveOption(sortFilter, SortToolOption.AllowedValues, out string? resolved))
+            return tools;
+
+        return resolved switch
         {
-            ToolSortFilter.Name => OrderByMany(tools, [(i => i.Name)], descending),
-            ToolSortFilter.Category => OrderByMany(tools, [(i => i.ToolType), (i => i.Name)], descending),
-            ToolSortFilter.Value => OrderByMany(tools, [(i => i.Value), (i => i.Name)], descending),
-            ToolSortFilter.Rarity => OrderByMany(tools, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => tools,
+            SortToolOption.Name => OrderByMany(tools, [(i => i.Name)], descending),
+            SortToolOption.Category => OrderByMany(tools, [(i => i.ToolType), (i => i.Name)], descending),
+            SortToolOption.Value => OrderByMany(tools, [(i => i.Value), (i => i.Name)], descending),
+            SortToolOption.Rarity => OrderByMany(tools, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

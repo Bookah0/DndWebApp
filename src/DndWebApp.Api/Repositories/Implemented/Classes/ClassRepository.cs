@@ -24,7 +24,6 @@ public class ClassRepository : IClassRepository
 
     public async Task<ICollection<Class>> GetAllAsync() => await context.Classes.ToListAsync();
     public async Task<Class?> GetByIdAsync(int id) => await context.Classes.FirstOrDefaultAsync(c => c.Id == id);
-    public async Task<Class?> GetByTypeAsync(ClassType type) => await context.Classes.FirstOrDefaultAsync(c => c.Type == type);
 
     public async Task DeleteAsync(Class entity)
     {

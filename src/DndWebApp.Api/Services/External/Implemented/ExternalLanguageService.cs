@@ -2,14 +2,9 @@ namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
-using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Models.World.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
-using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Services.Util;
 
 public class ExternalLanguageService : IExternalLanguageService
 {
@@ -26,7 +21,6 @@ public class ExternalLanguageService : IExternalLanguageService
         if ((await repo.GetAllAsync()).Count > 0)
         {
             throw new InvalidOperationException("Languages already exist in the database. Skipping fetch.");
-            return;
         }
         
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/languages/", cancellationToken);
@@ -35,7 +29,6 @@ public class ExternalLanguageService : IExternalLanguageService
         if (result is null || result.Results.Count == 0)
         {
             throw new InvalidOperationException("No languages found in external API.");
-            return;
         }
 
         foreach (var item in result.Results)
@@ -46,12 +39,10 @@ public class ExternalLanguageService : IExternalLanguageService
             if (eLanguage is null)
             {
                 throw new InvalidOperationException($"Failed to deserialize language {item.Index}.");
-                continue;
             }
 
             var language = new Language
             {
-                Type = NormalizationUtil.ParseEnumOrThrow<LanguageType>(eLanguage.Type),
                 Name = eLanguage.Name,
                 Family = eLanguage.Type,
                 Script = eLanguage.Script,

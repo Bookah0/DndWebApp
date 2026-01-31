@@ -16,5 +16,3 @@ public class Feat : AFeature
     public int? FromBackgroundId { get; set; }
     public Background? FromBackground { get; set; }
 }
-
-public enum FeatFromType { Class, Background, Race }

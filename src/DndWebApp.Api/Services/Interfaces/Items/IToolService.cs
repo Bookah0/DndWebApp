@@ -1,6 +1,6 @@
 using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Api.Services.Interfaces.Items;
 
@@ -13,5 +13,5 @@ public interface IToolService
     Task<ICollection<Tool>> GetAllAsync();
     Task<Tool> GetByIdAsync(int id);
     Task UpdateAsync(ToolDto dto);
-    ICollection<Tool> SortBy(ICollection<Tool> tools, ToolSortFilter sortFilter, bool descending = false);
+    ICollection<Tool> SortBy(ICollection<Tool> tools, string sortFilter, bool descending = false);
 }

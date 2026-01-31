@@ -1,15 +1,13 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
-using System.Xml.Serialization;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.Features;
+using DndWebApp.Api.Models.Items.Constants;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
-using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 public class ExternalClassService : IExternalClassService
 {
@@ -51,21 +49,17 @@ public class ExternalClassService : IExternalClassService
 
             if (eClass.SpellcastingAbility is not null)
             {
-                var abilityType = NormalizationUtil.ParseEnumOrThrow<AbilityShortType>(eClass.SpellcastingAbility.SpellcastingAbility.Index);
-
-                spellcastingAbility = await abilityRepo.GetByTypeAsync(abilityType)
+                spellcastingAbility = await abilityRepo.GetByNameAsync(eClass.SpellcastingAbility.SpellcastingAbility.Name)
                     ?? throw new ArgumentException($"Ability with short name {eClass.SpellcastingAbility.SpellcastingAbility.Index} not found.");
             }
 
             var clss = new Class
             {
-                Type = NormalizationUtil.ParseEnumOrThrow<ClassType>(eClass.Name),
                 Name = eClass.Name,
                 Description = "",
                 HitDie = eClass.HitDie,
                 ClassLevels = [],
                 SpellcastingAbilityId = spellcastingAbility?.Id ?? null,
-                SpellcastingAbilityType = spellcastingAbility?.Type ?? null,
                 Subclasses = [],
                 StartingEquipment = [],
                 StartingEquipmentChoices = []
@@ -253,10 +247,10 @@ public class ExternalClassService : IExternalClassService
                         case "martial-melee-weapons":
                         case "simple-ranged-weapons":
                         case "martial-ranged-weapons":
-                            option.AnyOfWeaponCategory = NormalizationUtil.ParseEnumOrThrow<WeaponCategory>(categoryDto.Index);
+                            option.AnyOfWeaponCategory = ResolveOptionOrThrow(categoryDto.Index, WeaponCategory.AllowedValues, "Weapon Category");
                             break;
                         default:
-                            option.AnyOfWeaponType = NormalizationUtil.ParseEnumOrThrow<WeaponType>(categoryDto.Index);
+                            option.AnyOfWeaponType = ResolveOptionOrThrow(categoryDto.Index, WeaponType.AllowedValues, "Weapon Type");
                             break;
                     }
 
@@ -278,13 +272,13 @@ public class ExternalClassService : IExternalClassService
             var singleAbilityValue = new AbilityValue
             {
                 AbilityId = ability.Id,
-                Type = ability.Type ?? default,
+                Ability = ability,
                 Value = 2
             };
 
             var choice = new AbilityIncreaseChoice
             {
-                Description = $"Increase {ability.Type} by 2",
+                Description = $"Increase {ability.FullName} by 2",
                 Options = [singleAbilityValue]
             };
 
@@ -293,7 +287,7 @@ public class ExternalClassService : IExternalClassService
             var multipleAbilityValueFirst = new AbilityValue
             {
                 AbilityId = ability.Id,
-                Type = ability.Type ?? default,
+                Ability = ability,
                 Value = 1
             };
 
@@ -302,13 +296,13 @@ public class ExternalClassService : IExternalClassService
                 var multipleAbilityValueSecond = new AbilityValue
                 {
                     AbilityId = otherAbility.Id,
-                    Type = otherAbility.Type ?? default,
+                    Ability = otherAbility,
                     Value = 1
                 };
 
                 choice = new AbilityIncreaseChoice
                 {
-                    Description = $"Increase {ability.Type} by 1 and {otherAbility.Type} by 1",
+                    Description = $"Increase {ability.FullName} by 1 and {otherAbility.FullName} by 1",
                     Options = [multipleAbilityValueFirst, multipleAbilityValueSecond]
                 };
 

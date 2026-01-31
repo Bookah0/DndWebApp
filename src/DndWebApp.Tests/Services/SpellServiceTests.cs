@@ -1,12 +1,12 @@
 using static DndWebApp.Tests.Services.TestObjectFactory;
-using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.Spells.Enums;
 using Microsoft.Extensions.Logging.Abstractions;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Implemented;
 using Moq;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Models.Spells.Constants;
+using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Tests.Services;
 
@@ -79,7 +79,7 @@ public class SpellServiceTests
         var classRepo = new Mock<IClassRepository>();
         var service = new SpellService(repo.Object, classRepo.Object, NullLogger<SpellService>.Instance);
 
-        List<Spell> spells = [CreateTestSpell("Fireball", 0, 0, 0)];
+        List<Spell> spells = [CreateTestSpell("Fireball", 0, SpellDuration.Instantaneous, 0)];
 
         repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => spells
@@ -127,7 +127,7 @@ public class SpellServiceTests
         var classRepo = new Mock<IClassRepository>();
         var service = new SpellService(repo.Object, classRepo.Object, NullLogger<SpellService>.Instance);
 
-        List<Spell> spells = [CreateTestSpell("Lightning Bolt", 0, 0, 0)];
+        List<Spell> spells = [CreateTestSpell("Lightning Bolt", 0, SpellDuration.Instantaneous, 0)];
 
         repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => spells
@@ -155,7 +155,7 @@ public class SpellServiceTests
         var classRepo = new Mock<IClassRepository>();
         var service = new SpellService(repo.Object, classRepo.Object, NullLogger<SpellService>.Instance);
 
-        List<Spell> spells = [CreateTestSpell("Lightning Bolt", 0, 0, 0)];
+        List<Spell> spells = [CreateTestSpell("Lightning Bolt", 0, SpellDuration.Instantaneous, 0)];
 
         repo.Setup(r => r.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync((int id) => spells
@@ -184,19 +184,19 @@ public class SpellServiceTests
         ];
 
         // Act & Assert
-        var sorted = service.SortBy(spells, SpellSortFilter.Name);
+        var sorted = service.SortBy(spells, SortSpellOption.Name);
         string[] expectedOrder = ["Flame Bolt", "Ice Bolt", "Lightning Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellSortFilter.Name, true);
+        sorted = service.SortBy(spells, SortSpellOption.Name, true);
         expectedOrder = ["Rock Bolt", "Lightning Bolt", "Ice Bolt", "Flame Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellSortFilter.Level);
+        sorted = service.SortBy(spells, SortSpellOption.Level);
         expectedOrder = ["Ice Bolt", "Lightning Bolt", "Flame Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
 
-        sorted = service.SortBy(spells, SpellSortFilter.Duration);
+        sorted = service.SortBy(spells, SortSpellOption.Duration);
         expectedOrder = ["Lightning Bolt", "Flame Bolt", "Ice Bolt", "Rock Bolt"];
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }

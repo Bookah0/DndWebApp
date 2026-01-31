@@ -1,7 +1,3 @@
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Items.Enums;
-using Microsoft.EntityFrameworkCore;
-
 namespace DndWebApp.Api.Models.Items;
 
 public class Vehicle : Item

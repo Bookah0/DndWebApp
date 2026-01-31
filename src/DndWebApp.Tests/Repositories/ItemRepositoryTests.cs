@@ -1,9 +1,9 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Implemented.Items;
 using DndWebApp.Api.Repositories.Implemented;
+using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -48,7 +48,7 @@ public class ItemRepositoryTests
         Assert.Equal("Leather Armor", savedArmor!.Name);
         Assert.Equal("Light armor made from tanned leather, provides basic protection.", savedArmor.Description);
         Assert.Equal(ItemCategory.Armor, savedArmor.Categories.First());
-        Assert.Equal(ArmorCategory.Light, savedArmor.Category);
+        Assert.Equal(ArmorCategory.Light, savedArmor.ArmorCategory);
         Assert.Equal(11, savedArmor.BaseArmorClass);
         Assert.True(savedArmor.PlusDexMod);
 

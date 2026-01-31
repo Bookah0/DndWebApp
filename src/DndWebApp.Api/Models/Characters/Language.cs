@@ -1,14 +1,9 @@
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.World.Enums;
-using Microsoft.EntityFrameworkCore;
-
-namespace DndWebApp.Api.Models.World;
+namespace DndWebApp.Api.Models.Characters;
 
 // Based on https://5e-bits.github.io/docs/api/
 public class Language
 {
     public int Id { get; set; }
-    public LanguageType? Type { get; set; }
     public required string Name { get; set; }
     public required string Family { get; set; }
     public required string Script { get; set; }

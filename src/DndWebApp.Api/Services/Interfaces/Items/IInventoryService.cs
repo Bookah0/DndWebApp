@@ -1,7 +1,6 @@
 
 using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
 
 namespace DndWebApp.Api.Services.Interfaces.Items;
 public interface IInventoryService
@@ -10,7 +9,7 @@ public interface IInventoryService
     Task AddItem(int invId, int itemId);
     Task DiscardItem(int invId, int itemId);
     Task UnEquip(int invId, int itemId);
-    Task Equip(int invId, int itemId, EquipSlot slot);
+    Task Equip(int invId, int itemId, string slot);
     Task<ICollection<Inventory>> GetAllAsync();
     Task<Inventory> GetByIdAsync(int id);
     Task DeleteAsync(int id);

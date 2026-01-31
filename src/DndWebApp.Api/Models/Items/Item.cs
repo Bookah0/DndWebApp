@@ -1,6 +1,3 @@
-
-using DndWebApp.Api.Models.Items.Enums;
-
 namespace DndWebApp.Api.Models.Items;
 
 // Based on:
@@ -14,8 +11,8 @@ public class Item
     public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public required ICollection<ItemCategory> Categories { get; set; }
-    public ItemRarity? Rarity { get; set; }
+    public required ICollection<string> Categories { get; set; }
+    public string? Rarity { get; set; }
     public bool RequiresAttunement { get; set; } = false;
     public int Weight { get; set; }
     public int Value { get; set; }

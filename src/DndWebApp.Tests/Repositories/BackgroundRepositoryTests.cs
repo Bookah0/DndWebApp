@@ -1,9 +1,7 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Repositories;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Implemented;
+using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Tests.Repositories;
 

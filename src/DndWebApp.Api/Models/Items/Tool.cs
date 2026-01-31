@@ -1,11 +1,9 @@
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Items.Enums;
 using Microsoft.EntityFrameworkCore;
 namespace DndWebApp.Api.Models.Items;
 
 public class Tool : Item
 {
-    public required ToolCategory ToolType { get; set; }
+    public required string ToolType { get; set; }
     public required ICollection<ToolProperty> Properties { get; set; }
     public ICollection<ToolActivity> Activities { get; set; } = [];
 }

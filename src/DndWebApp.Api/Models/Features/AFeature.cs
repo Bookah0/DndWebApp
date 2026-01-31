@@ -1,8 +1,6 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.Items.Enums;
+using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.World.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Features;
@@ -17,18 +15,18 @@ public abstract class AFeature
     public ICollection<Spell> SpellsGained { get; set; } = [];
 
     // Damage Affinities
-    public ICollection<DamageType> DamageResistanceGained { get; set; } = [];
-    public ICollection<DamageType> DamageImmunityGained { get; set; } = [];
-    public ICollection<DamageType> DamageWeaknessGained { get; set; } = [];
+    public ICollection<string> DamageResistanceGained { get; set; } = [];
+    public ICollection<string> DamageImmunityGained { get; set; } = [];
+    public ICollection<string> DamageWeaknessGained { get; set; } = [];
 
     // Proficiencies
-    public ICollection<AbilityType> SavingThrowProficiencies { get; set; } = [];
-    public ICollection<SkillType> SkillProficiencies { get; set; } = [];
-    public ICollection<WeaponCategory> WeaponCategoryProficiencies { get; set; } = [];
-    public ICollection<WeaponType> WeaponTypeProficiencies { get; set; } = [];
-    public ICollection<ArmorCategory> ArmorProficiencies { get; set; } = [];
-    public ICollection<ToolCategory> ToolProficiencies { get; set; } = [];
-    public ICollection<LanguageType> Languages { get; set; } = [];
+    public ICollection<Ability> SavingThrowProficiencies { get; set; } = [];
+    public ICollection<Skill> SkillProficiencies { get; set; } = [];
+    public ICollection<Language> Languages { get; set; } = [];
+    public ICollection<string> ToolProficiencies { get; set; } = [];
+    public ICollection<string> WeaponCategoryProficiencies { get; set; } = [];
+    public ICollection<string> WeaponTypeProficiencies { get; set; } = [];
+    public ICollection<string> ArmorProficiencies { get; set; } = [];
 
     // Proficiency Choices
     public ICollection<AbilityIncreaseChoice> AbilityIncreaseChoices { get; set; } = [];
@@ -51,40 +49,40 @@ public class AbilityIncreaseChoice
 public class SkillProficiencyChoice
 {
     public required string Description { get; set; }
-    public required ICollection<SkillType> Options { get; set; }
+    public required ICollection<Skill> Options { get; set; }
 }
 
 [Owned]
 public class ToolProficiencyChoice
 {
     public required string Description { get; set; }
-    public required ICollection<ToolCategory> Options { get; set; }
+    public required ICollection<string> Options { get; set; }
 }
 
 [Owned]
 public class LanguageChoice
 {
     public required string Description { get; set; }
-    public required ICollection<LanguageType> Options { get; set; }
+    public required ICollection<Language> Options { get; set; }
 }
 
 [Owned]
 public class WeaponCategoryProficiencyChoice
 {
     public required string Description { get; set; }
-    public required ICollection<WeaponCategory> Options { get; set; }
+    public required ICollection<string> Options { get; set; }
 }
 
 [Owned]
 public class WeaponTypeProficiencyChoice
 {
     public required string Description { get; set; }
-    public required ICollection<WeaponType> Options { get; set; }
+    public required ICollection<string> Options { get; set; }
 }
 
 [Owned]
 public class ArmorProficiencyChoice
 {
     public required string Description { get; set; }
-    public required ICollection<ArmorCategory> Options { get; set; }
+    public required ICollection<string> Options { get; set; }
 }

@@ -1,7 +1,7 @@
 
 using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Api.Services.Interfaces.Items;
 
@@ -12,5 +12,5 @@ public interface IItemService
     Task<ICollection<Item>> GetAllAsync();
     Task<Item> GetByIdAsync(int id);
     Task UpdateAsync(ItemDto dto);
-    ICollection<Item> SortBy(ICollection<Item> items, ItemSortFilter sortFilter, bool descending = false);
+    ICollection<Item> SortBy(ICollection<Item> items, string sortFilter, bool descending = false);
 }

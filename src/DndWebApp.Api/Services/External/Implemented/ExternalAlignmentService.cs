@@ -1,10 +1,8 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
-using System.Globalization;
 using System.Text.Json;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Models.World.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Util;
@@ -40,7 +38,6 @@ public class ExternalAlignmentService : IExternalAlignmentService
 
             var alignment = new Alignment
             {
-                Type = NormalizationUtil.ParseEnumOrThrow<AlignmentType>(eAlignment.Name),
                 Name = eAlignment.Name,
                 Abbreviation = eAlignment.Abbreviation,
                 Description = eAlignment.Description

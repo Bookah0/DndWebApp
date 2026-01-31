@@ -1,22 +1,18 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
-using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
-using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Util;
 using static DndWebApp.Api.Services.Util.NormalizationUtil;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
+using DndWebApp.Api.Models.Items.Constants;
+using Microsoft.AspNetCore.Http.HttpResults;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 
 public class ExternalItemService : IExternalItemService
 {
@@ -33,7 +29,6 @@ public class ExternalItemService : IExternalItemService
         if ((await repo.GetAllAsync()).Count > 0)
         {
             throw new InvalidOperationException("Items already exist in the database. Skipping fetch.");
-            return;
         }
 
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/equipment/", cancellationToken);
@@ -42,7 +37,6 @@ public class ExternalItemService : IExternalItemService
         if (result is null || result.Results.Count == 0)
         {
             throw new InvalidOperationException("No items found in external API.");
-            return;
         }
 
         foreach (var item in result.Results)
@@ -79,8 +73,7 @@ public class ExternalItemService : IExternalItemService
     {
         var eArmor = jsonDoc.RootElement.Deserialize<EArmorDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize armor: {item.Index}");
-
-        var itemCategory = ParseEnumOrThrow<ItemCategory>(eArmor.EquipmentCategory.Index.Replace("-", ""));
+        var itemCategory = ResolveOptionOrThrow(eArmor.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
 
         return new Armor
         {
@@ -91,7 +84,7 @@ public class ExternalItemService : IExternalItemService
             Weight = eArmor.Weight,
             Value = GetConvertedValue(eArmor.Cost.Quantity, eArmor.Cost.Unit),
             Quantity = eArmor.Cost.Quantity,
-            Category = ParseEnumOrThrow<ArmorCategory>(eArmor.ArmorCategory),
+            ArmorCategory = ResolveOptionOrThrow(eArmor.ArmorCategory, ArmorCategory.AllowedValues, "Armor Category"),
             BaseArmorClass = eArmor.ArmorClass.BaseArmorClass,
             PlusDexMod = eArmor.ArmorClass.DexBonus,
             ModCap = eArmor.ArmorClass.MaxBonus,
@@ -103,17 +96,17 @@ public class ExternalItemService : IExternalItemService
     private Weapon ToWeapon(JsonDocument jsonDoc, EIndexDto item)
     {
         var eWeapon = jsonDoc.RootElement.Deserialize<EWeaponDto>()
-            ?? throw new InvalidOperationException($"Failed to deserialize weapon: {item.Index}");
+            ?? throw new InvalidOperationException($"Failed to deserialize weapon: {item.Name}");
         
         var eDamagetype = eWeapon.Damage?.DamageType.Name 
-            ?? throw new InvalidOperationException($"Weapon {item.Index} missing damage object.");
-        var damageType = ParseEnumOrThrow<DamageType>(eDamagetype);
+            ?? throw new InvalidOperationException($"Weapon {item.Name} missing damage object.");
+        var damageType = ResolveOptionOrThrow(eDamagetype, DamageType.AllowedValues, "Damage Type");
 
         var propertyNames = eWeapon.Properties?.Select(p => p.Name).ToList() ?? [];
-        var properties = ParseEnumOrThrow<WeaponProperty>(propertyNames);
+        var properties = ResolveOptionOrThrow(propertyNames, WeaponProperty.AllowedValues, "Weapon Property");
         
-        var category = ParseEnumOrThrow<WeaponCategory>(eWeapon.CategoryRange.Replace(" ", ""));
-        var itemCategory = ParseEnumOrThrow<ItemCategory>(eWeapon.EquipmentCategory.Index.Replace("-", ""));
+        var category = ResolveOptionOrThrow(eWeapon.CategoryRange, WeaponCategory.AllowedValues, "Weapon Category");
+        var itemCategory = ResolveOptionOrThrow(eWeapon.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
 
         return new Weapon
         {
@@ -139,8 +132,8 @@ public class ExternalItemService : IExternalItemService
         var eTool = jsonDoc.RootElement.Deserialize<EToolDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize tool: {item.Index}");
 
-        var category = ParseEnumOrThrow<ToolCategory>(eTool.ToolCategory.Replace("-", ""));
-        var itemCategory = ParseEnumOrThrow<ItemCategory>(eTool.EquipmentCategory.Index.Replace("-", ""));
+        var category = ResolveOptionOrThrow(eTool.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
+        var itemCategory = ResolveOptionOrThrow(eTool.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
 
         return new Tool
         {
@@ -164,7 +157,7 @@ public class ExternalItemService : IExternalItemService
         int? capacityValue = int.TryParse(eVehicle.Capacity?.Split(' ')[0], out var cap) ? cap : null;
         string? capacityUnit = eVehicle.Capacity?.Split(' ')[1] ?? null;
         
-        var itemCategory = ParseEnumOrThrow<ItemCategory>(eVehicle.EquipmentCategory.Index.Replace("-", ""));
+        var itemCategory = ResolveOptionOrThrow(eVehicle.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
 
         return new Vehicle
         {
@@ -189,7 +182,7 @@ public class ExternalItemService : IExternalItemService
         var eItem = jsonDoc.RootElement.Deserialize<EItemDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize item: {item.Index}");
 
-        var itemCategory = ParseEnumOrThrow<ItemCategory>(eItem.EquipmentCategory.Index.Replace("-", ""));
+        var itemCategory = ResolveOptionOrThrow(eItem.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
 
         return new Item
         {
@@ -208,22 +201,20 @@ public class ExternalItemService : IExternalItemService
         throw new NotImplementedException();
     }
 
-    private WeaponType ParseWeaponType(EWeaponDto eWeapon)
+    private string ParseWeaponType(EWeaponDto eWeapon)
     {
-        if (Enum.TryParse<WeaponType>(eWeapon.Name, out var weaponType))
-        {
-            return weaponType;
-        }
+        if (TryResolveOption(eWeapon.Name, WeaponType.AllowedValues, out var weaponType))
+            return weaponType!;
 
-        foreach (var type in Enum.GetNames<WeaponType>())
+        foreach (var allowed in WeaponType.AllowedValues)
         {
-            if (eWeapon.Name.Contains(type, StringComparison.CurrentCultureIgnoreCase))
+            if (eWeapon.Name.Contains(allowed, StringComparison.CurrentCultureIgnoreCase))
             {
-                return Enum.Parse<WeaponType>(type);
+                return allowed;
             }
         }
 
-        throw new ArgumentOutOfRangeException($"Unknown weapon type: {eWeapon.Name}");
+        throw new NotFoundException($"Unknown weapon type: {eWeapon.Name}");
     }
 
     private int GetConvertedValue(int value, string unit)

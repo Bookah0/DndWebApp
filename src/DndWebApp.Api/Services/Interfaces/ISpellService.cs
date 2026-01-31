@@ -1,7 +1,7 @@
 
 using DndWebApp.Api.Models.DTOs.Spells;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Api.Services.Interfaces;
 
@@ -13,5 +13,5 @@ public interface ISpellService
     Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto);
     Task<Spell> GetByIdAsync(int id);
     Task UpdateAsync(SpellDto dto);
-    ICollection<Spell> SortBy(ICollection<Spell> spells, SpellSortFilter sortFilter, bool descending = false);
+    ICollection<Spell> SortBy(ICollection<Spell> spells, string sortFilter, bool descending = false);
 }

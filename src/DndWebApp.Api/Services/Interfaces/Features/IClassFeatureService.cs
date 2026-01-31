@@ -1,6 +1,6 @@
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Api.Services.Interfaces.Features;
 
@@ -11,5 +11,5 @@ public interface IClassFeatureService : IBaseFeatureService<ClassFeature>
     Task<ICollection<ClassFeature>> GetAllAsync();
     Task<ClassFeature> GetByIdAsync(int id);
     Task UpdateAsync(ClassFeatureDto dto);
-    ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, ClassFeatureSortFilter sortFilter, bool descending = false);
+    ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, string sortFilter, bool descending = false);
 }

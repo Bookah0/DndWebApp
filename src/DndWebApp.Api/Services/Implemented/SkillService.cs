@@ -2,10 +2,11 @@ using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Util;
 using static DndWebApp.Api.Services.Util.SortUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -76,16 +77,18 @@ public class SkillService : ISkillService
         await repo.UpdateAsync(skill);
     }
 
-    
-    public ICollection<Skill> SortBy(ICollection<Skill> skills, SkillSortFilter SortFilter, bool descending = false)
+    public ICollection<Skill> SortBy(ICollection<Skill> skills, string sortFilter, bool descending = false)
     {
+        if(!ConstantsUtil.TryResolveOption(sortFilter, SortSkillOption.AllowedValues, out string? resolved))
+            return skills;
+
         var abilityOrder = CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
 
-        return SortFilter switch
+        return resolved switch
         {
-            SkillSortFilter.Name => OrderByMany(skills, [(s => s.Name)], descending),
-            SkillSortFilter.Ability => OrderByMany(skills, [(s => abilityOrder[s.Ability!.FullName]), (s => s.Name)], descending),
-            _ => skills,
+            SortSkillOption.Name => OrderByMany(skills, [(s => s.Name)], descending),
+            SortSkillOption.Ability => OrderByMany(skills, [(s => abilityOrder[s.Ability!.FullName]), (s => s.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

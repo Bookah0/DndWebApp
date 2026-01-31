@@ -1,16 +1,12 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.Spells.Enums;
+using DndWebApp.Api.Models.Spells.Constants;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
-using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Util;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 public class ExternalSpellService : IExternalSpellService
 {
@@ -27,7 +23,6 @@ public class ExternalSpellService : IExternalSpellService
         if ((await repo.GetAllAsync()).Count > 0)
         {
             throw new InvalidOperationException("Spells already exist in the database. Skipping fetch.");
-            return;
         }
 
         var getOpenListResponse = await client.GetAsync("https://api.open5e.com/v1/spells/", cancellationToken);
@@ -36,7 +31,6 @@ public class ExternalSpellService : IExternalSpellService
         if (resultOpen is null || resultOpen.Count == 0)
         {
             throw new InvalidOperationException("No spells found in external APIs.");
-            return;
         }
 
         var seenIndexes = new HashSet<string>();
@@ -63,12 +57,13 @@ public class ExternalSpellService : IExternalSpellService
 
             var spellTargeting = new SpellTargeting
             {
+                TargetType = ParseTargetType(),
                 Range = range,
                 RangeValue = rangeValue,
                 ShapeType = e5eSpell?.Aoe.AoeType ?? "",
             };
 
-            List<SpellType> spellTypes = [];
+            List<string> spellTypes = [];
             if (e5eSpell?.Ritual == true || eOpenSpell?.IsRitual == true)
             {
                 spellTypes.Add(SpellType.Ritual);
@@ -89,6 +84,8 @@ public class ExternalSpellService : IExternalSpellService
                 Materials = e5eSpell?.Material ?? eOpenSpell?.Material ?? null,
             };
 
+            var eMagicSchool = e5eSpell != null ? e5eSpell.School.Name : eOpenSpell!.School;
+
             var spell = new Spell
             {
                 Name = e5eSpell?.Name ?? eOpenSpell!.Name,
@@ -99,7 +96,7 @@ public class ExternalSpellService : IExternalSpellService
                 DurationValue = durationValue,
                 CastingTime = castingTime,
                 CastingTimeValue = timeValue,
-                MagicSchool = NormalizationUtil.ParseEnumOrThrow<MagicSchool>(e5eSpell?.School.Name ?? eOpenSpell?.School),
+                MagicSchool = ConstantsUtil.ResolveOptionOrThrow(eMagicSchool, MagicSchool.AllowedValues, "Magic School"),
                 SpellTargeting = spellTargeting,
                 SpellTypes = spellTypes,
                 CastingRequirements = castingRequirements
@@ -109,7 +106,7 @@ public class ExternalSpellService : IExternalSpellService
         }
     }
         
-    private static (CastingTime, int) ParseCastingTime(string castingTimeStr)
+    private static (string, int) ParseCastingTime(string castingTimeStr)
     {
         return castingTimeStr.ToLower() switch
         {
@@ -122,26 +119,26 @@ public class ExternalSpellService : IExternalSpellService
             "8 hours" => (CastingTime.Hour, 8),
             "12 hours" => (CastingTime.Hour, 12),
             "24 hours" => (CastingTime.Hour, 24),
-            _ => (default, 0)
+            _ => throw new ArgumentException($"Casting time '{castingTimeStr}' not recognized.")
         };
     }
 
-    private static (SpellDuration, int) ParseSpellDuration(string durationStr)
+    private static (string, int) ParseSpellDuration(string durationStr)
     {
         return durationStr.ToLower() switch
         {
             "instantaneous" => (SpellDuration.Instantaneous, 1),
             "concentration, up to 1 minute" => (SpellDuration.Minute, 1),
             "concentration, up to 10 minutes" => (SpellDuration.Minute, 10),
-            "concentration, up to 1 hour" => (SpellDuration.Hours, 1),
-            "concentration, up to 8 hours" => (SpellDuration.Hours, 8),
-            "concentration, up to 24 hours" => (SpellDuration.Hours, 24),
+            "concentration, up to 1 hour" => (SpellDuration.Hour, 1),
+            "concentration, up to 8 hours" => (SpellDuration.Hour, 8),
+            "concentration, up to 24 hours" => (SpellDuration.Hour, 24),
             "special" => (SpellDuration.Special, 0),
-            _ => (default, 0)
+            _ => throw new ArgumentException($"Duration '{durationStr}' not recognized.")
         };
     }
 
-    private static (SpellRange, int) ParseSpellRange(string rangeStr)
+    private static (string, int) ParseSpellRange(string rangeStr)
     {
         return rangeStr.ToLower() switch
         {
@@ -155,8 +152,13 @@ public class ExternalSpellService : IExternalSpellService
             "300 feet" => (SpellRange.Feet, 300),
             "500 feet" => (SpellRange.Feet, 500),
             "1 mile" => (SpellRange.Mile, 1),
-            _ => (default, 0)
+            _ => throw new ArgumentException($"Range '{rangeStr}' not recognized.")
         };
+    }
+
+    private static string ParseTargetType()
+    {
+        return ""; // Placeholder
     }
 }
 

@@ -1,15 +1,17 @@
 
-using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.Spells.Enums;
 using DndWebApp.Api.Services.Util;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Repositories.Implemented.Spells;
 using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Services.Enums;
 using static DndWebApp.Api.Services.Util.SortUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
+using static DndWebApp.Api.Services.Util.ValidationUtil;
 using DndWebApp.Api.Models.DTOs.Spells;
+using DndWebApp.Api.Services.Constants;
+using DndWebApp.Api.Models.Spells.Constants;
+using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -28,19 +30,19 @@ public class SpellService : ISpellService
 
     public async Task<Spell> CreateAsync(SpellDto dto)
     {
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.HasContentOrThrow(dto.Duration);
-        ValidationUtil.HasContentOrThrow(dto.CastingTime);
-        ValidationUtil.HasContentOrThrow(dto.MagicSchool);
+        HasContentOrThrow(dto.Name);
+        HasContentOrThrow(dto.Description);
+        HasContentOrThrow(dto.Duration);
+        HasContentOrThrow(dto.CastingTime);
+        HasContentOrThrow(dto.MagicSchool);
 
-        var dtoSchool = NormalizationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
-        var dtoTargetType = NormalizationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetingDto.TargetType);
-        var dtoSpellRange = NormalizationUtil.ParseEnumOrThrow<SpellRange>(dto.TargetingDto.Range);
-        var dtoDuration = NormalizationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
-        var dtoCastTime = NormalizationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
-        var dtoSpellTypes = NormalizationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
-        var dtoDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+        var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
+        var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");
+        var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues, "Spell Range");
+        var dtoDuration = ResolveOptionOrThrow(dto.Duration, SpellDuration.AllowedValues, "Spell Duration");
+        var dtoCastTime = ResolveOptionOrThrow(dto.CastingTime, CastingTime.AllowedValues, "Casting Time");
+        var dtoSpellTypes = ResolveOptionOrThrow(dto.Types, SpellType.AllowedValues, "Spell Type");
+        var dtoDamageTypes = ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type");
 
         if (dto.Level <= 0)
             throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
@@ -60,9 +62,9 @@ public class SpellService : ISpellService
             CastingTime = dtoCastTime,
             ReactionCondition = dto.ReactionCondition,
             MagicSchool = dtoSchool,
-            SpellTypes = dtoSpellTypes,
+            SpellTypes = dtoSpellTypes!,
             DamageRoll = dto.DamageRoll,
-            DamageTypes = dtoDamageTypes,
+            DamageTypes = dtoDamageTypes!,
             SpellTargeting = new SpellTargeting()
             {
                 TargetType = dtoTargetType,
@@ -108,15 +110,15 @@ public class SpellService : ISpellService
         if (dto.MaxLevel is not null && dto.MaxLevel < 0)
             throw new ArgumentOutOfRangeException(nameof(dto), "Maximum level must be greater than or equal to zero");
 
-        await ValidationUtil.IdsExist<IClassRepository, Class>(dto.ClassIds, classRepo);
+        await IdsExist<IClassRepository, Class>(dto.ClassIds, classRepo);
 
-        var dtoSchools = NormalizationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchools);
-        var dtoTargetTypes = NormalizationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetTypes);
-        var dtoSpellRanges = NormalizationUtil.ParseEnumOrThrow<SpellRange>(dto.Range);
-        var dtoDurations = NormalizationUtil.ParseEnumOrThrow<SpellDuration>(dto.Durations);
-        var dtoCastTimes = NormalizationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTimes);
-        var dtoSpellTypes = NormalizationUtil.ParseEnumOrThrow<SpellType>(dto.SpellTypes);
-        var dtoDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+        var dtoSchools = dto.MagicSchools != null ? ResolveOptionOrThrow(dto.MagicSchools, MagicSchool.AllowedValues, "Magic School") : null;
+        var dtoTargetTypes = dto.TargetTypes != null ? ResolveOptionOrThrow(dto.TargetTypes, SpellTargetType.AllowedValues, "Spell Target Type") : null;
+        var dtoSpellRanges = dto.Range != null ? ResolveOptionOrThrow(dto.Range, SpellRange.AllowedValues, "Spell Range") : null;
+        var dtoDurations = dto.Durations != null ? ResolveOptionOrThrow(dto.Durations, SpellDuration.AllowedValues, "Spell Duration") : null;
+        var dtoCastTimes = dto.CastingTimes != null ? ResolveOptionOrThrow(dto.CastingTimes, CastingTime.AllowedValues, "Casting Time") : null;
+        var dtoSpellTypes = dto.SpellTypes != null ? ResolveOptionOrThrow(dto.SpellTypes, SpellType.AllowedValues, "Spell Type") : null;
+        var dtoDamageTypes = dto.DamageTypes != null ? ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type") : null;
 
         var filter = new SpellFilter()
         {
@@ -151,19 +153,19 @@ public class SpellService : ISpellService
     {
         var spell = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Spell could not be found");
 
-        ValidationUtil.HasContentOrThrow(dto.Name);
-        ValidationUtil.HasContentOrThrow(dto.Description);
-        ValidationUtil.HasContentOrThrow(dto.Duration);
-        ValidationUtil.HasContentOrThrow(dto.CastingTime);
-        ValidationUtil.HasContentOrThrow(dto.MagicSchool);
+        HasContentOrThrow(dto.Name);
+        HasContentOrThrow(dto.Description);
+        HasContentOrThrow(dto.Duration);
+        HasContentOrThrow(dto.CastingTime);
+        HasContentOrThrow(dto.MagicSchool);
 
-        var dtoSchool = NormalizationUtil.ParseEnumOrThrow<MagicSchool>(dto.MagicSchool);
-        var dtoTargetType = NormalizationUtil.ParseEnumOrThrow<SpellTargetType>(dto.TargetingDto.TargetType);
-        var dtoSpellRange = NormalizationUtil.ParseEnumOrThrow<SpellRange>(dto.TargetingDto.Range);
-        var dtoDuration = NormalizationUtil.ParseEnumOrThrow<SpellDuration>(dto.Duration);
-        var dtoCastTime = NormalizationUtil.ParseEnumOrThrow<CastingTime>(dto.CastingTime);
-        var dtoSpellTypes = NormalizationUtil.ParseEnumOrThrow<SpellType>(dto.Types);
-        var dtoDamageTypes = NormalizationUtil.ParseEnumOrThrow<DamageType>(dto.DamageTypes);
+        var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
+        var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");
+        var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues, "Spell Range");
+        var dtoDuration = ResolveOptionOrThrow(dto.Duration, SpellDuration.AllowedValues, "Spell Duration");
+        var dtoCastTime = ResolveOptionOrThrow(dto.CastingTime, CastingTime.AllowedValues, "Casting Time");
+        var dtoSpellTypes = ResolveOptionOrThrow(dto.Types, SpellType.AllowedValues, "Spell Type");
+        var dtoDamageTypes = ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type");
 
         if (dto.Level <= 0)
             throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
@@ -181,10 +183,10 @@ public class SpellService : ISpellService
         spell.CastingTime = dtoCastTime;
         spell.ReactionCondition = dto.ReactionCondition;
         spell.MagicSchool = dtoSchool;
-        spell.SpellTypes = dtoSpellTypes;
+        spell.SpellTypes = dtoSpellTypes!;
 
         spell.DamageRoll = dto.DamageRoll;
-        spell.DamageTypes = dtoDamageTypes;
+        spell.DamageTypes = dtoDamageTypes!;
 
         spell.SpellTargeting.TargetType = dtoTargetType;
         spell.SpellTargeting.Range = dtoSpellRange;
@@ -202,18 +204,20 @@ public class SpellService : ISpellService
         await repo.UpdateAsync(spell);
     }
 
-    
-    public ICollection<Spell> SortBy(ICollection<Spell> spells, SpellSortFilter sortFilter, bool descending = false)
+    public ICollection<Spell> SortBy(ICollection<Spell> spells, string sortFilter, bool descending = false)
     {
-        return sortFilter switch
+        if(!TryResolveOption(sortFilter, SortSpellOption.AllowedValues, out string? resolved))
+            return spells;
+
+        return resolved switch
         {
-            SpellSortFilter.Name => OrderByMany(spells, [(s => s.Name)], descending),
-            SpellSortFilter.Level => OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
-            SpellSortFilter.CastingTime => OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue), (s => s.Name)], descending),
-            SpellSortFilter.Duration => OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
-            SpellSortFilter.Target => OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
-            SpellSortFilter.Range => OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
-            _ => spells,
+            SortSpellOption.Name => OrderByMany(spells, [(s => s.Name)], descending),
+            SortSpellOption.Level => OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
+            SortSpellOption.CastingTime => OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue), (s => s.Name)], descending),
+            SortSpellOption.Duration => OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
+            SortSpellOption.Target => OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
+            SortSpellOption.Range => OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

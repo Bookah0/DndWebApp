@@ -2,12 +2,9 @@ namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
-using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Util;
 
 public class ExternalSkillService : IExternalSkillService
@@ -27,7 +24,6 @@ public class ExternalSkillService : IExternalSkillService
         if ((await repo.GetAllAsync()).Count > 0)
         {
             throw new InvalidOperationException("Skills already exist in the database. Skipping fetch.");
-            return;
         }
         
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/skills/", cancellationToken);
@@ -36,7 +32,6 @@ public class ExternalSkillService : IExternalSkillService
         if (result is null || result.Results.Count == 0)
         {
             throw new InvalidOperationException("No skills found in external API.");
-            return;
         }
 
         foreach (var item in result.Results)
@@ -47,13 +42,10 @@ public class ExternalSkillService : IExternalSkillService
             if (eSkill is null)
             {
                 throw new InvalidOperationException($"Failed to deserialize skill {item.Index}.");
-                continue;
             }
 
-            var abilityType = NormalizationUtil.ParseEnumOrThrow<AbilityShortType>(eSkill.Ability.Index);
-
-            var ability = await abilityRepo.GetByTypeAsync(abilityType)
-                ?? throw new ArgumentException($"Ability with short name {eSkill.Ability.Index} not found.");
+            var ability = await abilityRepo.GetByNameAsync(eSkill.Ability.Name)
+                ?? throw new ArgumentException($"Ability with short name {eSkill.Ability.Name} not found.");
 
             var skill = new Skill
             {

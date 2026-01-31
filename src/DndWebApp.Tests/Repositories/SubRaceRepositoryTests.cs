@@ -1,6 +1,5 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Implemented.Species;
 
 namespace DndWebApp.Tests.Repositories;

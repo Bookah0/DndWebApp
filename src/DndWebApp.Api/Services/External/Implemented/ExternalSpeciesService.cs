@@ -2,12 +2,13 @@ namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
+using DndWebApp.Api.Models.Characters.Constants;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Util;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 public class ExternalSpeciesService : IExternalSpeciesService
 {
@@ -28,7 +29,6 @@ public class ExternalSpeciesService : IExternalSpeciesService
         if ((await raceRepo.GetAllAsync()).Count > 0)
         {
             throw new InvalidOperationException("Races already exist in the database. Skipping fetch.");
-            return;
         }
         
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/races/", cancellationToken);
@@ -37,7 +37,6 @@ public class ExternalSpeciesService : IExternalSpeciesService
         if (result is null || result.Results.Count == 0)
         {
             throw new InvalidOperationException("No races found in external API.");
-            return;
         }
 
         foreach (var item in result.Results)
@@ -48,7 +47,6 @@ public class ExternalSpeciesService : IExternalSpeciesService
             if (eRace is null)
             {
                 throw new InvalidOperationException($"Failed to deserialize race {item.Index}.");
-                continue;
             }
 
             var description = new RaceDescription
@@ -65,7 +63,7 @@ public class ExternalSpeciesService : IExternalSpeciesService
                 Name = eRace.Name,
                 Speed = eRace.Speed,
                 RaceDescription = description,
-                Size = NormalizationUtil.ParseEnumOrThrow<CreatureSize>(eRace.Size),
+                Size = ResolveOptionOrThrow(eRace.Size, CreatureSize.AllowedValues, "Creature Size"),
                 Traits = [],
                 SubRaces = []
             };
@@ -92,12 +90,10 @@ public class ExternalSpeciesService : IExternalSpeciesService
             if (eSubrace is null)
             {
                 throw new InvalidOperationException($"Failed to deserialize subrace {item.Index}.");
-                continue;
             }
             if (await subraceRepo.GetByNameAsync(eSubrace.Name) is not null)
             {
                 throw new InvalidOperationException($"Subrace {eSubrace.Name} already exists. Skipping.");
-                continue;
             }
 
             var description = new RaceDescription
@@ -137,15 +133,14 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
         foreach (var abilityIncrease in eSpecies.AbilityBonuses)
         {
-            var abilityType = NormalizationUtil.ParseEnumOrThrow<AbilityShortType>(abilityIncrease.AbilityScore.Index);
+            var ability = await abilityRepo.GetByNameAsync(abilityIncrease.AbilityScore.Name)
+                ?? throw new ArgumentException($"Ability with short name {abilityIncrease.AbilityScore.Name} not found.");
 
-            var ability = await abilityRepo.GetByTypeAsync(abilityType)
-                ?? throw new ArgumentException($"Ability with short name {abilityIncrease.AbilityScore.Index} not found.");
             abilityIncreases.Add(new AbilityValue
             {
                 AbilityId = ability.Id,
                 Value = abilityIncrease.Bonus,
-                Type = NormalizationUtil.ParseEnumOrThrow<AbilityType>(ability.FullName)
+                Ability = ability
             });
 
             if (eSpecies.AbilityBonuses.Count == 1)

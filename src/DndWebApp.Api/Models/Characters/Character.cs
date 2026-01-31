@@ -1,8 +1,5 @@
-using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.World.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Characters;
@@ -92,7 +89,6 @@ public class CharacterDescription
 [Owned]
 public class SaveThrowProficiency
 {
-    public required AbilityType AbilityType { get; set; }
     public int AbilityId { get; set; }
     public required int FeatureId { get; set; }
 }
@@ -100,15 +96,14 @@ public class SaveThrowProficiency
 [Owned]
 public class DamageAffinity
 {
-    public required AffinityType AffinityType { get; set; }
-    public required DamageType DamageType { get; set; }
+    public required string AffinityType { get; set; }
+    public required string DamageType { get; set; }
     public required int FeatureId { get; set; }
 }
 
 [Owned]
 public class SkillProficiency
 {
-    public required SkillType SkillType { get; set; }
     public int SkillId { get; set; }
     public required bool HasExpertise { get; set; }
     public required int FeatureId { get; set; }
@@ -117,35 +112,34 @@ public class SkillProficiency
 [Owned]
 public class WeaponCategoryProficiency
 {
-    public required WeaponCategory WeaponCategory { get; set; }
+    public required string WeaponCategory { get; set; }
     public required int FeatureId { get; set; }
 }
 
 [Owned]
 public class WeaponTypeProficiency
 {
-    public required WeaponType WeaponType { get; set; }
+    public required string WeaponType { get; set; }
     public required int FeatureId { get; set; }
 }
 
 [Owned]
 public class ArmorProficiency
 {
-    public required ArmorCategory ArmorType { get; set; }
+    public required string ArmorType { get; set; }
     public required int FeatureId { get; set; }
 }
 
 [Owned]
 public class ToolProficiency
 {
-    public required ToolCategory ToolType { get; set; }
+    public required string ToolType { get; set; }
     public required int FeatureId { get; set; }
 }
 
 [Owned]
 public class LanguageProficiency
 {
-    public required LanguageType LanguageType { get; set; }
     public int LanguageId { get; set; }
     public required int FeatureId { get; set; }
 }

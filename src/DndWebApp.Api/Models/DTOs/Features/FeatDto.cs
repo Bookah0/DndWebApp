@@ -40,7 +40,7 @@ public class FeatDto
 
     public ProficienciesDto? Proficiencies { get; set; }
 
-    public List<DamageAffinityDto> DamageAffinities { get; set; } = [];
+    public List<ProficiencyDto> DamageAffinities { get; set; } = [];
 
     public ProficiencyChoicesDto? ProficiencyChoices { get; set; }
 }

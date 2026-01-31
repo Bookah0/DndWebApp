@@ -1,11 +1,11 @@
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
-using static DndWebApp.Api.Services.Util.NormalizationUtil;
+using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
+using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
@@ -22,12 +22,12 @@ public class WeaponService
 
     public async Task<Weapon> CreateAsync(WeaponDto dto)
     {
-        var dtoCategory = ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
-        var dtoWeaponType = ParseEnumOrThrow<WeaponType>(dto.WeaponType);
-        var dtoMainDamageType = ParseEnumOrThrow<DamageType>(dto.MainDamageType);
-        var dtoOtherDamageTypes = ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
-        var dtoRarity = ParseEnumOrThrow<ItemRarity>(dto.Rarity);
-        var dtoProperties = ParseEnumOrThrow<WeaponProperty>(dto.Properties);
+        var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
+        var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type");
+        var dtoMainDamageType = ResolveOptionOrThrow(dto.MainDamageType, DamageType.AllowedValues, "Main Damage Type");
+        var dtoOtherDamageTypes = ResolveOptionOrThrow(dto.OtherDamageTypes, DamageType.AllowedValues, "Other Damage Types");
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues, "Weapon Property");
 
         Weapon weapon = new()
         {
@@ -70,12 +70,12 @@ public class WeaponService
 
     public async Task UpdateAsync(WeaponDto dto)
     {
-        var dtoCategory = ParseEnumOrThrow<WeaponCategory>(dto.WeaponCategory);
-        var dtoWeaponType = ParseEnumOrThrow<WeaponType>(dto.WeaponType);
-        var dtoMainDamageType = ParseEnumOrThrow<DamageType>(dto.MainDamageType);
-        var dtoOtherDamageTypes = ParseEnumOrThrow<DamageType>(dto.OtherDamageTypes);
-        var dtoRarity = ParseEnumOrThrow<ItemRarity>(dto.Rarity);
-        var dtoProperties = ParseEnumOrThrow<WeaponProperty>(dto.Properties);
+        var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
+        var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type");
+        var dtoMainDamageType = ResolveOptionOrThrow(dto.MainDamageType, DamageType.AllowedValues, "Main Damage Type");
+        var dtoOtherDamageTypes = ResolveOptionOrThrow(dto.OtherDamageTypes, DamageType.AllowedValues, "Other Damage Types");
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues, "Weapon Property");
 
         var weapon = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Weapon with id {dto.Id} could not be found");
 
@@ -91,25 +91,27 @@ public class WeaponService
         weapon.Properties = dtoProperties;
         weapon.VersitileDamageDice = dto.VersitileDamageDice ?? weapon.VersitileDamageDice;
         weapon.LongRange = dto.LongRange ?? weapon.LongRange;
-        weapon.Rarity = dtoRarity == 0 ? weapon.Rarity : dtoRarity;
+        weapon.Rarity = dtoRarity ?? weapon.Rarity;
         weapon.RequiresAttunement = dto.RequiresAttunement ?? weapon.RequiresAttunement;
         weapon.IsHomebrew = dto.IsHomebrew ?? weapon.IsHomebrew;
 
         await repo.UpdateAsync(weapon);
     }
 
-    
-    public ICollection<Weapon> SortBy(ICollection<Weapon> weapons, WeaponSortFilter sortFilter, bool descending = false)
+    public ICollection<Weapon> SortBy(ICollection<Weapon> weapons, string sortFilter, bool descending = false)
     {
-        return sortFilter switch
+        if(!TryResolveOption(sortFilter, SortWeaponOption.AllowedValues, out string? resolved))
+            return weapons;
+
+        return resolved switch
         {
-            WeaponSortFilter.Name => OrderByMany(weapons, [(i => i.Name)], descending),
-            WeaponSortFilter.Category => OrderByMany(weapons, [(i => i.WeaponCategory), (i => i.Name)], descending),
-            WeaponSortFilter.Type => OrderByMany(weapons, [(i => i.WeaponType), (i => i.Name)], descending),
-            WeaponSortFilter.Value => OrderByMany(weapons, [(i => i.Value), (i => i.Name)], descending),
-            WeaponSortFilter.Weight => OrderByMany(weapons, [(i => i.Weight), (i => i.Name)], descending),
-            WeaponSortFilter.Rarity => OrderByMany(weapons, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => weapons,
+            SortWeaponOption.Name => OrderByMany(weapons, [(i => i.Name)], descending),
+            SortWeaponOption.Category => OrderByMany(weapons, [(i => i.WeaponCategory), (i => i.Name)], descending),
+            SortWeaponOption.Type => OrderByMany(weapons, [(i => i.WeaponType), (i => i.Name)], descending),
+            SortWeaponOption.Value => OrderByMany(weapons, [(i => i.Value), (i => i.Name)], descending),
+            SortWeaponOption.Weight => OrderByMany(weapons, [(i => i.Weight), (i => i.Name)], descending),
+            SortWeaponOption.Rarity => OrderByMany(weapons, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

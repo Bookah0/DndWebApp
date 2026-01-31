@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Models.Spells.Enums;
 
 namespace DndWebApp.Api.Models.DTOs.Spells;
 

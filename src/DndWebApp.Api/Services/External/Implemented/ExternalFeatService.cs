@@ -25,7 +25,6 @@ public class ExternalFeatService : IExternalFeatService
         if ((await repo.GetAllAsync()).Count > 0)
         {
             throw new InvalidOperationException("Feats already exist in the database. Skipping fetch.");
-            return;
         }
         
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/feats/", cancellationToken);
@@ -34,7 +33,6 @@ public class ExternalFeatService : IExternalFeatService
         if (featResults is null || featResults.Count == 0)
         {
             throw new InvalidOperationException("No feats found on page 1 in external API.");
-            return;
         }
 
         getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/feats/?page=2", cancellationToken);
@@ -43,7 +41,6 @@ public class ExternalFeatService : IExternalFeatService
         if (featResults2 is null || featResults2.Count == 0)
         {
             throw new InvalidOperationException("No feats found on page 2 in external API.");
-            return;
         }
 
         featResults.AddRange(featResults2);
@@ -53,7 +50,6 @@ public class ExternalFeatService : IExternalFeatService
             if (eFeat is null)
             {
                 throw new InvalidOperationException($"Failed to deserialize feat.");
-                continue;
             }
 
             var feat = new Feat

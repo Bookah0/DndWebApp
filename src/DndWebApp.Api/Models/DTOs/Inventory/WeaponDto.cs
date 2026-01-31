@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using DndWebApp.Api.Models.Items.Enums;
 
 namespace DndWebApp.Api.Models.DTOs.Inventory;
 

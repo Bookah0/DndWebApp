@@ -2,9 +2,10 @@ using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Services.Interfaces.Features;
+using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
@@ -12,7 +13,15 @@ public class ClassFeatureService : BaseFeatureService<ClassFeature>, IClassFeatu
 {
     private readonly IClassLevelRepository classLevelRepo;
 
-    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo, ISpellRepository spellRepo, ILogger<ClassFeatureService> logger) : base(repo, spellRepo, logger)
+    public ClassFeatureService(
+        IClassFeatureRepository repo, 
+        IClassLevelRepository classLevelRepo, 
+        ISpellRepository spellRepo, 
+        ISkillRepository skillRepo, 
+        IAbilityRepository abilityRepo, 
+        ILanguageRepository languageRepo, 
+        ILogger<ClassFeatureService> logger) 
+        : base(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
     {
         this.classLevelRepo = classLevelRepo;
     }
@@ -65,13 +74,16 @@ public class ClassFeatureService : BaseFeatureService<ClassFeature>, IClassFeatu
         await repo.UpdateAsync(feature);
     }
 
-    public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, ClassFeatureSortFilter sortFilter, bool descending = false)
+    public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, string sortFilter, bool descending = false)
     {
-        return sortFilter switch
+        if(!TryResolveOption(sortFilter, SortClassFeatureOption.AllowedValues, out string? resolved))
+            return features;
+
+        return resolved switch
         {
-            ClassFeatureSortFilter.Name => OrderByMany(features, [(l => l.Name)], descending),
-            ClassFeatureSortFilter.Class => OrderByMany(features, [(l => l.ClassLevel!.Class.Name), (l => l.Name)], descending),
-            _ => features,
+            SortClassFeatureOption.Name => OrderByMany(features, [(l => l.Name)], descending),
+            SortClassFeatureOption.Class => OrderByMany(features, [(l => l.ClassLevel!.Class.Name), (l => l.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

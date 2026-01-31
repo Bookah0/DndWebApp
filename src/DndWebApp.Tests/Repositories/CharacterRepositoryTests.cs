@@ -1,9 +1,9 @@
 using static DndWebApp.Tests.Repositories.TestObjectFactory;
 using DndWebApp.Api.Data;
-using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Repositories;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Repositories.Implemented;
+using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Tests.Repositories;
 
@@ -74,7 +74,7 @@ public class CharacterRepositoryTests
         Assert.Equal("Ranger", result.Class!.Name);
         Assert.Equal(14, result.CombatStats!.ArmorClass);
         Assert.NotEmpty(result.SkillProficiencies);
-        Assert.Contains(result.SkillProficiencies, s => s.SkillType == SkillType.Athletics);
+        Assert.Contains(result.SkillProficiencies, s => s.SkillId == 12);
         Assert.NotEmpty(result.Languages);
     }
 

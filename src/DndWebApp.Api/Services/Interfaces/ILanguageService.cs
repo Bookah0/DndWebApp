@@ -1,7 +1,7 @@
 
+using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
-using DndWebApp.Api.Models.World;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Api.Services.Interfaces;
 
@@ -12,5 +12,5 @@ public interface ILanguageService
     Task<ICollection<Language>> GetAllAsync(); 
     Task<Language> GetByIdAsync(int id); 
     Task UpdateAsync(LanguageDto dto); 
-    ICollection<Language> SortBy(ICollection<Language> languages, LanguageSortFilter sortFilter, bool descending = false);
+    ICollection<Language> SortBy(ICollection<Language> languages, string sortFilter, bool descending = false);
 }

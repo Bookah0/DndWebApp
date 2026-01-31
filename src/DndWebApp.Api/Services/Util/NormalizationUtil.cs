@@ -5,6 +5,7 @@ namespace DndWebApp.Api.Services.Util;
 
 public static class NormalizationUtil
 {
+    /*
     public static TEnum ParseEnumOrThrow<TEnum>(string? enumAsString, bool ignoreCase = true) where TEnum : struct, Enum
     {
         if (enumAsString is null || string.IsNullOrWhiteSpace(enumAsString))
@@ -25,7 +26,7 @@ public static class NormalizationUtil
         return [.. enumStrings.Select(s => ParseEnumOrThrow<TEnum>(s))];
     }
 
-/*
+
     public static string ToEnumPascalCaseFormat(string input)
     {
         if (string.IsNullOrWhiteSpace(input))

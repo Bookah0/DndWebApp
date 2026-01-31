@@ -1,8 +1,9 @@
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
+using DndWebApp.Api.Models.Items.Constants;
 using DndWebApp.Api.Repositories.Interfaces;
+using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 public class InventoryService
@@ -120,19 +121,21 @@ public class InventoryService
         throw new NotFoundException($"Item with id {itemId} is not equipped in inventory with id {invId}");
     }
 
-    public async Task Equip(int invId, int itemId, EquipSlot slot)
+    public async Task Equip(int invId, int itemId, string slot)
     {
         var inv = await repo.GetByIdAsync(invId)
-            ?? throw new NotFoundException($"Inventory with id {itemId} could not be found");
+            ?? throw new NotFoundException($"Inventory with id {invId} could not be found");
         
         var item = await itemRepo.GetByIdAsync(itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+        
+        var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues, "Equipment Slot");
 
         EquipmentSlot? firstSlotFound = null;
 
         foreach (var equipmentSlot in inv.EquippedItems)
         {
-            if (equipmentSlot.Slot == slot)
+            if (equipmentSlot.Slot == resolvedSlot)
             {
                 firstSlotFound = equipmentSlot;
                 if (equipmentSlot.EquipmentId == null)

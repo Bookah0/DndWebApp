@@ -8,5 +8,4 @@ public interface IClassRepository : IRepository<Class>
     Task<Class?> GetWithAllDataAsync(int id);
     Task<ICollection<Class>> GetAllWithAllDataAsync();
     Task<Class?> GetWithClassLevelsAsync(int id);
-    Task<Class?> GetByTypeAsync(ClassType type);
 }

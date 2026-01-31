@@ -1,11 +1,12 @@
 using DndWebApp.Api.Models.Characters;
 using static DndWebApp.Api.Services.Util.SortUtil;
 using static DndWebApp.Api.Services.Util.ValidationUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Services.Enums;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
+using DndWebApp.Api.Services.Constants;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -178,14 +179,17 @@ public partial class CharacterService : ICharacterService
         await repo.UpdateAsync(character);
     }
 
-    public ICollection<Character> SortBy(ICollection<Character> characters, CharacterSortFilter sortFilter, bool descending = false)
+    public ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false)
     {
-        return sortFilter switch
+        if(!TryResolveOption(sortFilter, SortCharacterOption.AllowedValues, out string? resolved))
+            return characters;
+
+        return resolved switch
         {
-            CharacterSortFilter.Name => OrderByMany(characters, [(c => c.Name)], descending),
-            CharacterSortFilter.Level => OrderByMany(characters, [(c => c.Level), (c => c.Name)], descending),
-            CharacterSortFilter.TimeCreated => OrderByMany(characters, [(c => c.TimeCreated), (c => c.Name)], descending),
-            _ => characters,
+            SortCharacterOption.Name => OrderByMany(characters, [(c => c.Name)], descending),
+            SortCharacterOption.Level => OrderByMany(characters, [(c => c.Level), (c => c.Name)], descending),
+            SortCharacterOption.TimeCreated => OrderByMany(characters, [(c => c.TimeCreated), (c => c.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

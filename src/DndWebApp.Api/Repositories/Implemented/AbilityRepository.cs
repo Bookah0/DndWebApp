@@ -1,7 +1,5 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,8 +34,7 @@ public class AbilityRepository : IAbilityRepository
 
     public async Task<ICollection<Ability>> GetAllAsync() => await context.AbilityScores.ToListAsync();
     public async Task<Ability?> GetByIdAsync(int id) => await context.AbilityScores.FindAsync(id);
-    public async Task<Ability?> GetByTypeAsync(AbilityShortType shortType) => await context.AbilityScores.FirstOrDefaultAsync(a => a.ShortType == shortType);
-    public async Task<Ability?> GetByTypeAsync(AbilityType type) => await context.AbilityScores.FirstOrDefaultAsync(a => a.Type == type);
+    public async Task<Ability?> GetByNameAsync(string name) => await context.AbilityScores.FirstOrDefaultAsync(a => a.FullName == name);
 
     public async Task<Ability?> GetWithSkillsAsync(int id)
     {

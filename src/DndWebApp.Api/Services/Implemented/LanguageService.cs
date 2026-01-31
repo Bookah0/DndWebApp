@@ -1,11 +1,13 @@
 
 using DndWebApp.Api.Middlewares.ExceptionHandling;
+using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
-using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Enums;
+using DndWebApp.Api.Services.Constants;
 using DndWebApp.Api.Services.Interfaces;
+using DndWebApp.Api.Services.Util;
 using static DndWebApp.Api.Services.Util.SortUtil;
+using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -61,14 +63,17 @@ public class LanguageService : ILanguageService
         await repo.UpdateAsync(language);
     }
 
-    public ICollection<Language> SortBy(ICollection<Language> languages, LanguageSortFilter sortFilter, bool descending = false)
+    public ICollection<Language> SortBy(ICollection<Language> languages, string sortFilter, bool descending = false)
     {
-        return sortFilter switch
+        if(!TryResolveOption(sortFilter, SortLanguageOption.AllowedValues, out string? resolved))
+            return languages;
+    
+        return resolved switch
         {
-            LanguageSortFilter.Name => OrderByMany(languages, [(l => l.Name)], descending),
-            LanguageSortFilter.Family => OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
-            LanguageSortFilter.Script => OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
-            _ => languages,
+            SortLanguageOption.Name => OrderByMany(languages, [(l => l.Name)], descending),
+            SortLanguageOption.Family => OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
+            SortLanguageOption.Script => OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
+            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
 }

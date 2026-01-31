@@ -2,7 +2,7 @@ using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.DTOs.Spells;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.Spells.Enums;
+using DndWebApp.Api.Models.Spells.Constants;
 using DndWebApp.Api.Models.World;
 
 namespace DndWebApp.Tests.Services;
@@ -32,7 +32,7 @@ public static class TestObjectFactory
         };
     }
 
-    internal static Spell CreateTestSpell(string name, int level, SpellDuration spellDuration, int id = 1)
+    internal static Spell CreateTestSpell(string name, int level, string spellDuration, int id = 1)
     {
         return new Spell
         {
@@ -41,8 +41,8 @@ public static class TestObjectFactory
             Description = "A powerful spell",
             Level = level,
             Duration = spellDuration,
-            CastingTime = 0,
-            MagicSchool = 0,
+            CastingTime = CastingTime.Action,
+            MagicSchool = MagicSchool.Evocation,
             SpellTargeting = new() { Range = SpellRange.Feet, TargetType = SpellTargetType.Creature }
         };
     }

@@ -2,13 +2,11 @@ using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.World.Enums;
-using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Services.Interfaces;
 using static DndWebApp.Api.Services.Util.NormalizationUtil;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
+using DndWebApp.Api.Models.Characters.Constants;
+using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -132,9 +130,9 @@ public partial class CharacterService : ICharacterService
         return latestLevel.SpellSlots;
     }
 
-    public ICollection<AbilityValue> InitAbilityScoreList(CharacterDto dto, Dictionary<AbilityType, Ability> repoDict)
+    public ICollection<AbilityValue> InitAbilityScoreList(CharacterDto dto, Dictionary<string, Ability> repoDict)
     {
-        var dtoValues = new Dictionary<AbilityType, int>
+        var dtoValues = new Dictionary<string, int>
         {
             { AbilityType.Strength, dto.AbilityScores.Strength },
             { AbilityType.Dexterity, dto.AbilityScores.Dexterity },
@@ -148,8 +146,7 @@ public partial class CharacterService : ICharacterService
             .Select(kvp => new AbilityValue
             {
                 AbilityId = repoDict[kvp.Key].Id,
-                Type = ParseEnumOrThrow<AbilityType>(repoDict[kvp.Key].FullName),
-                //Ability = repoDict[kvp.Key],
+                Ability = repoDict[kvp.Key],
                 Value = kvp.Value
             })];
         return abilityScores;
@@ -239,45 +236,41 @@ public partial class CharacterService : ICharacterService
             character.ToolProficiencies.Add(new ToolProficiency { ToolType = type, FeatureId = feature.Id });
         }
 
-        foreach (var abilityType in feature.SavingThrowProficiencies)
+        foreach (var ability in feature.SavingThrowProficiencies)
         {
-            if (!abilityDict.TryGetValue(abilityType, out Ability? ability))
-                throw new NotFoundException($"Ability with name {abilityType} could not be found");
-            character.SavingThrows.Add(new SaveThrowProficiency { AbilityType = abilityType, AbilityId = ability.Id, FeatureId = feature.Id });
+            character.SavingThrows.Add(new SaveThrowProficiency { AbilityId = ability.Id, FeatureId = feature.Id });
         }
 
-        foreach (var type in feature.Languages)
+        foreach (var language in feature.Languages)
         {
-            if (!languageDict.TryGetValue(type, out Language? lang))
-                throw new NotFoundException($"Language with name {type} could not be found");
-            character.Languages.Add(new LanguageProficiency { LanguageType = type, LanguageId = lang.Id, FeatureId = feature.Id });
+            character.Languages.Add(new LanguageProficiency { LanguageId = language.Id, FeatureId = feature.Id });
         }
     }
 
-    private async Task<Dictionary<AbilityType, Ability>> GetAllAbilitiesAsDictionaryAsync()
+    private async Task<Dictionary<string, Ability>> GetAllAbilitiesAsDictionaryAsync()
     {
         var abilities = await abilityRepo.GetAllAsync();
         if (abilities.Count == 0)
             throw new InvalidOperationException("Ability list can't be empty");
 
-        return abilities.ToDictionary(a => ParseEnumOrThrow<AbilityType>(a.FullName), a => a);
+        return abilities.ToDictionary(a => a.FullName, a => a);
     }
-
-    private async Task<Dictionary<LanguageType, Language>> GetAllLanguagesAsDictionaryAsync()
+    
+    private async Task<Dictionary<string, Language>> GetAllLanguagesAsDictionaryAsync()
     {
         var languages = await languageRepo.GetAllAsync();
         if (languages.Count == 0)
             throw new InvalidOperationException("Language list can't be empty");
 
-        return languages.ToDictionary(l => ParseEnumOrThrow<LanguageType>(l.Name), l => l);
+        return languages.ToDictionary(l => l.Name, l => l);
     }
 
-    private async Task<Dictionary<SkillType, Skill>> GetAllSkillsAsDictionaryAsync()
+    private async Task<Dictionary<string, Skill>> GetAllSkillsAsDictionaryAsync()
     {
         var skills = await skillRepo.GetAllAsync();
         if (skills.Count == 0)
             throw new InvalidOperationException("Skill list can't be empty");
 
-        return skills.ToDictionary(s => ParseEnumOrThrow<SkillType>(s.Name), s => s);
+        return skills.ToDictionary(s => s.Name, s => s);
     }
 }

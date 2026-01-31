@@ -1,12 +1,10 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
-using DndWebApp.Api.Models.Items.Enums;
+using DndWebApp.Api.Models.Items.Constants;
 using DndWebApp.Api.Models.Spells;
-using DndWebApp.Api.Models.Spells.Enums;
-using DndWebApp.Api.Models.World.Enums;
+using DndWebApp.Api.Models.Spells.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Tests.Repositories;
@@ -31,7 +29,7 @@ public static class TestObjectFactory
         return new BackgroundFeature { Name = name, Description = description, Background = bg, BackgroundId = bgId };
     }
 
-    internal static Item CreateTestItem(string name, ItemCategory category, int quantity = 1, string description = "")
+    internal static Item CreateTestItem(string name, string category, int quantity = 1, string description = "")
     {
         return new Item { Name = name, Description = description, Categories = [category], Quantity = quantity };
     }
@@ -74,7 +72,7 @@ public static class TestObjectFactory
             BackgroundId = background.Id,
             Inventory = new Inventory { Currency = new(), Id = 10, EquippedItems = [] },
             InventoryId = 10,
-            AbilityScores = [new AbilityValue() { Type = AbilityType.Strength, AbilityId = str.Id, Value = 10 }],
+            AbilityScores = [new AbilityValue() { Ability = str, AbilityId = str.Id, Value = 10 }],
             CombatStats = new CombatStats
             {
                 ArmorClass = 14,
@@ -90,8 +88,8 @@ public static class TestObjectFactory
             {
                 Eyes = "Brown"
             },
-            SkillProficiencies = [new SkillProficiency() { SkillType = SkillType.Athletics, FeatureId = background.Id, HasExpertise = false }],
-            Languages = [new() { LanguageType = LanguageType.Primordial, FeatureId = background.Id }],
+            SkillProficiencies = [new SkillProficiency() { SkillId = 12, FeatureId = background.Id, HasExpertise = false }],
+            Languages = [new() { LanguageId = 1, FeatureId = background.Id }],
             ToolProficiencies = [new() { ToolType = ToolCategory.HerbalismKit, FeatureId = background.Id }],
             WeaponCategoryProficiencies = [new() { WeaponCategory = WeaponCategory.MartialRanged, FeatureId = background.Id }]
         };
@@ -152,7 +150,7 @@ public static class TestObjectFactory
         Name = "Leather Armor",
         Description = "Light armor made from tanned leather, provides basic protection.",
         Categories = [ItemCategory.Armor],
-        Category = ArmorCategory.Light,
+        ArmorCategory = ArmorCategory.Light,
         BaseArmorClass = 11,
         PlusDexMod = true
     };
@@ -203,8 +201,8 @@ public static class TestObjectFactory
         Name = name,
         Description = $"Description of {name}",
         Level = 1,
-        Duration = 0,
-        CastingTime = 0,
+        Duration = SpellDuration.Instantaneous,
+        CastingTime = CastingTime.Action,
         SpellTargeting = new() { TargetType = SpellTargetType.Creature, Range = SpellRange.Feet, RangeValue = 20 },
         MagicSchool = MagicSchool.Evocation,
     };

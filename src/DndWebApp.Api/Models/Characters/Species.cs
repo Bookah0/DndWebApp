@@ -1,4 +1,3 @@
-using DndWebApp.Api.Models.Characters.Enums;
 using DndWebApp.Api.Models.Features;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,13 +12,12 @@ public class Species
     public bool IsHomebrew { get; set; } = false;
 
     public required int Speed { get; set; }
-    public CreatureSize Size { get; set; } = CreatureSize.Medium;
+    public string Size { get; set; } = "Medium";
     public ICollection<Trait> Traits { get; set; } = [];
 }
 
 public class Race : Species
 {
-    public RaceType? Type { get; set; }
     public ICollection<Subrace> SubRaces { get; set; } = [];
 }
 

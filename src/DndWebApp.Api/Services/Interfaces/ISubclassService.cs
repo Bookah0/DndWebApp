@@ -9,6 +9,6 @@ public interface ISubclassService
     Task DeleteAsync(int id);
     Task<ICollection<Subclass>> GetAllAsync();
     Task<Subclass> GetByIdAsync(int id);
-    Task UpdateAsync(ClassDto dto, int? newParentClassId);
+    Task UpdateAsync(int id, ClassDto dto, int? newParentClassId);
     ICollection<Class> SortBy(ICollection<Class> classes, bool descending = false);
 }

@@ -58,9 +58,9 @@ public class SkillService : ISkillService
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Skill could not be found");
     }
 
-    public async Task UpdateAsync(SkillDto dto)
+    public async Task UpdateAsync(int id, SkillDto dto)
     {
-        var skill = await repo.GetByIdAsync(dto.Id) 
+        var skill = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException("Skill could not be found");
 
         if (skill.AbilityId != dto.AbilityId)

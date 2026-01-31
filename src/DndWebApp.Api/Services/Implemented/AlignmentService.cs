@@ -47,9 +47,9 @@ public class AlignmentService : IAlignmentService
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
     }
 
-    public async Task UpdateAsync(AlignmentDto dto)
+    public async Task UpdateAsync(int id, AlignmentDto dto)
     {
-        var alignment = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException("Alignment could not be found");
+        var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
 
         alignment.Name = dto.Name;
         alignment.Description = dto.Description;

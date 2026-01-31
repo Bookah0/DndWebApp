@@ -64,10 +64,10 @@ public partial class ClassLevelService : IClassLevelService
         return await levelRepo.CreateAsync(level);
     }
 
-    public async Task EditClassLevelAsync(ClassLevelDto dto)
+    public async Task UpdateClassLevelAsync(int id, ClassLevelDto dto)
     {
-        var level = await levelRepo.GetByIdAsync(dto.Id) 
-            ?? throw new NotFoundException($"Class level with id {dto.Id} could not be found");
+        var level = await levelRepo.GetByIdAsync(id) 
+            ?? throw new NotFoundException($"Class level with id {id} could not be found");
 
         level.Level = dto.Level;
         level.ClassId = dto.ClassId;

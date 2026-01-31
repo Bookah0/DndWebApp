@@ -1,3 +1,4 @@
+using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Enums;
@@ -14,12 +15,14 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     internal readonly IRepository<T> repo;
     internal readonly ISpellRepository spellRepo;
     internal readonly ILogger<IBaseFeatureService<T>> logger;
+    internal readonly IMapper mapper;
 
-    public BaseFeatureService(IRepository<T> repo, ISpellRepository spellRepo, ILogger<BaseFeatureService<T>> logger)
+    public BaseFeatureService(IRepository<T> repo, ISpellRepository spellRepo, ILogger<BaseFeatureService<T>> logger, IMapper mapper)
     {
         this.repo = repo;
         this.spellRepo = spellRepo;
         this.logger = logger;
+        this.mapper = mapper;
     }
 
     public async Task AddSpell(int spellId, int featureId)
@@ -46,7 +49,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         await repo.UpdateAsync(feature);
     }
 
-    public async Task AddProficiency<TEnum>(TEnum proficiency, int featureId) where TEnum : struct, Enum
+    public async Task AddProficiency<TEnum>(ProficiencyDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");

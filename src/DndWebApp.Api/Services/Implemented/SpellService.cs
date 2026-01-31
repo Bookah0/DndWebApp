@@ -147,9 +147,9 @@ public class SpellService : ISpellService
         return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
     }
 
-    public async Task UpdateAsync(SpellDto dto)
+    public async Task UpdateAsync(int id, SpellDto dto)
     {
-        var spell = await repo.GetByIdAsync(dto.Id) ?? throw new NullReferenceException("Spell could not be found");
+        var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
 
         ValidationUtil.HasContentOrThrow(dto.Name);
         ValidationUtil.HasContentOrThrow(dto.Description);

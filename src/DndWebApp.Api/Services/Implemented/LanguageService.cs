@@ -1,6 +1,8 @@
 
+using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
@@ -13,14 +15,16 @@ public class LanguageService : ILanguageService
 {
     private readonly IRepository<Language> repo;
     private readonly ILogger<LanguageService> logger;
+    private readonly IMapper mapper;
     
-    public LanguageService(IRepository<Language> repo, ILogger<LanguageService> logger)
+    public LanguageService(IRepository<Language> repo, ILogger<LanguageService> logger, IMapper mapper)
     {
         this.repo = repo;
         this.logger = logger;
+        this.mapper = mapper;
     }
 
-    public async Task<Language> CreateAsync(LanguageDto dto)
+    public async Task<LanguageResponseDto> CreateAsync(LanguageDto dto)
     {
         Language language = new()
         {
@@ -29,8 +33,8 @@ public class LanguageService : ILanguageService
             Family = dto.Family,
             IsHomebrew = dto.IsHomebrew,
         };
-
-        return await repo.CreateAsync(language);
+        var createdLanguage = await repo.CreateAsync(language);
+        return mapper.Map<LanguageResponseDto>(createdLanguage);
     }
 
     public async Task DeleteAsync(int id)
@@ -39,19 +43,21 @@ public class LanguageService : ILanguageService
         await repo.DeleteAsync(language);
     }
 
-    public async Task<ICollection<Language>> GetAllAsync()
+    public async Task<ICollection<LanguageResponseDto>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        var languages = await repo.GetAllAsync();
+        return mapper.Map<ICollection<LanguageResponseDto>>(languages);
     }
 
-    public async Task<Language> GetByIdAsync(int id)
+    public async Task<LanguageResponseDto> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found");
+        var language = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found"); 
+        return mapper.Map<LanguageResponseDto>(language);
     }
 
-    public async Task UpdateAsync(LanguageDto dto)
+    public async Task UpdateAsync(int id, LanguageDto dto)
     {
-        var language = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException("Language could not be found");
+        var language = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found");
 
         language.Name = dto.Name;
         language.Script = dto.Script;

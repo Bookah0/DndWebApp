@@ -5,8 +5,6 @@ namespace DndWebApp.Api.Models.DTOs.Inventory;
 
 public class WeaponDto
 {
-    public int Id { get; set; }
-
     [Required]
     [MinLength(1)]
     [MaxLength(100)]

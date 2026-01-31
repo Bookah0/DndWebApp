@@ -1,6 +1,8 @@
 
+using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
+using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
@@ -13,12 +15,12 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
 {
     private readonly IBackgroundRepository backgroundRepo;
 
-    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo, ISpellRepository spellRepo, ILogger<BackgroundFeatureService> logger) : base(repo, spellRepo, logger)
+    public BackgroundFeatureService(IBackgroundFeatureRepository repo, IBackgroundRepository backgroundRepo, ISpellRepository spellRepo, ILogger<BackgroundFeatureService> logger, IMapper mapper) : base(repo, spellRepo, logger, mapper)
     {
         this.backgroundRepo = backgroundRepo;
     }
 
-    public async Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
+    public async Task<BackgroundFeatureResponseDto> CreateAsync(BackgroundFeatureDto dto)
     {
         var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
 
@@ -31,7 +33,7 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
             IsHomebrew = dto.IsHomebrew
         };
 
-        return await repo.CreateAsync(bgFeature);
+        return mapper.Map<BackgroundFeatureResponseDto>(await repo.CreateAsync(bgFeature));
     }
 
     public async Task DeleteAsync(int id)
@@ -40,19 +42,20 @@ public class BackgroundFeatureService : BaseFeatureService<BackgroundFeature>, I
         await repo.DeleteAsync(feature);
     }
 
-    public async Task<ICollection<BackgroundFeature>> GetAllAsync()
+    public async Task<ICollection<BackgroundFeatureResponseDto>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return mapper.Map<ICollection<BackgroundFeatureResponseDto>>(await repo.GetAllAsync());
     }
 
-    public async Task<BackgroundFeature> GetByIdAsync(int id)
+    public async Task<BackgroundFeatureResponseDto> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
+        return mapper.Map<BackgroundFeatureResponseDto>(await repo.GetByIdAsync(id) 
+            ?? throw new NotFoundException($"Background Feature with id {id} could not be found"));
     }
 
-    public async Task UpdateAsync(BackgroundFeatureDto dto)
+    public async Task UpdateAsync(int id, BackgroundFeatureDto dto)
     {
-        var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Background Feature with id {dto.Id} could not be found");
+        var feature = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
 
         if (feature.BackgroundId != dto.BackgroundId)
         {

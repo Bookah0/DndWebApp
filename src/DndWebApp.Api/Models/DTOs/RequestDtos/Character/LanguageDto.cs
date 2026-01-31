@@ -4,8 +4,6 @@ namespace DndWebApp.Api.Models.DTOs.Character;
 
 public class LanguageDto
 {
-    public int Id { get; set; }
-
     [Required]
     [MinLength(1)]
     [MaxLength(100)]

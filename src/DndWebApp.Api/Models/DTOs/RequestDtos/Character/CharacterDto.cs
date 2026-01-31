@@ -4,8 +4,6 @@ using System.ComponentModel.DataAnnotations;
 
 public class CharacterDto
 {
-    public int Id { get; set; }
-
     [Required]
     [MinLength(1)]
     [MaxLength(100)]
@@ -71,8 +69,6 @@ public class AbilityScoresDto
 
 public class CharacterDescriptionDto
 {
-    public int Id { get; set; }
-
     [Range(1, int.MaxValue)]
     public required int? AlignmentId { get; set; }
 

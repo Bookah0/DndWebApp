@@ -10,6 +10,6 @@ public interface ISkillService
     Task DeleteAsync(int id); Task<ICollection<Skill>> GetAllAsync();
     Task<ICollection<Skill>> GetAllWithAbilityAsync();
     Task<Skill> GetByIdAsync(int id);
-    Task UpdateAsync(SkillDto dto); 
+    Task UpdateAsync(int id, SkillDto dto); 
     ICollection<Skill> SortBy(ICollection<Skill> skills, SkillSortFilter SkillSortFilter, bool descending = false);
 }

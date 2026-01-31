@@ -21,6 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
     npgsql => npgsql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 

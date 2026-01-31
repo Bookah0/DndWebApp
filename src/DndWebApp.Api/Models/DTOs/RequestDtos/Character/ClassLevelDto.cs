@@ -4,8 +4,6 @@ namespace DndWebApp.Api.Models.DTOs.Character;
 
 public class ClassLevelDto
 {
-    public int Id { get; set; }
-
     [Required]
     [Range(1, 20)]
     public required int Level { get; set; }
@@ -36,8 +34,6 @@ public class ClassLevelDto
 
 public class ClassSpecificSlotDto
 {
-    public int Id { get; set; }
-
     [Required]
     [MinLength(1)]
     [MaxLength(100)]

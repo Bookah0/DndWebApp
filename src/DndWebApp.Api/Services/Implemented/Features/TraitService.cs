@@ -1,5 +1,7 @@
+using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
+using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
@@ -12,12 +14,12 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
 {
     private readonly IRaceRepository raceRepo;
 
-    public TraitService(ITraitRepository repo, IRaceRepository raceRepo, ISpellRepository spellRepo, ILogger<TraitService> logger) : base(repo, spellRepo, logger)
+    public TraitService(ITraitRepository repo, IRaceRepository raceRepo, ISpellRepository spellRepo, ILogger<TraitService> logger, IMapper mapper) : base(repo, spellRepo, logger, mapper)
     {
         this.raceRepo = raceRepo;
     }
 
-    public async Task<Trait> CreateAsync(TraitDto dto)
+    public async Task<TraitResponseDto> CreateAsync(TraitDto dto)
     {
         var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NotFoundException($"Trait level with id {dto.RaceId} could not be found");
 
@@ -30,7 +32,7 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
             IsHomebrew = dto.IsHomebrew
         };
 
-        return await repo.CreateAsync(trait);
+        return mapper.Map<TraitResponseDto>(await repo.CreateAsync(trait));
     }
 
     public async Task DeleteAsync(int id)
@@ -39,19 +41,20 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
         await repo.DeleteAsync(trait);
     }
 
-    public async Task<ICollection<Trait>> GetAllAsync()
+    public async Task<ICollection<TraitResponseDto>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return mapper.Map<ICollection<TraitResponseDto>>(await repo.GetAllAsync());
     }
 
-    public async Task<Trait> GetByIdAsync(int id)
+    public async Task<TraitResponseDto> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Trait with id {id} could not be found");
+        return mapper.Map<TraitResponseDto>(await repo.GetByIdAsync(id) 
+            ?? throw new NotFoundException($"Trait with id {id} could not be found"));
     }
 
-    public async Task UpdateAsync(TraitDto dto)
+    public async Task UpdateAsync(int id, TraitDto dto)
     {
-        var trait = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Trait with id {dto.Id} could not be found");
+        var trait = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Trait with id {id} could not be found");
 
         if (trait.RaceId != dto.RaceId)
         {
@@ -65,7 +68,7 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
         await repo.UpdateAsync(trait);
     }
 
-    public Task UpdateCollectionsAsync(TraitDto dto)
+    public Task UpdateCollectionsAsync(int id, TraitDto dto)
     {
         throw new NotImplementedException();
     }

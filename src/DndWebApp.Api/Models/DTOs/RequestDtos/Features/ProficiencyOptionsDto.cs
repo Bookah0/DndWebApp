@@ -4,9 +4,7 @@ using DndWebApp.Api.Models.DTOs.Character;
 namespace DndWebApp.Api.Models.DTOs.Features;
 
 public class ProficiencyChoicesDto
-{
-    public int Id { get; set; }
-    public ICollection<AbilityIncreaseOptionDto> AbilityIncreaseChoices { get; set; } = [];
+{    public ICollection<AbilityIncreaseOptionDto> AbilityIncreaseChoices { get; set; } = [];
     public ICollection<SkillProficiencyOptionDto> SkillProficiencyChoices { get; set; } = [];
     public ICollection<ToolProficiencyOptionDto> ToolProficiencyChoices { get; set; } = [];
     public ICollection<LanguageOptionDto> LanguageChoices { get; set; } = [];

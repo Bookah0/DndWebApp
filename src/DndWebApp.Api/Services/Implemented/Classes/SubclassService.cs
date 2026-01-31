@@ -48,9 +48,9 @@ public partial class SubclassService : ISubclassService
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(ClassDto dto, int? newParentClassId)
+    public async Task UpdateAsync(int id, ClassDto dto, int? newParentClassId)
     {
-        var cls = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Class with id {dto.Id} could not be found");
+        var cls = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
 
         cls.Name = dto.Name;
         cls.Description = dto.Description;

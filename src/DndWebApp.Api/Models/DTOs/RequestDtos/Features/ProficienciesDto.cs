@@ -12,6 +12,12 @@ public class ProficienciesDto
     public ICollection<DamageAffinityDto> DamageAffinities { get; set; } = [];
 }
 
+public class AddProficiencyDto
+{
+    public string Type { get; set; }
+    public string Value { get; set; }
+}
+
 public class DamageAffinityDto
 {
     [Required]

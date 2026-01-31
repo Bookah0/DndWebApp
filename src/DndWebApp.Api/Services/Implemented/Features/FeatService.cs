@@ -1,5 +1,7 @@
+using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
+using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
@@ -10,11 +12,11 @@ namespace DndWebApp.Api.Services.Implemented.Features;
 public class FeatService : BaseFeatureService<Feat>, IFeatService
 {
 
-    public FeatService(IFeatRepository repo, ISpellRepository spellRepo, ILogger<FeatService> logger) : base(repo, spellRepo, logger)
+    public FeatService(IFeatRepository repo, ISpellRepository spellRepo, ILogger<FeatService> logger, IMapper mapper) : base(repo, spellRepo, logger, mapper)
     {
     }
 
-    public async Task<Feat> CreateAsync(FeatDto dto)
+    public async Task<FeatResponseDto> CreateAsync(FeatDto dto)
     {
         var feat = new Feat
         {
@@ -23,7 +25,7 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
             IsHomebrew = dto.IsHomebrew
         };
 
-        return await repo.CreateAsync(feat);
+        return mapper.Map<FeatResponseDto>(await repo.CreateAsync(feat));
     }
 
     public async Task DeleteAsync(int id)
@@ -32,26 +34,27 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
         await repo.DeleteAsync(feat);
     }
 
-    public async Task<ICollection<Feat>> GetAllAsync()
+    public async Task<ICollection<FeatResponseDto>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return mapper.Map<ICollection<FeatResponseDto>>(await repo.GetAllAsync());
     }
 
-    public async Task<Feat> GetByIdAsync(int id)
+    public async Task<FeatResponseDto> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
+        return mapper.Map<FeatResponseDto>(await repo.GetByIdAsync(id) 
+            ?? throw new NotFoundException($"Feat with id {id} could not be found"));
     }
 
-    public async Task UpdateAsync(FeatDto dto)
+    public async Task UpdateAsync(int id, FeatDto dto)
     {
-        var feat = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Feat with id {dto.Id} could not be found");
+        var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
 
         feat.Name = dto.Name;
         feat.Description = dto.Description;
         await repo.UpdateAsync(feat);
     }
 
-    public Task UpdateCollectionsAsync(FeatDto dto)
+    public Task UpdateCollectionsAsync(int id, FeatDto dto)
     {
         throw new NotImplementedException();
     }

@@ -1,5 +1,7 @@
+using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
+using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Enums;
@@ -12,12 +14,12 @@ public class ClassFeatureService : BaseFeatureService<ClassFeature>, IClassFeatu
 {
     private readonly IClassLevelRepository classLevelRepo;
 
-    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo, ISpellRepository spellRepo, ILogger<ClassFeatureService> logger) : base(repo, spellRepo, logger)
+    public ClassFeatureService(IClassFeatureRepository repo, IClassLevelRepository classLevelRepo, ISpellRepository spellRepo, ILogger<ClassFeatureService> logger, IMapper mapper) : base(repo, spellRepo, logger, mapper)
     {
         this.classLevelRepo = classLevelRepo;
     }
 
-    public async Task<ClassFeature> CreateAsync(ClassFeatureDto dto)
+    public async Task<ClassFeatureResponseDto> CreateAsync(ClassFeatureDto dto)
     {
         var classLevel = await classLevelRepo.GetByIdAsync(dto.ClassLevelId) ?? throw new NotFoundException($"Class level with id {dto.ClassLevelId} could not be found");
 
@@ -30,7 +32,7 @@ public class ClassFeatureService : BaseFeatureService<ClassFeature>, IClassFeatu
             IsHomebrew = dto.IsHomebrew
         };
 
-        return await repo.CreateAsync(classFeature);
+        return mapper.Map<ClassFeatureResponseDto>(await repo.CreateAsync(classFeature));
     }
 
     public async Task DeleteAsync(int id)
@@ -39,19 +41,20 @@ public class ClassFeatureService : BaseFeatureService<ClassFeature>, IClassFeatu
         await repo.DeleteAsync(feature);
     }
 
-    public async Task<ICollection<ClassFeature>> GetAllAsync()
+    public async Task<ICollection<ClassFeatureResponseDto>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        return mapper.Map<ICollection<ClassFeatureResponseDto>>(await repo.GetAllAsync());
     }
 
-    public async Task<ClassFeature> GetByIdAsync(int id)
+    public async Task<ClassFeatureResponseDto> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
+        return mapper.Map<ClassFeatureResponseDto>(await repo.GetByIdAsync(id) 
+            ?? throw new NotFoundException($"Class Feature with id {id} could not be found"));
     }
 
-    public async Task UpdateAsync(ClassFeatureDto dto)
+    public async Task UpdateAsync(int id, ClassFeatureDto dto)
     {
-        var feature = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Class Feature with id {dto.Id} could not be found");
+        var feature = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
 
         if (feature.ClassLevelId != dto.ClassLevelId)
         {
@@ -61,7 +64,7 @@ public class ClassFeatureService : BaseFeatureService<ClassFeature>, IClassFeatu
 
         feature.Name = dto.Name;
         feature.Description = dto.Description;
-
+        feature.IsHomebrew = dto.IsHomebrew;
         await repo.UpdateAsync(feature);
     }
 

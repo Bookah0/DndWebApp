@@ -107,7 +107,7 @@ public class ExternalItemService : IExternalItemService
         
         var category = ResolveOptionOrThrow(eWeapon.CategoryRange, WeaponCategory.AllowedValues, "Weapon Category");
         var itemCategory = ResolveOptionOrThrow(eWeapon.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
-
+        var weaponType = ParseWeaponType(eWeapon);
         return new Weapon
         {
             Name = eWeapon.Name,
@@ -118,7 +118,8 @@ public class ExternalItemService : IExternalItemService
             Value = GetConvertedValue(eWeapon.Cost.Quantity, eWeapon.Cost.Unit),
             Quantity = eWeapon.Cost.Quantity,
             WeaponCategory = category,
-            WeaponType = ParseWeaponType(eWeapon),
+            WeaponType = weaponType,
+            Slot = ConvertWeaponTypeToMainSlot(weaponType),
             Properties = properties,
             DamageTypes = [damageType],
             DamageDice = eWeapon.Damage?.DamageDice ?? "",
@@ -219,16 +220,18 @@ public class ExternalItemService : IExternalItemService
 
     private int GetConvertedValue(int value, string unit)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(value);
-        ValidationUtil.HasContentOrThrow(unit);
+        if(value <= 0)
+            return 0;
 
-        return unit switch
+        var resolvedUnit = ResolveOptionOrThrow(unit, CurrencyUtil.AllowedUnits, "Currency Unit");
+
+        return resolvedUnit switch
         {
-            "cp" => value,
-            "sp" => value * 10,
-            "ep" => value * 50,
-            "gp" => value * 100,
-            "pp" => value * 1000,
+            CurrencyUtil.Copper => value,
+            CurrencyUtil.Silver => value * 10,
+            CurrencyUtil.Electrum => value * 50,
+            CurrencyUtil.Gold => value * 100,
+            CurrencyUtil.Platinum => value * 1000,
             _ => throw new ArgumentOutOfRangeException($"Unknown currency unit: {unit}"),
         };
     }

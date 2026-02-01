@@ -1,3 +1,4 @@
+using DndWebApp.Api.Controllers.Characters;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.Spells;
@@ -11,7 +12,7 @@ public interface ICharacterService
     Task DeleteAsync(int id);
     Task<ICollection<Character>> GetAllAsync();
     Task<Character> GetByIdAsync(int id);
-    Task LevelUpAsync(ICollection<Spell> chosenSpells, int characterId);
+    Task LevelUpAsync(LevelUpDto dto, int characterId);
     Task AddSubclassAsync(int subclassId, int characterId);
     Task EditCharacterDescriptionAsync(CharacterDescription edited, int characterId);
     Task SpendHitDice(int nDice, int characterId);
@@ -21,4 +22,5 @@ public interface ICharacterService
     Task EditCurrentClassSlotAsync(string slotName, int change, int characterId);
     Task EditCurrentSpellSlotAsync(int slotLevel, int change, int characterId);
     ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false);
+    Task<ICollection<Character>> GetAllByUserIdAsync(int userId);
 }

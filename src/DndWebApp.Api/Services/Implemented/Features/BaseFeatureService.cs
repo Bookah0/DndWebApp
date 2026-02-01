@@ -1,46 +1,23 @@
-using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Constants;
-using DndWebApp.Api.Repositories.Implemented;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
 using DndWebApp.Api.Services.Util;
+using DndWebApp.Api.Services.Util.Interfaces;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
-public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : AFeature
+public abstract class BaseFeatureService<T>(
+    IRepository<T> repo,
+    ISpellRepository spellRepo,
+    ISkillRepository skillRepo,
+    IAbilityRepository abilityRepo,
+    ILanguageRepository languageRepo,
+    ILogger<BaseFeatureService<T>> logger) : IBaseFeatureService<T> where T : AFeature
 {
-    internal readonly IRepository<T> repo;
-    internal readonly ISpellRepository spellRepo;
-    internal readonly ISkillRepository skillRepo;
-    internal readonly IAbilityRepository abilityRepo;
-    internal readonly ILanguageRepository languageRepo;
-    internal readonly ILogger<IBaseFeatureService<T>> logger;
-    internal readonly IMapper mapper;
-
-    public BaseFeatureService(
-        IRepository<T> repo, 
-        ISpellRepository spellRepo, 
-        ISkillRepository skillRepo, 
-        IAbilityRepository abilityRepo, 
-        ILanguageRepository languageRepo, 
-        ILogger<BaseFeatureService<T>> logger,
-        IMapper mapper)
-    {
-        this.repo = repo;
-        this.spellRepo = spellRepo;
-        this.skillRepo = skillRepo;
-        this.abilityRepo = abilityRepo;
-        this.languageRepo = languageRepo;
-        this.logger = logger;
-        this.mapper = mapper;
-    }
-
     public async Task AddSpell(int spellId, int featureId)
     {
         var spell = await spellRepo.GetByIdAsync(spellId)
@@ -69,7 +46,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
-
+        
         switch (dto.Type)
         {
             case "WeaponCategory":
@@ -120,20 +97,11 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         await repo.UpdateAsync(feature);
     }
 
-    private async Task<P> GetProficiencyById<P>(ProficiencyDto dto, IRepository<P> repository) where P : class
-    {
-        if (!int.TryParse(dto.Value, out var id))
-            throw new ValidationException($"{dto.Type} id {dto.Value} is not a valid integer");
-
-        return await repository.GetByIdAsync(id)
-            ?? throw new NotFoundException($"{dto.Type} with id {dto.Value} could not be found");
-    }
-
     public async Task RemoveProficiency(ProficiencyDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
-
+                
         switch (dto.Type)
         {
             case "WeaponCategory":
@@ -165,16 +133,16 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
                 feature.DamageWeaknessGained.Remove(weaknessDamageType);
                 break;
             case "Skill":
-                var skill = await GetProficiencyById(dto, feature.SkillProficiencies);
+                var skill = GetProficiencyById(dto, feature.SkillProficiencies);
                 feature.SkillProficiencies.Remove(skill);
                 break;
             case "Language":
-                var language = await GetProficiencyById(dto, feature.Languages);
+                var language = GetProficiencyById(dto, feature.Languages);
                 feature.Languages.Remove(language);
                 break;
             case "SavingThrow":
             case "Ability":
-                var ability = await GetProficiencyById(dto, feature.SavingThrowProficiencies);
+                var ability = GetProficiencyById(dto, feature.SavingThrowProficiencies);
                 feature.SavingThrowProficiencies.Remove(ability);
                 break;
             default:
@@ -182,16 +150,6 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         }
 
         await repo.UpdateAsync(feature);
-    }
-
-    private async Task<P> GetProficiencyById<P>(ProficiencyDto dto, ICollection<P> collection) where P : class
-    {
-        if (!int.TryParse(dto.Value, out var id))
-            throw new ValidationException($"{dto.Type} id {dto.Value} is not a valid integer");
-
-        var proficiency = collection.FirstOrDefault(s => s.Equals(id))
-            ?? throw new NotFoundException($"{dto.Type} with id {dto.Value} was not in the list of proficiencies");
-        return proficiency;
     }
 
     public async Task AddAbilityIncrease(int abilityId, int value, int featureId)
@@ -213,7 +171,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
 
         var abilityIncrease = feature.AbilityIncreases.FirstOrDefault(a => a.AbilityId == abilityId)
             ?? throw new NotFoundException($"AbilityIncrease with Ability id {abilityId} was not in the list of Ability Increases");
-
+        
         feature.AbilityIncreases.Remove(abilityIncrease);
         await repo.UpdateAsync(feature);
     }
@@ -263,7 +221,7 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
         await repo.UpdateAsync(feature);
     }
 
-    public async Task AddProficiencyChoice(AbilityIncreaseChoiceDto dto, int featureId)
+    public async Task AddAbilityIncreaseChoice(AbilityIncreaseChoiceDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
@@ -272,18 +230,92 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
 
         foreach (var abilityValueDto in dto.Options)
         {
-            var option = new AbilityValue
-            {
-                Ability = await abilityRepo.GetByIdAsync(abilityValueDto.AbilityId)
-                    ?? throw new NotFoundException($"Ability with id {abilityValueDto.AbilityId} could not be found"),
-                AbilityId = abilityValueDto.AbilityId,
-                Value = abilityValueDto.Value
-            };
+            var ability = await abilityRepo.GetByIdAsync(abilityValueDto.AbilityId)
+                ?? throw new NotFoundException($"Ability with id {abilityValueDto.AbilityId} could not be found");
 
-            options.Add(option);
+            options.Add(new AbilityValue
+            {
+                Ability = ability,
+                AbilityId = ability.Id,
+                Value = abilityValueDto.Value
+            });
         }
         feature.AbilityIncreaseChoices.Add(new() { Description = dto.Description, Options = options });
         await repo.UpdateAsync(feature);
+    }
+
+    public async Task RemoveProficiencyChoice(string type, int choiceIndex, int featureId)
+    {
+        var feature = await repo.GetByIdAsync(featureId)
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+        
+        void RemoveChoiceAtIndex<PC>(ICollection<PC> choices, string choiceType)
+        {
+            if (choiceIndex < 0 || choiceIndex >= choices.Count)
+                throw new ArgumentOutOfRangeException(nameof(choiceIndex), $"Index is out of range. No {choiceType.ToLower()} choice at index {choiceIndex}.");
+            
+            choices.RemoveAt(choiceIndex);
+        }
+
+        switch (type)
+        {
+            case "Skill":
+                RemoveChoiceAtIndex(feature.SkillProficiencyChoices, type);
+                break;
+            case "Weapon Category":
+                RemoveChoiceAtIndex(feature.WeaponCategoryProficiencyChoices, type);
+                break;
+            case "Weapon Type":
+                RemoveChoiceAtIndex(feature.WeaponTypeProficiencyChoices, type);
+                break;
+            case "Armor Category":
+                RemoveChoiceAtIndex(feature.ArmorProficiencyChoices, type);
+                break;
+            case "Tool Category":
+                RemoveChoiceAtIndex(feature.ToolProficiencyChoices, type);
+                break;
+            case "Language":
+                RemoveChoiceAtIndex(feature.LanguageChoices, type);
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown Choice type");
+        }
+
+        await repo.UpdateAsync(feature);
+    }
+
+    public async Task RemoveAbilityIncreaseChoice(int choiceIndex, int featureId)
+    {
+        var feature = await repo.GetByIdAsync(featureId)
+            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+
+        if (choiceIndex < 0 || choiceIndex >= feature.AbilityIncreaseChoices.Count)
+                throw new ArgumentOutOfRangeException($"Index is out of range. No ability increase choice at index {choiceIndex}.");
+
+        feature.AbilityIncreaseChoices.RemoveAt(choiceIndex);
+        await repo.UpdateAsync(feature);
+    }
+
+    // Helpers
+
+    private static async Task<P> GetProficiencyById<P>(ProficiencyDto dto, IRepository<P> repository) where P : class
+    {
+        if (!int.TryParse(dto.Value, out var id))
+            throw new ValidationException($"{dto.Type} id {dto.Value} is not a valid integer");
+
+        return await repository.GetByIdAsync(id)
+            ?? throw new NotFoundException($"{dto.Type} with id {dto.Value} could not be found");
+    }
+
+    private static P GetProficiencyById<P>(ProficiencyDto dto, ICollection<P> collection) where P : class
+    {
+        if (!int.TryParse(dto.Value, out var id))
+            throw new ValidationException($"{dto.Type} id {dto.Value} is not a valid integer");
+
+        var proficiency = collection.FirstOrDefault(s => s.Equals(id))
+            ?? throw new NotFoundException($"{dto.Type} with id {dto.Value} was not in the list of proficiencies");
+
+        return proficiency;
     }
 
     private async Task<ICollection<P>> GetProficiencyOptionsById<P>(ProficiencyChoiceDto dto, IRepository<P> repository) where P : class
@@ -299,37 +331,5 @@ public abstract class BaseFeatureService<T> : IBaseFeatureService<T> where T : A
                 ?? throw new NotFoundException($"{dto.Type} with id {optionId} could not be found"));
         }
         return options;
-    }
-
-    public async Task RemoveProficiencyChoice(string type, int choiceIndex, int featureId)
-    {
-        var feature = await repo.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
-
-        switch (type)
-        {
-            case "Skill":
-                feature.SkillProficiencyChoices.RemoveAt(choiceIndex);
-                break;
-            case "Weapon Category":
-                feature.WeaponCategoryProficiencyChoices.RemoveAt(choiceIndex);
-                break;
-            case "Weapon Type"   :
-                feature.WeaponTypeProficiencyChoices.RemoveAt(choiceIndex);
-                break;
-            case "Armor Category":
-                feature.ArmorProficiencyChoices.RemoveAt(choiceIndex);
-                break;
-            case "Tool Category":
-                feature.ToolProficiencyChoices.RemoveAt(choiceIndex);
-                break;
-            case "Language":
-                feature.LanguageChoices.RemoveAt(choiceIndex);
-                break;
-            default:
-                throw new InvalidOperationException($"Unknown Choice type");
-        }
-
-        await repo.UpdateAsync(feature);
     }
 }

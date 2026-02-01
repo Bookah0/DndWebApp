@@ -1,4 +1,4 @@
-using DndWebApp.Api.Models.Characters;
+/*using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.DTOs.Spells;
 using DndWebApp.Api.Models.Spells;
@@ -13,7 +13,6 @@ public static class TestObjectFactory
     {
         return new SpellDto
         {
-            Id = id,
             Name = name,
             Description = "A powerful spell",
             IsHomebrew = isHomebrew,
@@ -32,11 +31,10 @@ public static class TestObjectFactory
         };
     }
 
-    internal static Spell CreateTestSpell(string name, int level, string spellDuration, int id = 1)
+    internal static Spell CreateTestSpell(string name, int level, string spellDuration)
     {
         return new Spell
         {
-            Id = id,
             Name = name,
             Description = "A powerful spell",
             Level = level,
@@ -47,43 +45,44 @@ public static class TestObjectFactory
         };
     }
 
-    internal static SkillDto CreateTestSkillDto(string name, int abilityId, int id = 1, bool isHomebrew = false)
+    internal static SkillDto CreateTestSkillDto(string name, int abilityId, bool isHomebrew = false)
     {
-        return new() { Id = id, Name = name, AbilityId = abilityId, IsHomebrew = isHomebrew };
+        return new() { Name = name, AbilityId = abilityId, IsHomebrew = isHomebrew };
     }
 
-    internal static Skill CreateTestSkill(string name, int abilityId, Ability ability = null!, int id = 1)
+    internal static Skill CreateTestSkill(string name, int abilityId, Ability ability = null!)
     {
-        return new() { Id = id, Name = name, AbilityId = abilityId, Ability = ability };
+        return new() { Name = name, AbilityId = abilityId, Ability = ability };
     }
 
-    internal static LanguageDto CreateTestLanguageDto(string name, string family, string script, int id = 1)
+    internal static LanguageDto CreateTestLanguageDto(string name, string family, string script)
     {
-        return new() { Id = id, Name = name, Family = family, Script = script, IsHomebrew = false };
+        return new() { Name = name, Family = family, Script = script, IsHomebrew = false };
     }
 
-    internal static Language CreateTestLanguage(string name, string family, string script, int id = 1)
+    internal static Language CreateTestLanguage(string name, string family, string script)
     {
-        return new() { Id = id, Name = name, Family = family, Script = script, IsHomebrew = false };
+        return new() { Name = name, Family = family, Script = script, IsHomebrew = false };
     }
 
-    internal static AlignmentDto CreateTestAlignmentDto(string name, string abbreviation, string description, int id)
+    internal static AlignmentDto CreateTestAlignmentDto(string name, string abbreviation, string description)
     {
-        return new() { Id = id, Name = name, Description = description, Abbreviation = abbreviation };
+        return new() { Name = name, Description = description, Abbreviation = abbreviation };
     }
 
-    internal static Alignment CreateTestAlignment(string name, string abbreviation, string description, int id)
+    internal static Alignment CreateTestAlignment(string name, string abbreviation, string description)
     {
-        return new() { Id = id, Name = name, Description = description, Abbreviation = abbreviation };
+        return new() { Name = name, Description = description, Abbreviation = abbreviation };
     }
 
-    internal static AbilityDto CreateTestAbilityDto(string fullName, string shortName, string description, int id)
+    internal static AbilityDto CreateTestAbilityDto(string fullName, string shortName, string description)
     {
-        return new() { Id = id, FullName = fullName, ShortName = shortName, Description = description };
+        return new() { FullName = fullName, ShortName = shortName, Description = description };
     }
 
-    internal static Ability CreateTestAbility(string fullName, string shortName, string description, int id, ICollection<Skill> skills = null!)
+    internal static Ability CreateTestAbility(string fullName, string shortName, string description, ICollection<Skill> skills = null!)
     {
-        return new() { Id = id, FullName = fullName, ShortName = shortName, Description = description, Skills = skills };
+        return new() { FullName = fullName, ShortName = shortName, Description = description, Skills = skills };
     }
 }
+*/

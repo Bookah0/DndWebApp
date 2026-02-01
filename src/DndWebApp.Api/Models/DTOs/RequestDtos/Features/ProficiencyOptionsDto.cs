@@ -14,7 +14,6 @@ public class ProficiencyChoicesDto
     public ICollection<ProficiencyChoiceDto> WeaponProficiencyChoices { get; set; } = [];
 }
 
-
 public class ProficiencyChoiceDto
 {
     [Required]
@@ -29,10 +28,6 @@ public class ProficiencyChoiceDto
 
     [Required]
     public required ICollection<string> Options { get; set; }
-    
-    [Required]
-    [Range(1, int.MaxValue)]
-    public required int FeatureId { get; set; }
 }
 
 public class AbilityIncreaseChoiceDto
@@ -44,8 +39,4 @@ public class AbilityIncreaseChoiceDto
 
     [Required]
     public required ICollection<AbilityValueDto> Options { get; set; }
-
-    [Required]
-    [Range(1, int.MaxValue)]
-    public required int FeatureId { get; set; }
 }

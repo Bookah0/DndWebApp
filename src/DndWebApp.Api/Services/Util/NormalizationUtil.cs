@@ -3,49 +3,9 @@ using System.Text;
 
 namespace DndWebApp.Api.Services.Util;
 
+// TODO Could maybe be removed once filtering is implemented for Spells
 public static class NormalizationUtil
 {
-    /*
-    public static TEnum ParseEnumOrThrow<TEnum>(string? enumAsString, bool ignoreCase = true) where TEnum : struct, Enum
-    {
-        if (enumAsString is null || string.IsNullOrWhiteSpace(enumAsString))
-            return default;
-
-        if (!Enum.TryParse<TEnum>(enumAsString, ignoreCase, out var result))
-        {
-            throw new ValidationException($"Could not convert {enumAsString} to Enum of type {typeof(TEnum).Name}.");
-        }
-        return result;
-    }
-
-    public static List<TEnum> ParseEnumOrThrow<TEnum>(ICollection<string>? enumStrings) where TEnum : struct, Enum
-    {
-        if (enumStrings is null || enumStrings.Count == 0)
-            return [];
-
-        return [.. enumStrings.Select(s => ParseEnumOrThrow<TEnum>(s))];
-    }
-
-
-    public static string ToEnumPascalCaseFormat(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return input;
-
-        string normalized = input
-            .Replace("-", " ")
-            .Replace("_", " ");
-
-        var words = normalized
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        var pascalCase = string.Concat(words.Select(word =>
-            char.ToUpper(word[0]) + word[1..].ToLower()));
-
-        return pascalCase;
-    }
-*/
-
     public static string NormalizeWhiteSpace(string str)
     {
         if (string.IsNullOrEmpty(str))

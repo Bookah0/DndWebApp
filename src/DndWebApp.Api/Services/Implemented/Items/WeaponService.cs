@@ -9,17 +9,8 @@ using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
-public class WeaponService
+public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logger)
 {
-    private readonly IRepository<Weapon> repo;
-    private readonly ILogger<WeaponService> logger;
-
-    public WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logger)
-    {
-        this.repo = repo;
-        this.logger = logger;
-    }
-
     public async Task<Weapon> CreateAsync(WeaponDto dto)
     {
         var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
@@ -37,11 +28,12 @@ public class WeaponService
             Value = dto.Value,
             WeaponCategory = dtoCategory,
             WeaponType = dtoWeaponType,
+            Slot = ConvertWeaponTypeToMainSlot(dtoWeaponType),
             DamageDice = dto.DamageDice,
             Range = dto.Range,
             DamageTypes = [dtoMainDamageType, .. dtoOtherDamageTypes],
             Properties = dtoProperties,
-            VersitileDamageDice = dto.VersitileDamageDice ?? "",
+            VersatileDamageDice = dto.VersitileDamageDice ?? "",
             LongRange = dto.LongRange,
             Rarity = dtoRarity,
             RequiresAttunement = dto.RequiresAttunement ?? false,
@@ -68,7 +60,7 @@ public class WeaponService
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(WeaponDto dto)
+    public async Task UpdateAsync(int id, WeaponDto dto)
     {
         var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
         var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type");
@@ -77,7 +69,7 @@ public class WeaponService
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
         var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues, "Weapon Property");
 
-        var weapon = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Weapon with id {dto.Id} could not be found");
+        var weapon = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
 
         weapon.Name = dto.Name;
         weapon.Description = dto.Description;
@@ -89,7 +81,7 @@ public class WeaponService
         weapon.Range = dto.Range;
         weapon.DamageTypes = [dtoMainDamageType, .. dtoOtherDamageTypes];
         weapon.Properties = dtoProperties;
-        weapon.VersitileDamageDice = dto.VersitileDamageDice ?? weapon.VersitileDamageDice;
+        weapon.VersatileDamageDice = dto.VersitileDamageDice ?? weapon.VersatileDamageDice;
         weapon.LongRange = dto.LongRange ?? weapon.LongRange;
         weapon.Rarity = dtoRarity ?? weapon.Rarity;
         weapon.RequiresAttunement = dto.RequiresAttunement ?? weapon.RequiresAttunement;

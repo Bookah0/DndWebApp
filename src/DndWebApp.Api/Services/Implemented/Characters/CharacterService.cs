@@ -7,42 +7,26 @@ using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Services.Constants;
+using DndWebApp.Api.Controllers.Characters;
 
 namespace DndWebApp.Api.Services.Implemented;
 
-public partial class CharacterService : ICharacterService
+public partial class CharacterService(
+    ICharacterRepository repo,
+    IRaceRepository raceRepo,
+    ISubraceRepository subraceRepo,
+    IClassRepository classRepo,
+    ISubclassRepository subclassRepo,
+    IClassLevelRepository levelRepo,
+    IBackgroundRepository backgroundRepo,
+    IAbilityRepository abilityRepo,
+    ISkillRepository skillRepo,
+    ILanguageRepository languageRepo,
+    ILogger<CharacterService> logger) : ICharacterService
 {
-    private readonly ICharacterRepository repo;
-    private readonly IRaceRepository raceRepo;
-    private readonly ISubraceRepository subraceRepo;
-    private readonly IClassRepository classRepo;
-    private readonly ISubclassRepository subclassRepo;
-    private readonly IClassLevelRepository levelRepo;
-    private readonly IBackgroundRepository backgroundRepo;
-    private readonly IAbilityRepository abilityRepo;
-    private readonly ISkillRepository skillRepo;
-    private readonly ILanguageRepository languageRepo;
-
-    private readonly ILogger<CharacterService> logger;
-
-    public CharacterService(ICharacterRepository repo, IRaceRepository raceRepo, ISubraceRepository subraceRepo, IClassRepository classRepo, ISubclassRepository subclassRepo, IClassLevelRepository levelRepo, IBackgroundRepository backgroundRepo, IAbilityRepository abilityRepo, ISkillRepository skillRepo, ILanguageRepository languageRepo, ILogger<CharacterService> logger)
-    {
-        this.repo = repo;
-        this.backgroundRepo = backgroundRepo;
-        this.classRepo = classRepo;
-        this.subclassRepo = subclassRepo;
-        this.levelRepo = levelRepo;
-        this.raceRepo = raceRepo;
-        this.subraceRepo = subraceRepo;
-        this.abilityRepo = abilityRepo;
-        this.skillRepo = skillRepo;
-        this.languageRepo = languageRepo;
-        this.logger = logger;
-    }
-
     public async Task DeleteAsync(int id)
     {
-        var character = await GetByIdAsync(id);
+        var character = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Character with id {id} could not be found");
         await repo.DeleteAsync(character);
     }
 
@@ -51,14 +35,21 @@ public partial class CharacterService : ICharacterService
         return await repo.GetAllAsync();
     }
 
-    public async Task<Character> GetByIdAsync(int id)
+    public async Task<ICollection<Character>> GetAllByUserIdAsync(int userId)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Character with id {id} could not be found");
+        // TODO implement when user repository is ready
+        return await repo.GetAllAsync();
     }
 
-    public async Task LevelUpAsync(ICollection<Spell> chosenSpells, int characterId)
+    public async Task<Character> GetByIdAsync(int id)
     {
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Character with id {id} could not be found");
+        return character;
+    }
+
+    public async Task LevelUpAsync(LevelUpDto dto, int characterId)
+    {
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
         var newLvl = character.Level + 1;
 
         var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(character.ClassId, newLvl)
@@ -68,7 +59,7 @@ public partial class CharacterService : ICharacterService
         character.CurrentSpellSlots = latestLevel.SpellSlots;
         character.CurrentClassSlots = latestLevel.ClassSpecificSlotsAtLevel;
 
-        foreach (var spell in chosenSpells)
+        foreach (var spell in dto.ChosenSpells)
         {
             character.ReadySpells.Add(spell);
         }
@@ -81,7 +72,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task AddSubclassAsync(int subclassId, int characterId)
     {
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
 
         var subclass = await subclassRepo.GetByIdAsync(subclassId)
             ?? throw new NotFoundException($"Subclass with id {subclassId} could not be found");
@@ -96,15 +87,17 @@ public partial class CharacterService : ICharacterService
 
     public async Task EditCharacterDescriptionAsync(CharacterDescription edited, int characterId)
     {
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
         character.CharacterDescription = edited;
         await repo.UpdateAsync(character);
     }
 
     public async Task SpendHitDice(int nDice, int characterId)
     {
-        AboveZeroOrThrow(nDice);
-        var character = await GetByIdAsync(characterId);
+        if(nDice < 0)
+            throw new ValidationException("Number of hit dice to spend must be a positive value.");
+            
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
 
         if (character.CombatStats.CurrentHitDice - nDice < 0)
             throw new ValidationException($"Character has {character.CombatStats.CurrentHitDice} hit dice to spend, cant spend {nDice}");
@@ -115,7 +108,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task LongRest(int characterId)
     {
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
 
         var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(character.ClassId, character.Level)
             ?? throw new NotFoundException($"Class level with classId {character.ClassId} at level {character.Level} could not be found");
@@ -130,9 +123,10 @@ public partial class CharacterService : ICharacterService
 
     public async Task TakeDamage(int characterId, int change)
     {
-        AboveZeroOrThrow(change);
+        if(change < 0)
+            throw new ValidationException("Damage taken must be a positive value.");
 
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
         character.CombatStats.TempHP -= change;
 
         if (character.CombatStats.TempHP < 0)
@@ -145,9 +139,10 @@ public partial class CharacterService : ICharacterService
 
     public async Task HealDamage(int characterId, int change)
     {
-        AboveZeroOrThrow(change);
+        if(change < 0)
+            throw new ValidationException("Healing amount must be a positive value.");
 
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
         character.CombatStats.CurrentHP += change;
         character.CombatStats.CurrentHP = Math.Min(character.CombatStats.CurrentHP, character.CombatStats.MaxHP);
 
@@ -156,7 +151,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task EditCurrentClassSlotAsync(string slotName, int change, int characterId)
     {
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
 
         if (character.CurrentSpellSlots is null)
             throw new ValidationException($"Character has no class specific slots");
@@ -170,7 +165,7 @@ public partial class CharacterService : ICharacterService
     
     public async Task EditCurrentSpellSlotAsync(int slotLevel, int change, int characterId)
     {
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
 
         if (character.CurrentSpellSlots is null)
             throw new ValidationException($"Character has no spellcasting");
@@ -192,4 +187,5 @@ public partial class CharacterService : ICharacterService
             _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
         };
     }
+
 }

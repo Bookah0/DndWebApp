@@ -8,27 +8,18 @@ using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented;
 
-public class AlignmentService : IAlignmentService
+public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentService> logger) : IAlignmentService
 {
-    private readonly IRepository<Alignment> repo;
-    private readonly ILogger<AlignmentService> logger;
-
-    public AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentService> logger)
-    {
-        this.repo = repo;
-        this.logger = logger;
-    }
-
     public async Task<Alignment> CreateAsync(AlignmentDto dto)
     {
-        Alignment alignment = new()
+        var alignment = await repo.CreateAsync(new()
         {
             Name = dto.Name,
             Description = dto.Description,
             Abbreviation = dto.Abbreviation
-        };
+        });
 
-        return await repo.CreateAsync(alignment);
+        return alignment;
     }
 
     public async Task DeleteAsync(int id)
@@ -39,12 +30,14 @@ public class AlignmentService : IAlignmentService
 
     public async Task<ICollection<Alignment>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        var alignments = await repo.GetAllAsync();
+        return alignments;
     }
 
     public async Task<Alignment> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
+        var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
+        return alignment;
     }
 
     public async Task UpdateAsync(int id, AlignmentDto dto)

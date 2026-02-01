@@ -37,16 +37,24 @@ public class ClassRepository : IClassRepository
         await context.SaveChangesAsync();
     }
 
+    public async Task<Class?> GetWithSubclassesAsync(int id)
+    {
+        return await context.Classes
+            .Include(c => c.Subclasses)
+            .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<Class?> GetWithAllDataAsync(int id)
     {
         return await context.Classes
+            .Include(c => c.Subclasses)
             .Include(c => c.ClassLevels)
             .Include(c => c.StartingEquipment)
             .Include(c => c.StartingEquipmentChoices)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<Class?> GetWithClassLevelsAsync(int id)
+    public async Task<Class?> GetWithLevelsAsync(int id)
     {
         return await context.Classes
             .Include(c => c.ClassLevels)
@@ -72,6 +80,7 @@ public class ClassRepository : IClassRepository
     public async Task<ICollection<Class>> GetAllWithAllDataAsync()
     {
         return await context.Classes
+            .Include(c => c.Subclasses)
             .Include(c => c.ClassLevels)
             .Include(c => c.StartingEquipment)
             .Include(c => c.StartingEquipmentChoices)

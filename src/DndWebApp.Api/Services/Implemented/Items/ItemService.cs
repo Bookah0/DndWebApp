@@ -6,27 +6,19 @@ using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
 using static DndWebApp.Api.Services.Util.ConstantsUtil;
 using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Services.Interfaces.Items;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
-public class ItemService
+public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : IItemService
 {
-    private readonly IItemRepository repo;
-    private readonly ILogger<ItemService> logger;
-
-    public ItemService(IItemRepository repo, ILogger<ItemService> logger)
-    {
-        this.repo = repo;
-        this.logger = logger;
-    }
-
     public async Task<Item> CreateAsync(ItemDto dto)
     {
         var dtoMainCategory =  ResolveOptionOrThrow(dto.MainCategory, ItemCategory.AllowedValues, "Item Category");
         var dtoOtherCategories = ResolveOptionOrThrow(dto.OtherCategories, ItemCategory.AllowedValues, "Item Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
-        Item item = new()
+        Item item = await repo.CreateAsync(new()
         {
             Name = dto.Name,
             Description = dto.Description,
@@ -36,9 +28,9 @@ public class ItemService
             RequiresAttunement = dto.RequiresAttunement ?? false,
             IsHomebrew = dto.IsHomebrew ?? false,
             Weight = dto.Weight ?? 0,
-        };
+        });
 
-        return await repo.CreateAsync(item);
+        return item;
     }
 
     public async Task DeleteAsync(int id)
@@ -47,23 +39,25 @@ public class ItemService
         await repo.DeleteAsync(item);
     }
 
-    public async Task<ICollection<Item>> GetMiscellaneousItemsAsync()
+    public async Task<ICollection<Item>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        var items = await repo.GetAllAsync();
+        return items;
     }
 
     public async Task<Item> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Item with id {id} could not be found");
+        var item = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Item with id {id} could not be found");
+        return item;
     }
 
-    public async Task UpdateAsync(ItemDto dto)
+    public async Task UpdateAsync(ItemDto dto, int id)
     {
         var dtoMainCategory =  ResolveOptionOrThrow(dto.MainCategory, ItemCategory.AllowedValues, "Item Category");
         var dtoOtherCategories = ResolveOptionOrThrow(dto.OtherCategories, ItemCategory.AllowedValues, "Item Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
-        var item = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Item with id {dto.Id} could not be found");
+        var item = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Item with id {id} could not be found");
 
         item.Name = dto.Name;
         item.Description = dto.Description;

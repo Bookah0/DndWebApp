@@ -2,8 +2,9 @@ namespace DndWebApp.Api.Models.Items.Constants;
 
 public static class EquipSlot
 {
-    public const string MainHand = "MainHand";
-    public const string OffHand = "OffHand";
+    public const string MainHand = "Main Hand";
+    public const string OffHand = "Off Hand";
+    public const string TwoHand = "Two Hand";
     public const string Ranged = "Ranged";
     public const string Armor = "Armor";
     public const string Head = "Head";
@@ -13,13 +14,14 @@ public static class EquipSlot
     public const string Back = "Back";
     public const string Neck = "Neck";
     public const string Rings = "Rings";
-    public const string ArcaneFocus = "ArcaneFocus";
-    public const string HolySymbol = "HolySymbol";
+    public const string ArcaneFocus = "Arcane Focus";
+    public const string HolySymbol = "Holy Symbol";
 
     public static readonly IReadOnlySet<string> AllowedValues = new HashSet<string>
     {
         MainHand,
         OffHand,
+        TwoHand,
         Ranged,
         Armor,
         Head,

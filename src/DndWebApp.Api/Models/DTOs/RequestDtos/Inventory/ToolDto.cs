@@ -33,3 +33,36 @@ public class ToolDto
 
     public bool? IsHomebrew { get; set; }
 }
+
+public class ToolPropertyDto
+{
+    [Required]
+    [MinLength(1)]
+    [MaxLength(100)]
+    public required string Title { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(2000)]
+    public required string Description { get; set; }
+
+}
+
+public class ToolActivityDto
+{
+    [Required]
+    [MinLength(1)]
+    [MaxLength(100)]
+    public required string Title { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? SkillId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? AbilityId { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(50)]
+    public required string DC { get; set; }
+}

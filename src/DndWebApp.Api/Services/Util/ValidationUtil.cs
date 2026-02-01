@@ -4,38 +4,11 @@ using DndWebApp.Api.Repositories.Interfaces;
 
 namespace DndWebApp.Api.Services.Util;
 
+// TODO Should be removed once validation is handled through Annotations and inline throws
 public static class ValidationUtil
 {
-    public static void HasContentOrThrow(string? str)
-    {
-        if (string.IsNullOrWhiteSpace(str))
-        {
-            throw new ValidationException($"{nameof(str)} cannot be null, empty, or whitespace.");
-        }
-    }
 
-    public static void HasContentOrThrow(int? num)
-    {
-        if (num == null)
-        {
-            throw new ValidationException($"{nameof(num)} cannot be null.");
-        }
-    }
-
-    public static void AboveZeroOrThrow(int? num)
-    {
-        if (num == null || num < 0)
-        {
-            throw new ValidationException($"{nameof(num)} cannot be null, zero or negative.");
-        }
-    }
-
-    public static async Task IdExist<T, C>(int id, T repo) where T : IRepository<C>
-    {
-        if (await repo.GetByIdAsync(id) == null)
-            throw new NotFoundException($"Entity of type {typeof(T).Name} with id {id} does not exist.");
-    }
-
+    // TODO Should be removed once filtering is implemented for Spells
     public static async Task IdsExist<T, C>(ICollection<int>? ids, T repo) where T : IRepository<C>
     {
         if (ids is null)

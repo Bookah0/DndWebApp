@@ -1,62 +1,48 @@
+using AutoMapper;
 using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
-using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DndWebApp.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class FeatController : ControllerBase
-    {
-    public IFeatService service;
-
-    public FeatController(IFeatService service)
-    {
-        this.service = service;
-    }
-    
+[Route("api/[controller]s")]
+public class FeatController(IFeatService service, IMapper mapper) : ControllerBase
+{
     [HttpGet]
     public async Task<ActionResult<ICollection<FeatResponseDto>>> GetFeats()
     {
         var feats = await service.GetAllAsync();
-        return Ok(feats);
+        return Ok(mapper.Map<ICollection<FeatResponseDto>>(feats));
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<FeatResponseDto>> GetFeat(int id)
+    [HttpGet("{featId}")]
+    public async Task<ActionResult<FeatResponseDto>> GetFeat(int featId)
     {
-        var feat = await service.GetByIdAsync(id);
-        return Ok(feat);
+        var feat = await service.GetByIdAsync(featId);
+        return Ok(mapper.Map<FeatResponseDto>(feat));
     }
 
     [HttpPost]
     public async Task<ActionResult<FeatResponseDto>> CreateFeat([FromBody] FeatDto dto)
     {
         var feat = await service.CreateAsync(dto);
-        return Ok(feat);
+        return Ok(mapper.Map<FeatResponseDto>(feat));
     }
 
-    [HttpPatch("{id}")]
-    public async Task<ActionResult> UpdateFeat(int id, [FromBody] FeatDto dto)
+    [HttpPatch("{featId}")]
+    public async Task<ActionResult> UpdateFeat(int featId, [FromBody] FeatDto dto)
     {
-        await service.UpdateAsync(id, dto);
+        await service.UpdateAsync(featId, dto);
         return Ok();
     }
 
-    [HttpPatch("{id}/proficiencies/{type}")]
-    public async Task<ActionResult> UpdateFeat(int id, string type, [FromBody] FeatDto dto)
+    [HttpDelete("{featId}")]
+    public async Task<ActionResult> DeleteFeat(int featId)
     {
-        await service.UpdateAsync(id, dto);
-        return Ok();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteFeat(int id)
-    {
-        await service.DeleteAsync(id);
+        await service.DeleteAsync(featId);
         return Ok();
     }
 
@@ -67,7 +53,7 @@ public class FeatController : ControllerBase
         await service.AddSpell(spellId, featId);
         return Ok();
     }
-
+    
     [HttpDelete("{featId}/spells/{spellId}")]
     public async Task<ActionResult> RemoveSpell(int featId, int spellId)
     {
@@ -77,29 +63,59 @@ public class FeatController : ControllerBase
 
     // Proficiency management endpoints
     [HttpPost("{featId}/proficiencies")]
-    public async Task<ActionResult> AddProficiency(int featId, [FromBody] string proficiency)
+    public async Task<ActionResult> AddProficiency(int featId, [FromBody] ProficiencyDto proficiency)
     {
         await service.AddProficiency(proficiency, featId);
         return Ok();
     }
 
     [HttpDelete("{featId}/proficiencies")]
-    public async Task<ActionResult> RemoveProficiency(int featId, [FromBody] string proficiency)
+    public async Task<ActionResult> RemoveProficiency(int featId, [FromBody] ProficiencyDto proficiency)
     {
         await service.RemoveProficiency(proficiency, featId);
         return Ok();
     }
-}
 
-/*
-    Task AddProficiency<TEnum>(TEnum proficiency, int featureId) where TEnum : struct, Enum;
-    Task RemoveProficiency<TEnum>(TEnum proficiency, int featureId) where TEnum : struct, Enum;
-    Task AddDamageAffinity(AffinityType affinityType, DamageType damageType, int featureId);
-    Task RemoveDamageAffinity(AffinityType affinityType, DamageType damageType, int featureId);
-    Task AddAbilityIncrease(int abilityId, int value, int featureId);
-    Task RemoveAbilityIncrease(int abilityId, int featureId);
-    Task AddAbilityIncreaseChoice(List<AbilityValue> options, string description, int featureId);
-    Task ClearAbilityIncreaseOptions(int featureId);
-    Task AddProficiencyChoice<TEnum>(List<TEnum> options, string description, int featureId) where TEnum : struct, Enum;
-    Task RemoveProficiencyChoice<TEnum>(int choiceId, int featureId) where TEnum : struct, Enum;
-*/
+    [HttpPost("{featId}/proficiency-choices")]
+    public async Task<ActionResult> AddProficiencyChoice(int featId, [FromBody] ProficiencyChoiceDto dto)
+    {
+        await service.AddProficiencyChoice(dto, featId);
+        return Ok();
+    }
+
+    [HttpDelete("{featId}/proficiency-choices/{type}/{choiceIndex}")]
+    public async Task<ActionResult> RemoveProficiencyChoice(int featId, string type, int choiceIndex)
+    {
+        await service.RemoveProficiencyChoice(type, choiceIndex, featId);
+        return Ok();
+    }
+
+    // Ability increase management endpoints
+    [HttpPost("{featId}/ability-increases")]
+    public async Task<ActionResult> AddAbilityIncrease(int featId, [FromBody] AbilityValueDto increase)
+    {
+        await service.AddAbilityIncrease(increase.AbilityId, increase.Value, featId);
+        return Ok();
+    }
+
+    [HttpDelete("{featId}/ability-increases")]
+    public async Task<ActionResult> RemoveAbilityIncrease(int featId, [FromBody] AbilityValueDto increase)
+    {
+        await service.RemoveAbilityIncrease(increase.AbilityId, featId);
+        return Ok();
+    }
+
+    [HttpPost("{featId}/ability-increase-choices")]
+    public async Task<ActionResult> AddAbilityIncreaseChoice(int featId, [FromBody] AbilityIncreaseChoiceDto increaseChoice)
+    {
+        await service.AddAbilityIncreaseChoice(increaseChoice, featId);
+        return Ok();
+    }
+
+    [HttpDelete("{featId}/ability-increase-choices/{choiceIndex}")]
+    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int featId, int choiceIndex)
+    {
+        await service.RemoveAbilityIncreaseChoice(choiceIndex, featId);
+        return Ok();
+    }
+}

@@ -137,3 +137,5 @@ c:\Users\Antho\Documents\GitHub\DndWebApp\src\DndWebApp.Tests\obj\Debug\net9.0\r
 c:\Users\Antho\Documents\GitHub\DndWebApp\src\DndWebApp.Tests\obj\Debug\net9.0\DndWebApp.Tests.pdb
 c:\Users\Antho\Documents\GitHub\DndWebApp\src\DndWebApp.Tests\obj\Debug\net9.0\DndWebApp.Tests.genruntimeconfig.cache
 c:\Users\Antho\Documents\GitHub\DndWebApp\src\DndWebApp.Tests\obj\Debug\net9.0\ref\DndWebApp.Tests.dll
+C:\Users\Antho\Documents\GitHub\DndWebApp\src\DndWebApp.Tests\bin\Debug\net9.0\AutoMapper.dll
+C:\Users\Antho\Documents\GitHub\DndWebApp\src\DndWebApp.Tests\bin\Debug\net9.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

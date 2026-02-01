@@ -1,9 +1,9 @@
-using DndWebApp.Api.Models.Characters;
-using Microsoft.EntityFrameworkCore;
+using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Services.Util.Interfaces;
 
 namespace DndWebApp.Api.Models.Items;
 
-public class Armor : Item
+public class Armor : Item, IEquippable
 {
     public required string ArmorCategory { get; set; }
     public required int BaseArmorClass { get; set; }
@@ -11,5 +11,6 @@ public class Armor : Item
     public int? ModCap { get; set; }
     public int? StrengthScoreRequired { get; set; }
     public bool StealthDisadvantage { get; set; } = false;
+    public string MainSlot => ArmorCategory.Equals(Constants.ArmorCategory.Shield) ? EquipSlot.OffHand : EquipSlot.Armor;
+    public string? SecondarySlot => null;
 }
-

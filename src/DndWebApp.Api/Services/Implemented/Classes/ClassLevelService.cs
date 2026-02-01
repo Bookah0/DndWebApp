@@ -6,27 +6,17 @@ using DndWebApp.Api.Services.Interfaces;
 using static DndWebApp.Api.Services.Util.SortUtil;
 namespace DndWebApp.Api.Services.Implemented.Classes;
 
-public partial class ClassLevelService : IClassLevelService
+public partial class ClassLevelService(
+    IClassRepository classRepo,
+    ISubclassRepository subclassRepo,
+    IClassLevelRepository levelRepo,
+    IClassFeatureRepository featureRepo,
+    ILogger<ClassService> logger) : IClassLevelService
 {
-    private readonly IClassLevelRepository levelRepo;
-    private readonly IClassRepository classRepo;
-    private readonly ISubclassRepository subclassRepo;
-    private readonly IClassFeatureRepository featureRepo;
-    private readonly ILogger<ClassService> logger;
-
-    public ClassLevelService(IClassRepository classRepo, ISubclassRepository subclassRepo, IClassLevelRepository levelRepo, IClassFeatureRepository featureRepo, ILogger<ClassService> logger)
-    {
-        this.levelRepo = levelRepo;
-        this.classRepo = classRepo;
-        this.subclassRepo = subclassRepo;
-        this.featureRepo = featureRepo;
-        this.logger = logger;
-    }
-
-    public async Task<ClassLevel> AddLevelToClassAsync(ClassLevelDto dto)
+    public async Task<ClassLevel> CreateAsync(ClassLevelDto dto)
     {
         AClass? clss;
-
+        
         if (!dto.IsSubclassLevel)
         {
             clss = await classRepo.GetByIdAsync(dto.ClassId)
@@ -64,7 +54,7 @@ public partial class ClassLevelService : IClassLevelService
         return await levelRepo.CreateAsync(level);
     }
 
-    public async Task UpdateClassLevelAsync(int id, ClassLevelDto dto)
+    public async Task UpdateAsync(int id, ClassLevelDto dto)
     {
         var level = await levelRepo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class level with id {id} could not be found");
@@ -102,29 +92,20 @@ public partial class ClassLevelService : IClassLevelService
         await levelRepo.UpdateAsync(level);
     }
 
-    public async Task DeleteClassLevelAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        var level = await levelRepo.GetByIdAsync(id) ?? throw new NotFoundException($"Class level with id {id} could not be found");
+        var level = await levelRepo.GetByIdAsync(id) 
+            ?? throw new NotFoundException($"Class level with id {id} could not be found");
+        
         await levelRepo.DeleteAsync(level);
     }
 
-    public async Task<ICollection<ClassLevel>> GetAllLevelsAsync(int classId, bool isSubclass)
+    public async Task<ClassLevel> GetByIdAsync(int id)
     {
-        if (isSubclass)
-        {
-            var classWithLevels = await subclassRepo.GetByIdAsync(classId) ?? throw new NotFoundException($"No subclass with id {classId} can be found");
-            return classWithLevels.ClassLevels;
-        }
-        else
-        {
-            var classWithLevels = await classRepo.GetByIdAsync(classId) ?? throw new NotFoundException($"No class with id {classId} can be found");
-            return classWithLevels.ClassLevels;
-        }
-    }
+        var level = await levelRepo.GetByIdAsync(id) 
+            ?? throw new NotFoundException($"Class level with id {id} could not be found");
 
-    public async Task<ClassLevel> GetLevelByIdAsync(int id)
-    {
-        return await levelRepo.GetByIdAsync(id) ?? throw new NotFoundException($"Class level with id {id} could not be found");
+        return level;
     }
 
     public ICollection<ClassLevel> SortByLevel(ICollection<ClassLevel> levels, bool descending = false)

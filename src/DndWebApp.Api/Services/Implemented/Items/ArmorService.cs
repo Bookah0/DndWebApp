@@ -6,26 +6,18 @@ using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
 using static DndWebApp.Api.Services.Util.ConstantsUtil;
 using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Services.Interfaces.Items;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
-public class ArmorService
+public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger) : IArmorService
 {
-    private readonly IRepository<Armor> repo;
-    private readonly ILogger<ArmorService> logger;
-
-    public ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
-    {
-        this.repo = repo;
-        this.logger = logger;
-    }
-
     public async Task<Armor> CreateAsync(ArmorDto dto)
     {
         var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category");
         var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
-        Armor armor = new()
+        Armor armor = await repo.CreateAsync(new()
         {
             Name = dto.Name,
             Description = dto.Description,
@@ -41,9 +33,9 @@ public class ArmorService
             RequiresAttunement = dto.RequiresAttunement ?? false,
             IsHomebrew = dto.IsHomebrew ?? false,
             Categories = [ItemCategory.Armor]
-        };
+        });
 
-        return await repo.CreateAsync(armor);
+        return armor;
     }
 
     public async Task DeleteAsync(int id)
@@ -54,20 +46,22 @@ public class ArmorService
 
     public async Task<ICollection<Armor>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        var armors = await repo.GetAllAsync();
+        return armors;
     }
 
     public async Task<Armor> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
+        var armor = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
+        return armor;
     }
 
-    public async Task UpdateAsync(ArmorDto dto)
+    public async Task UpdateAsync(ArmorDto dto, int id)
     {
         var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category");
         var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
-        var armor = await repo.GetByIdAsync(dto.Id) ?? throw new NotFoundException($"Armor with id {dto.Id} could not be found");
+        var armor = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
 
         armor.Name = dto.Name;
         armor.Description = dto.Description;

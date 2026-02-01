@@ -41,7 +41,7 @@ public class ClassFeatureRepository : IClassFeatureRepository
     {
         return await context.ClassFeatures
             .AsSplitQuery()
-            .Include(f => f.ClassLevel)
+            .Include(f => f.Level)
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -51,7 +51,7 @@ public class ClassFeatureRepository : IClassFeatureRepository
     {
         return await context.ClassFeatures
             .AsSplitQuery()
-            .Include(f => f.ClassLevel)
+            .Include(f => f.Level)
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
             .ToListAsync();

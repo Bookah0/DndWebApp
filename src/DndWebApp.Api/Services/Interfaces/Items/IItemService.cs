@@ -11,6 +11,6 @@ public interface IItemService
     Task DeleteAsync(int id);
     Task<ICollection<Item>> GetAllAsync();
     Task<Item> GetByIdAsync(int id);
-    Task UpdateAsync(ItemDto dto);
+    Task UpdateAsync(ItemDto dto, int id);
     ICollection<Item> SortBy(ICollection<Item> items, string sortFilter, bool descending = false);
 }

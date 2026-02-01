@@ -5,10 +5,6 @@ namespace DndWebApp.Api.Models.DTOs.Spells;
 public class SpellDto
 {
     [Required]
-    [Range(1, int.MaxValue)]
-    public required int Id { get; set; }
-
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }

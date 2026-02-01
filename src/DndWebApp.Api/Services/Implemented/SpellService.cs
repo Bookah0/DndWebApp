@@ -15,27 +15,10 @@ using DndWebApp.Api.Models.Items.Constants;
 
 namespace DndWebApp.Api.Services.Implemented;
 
-public class SpellService : ISpellService
+public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILogger<SpellService> logger) : ISpellService
 {
-    private readonly ISpellRepository repo;
-    private readonly IClassRepository classRepo;
-    private readonly ILogger<SpellService> logger;
-
-    public SpellService(ISpellRepository repo, IClassRepository classRepo, ILogger<SpellService> logger)
-    {
-        this.repo = repo;
-        this.classRepo = classRepo;
-        this.logger = logger;
-    }
-
     public async Task<Spell> CreateAsync(SpellDto dto)
     {
-        HasContentOrThrow(dto.Name);
-        HasContentOrThrow(dto.Description);
-        HasContentOrThrow(dto.Duration);
-        HasContentOrThrow(dto.CastingTime);
-        HasContentOrThrow(dto.MagicSchool);
-
         var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
         var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");
         var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues, "Spell Range");
@@ -84,7 +67,8 @@ public class SpellService : ISpellService
             }
         };
 
-        return await repo.CreateAsync(spell);
+        var createdSpell = await repo.CreateAsync(spell);
+        return createdSpell;
     }
 
 
@@ -96,7 +80,8 @@ public class SpellService : ISpellService
 
     public async Task<ICollection<Spell>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        var spells = await repo.GetAllAsync();
+        return spells;
     }
 
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto)
@@ -146,18 +131,13 @@ public class SpellService : ISpellService
 
     public async Task<Spell> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
+        var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
+        return spell;
     }
 
     public async Task UpdateAsync(int id, SpellDto dto)
     {
         var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
-
-        HasContentOrThrow(dto.Name);
-        HasContentOrThrow(dto.Description);
-        HasContentOrThrow(dto.Duration);
-        HasContentOrThrow(dto.CastingTime);
-        HasContentOrThrow(dto.MagicSchool);
 
         var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
         var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");

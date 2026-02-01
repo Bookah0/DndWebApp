@@ -3,22 +3,17 @@ using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Items.Constants;
 using DndWebApp.Api.Repositories.Interfaces;
+using DndWebApp.Api.Services.Interfaces.Items;
 using DndWebApp.Api.Services.Util;
+using DndWebApp.Api.Services.Util.Interfaces;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
-public class InventoryService
+public class InventoryService(
+    IInventoryRepository repo,
+    IItemRepository itemRepo,
+    ICharacterRepository characterRepo,
+    ILogger<InventoryService> logger) : IInventoryService
 {
-    private readonly IInventoryRepository repo;
-    private readonly IItemRepository itemRepo;
-    private readonly ILogger<InventoryService> logger;
-
-    public InventoryService(IInventoryRepository repo, IItemRepository itemRepo, ILogger<InventoryService> logger)
-    {
-        this.repo = repo;
-        this.itemRepo = itemRepo;
-        this.logger = logger;
-    }
-
     public async Task<Inventory> CreateAsync(CreateInventoryDto dto)
     {
         ICollection<EquipmentSlot> equipmentSlots = [
@@ -62,78 +57,95 @@ public class InventoryService
             inv.StoredItems.Add(item);
         }
             
-        ConvertCurrency(inv.Currency);
+        CurrencyUtil.ConvertCurrency(inv.Currency);
         return await repo.CreateAsync(inv);
     }
 
-    public async Task AddItem(int invId, int itemId)
+    public async Task AddItem(Inventory inventory, int itemId)
+    {         
+        var item = await itemRepo.GetByIdAsync(itemId) 
+            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+
+        inventory.StoredItems.Add(item);
+        inventory.TotalWeight += item.Weight;
+        await repo.UpdateAsync(inventory);
+    }
+
+    public async Task DiscardItem(Inventory inventory, int itemId)
     {
-        var inv = await repo.GetByIdAsync(invId)
-            ?? throw new NotFoundException($"Inventory with id {invId} could not be found");
+        var item = await itemRepo.GetByIdAsync(itemId) 
+            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+        
+        if(inventory.StoredItems.FirstOrDefault(i => i.Id == itemId) is null)
+             throw new NotFoundException($"Item with id {itemId} could not be found in inventory with id {inventory.Id}");
+
+        if (inventory.StoredItems.FirstOrDefault(i => i.Id == itemId) is null)
+            throw new NotFoundException($"Item with id {itemId} could not be found in inventory with id {inventory.Id}");
             
-        var item = await itemRepo.GetByIdAsync(itemId) 
-            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
-
-        inv.StoredItems.Add(item);
-        inv.TotalWeight += item.Weight;
-        await repo.UpdateAsync(inv);
-    }
-
-    public async Task DiscardItem(int invId, int itemId)
-    {
-        var inv = await repo.GetByIdAsync(invId)
-            ?? throw new NotFoundException($"Inventory with id {invId} could not be found");
-        
-        var item = await itemRepo.GetByIdAsync(itemId) 
-            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
-        
-        if(inv.StoredItems.FirstOrDefault(i => i.Id == itemId) is null)
-             throw new NotFoundException($"Item with id {itemId} could not be found in inventory with id {invId}");
-
-        if (inv.StoredItems.FirstOrDefault(i => i.Id == itemId) is null)
-            throw new NotFoundException($"Item with id {itemId} could not be found in inventory with id {invId}");
-
-        await UnEquip(invId, itemId);
-        inv.StoredItems.Remove(item);
-        inv.TotalWeight -= item.Weight;
-        await repo.UpdateAsync(inv);
+        await UnEquip(inventory, itemId);
+        inventory.StoredItems.Remove(item);
+        inventory.TotalWeight -= item.Weight;
+        await repo.UpdateAsync(inventory);
     }
 
 
-    public async Task UnEquip(int invId, int itemId)
+    public async Task UnEquip(Inventory inventory, int itemId)
     {
-        var inv = await repo.GetByIdAsync(invId)
-            ?? throw new NotFoundException($"Inventory with id {invId} could not be found");
-
         var item = await itemRepo.GetByIdAsync(itemId)
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
             
-        foreach (var equipmentSlot in inv.EquippedItems)
+        foreach (var equipmentSlot in inventory.EquippedItems)
         {
             if (equipmentSlot.EquipmentId == itemId)
             {
                 equipmentSlot.EquipmentId = null;
-                inv.AttunedItems += item.RequiresAttunement ? 1 : 0;
-                await repo.UpdateAsync(inv);
+                inventory.AttunedItems += item.RequiresAttunement ? 1 : 0;
+                await repo.UpdateAsync(inventory);
                 return;
             }
         }
-        throw new NotFoundException($"Item with id {itemId} is not equipped in inventory with id {invId}");
+        throw new NotFoundException($"Item with id {itemId} is not equipped in inventory with id {inventory.Id}");
     }
 
-    public async Task Equip(int invId, int itemId, string slot)
+    public async Task UnEquip(Inventory inventory, string slot)
     {
-        var inv = await repo.GetByIdAsync(invId)
-            ?? throw new NotFoundException($"Inventory with id {invId} could not be found");
-        
+        var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues, "Equipment Slot");
+
+        foreach (var equipmentSlot in inventory.EquippedItems)
+        {
+            if (equipmentSlot.Slot == resolvedSlot)
+            {
+                if(equipmentSlot.EquipmentId is null)
+                    throw new NotFoundException($"No item is equipped in slot {resolvedSlot} in inventory with id {inventory.Id}");
+
+                var item = await itemRepo.GetByIdAsync((int)equipmentSlot.EquipmentId)
+                    ?? throw new NotFoundException($"Item with id {equipmentSlot.EquipmentId} could not be found");
+
+                equipmentSlot.EquipmentId = null;
+                inventory.AttunedItems += item.RequiresAttunement ? 1 : 0;
+                await repo.UpdateAsync(inventory);
+                return;
+            }
+        }
+        throw new NotFoundException($"Could not find a slot of that type in the inventory with id {inventory.Id}");
+    }
+
+    public async Task Equip(Inventory inventory, int itemId, string slot)
+    {
         var item = await itemRepo.GetByIdAsync(itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
         
+        if(item is not IEquippable equippableItem)
+            throw new InvalidOperationException($"Item with id {itemId} is not equippable");
+        
         var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues, "Equipment Slot");
+
+        if(equippableItem.MainSlot != resolvedSlot && equippableItem.SecondarySlot != resolvedSlot)
+            throw new InvalidOperationException($"Item with id {itemId} cannot be equipped in slot {resolvedSlot}");
 
         EquipmentSlot? firstSlotFound = null;
 
-        foreach (var equipmentSlot in inv.EquippedItems)
+        foreach (var equipmentSlot in inventory.EquippedItems)
         {
             if (equipmentSlot.Slot == resolvedSlot)
             {
@@ -141,8 +153,8 @@ public class InventoryService
                 if (equipmentSlot.EquipmentId == null)
                 {
                     equipmentSlot.EquipmentId = itemId;
-                    inv.AttunedItems -= item.RequiresAttunement ? 1 : 0;
-                    await repo.UpdateAsync(inv);
+                    inventory.AttunedItems -= item.RequiresAttunement ? 1 : 0;
+                    await repo.UpdateAsync(inventory);
                     return;
                 }
             }
@@ -150,40 +162,73 @@ public class InventoryService
         if (firstSlotFound is not null)
         {
             firstSlotFound.EquipmentId = itemId;
-            await repo.UpdateAsync(inv);
+            await repo.UpdateAsync(inventory);
             return;
         }
 
-        throw new NotFoundException($"Could not find a slot of that type in the inventory with id {invId}");
+        throw new NotFoundException($"Could not find a slot of that type in the inventory with id {inventory.Id}");
     }
 
-    public async Task<ICollection<Inventory>> GetAllAsync()
+    public async Task Equip(Inventory inventory, int itemId)
     {
-        return await repo.GetAllAsync();
+        var item = await itemRepo.GetByIdAsync(itemId) 
+            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+        
+        if(item is not IEquippable equippableItem)
+            throw new InvalidOperationException($"Item with id {itemId} is not equippable");
+        
+        EquipmentSlot? firstSlotFound = null;
+        EquipmentSlot? firstSecondarySlotFound = null;
+
+        foreach (var equipmentSlot in inventory.EquippedItems)
+        {
+            if (equipmentSlot.Slot == equippableItem.MainSlot)
+            {
+                firstSlotFound = equipmentSlot;
+                if (equipmentSlot.EquipmentId == null)
+                {
+                    equipmentSlot.EquipmentId = itemId;
+                    inventory.AttunedItems -= item.RequiresAttunement ? 1 : 0;
+                    await repo.UpdateAsync(inventory);
+                    return;
+                }
+            }
+            else if (equippableItem.SecondarySlot is not null && equipmentSlot.Slot == equippableItem.SecondarySlot)
+            {
+                firstSecondarySlotFound = equipmentSlot;
+            }
+        }
+        
+        if (firstSlotFound is not null)
+        {
+            firstSlotFound.EquipmentId = itemId;
+            await repo.UpdateAsync(inventory);
+            return;
+        } 
+        else if (firstSecondarySlotFound is not null)
+        {
+            firstSecondarySlotFound.EquipmentId = itemId;
+            await repo.UpdateAsync(inventory);
+            return;
+        }
+
+        throw new NotFoundException($"Could not find a slot of that type in the inventory with id {inventory.Id}");
     }
 
-    public async Task<Inventory> GetByIdAsync(int id)
+    public async Task<Inventory> GetByCharacterIdAsync(int characterId)
     {
-        return await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Inventory with id {id} could not be found");
+        var character = await characterRepo.GetByIdAsync(characterId)
+            ?? throw new NotFoundException($"Character with id {characterId} could not be found");
+        
+        return await repo.GetByIdAsync(character.InventoryId)
+            ?? throw new NotFoundException($"Inventory for character with id {characterId} could not be found");
     }
 
     public async Task DeleteAsync(int id)
     {
-        var inv = await repo.GetByIdAsync(id)
+        var inventory = await repo.GetByIdAsync(id)
             ?? throw new NotFoundException($"Inventory with id {id} could not be found");
             
-        await repo.DeleteAsync(inv);
-    }
-    
-    public void ConvertCurrency(Currency currency)
-    {
-        var valueInBrass = currency.Brass + (currency.Copper * 10) + (currency.Silver * 100) + (currency.Gold * 1000) + (currency.Electrum * 10000);
-
-        currency.Electrum = valueInBrass / 10000;
-        currency.Gold = valueInBrass % 10000 / 1000;
-        currency.Silver = valueInBrass % 1000 / 100;
-        currency.Copper = valueInBrass % 100 / 10;
-        currency.Brass = valueInBrass % 10;
+        await repo.DeleteAsync(inventory);
     }
 }

@@ -1,3 +1,5 @@
+namespace DndWebApp.Api.Services.Util;
+
 public static class CollectionUtil
 {
     public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)

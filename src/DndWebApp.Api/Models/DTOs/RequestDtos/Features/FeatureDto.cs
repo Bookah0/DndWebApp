@@ -58,7 +58,11 @@ public class ClassFeatureDto : FeatureDto
 {
     [Required]
     [Range(1, int.MaxValue)]
-    public required int ClassLevelId { get; set; }
+    public required int LevelId { get; set; }
+
+    [Required]
+    [Range(1, int.MaxValue)]
+    public required int ClassId { get; set; }
 }
 
 public class TraitDto : FeatureDto

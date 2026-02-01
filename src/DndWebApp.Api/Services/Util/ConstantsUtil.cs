@@ -1,4 +1,5 @@
 using DndWebApp.Api.Middlewares.ExceptionHandling;
+using DndWebApp.Api.Models.Items.Constants;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.VisualBasic;
 
@@ -62,5 +63,58 @@ public static class ConstantsUtil
     internal static object ResolveOptionOrThrow(string? value, object weaponCategories, string v)
     {
         throw new NotImplementedException();
+    }
+
+    internal static string ConvertWeaponTypeToMainSlot (string weaponType)
+    {
+        return weaponType switch 
+        {
+            // Simple Melee Weapons
+            WeaponType.Club => EquipSlot.MainHand,
+            WeaponType.Dagger => EquipSlot.MainHand,
+            WeaponType.Greatclub => EquipSlot.TwoHand,
+            WeaponType.Handaxe => EquipSlot.MainHand,
+            WeaponType.Javelin => EquipSlot.MainHand,
+            WeaponType.LightHammer => EquipSlot.MainHand,
+            WeaponType.Mace => EquipSlot.MainHand,
+            WeaponType.Quarterstaff => EquipSlot.TwoHand,
+            WeaponType.Sickle => EquipSlot.MainHand,
+            WeaponType.Spear => EquipSlot.TwoHand,
+            
+            // Simple Ranged Weapons
+            WeaponType.LightCrossbow => EquipSlot.Ranged,
+            WeaponType.Dart => EquipSlot.Ranged,
+            WeaponType.Shortbow => EquipSlot.Ranged,
+            WeaponType.Sling => EquipSlot.Ranged,
+            
+            // Martial Melee Weapons
+            WeaponType.Battleaxe => EquipSlot.TwoHand,
+            WeaponType.Flail => EquipSlot.MainHand,
+            WeaponType.Glaive => EquipSlot.TwoHand,
+            WeaponType.Greataxe => EquipSlot.TwoHand,
+            WeaponType.Greatsword => EquipSlot.TwoHand,
+            WeaponType.Halberd => EquipSlot.TwoHand,
+            WeaponType.Lance => EquipSlot.TwoHand,
+            WeaponType.Longsword => EquipSlot.TwoHand,
+            WeaponType.Maul => EquipSlot.TwoHand,
+            WeaponType.Morningstar => EquipSlot.MainHand,
+            WeaponType.Pike => EquipSlot.TwoHand,
+            WeaponType.Rapier => EquipSlot.MainHand,
+            WeaponType.Scimitar => EquipSlot.MainHand,
+            WeaponType.Shortsword => EquipSlot.MainHand,
+            WeaponType.Trident => EquipSlot.TwoHand,
+            WeaponType.WarPick => EquipSlot.MainHand,
+            WeaponType.Warhammer => EquipSlot.TwoHand,
+            WeaponType.Whip => EquipSlot.MainHand,
+            
+            // Martial Ranged Weapons
+            WeaponType.Blowgun => EquipSlot.Ranged,
+            WeaponType.HandCrossbow => EquipSlot.Ranged,
+            WeaponType.HeavyCrossbow => EquipSlot.Ranged,
+            WeaponType.Longbow => EquipSlot.Ranged,
+            WeaponType.Net => EquipSlot.Ranged,
+            
+            _ => throw new ArgumentException($"Unknown weapon type: {weaponType}")
+        };
     }
 }

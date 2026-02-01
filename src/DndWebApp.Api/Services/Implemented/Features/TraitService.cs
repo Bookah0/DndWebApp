@@ -1,7 +1,5 @@
-using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
-using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
@@ -11,28 +9,21 @@ using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
-public class TraitService : BaseFeatureService<Trait>, ITraitService
+public class TraitService(
+    ITraitRepository repo,
+    IRaceRepository raceRepo,
+    ISpellRepository spellRepo,
+    ISkillRepository skillRepo,
+    IAbilityRepository abilityRepo,
+    ILanguageRepository languageRepo,
+    ILogger<TraitService> logger)
+    : BaseFeatureService<Trait>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), ITraitService
 {
-    private readonly IRaceRepository raceRepo;
-
-    public TraitService(
-        ITraitRepository repo, 
-        IRaceRepository raceRepo, 
-        ISpellRepository spellRepo,        
-        ISkillRepository skillRepo, 
-        IAbilityRepository abilityRepo, 
-        ILanguageRepository languageRepo,  
-        ILogger<TraitService> logger, 
-        IMapper mapper) 
-        : base(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger, mapper)
+    public async Task<Trait> CreateAsync(TraitDto dto)
     {
-        this.raceRepo = raceRepo;
-    }
-
-    public async Task<TraitResponseDto> CreateAsync(TraitDto dto)
-    {
+           
         var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NotFoundException($"Trait level with id {dto.RaceId} could not be found");
-
+    
         var trait = new Trait
         {
             Name = dto.Name,
@@ -42,29 +33,33 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
             IsHomebrew = dto.IsHomebrew
         };
 
-        return mapper.Map<TraitResponseDto>(await repo.CreateAsync(trait));
+        return await repo.CreateAsync(trait);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(int traitId)
     {
-        var trait = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Trait with id {id} could not be found");
+        var trait = await repo.GetByIdAsync(traitId) 
+            ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
+
         await repo.DeleteAsync(trait);
     }
 
-    public async Task<ICollection<TraitResponseDto>> GetAllAsync()
+    public async Task<ICollection<Trait>> GetAllAsync()
     {
-        return mapper.Map<ICollection<TraitResponseDto>>(await repo.GetAllAsync());
+        return await repo.GetAllAsync();
     }
 
-    public async Task<TraitResponseDto> GetByIdAsync(int id)
+    public async Task<Trait> GetByIdAsync(int traitId)
     {
-        return mapper.Map<TraitResponseDto>(await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Trait with id {id} could not be found"));
+        var trait = await repo.GetByIdAsync(traitId) 
+            ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
+
+        return trait;
     }
 
-    public async Task UpdateAsync(int id, TraitDto dto)
+    public async Task UpdateAsync(TraitDto dto, int traitId)
     {
-        var trait = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Trait with id {id} could not be found");
+        var trait = await repo.GetByIdAsync(traitId) ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
 
         if (trait.RaceId != dto.RaceId)
         {
@@ -78,7 +73,7 @@ public class TraitService : BaseFeatureService<Trait>, ITraitService
         await repo.UpdateAsync(trait);
     }
 
-    public Task UpdateCollectionsAsync(int id, TraitDto dto)
+    public Task UpdateCollectionsAsync(TraitDto dto, int traitId)
     {
         throw new NotImplementedException();
     }

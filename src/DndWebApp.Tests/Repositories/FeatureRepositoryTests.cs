@@ -48,7 +48,7 @@ public class FeatureRepositoryTests
 
         var fullClassFeat = await classFeatureRepo.GetWithAllDataAsync(classFeature.Id);
         Assert.NotNull(fullClassFeat);
-        Assert.Equal(cls.ClassLevels.First().Id, fullClassFeat!.ClassLevelId);
+        Assert.Equal(cls.ClassLevels.First().Id, fullClassFeat!.LevelId);
         Assert.NotNull(fullClassFeat.AbilityIncreases);
 
         var fullFeat = await featRepo.GetWithAllDataAsync(feat.Id);

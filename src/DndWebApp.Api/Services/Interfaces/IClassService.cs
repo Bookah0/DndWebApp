@@ -9,6 +9,9 @@ public interface IClassService
     Task DeleteAsync(int id);
     Task<ICollection<Class>> GetAllAsync();
     Task<Class> GetByIdAsync(int id);
+    Task<Class> GetWithSubclassesAsync(int id);
+    Task<Class> GetWithLevelsAsync(int id);
+    Task<Class> GetWithFeaturesAsync(int id);
     Task UpdateAsync(int id, ClassDto dto);
     ICollection<Class> SortBy(ICollection<Class> classes, bool descending = false);
 }

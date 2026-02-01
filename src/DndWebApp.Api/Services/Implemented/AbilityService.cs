@@ -1,28 +1,15 @@
-using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.Character;
-using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
 using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented;
 
-public class AbilityService : IAbilityService
+public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> logger) : IAbilityService
 {
-    private readonly IAbilityRepository repo;
-    private readonly ILogger<AbilityService> logger;
-    private readonly IMapper mapper;
-
-    public AbilityService(IAbilityRepository repo, ILogger<AbilityService> logger, IMapper mapper)
-    {
-        this.repo = repo;
-        this.logger = logger;
-        this.mapper = mapper;
-    }
-
-    public async Task<AbilityResponseDto> CreateAsync(AbilityDto dto)
+    public async Task<Ability> CreateAsync(AbilityDto dto)
     {
         Ability ability = new()
         {
@@ -33,7 +20,7 @@ public class AbilityService : IAbilityService
         };
 
         await repo.CreateAsync(ability);
-        return mapper.Map<AbilityResponseDto>(ability);
+        return ability;
     }
 
     public async Task DeleteAsync(int id)
@@ -42,16 +29,16 @@ public class AbilityService : IAbilityService
         await repo.DeleteAsync(ability);
     }
 
-    public async Task<ICollection<AbilityResponseDto>> GetAllAsync()
+    public async Task<ICollection<Ability>> GetAllAsync()
     {
         var abilities = await repo.GetAllAsync();
-        return [.. abilities.Select(a => mapper.Map<AbilityResponseDto>(a))];
+        return abilities;
     }
 
-    public async Task<AbilityResponseDto> GetByIdAsync(int id)
+    public async Task<Ability> GetByIdAsync(int id)
     {
         var ability = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Ability could not be found");
-        return mapper.Map<AbilityResponseDto>(ability);
+        return ability;
     }
 
     public async Task UpdateAsync(int id, AbilityDto dto)

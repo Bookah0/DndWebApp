@@ -1,7 +1,5 @@
-using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
-using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
@@ -9,21 +7,16 @@ using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
-public class FeatService : BaseFeatureService<Feat>, IFeatService
+public class FeatService(
+    IFeatRepository repo,
+    ISpellRepository spellRepo,
+    ISkillRepository skillRepo,
+    IAbilityRepository abilityRepo,
+    ILanguageRepository languageRepo,
+    ILogger<FeatService> logger)
+    : BaseFeatureService<Feat>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), IFeatService
 {
-    public FeatService(
-        IFeatRepository repo, 
-        ISpellRepository spellRepo,
-        ISkillRepository skillRepo, 
-        IAbilityRepository abilityRepo, 
-        ILanguageRepository languageRepo,  
-        ILogger<FeatService> logger,
-        IMapper mapper) 
-        : base(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger, mapper)
-    {
-    }
-
-    public async Task<FeatResponseDto> CreateAsync(FeatDto dto)
+    public async Task<Feat> CreateAsync(FeatDto dto)
     {
         var feat = new Feat
         {
@@ -32,7 +25,7 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
             IsHomebrew = dto.IsHomebrew
         };
 
-        return mapper.Map<FeatResponseDto>(await repo.CreateAsync(feat));
+        return await repo.CreateAsync(feat);
     }
 
     public async Task DeleteAsync(int id)
@@ -41,15 +34,15 @@ public class FeatService : BaseFeatureService<Feat>, IFeatService
         await repo.DeleteAsync(feat);
     }
 
-    public async Task<ICollection<FeatResponseDto>> GetAllAsync()
+    public async Task<ICollection<Feat>> GetAllAsync()
     {
-        return mapper.Map<ICollection<FeatResponseDto>>(await repo.GetAllAsync());
+        return await repo.GetAllAsync();
     }
 
-    public async Task<FeatResponseDto> GetByIdAsync(int id)
+    public async Task<Feat> GetByIdAsync(int id)
     {
-        return mapper.Map<FeatResponseDto>(await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Feat with id {id} could not be found"));
+        return await repo.GetByIdAsync(id) 
+            ?? throw new NotFoundException($"Feat with id {id} could not be found");
     }
 
     public async Task UpdateAsync(int id, FeatDto dto)

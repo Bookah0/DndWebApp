@@ -103,7 +103,8 @@ public static class TestObjectFactory
         {
             Name = "Spellcasting",
             Description = "Gain spellcasting abilities.",
-            ClassLevelId = classLevelId
+            LevelId = classLevelId,
+            ClassId = 1
         };
     }
 
@@ -162,6 +163,7 @@ public static class TestObjectFactory
         Categories = [ItemCategory.Weapon],
         WeaponCategory = WeaponCategory.SimpleRanged,
         WeaponType = WeaponType.Shortbow,
+        Slot = EquipSlot.TwoHand,
         Properties = [WeaponProperty.TwoHanded],
         DamageTypes = [DamageType.Piercing],
         DamageDice = "1d6",

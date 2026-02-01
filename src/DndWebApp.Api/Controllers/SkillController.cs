@@ -1,3 +1,4 @@
+using AutoMapper;
 using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Services.Interfaces;
@@ -6,48 +7,41 @@ using Microsoft.AspNetCore.Mvc;
 namespace DndWebApp.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class SkillController : ControllerBase
-    {
-    public ISkillService service;
-
-    public SkillController(ISkillService service)
-    {
-        this.service = service;
-    }
-    
+[Route("api/[controller]s")]
+public class SkillController(ISkillService service, IMapper mapper) : ControllerBase
+{
     [HttpGet]
     public async Task<ActionResult<ICollection<SkillResponseDto>>> GetSkills()
     {
         var skills = await service.GetAllAsync();
-        return Ok(skills);
+        return Ok(mapper.Map<ICollection<SkillResponseDto>>(skills));
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<SkillResponseDto>> GetSkill(int id)
+    [HttpGet("{skillId}")]
+    public async Task<ActionResult<SkillResponseDto>> GetSkill(int skillId)
     {
-        var skill = await service.GetByIdAsync(id);
-        return Ok(skill);
+        var skill = await service.GetByIdAsync(skillId);
+        return Ok(mapper.Map<SkillResponseDto>(skill));
     }
 
     [HttpPost]
     public async Task<ActionResult<SkillResponseDto>> CreateSkill([FromBody] SkillDto dto)
     {
         var skill = await service.CreateAsync(dto);
-        return Ok(skill);
+        return Ok(mapper.Map<SkillResponseDto>(skill));
     }
 
-    [HttpPatch("{id}")]
-    public async Task<ActionResult> UpdateSkill(int id, [FromBody] SkillDto dto)
+    [HttpPatch("{skillId}")]
+    public async Task<ActionResult> UpdateSkill(int skillId, [FromBody] SkillDto dto)
     {
-        await service.UpdateAsync(id, dto);
+        await service.UpdateAsync(skillId, dto);
         return Ok();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteSkill(int id)
+    [HttpDelete("{skillId}")]
+    public async Task<ActionResult> DeleteSkill(int skillId)
     {
-        await service.DeleteAsync(id);
+        await service.DeleteAsync(skillId);
         return Ok();
     }
 }

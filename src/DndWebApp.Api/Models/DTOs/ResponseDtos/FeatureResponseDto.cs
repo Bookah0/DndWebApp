@@ -1,7 +1,3 @@
-using DndWebApp.Api.Models.Characters.Enums;
-using DndWebApp.Api.Models.Items.Enums;
-using DndWebApp.Api.Models.World.Enums;
-
 namespace DndWebApp.Api.Models.DTOs.ResponseDtos;
 
 public class FeatureResponseDto

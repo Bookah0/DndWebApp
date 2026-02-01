@@ -14,6 +14,7 @@ public interface IBaseFeatureService<T> where T : AFeature
     Task RemoveAbilityIncrease(int abilityId, int featureId);
     Task ClearAbilityIncreaseChoices(int featureId);
     Task AddProficiencyChoice(ProficiencyChoiceDto dto, int featureId);
-    Task AddProficiencyChoice(AbilityIncreaseChoiceDto dto, int featureId);
+    Task AddAbilityIncreaseChoice(AbilityIncreaseChoiceDto dto, int featureId);
     Task RemoveProficiencyChoice(string type, int choiceIndex, int featureId);
+    Task RemoveAbilityIncreaseChoice(int choiceIndex, int featureId);
 }

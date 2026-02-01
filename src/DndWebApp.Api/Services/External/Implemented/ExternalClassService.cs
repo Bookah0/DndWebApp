@@ -140,8 +140,9 @@ public class ExternalClassService : IExternalClassService
                 {
                     Name = "Ability Score Improvement",
                     Description = $"When you reach {level.Level}th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature.",
-                    ClassLevel = curClassLevel,
-                    ClassLevelId = curClassLevel.Id,
+                    Level = curClassLevel,
+                    LevelId = curClassLevel.Id,
+                    ClassId = clss.Id,
                     AbilityIncreaseChoices = abilityScoreIncreaseChoiceList
                 });
             }

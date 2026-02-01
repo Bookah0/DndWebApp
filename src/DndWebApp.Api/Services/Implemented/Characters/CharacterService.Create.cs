@@ -182,7 +182,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task ApplyFeature(AFeature feature, int characterId)
     {
-        var character = await GetByIdAsync(characterId);
+        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
         await ApplyFeature(feature, character);
     }
 

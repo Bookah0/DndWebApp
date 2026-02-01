@@ -10,32 +10,20 @@ using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
 namespace DndWebApp.Api.Services.Implemented;
 
-public class SkillService : ISkillService
+public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo, ILogger<SkillService> logger) : ISkillService
 {
-    private readonly ISkillRepository repo;
-    private readonly IAbilityRepository abilityRepo;
-    private readonly ILogger<SkillService> logger;
-    
-    public SkillService(ISkillRepository repo, IAbilityRepository abilityRepo, ILogger<SkillService> logger)
-    {
-        this.repo = repo;
-        this.abilityRepo = abilityRepo;
-        this.logger = logger;
-    }
-
     public async Task<Skill> CreateAsync(SkillDto dto)
     {
         var ability = await abilityRepo.GetByIdAsync(dto.AbilityId) ?? throw new NotFoundException("Ability could not be found");
 
-        Skill skill = new()
+        var skill = await repo.CreateAsync(new()
         {
             Name = dto.Name,
             AbilityId = dto.AbilityId,
             Ability = ability,
             IsHomebrew = dto.IsHomebrew,
-        };
-
-        return await repo.CreateAsync(skill);
+        });
+        return skill;
     }
 
     public async Task DeleteAsync(int id)
@@ -46,17 +34,20 @@ public class SkillService : ISkillService
 
     public async Task<ICollection<Skill>> GetAllAsync()
     {
-        return await repo.GetAllAsync();
+        var skills = await repo.GetAllAsync();
+        return skills;
     }
 
     public async Task<ICollection<Skill>> GetAllWithAbilityAsync()
     {
-        return await repo.GetAllWithAbilityAsync();
+        var skills = await repo.GetAllWithAbilityAsync();
+        return skills;
     }
 
     public async Task<Skill> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Skill could not be found");
+        var skill = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Skill could not be found");
+        return skill;
     }
 
     public async Task UpdateAsync(int id, SkillDto dto)

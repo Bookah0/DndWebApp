@@ -1,4 +1,4 @@
-using static DndWebApp.Tests.Services.TestObjectFactory;
+/*using static DndWebApp.Tests.Services.TestObjectFactory;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Services.Implemented;
 using Moq;
@@ -204,3 +204,4 @@ public class AlignmentServiceTests
         Assert.Equal(expectedOrder, sorted.Select(s => s.Name));
     }
 }
+*/

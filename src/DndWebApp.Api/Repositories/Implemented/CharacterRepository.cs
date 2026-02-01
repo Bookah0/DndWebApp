@@ -1,6 +1,6 @@
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 using DndWebApp.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,12 +1,11 @@
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Constants;
 using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Util;
 using static DndWebApp.Api.Services.Util.SortUtil;
-using static DndWebApp.Api.Services.Util.ConstantsUtil;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 
 namespace DndWebApp.Api.Services.Implemented;
 

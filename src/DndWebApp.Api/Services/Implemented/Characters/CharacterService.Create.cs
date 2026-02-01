@@ -1,12 +1,11 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs.Character;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Services.Interfaces;
-using static DndWebApp.Api.Services.Util.NormalizationUtil;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters.Constants;
 using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 
 namespace DndWebApp.Api.Services.Implemented;
 

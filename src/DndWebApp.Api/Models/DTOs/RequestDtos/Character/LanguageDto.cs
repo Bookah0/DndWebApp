@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DndWebApp.Api.Models.DTOs.Character;
+namespace DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 
 public class LanguageDto
 {

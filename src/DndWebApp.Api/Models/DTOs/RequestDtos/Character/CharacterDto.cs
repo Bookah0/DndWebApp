@@ -1,4 +1,4 @@
-namespace DndWebApp.Api.Models.DTOs.Character;
+namespace DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 
 using System.ComponentModel.DataAnnotations;
 

@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 
 namespace DndWebApp.Api.Models.DTOs.Features;
 

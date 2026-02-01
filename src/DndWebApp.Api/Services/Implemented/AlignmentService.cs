@@ -1,6 +1,6 @@
 
 using DndWebApp.Api.Middlewares.ExceptionHandling;
-using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
@@ -18,7 +18,7 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
             Description = dto.Description,
             Abbreviation = dto.Abbreviation
         });
-
+        
         return alignment;
     }
 

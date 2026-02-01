@@ -1,5 +1,5 @@
 using AutoMapper;
-using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Services.Constants;

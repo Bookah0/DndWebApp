@@ -1,7 +1,7 @@
 
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 using DndWebApp.Api.Models.World;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Constants;

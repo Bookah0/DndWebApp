@@ -1,6 +1,5 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs.Character;
-using DndWebApp.Api.Services.Constants;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 
 namespace DndWebApp.Api.Services.Interfaces;
 

@@ -1,6 +1,6 @@
 using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
-using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.DTOs.Spells;
 using DndWebApp.Api.Services.Interfaces;
@@ -47,7 +47,7 @@ public class SubclassController(ISubclassService service, IClassService classSer
     public async Task<ActionResult> UpdateSubclass(int subclassId, int newParentClassId, int classId, [FromBody] ClassDto dto)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
-        await service.UpdateAsync(subclassId, dto, newParentClassId);
+        await service.UpdateAsync(subclassId, dto);
         await EnsureSubclassBelongsToParentClass(newParentClassId, subclassId);
         return Ok();
     }

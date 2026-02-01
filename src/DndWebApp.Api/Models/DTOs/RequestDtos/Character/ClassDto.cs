@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DndWebApp.Api.Models.DTOs.Character;
+namespace DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 
 public class ClassDto
 {
@@ -24,4 +24,7 @@ public class ClassDto
     public int? SpellcastingAbilityId { get; set; }
 
     public List<int> ClassLevelIds { get; set; } = [];
+
+    [Range(1, int.MaxValue)]
+    public int? NewParentClassId { get; set; }
 }

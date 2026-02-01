@@ -1,13 +1,13 @@
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
 using static DndWebApp.Api.Services.Util.SortUtil;
 
 namespace DndWebApp.Api.Services.Implemented.Classes;
 
-public partial class SubclassService(ISubclassRepository repo, ILogger<SubclassService> logger) : ISubclassService
+public partial class SubclassService(ISubclassRepository repo, IClassRepository classRepo, ILogger<SubclassService> logger) : ISubclassService
 {
     public async Task<Subclass> CreateAsync(ClassDto dto, int parentClassId)
     {
@@ -41,15 +41,23 @@ public partial class SubclassService(ISubclassRepository repo, ILogger<SubclassS
         return subclass;
     }
 
-    public async Task UpdateAsync(int id, ClassDto dto, int? newParentClassId = null)
+    public async Task UpdateAsync(int id, ClassDto dto)
     {
         var subclass = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
-
+        
         subclass.Name = dto.Name;
         subclass.Description = dto.Description;
         subclass.HitDie = dto.HitDie;
-        subclass.ParentClassId = newParentClassId ?? subclass.ParentClassId;
+        
+        if(dto.NewParentClassId is not null)
+        {
+            var newParentClass = await classRepo.GetByIdAsync((int)dto.NewParentClassId) 
+                ?? throw new NotFoundException($"Parent Class with id {(int)dto.NewParentClassId} could not be found");
 
+            subclass.ParentClassId = (int)dto.NewParentClassId;
+            subclass.ParentClass = newParentClass;
+        }
+        
         await repo.UpdateAsync(subclass);
     }
 

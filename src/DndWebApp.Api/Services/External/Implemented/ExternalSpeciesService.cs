@@ -51,11 +51,11 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
             var description = new RaceDescription
             {
-                GeneralDescription = "",
-                AgingDescription = eRace.Age,
-                CommonAlignmentDescription = eRace.PreferedAlignment,
-                SizeDescription = eRace.SizeDescription,
-                LanguageDescription = eRace.AvailableLanguagesDescription
+                General = "",
+                Aging = eRace.Age,
+                CommonAlignment = eRace.PreferedAlignment,
+                Size = eRace.SizeDescription,
+                Languages = eRace.AvailableLanguagesDescription
             };
 
             var race = new Race
@@ -98,7 +98,7 @@ public class ExternalSpeciesService : IExternalSpeciesService
 
             var description = new RaceDescription
             {
-                GeneralDescription = eSubrace.Description
+                General = eSubrace.Description
             };
 
             var subrace = new Subrace

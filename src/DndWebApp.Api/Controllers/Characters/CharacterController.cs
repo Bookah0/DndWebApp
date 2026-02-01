@@ -5,7 +5,7 @@ using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Services.Interfaces.Items;
 using System.ComponentModel.DataAnnotations;
 using DndWebApp.Api.Services.Interfaces;
-using DndWebApp.Api.Models.DTOs.Character;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 using DndWebApp.Api.Models.DTOs.Spells;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Characters;
@@ -129,6 +129,7 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     private async Task EnsureCharacterBelongsToUser(int userId, int characterId)
     {
         // TODO after implementing user service
+        await Task.CompletedTask;
     }
 }
 

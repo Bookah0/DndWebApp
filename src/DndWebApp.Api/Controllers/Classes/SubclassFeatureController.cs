@@ -1,16 +1,14 @@
 using AutoMapper;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
-using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Models.Features;
-using DndWebApp.Api.Services.Implemented.Classes;
 using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DndWebApp.Api.Controllers.Features;
+namespace DndWebApp.Api.Controllers.Classes;
 
 [ApiController]
 [Route("api/classes/{classId}/subclasses/{subclassId}/features")]
@@ -32,7 +30,12 @@ public class SubclassFeatureController(
     [HttpGet("{featureId}")]
     public async Task<ActionResult<ClassFeatureResponseDto>> GetClassFeature(int subclassId, int featureId, int classId)
     {
-        var feature = await ValidateAndGetFeature(classId, subclassId, featureId);
+        await EnsureSubclassBelongsToParentClass(classId, subclassId);
+        var feature = await service.GetByIdAsync(featureId);
+
+        if (feature.ClassId != subclassId)
+            throw new ValidationException($"Subclass feature with id {feature.Id} does not belong to subclass with id {subclassId}");
+
         return Ok(mapper.Map<ClassFeatureResponseDto>(feature));
     }
 
@@ -152,17 +155,6 @@ public class SubclassFeatureController(
     }
 
     // Helpers
-    private async Task<ClassFeature> ValidateAndGetFeature(int classId, int subclassId, int featureId)
-    {
-        await EnsureSubclassBelongsToParentClass(classId, subclassId);
-        var feature = await service.GetByIdAsync(featureId);
-
-        if (feature.ClassId != subclassId)
-            throw new ValidationException($"Subclass feature with id {feature.Id} does not belong to subclass with id {subclassId}");
-
-        return feature;
-    }
-
     private async Task EnsureSubclassBelongsToParentClass(int classId, int subclassId)
     {
         var parentClass = await classService.GetWithSubclassesAsync(classId);

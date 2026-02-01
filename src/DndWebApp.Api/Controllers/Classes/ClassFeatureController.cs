@@ -9,7 +9,7 @@ using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DndWebApp.Api.Controllers.Features;
+namespace DndWebApp.Api.Controllers.Classes;
 
 [ApiController]
 [Route("api/classes/{classId}/features")]

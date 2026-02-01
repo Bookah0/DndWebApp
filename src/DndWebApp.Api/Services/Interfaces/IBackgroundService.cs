@@ -11,5 +11,9 @@ public interface IBackgroundService
     Task<Background> GetByIdAsync(int id);
     Task<Background> GetWithFeaturesAsync(int id);
     Task UpdateAsync(int id, BackgroundDto dto);
-    ICollection<Background> SortBy(ICollection<Background> backgrounds, bool descending = false);
+    Task AddStartingItemsAsync(int id, int itemId);
+    Task RemoveStartingItemsAsync(int id, int itemId);
+    Task AddStartingItemChoiceAsync(int id, StartingItemOptionDto dto);
+    Task RemoveStartingItemChoiceAsync(int id, int optionId);
+
 }

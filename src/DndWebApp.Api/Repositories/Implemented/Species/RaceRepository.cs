@@ -42,19 +42,18 @@ public class RaceRepository : IRaceRepository
         .FirstOrDefaultAsync(x => x.Id == id);
     }
 
+    public async Task<Race?> GetWithSubracesAsync(int id)
+    {
+        return await context.Races
+        .Include(r => r.SubRaces)
+        .FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<Race?> GetWithAllDataAsync(int id)
     {
         return await context.Races
         .Include(r => r.Traits)
         .Include(r => r.SubRaces)
         .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<ICollection<Race>> GetAllWithAllDataAsync()
-    {
-        return await context.Races
-        .Include(r => r.Traits)
-        .Include(r => r.SubRaces)
-        .ToListAsync();
     }
 }

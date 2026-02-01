@@ -7,5 +7,4 @@ public interface IBackgroundRepository : IRepository<Background>
 {
     Task<Background?> GetWithFeaturesAsync(int id);
     Task<Background?> GetWithAllDataAsync(int id);
-    Task<ICollection<Background>> GetAllWithAllDataAsync();
 }

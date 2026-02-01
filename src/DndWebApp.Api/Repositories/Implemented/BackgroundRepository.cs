@@ -52,14 +52,4 @@ public class BackgroundRepository : IBackgroundRepository
             .Include(b => b.StartingItemsOptions)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
-
-    public async Task<ICollection<Background>> GetAllWithAllDataAsync()
-    {
-        return await context.Backgrounds
-            .AsSplitQuery()
-            .Include(b => b.Features)
-            .Include(b => b.StartingItems)
-            .Include(b => b.StartingItemsOptions)
-            .ToListAsync();
-    }
 }

@@ -52,21 +52,4 @@ public class SubraceRepository : ISubraceRepository
         .Include(r => r.ParentRace)
         .FirstOrDefaultAsync(x => x.Id == id);
     }
-
-    public async Task<ICollection<Subrace>> GetAllSubracesByRaceAsync(int raceId)
-    {
-        return await context.Subraces
-        .Where(s => s.ParentRaceId == raceId)
-        .Include(r => r.Traits)
-        .Include(r => r.ParentRace)
-        .ToListAsync();
-    }
-
-    public async Task<ICollection<Subrace>> GetAllWithAllDataAsync()
-    {
-        return await context.Subraces
-        .Include(r => r.Traits)
-        .Include(r => r.ParentRace)
-        .ToListAsync();
-    }
 }

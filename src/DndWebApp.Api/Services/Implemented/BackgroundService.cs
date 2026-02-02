@@ -12,6 +12,8 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
 {
     public async Task<Background> CreateAsync(BackgroundDto dto)
     {
+        logger.LogInformation("Creating background, Name: {BackgroundName}", dto.Name);
+
         var StartingCurrency = new Currency
         {
             Brass = dto.Currency.Brass,
@@ -30,13 +32,17 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
             StartingCurrency = StartingCurrency
         });
 
+        logger.LogInformation("Successfully created background, Name: {BackgroundName}, ID: {BackgroundId}", dto.Name, background.Id);
+
         return background;
     }
 
     public async Task DeleteAsync(int id)
     {
         var background = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background with id {id} could not be found");
+        logger.LogInformation("Deleting background with Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
         await repo.DeleteAsync(background);
+        logger.LogInformation("Successfully deleted background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
     }
 
     public async Task<ICollection<Background>> GetAllAsync()
@@ -64,6 +70,8 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         var background = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Background with id {id} could not be found");
 
+        logger.LogInformation("Updating background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
+
         background.Name = dto.Name;
         background.Description = dto.Description;
         background.IsHomebrew = dto.IsHomebrew;
@@ -76,6 +84,7 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         background.StartingCurrency.Silver = dto.Currency.Silver;
 
         await repo.UpdateAsync(background);
+        logger.LogInformation("Successfully updated background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
     }
 
     public async Task AddStartingItemsAsync(int id, int itemId)
@@ -86,8 +95,10 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         var background = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Background with id {id} could not be found");
 
+        logger.LogInformation("Adding starting item with Name: {ItemName} ID: {ItemId} to background, Name: {BackgroundName}, ID: {BackgroundId}", item.Name, itemId, background.Name, id);
         background.StartingItems.Add(item);
         await repo.UpdateAsync(background);
+        logger.LogInformation("Successfully added starting item with Name: {ItemName} ID: {ItemId} to background, Name: {BackgroundName}, ID: {BackgroundId}", item.Name, itemId, background.Name, id);
     }
 
     public async Task RemoveStartingItemsAsync(int id, int itemId)
@@ -98,8 +109,10 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         var item = background.StartingItems.FirstOrDefault(i => i.Id == itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} is not a starting item for background with id {id}");
 
+        logger.LogInformation("Removing starting item with Name: {ItemName} ID: {ItemId} from background, Name: {BackgroundName}, ID: {BackgroundId}", item.Name, itemId, background.Name, id);
         background.StartingItems.Remove(item);
         await repo.UpdateAsync(background);
+        logger.LogInformation("Successfully removed starting item with Name: {ItemName} ID: {ItemId} from background, Name: {BackgroundName}, ID: {BackgroundId}", item.Name, itemId, background.Name, id);
     }
 
     public async Task AddStartingItemChoiceAsync(int id, StartingItemOptionDto dto)
@@ -113,6 +126,7 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         var background = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Background with id {id} could not be found");
 
+        logger.LogInformation("Adding starting item option to background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
         background.StartingItemsOptions.Add(new StartingItemOption
         {
             Description = dto.Description,
@@ -120,6 +134,7 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         });
 
         await repo.UpdateAsync(background);
+        logger.LogInformation("Successfully added starting item option to background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
     }
 
     public async Task RemoveStartingItemChoiceAsync(int id, int optionId)
@@ -130,7 +145,9 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         var option = background.StartingItemsOptions.FirstOrDefault(o => o.Id == optionId) 
             ?? throw new NotFoundException($"Starting Item Option with id {optionId} is not a starting item option for background with id {id}");
 
+        logger.LogInformation("Removing starting item option with ID: {OptionId} from background, Name: {BackgroundName}, ID: {BackgroundId}", optionId, background.Name, id);
         background.StartingItemsOptions.Remove(option);
         await repo.UpdateAsync(background);
+        logger.LogInformation("Successfully removed starting item option with ID: {OptionId} from background, Name: {BackgroundName}, ID: {BackgroundId}", optionId, background.Name, id);
     }
 }

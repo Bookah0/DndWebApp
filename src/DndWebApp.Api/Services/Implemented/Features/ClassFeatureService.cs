@@ -25,7 +25,9 @@ public class ClassFeatureService(
         var level = await classLevelRepo.GetByIdAsync(dto.LevelId) 
             ?? throw new NotFoundException($"Class Level with id {dto.LevelId} could not be found");
 
-        var classFeature = new ClassFeature
+        logger.LogInformation("Creating class feature, Name: {ClassFeatureName}, LevelId: {LevelId}", dto.Name, dto.LevelId);
+
+        var classFeature = await repo.CreateAsync(new ClassFeature
         {
             Name = dto.Name,
             Description = dto.Description,
@@ -33,9 +35,10 @@ public class ClassFeatureService(
             Level = level,
             ClassId = dto.ClassId,
             IsHomebrew = dto.IsHomebrew
-        };
+        });
 
-        return await repo.CreateAsync(classFeature);
+        logger.LogInformation("Successfully created class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", classFeature.Name, classFeature.Id);
+        return classFeature;
     }
 
     public async Task DeleteAsync(int id)
@@ -43,7 +46,9 @@ public class ClassFeatureService(
         var feature = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
 
+        logger.LogInformation("Deleting class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
         await repo.DeleteAsync(feature);
+        logger.LogInformation("Successfully deleted class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
     }
 
     public async Task<ICollection<ClassFeature>> GetAllAsync()
@@ -61,6 +66,8 @@ public class ClassFeatureService(
         var feature = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
 
+        logger.LogInformation("Updating class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
+
         if (feature.LevelId != dto.LevelId)
         {
             feature.Level = await classLevelRepo.GetByIdAsync(dto.LevelId) ?? throw new NotFoundException($"Class Level with id {dto.LevelId} could not be found");
@@ -71,6 +78,7 @@ public class ClassFeatureService(
         feature.Description = dto.Description;
         feature.IsHomebrew = dto.IsHomebrew;
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully updated class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
     }
 
     public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, string sortFilter, bool descending = false)

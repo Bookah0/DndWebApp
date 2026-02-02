@@ -28,6 +28,8 @@ public partial class CharacterService : ICharacterService
         var subclass = dto.SubClassId is not null ? await subclassRepo.GetWithClassLevelFeaturesAsync((int)dto.SubClassId!)
             ?? throw new NotFoundException($"Subclass with id {dto.SubClassId} could not be found") : null;
 
+        logger.LogInformation("Creating character, Name: {CharacterName}, ClassId: {ClassId}, RaceId: {RaceId}", dto.Name, dto.ClassId, dto.RaceId);
+
         var abilityDict = await GetAllAbilitiesAsDictionaryAsync();
         var languageDict = await GetAllLanguagesAsDictionaryAsync();
         var skillDict = await GetAllSkillsAsDictionaryAsync();
@@ -92,8 +94,9 @@ public partial class CharacterService : ICharacterService
             await ApplyFeature(feature, character);
         }
 
-        await repo.CreateAsync(character);
-        return character;
+        var createdCharacter = await repo.CreateAsync(character);
+        logger.LogInformation("Successfully created character, Name: {CharacterName}, ID: {CharacterId}", createdCharacter.Name, createdCharacter.Id);
+        return createdCharacter;
     }
 
 

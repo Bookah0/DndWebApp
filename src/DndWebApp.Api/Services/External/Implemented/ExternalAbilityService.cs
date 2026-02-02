@@ -7,21 +7,20 @@ using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Util;
 
-public class ExternalAbilityService : IExternalAbilityService
+public class ExternalAbilityService(IAbilityRepository repo, ILogger<ExternalAbilityService> logger) : IExternalAbilityService
 {
-    private readonly IAbilityRepository repo;
     private readonly HttpClient client = new();
-
-    public ExternalAbilityService(IAbilityRepository repo)
-    {
-        this.repo = repo;
-    }
 
     public async Task FetchExternalAbilitiesAsync(CancellationToken cancellationToken = default)
     {
-        if ((await repo.GetAllAsync()).Count > 0)
-            return; // Abilities already exist in the database. Skipping fetch.
+        var existingCount = (await repo.GetAllAsync()).Count;
+        if (existingCount > 0)
+        {
+            logger.LogInformation("Skipping external abilities fetch. ExistingCount: {ExistingCount}", existingCount);
+            return;
+        }
 
+        logger.LogInformation("Fetching external abilities.");
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/ability-scores/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
@@ -46,6 +45,8 @@ public class ExternalAbilityService : IExternalAbilityService
 
             await repo.CreateAsync(ability);
         }
+
+        logger.LogInformation("Successfully fetched external abilities. Count: {AbilityCount}", result.Results.Count);
     }
 }
 

@@ -17,6 +17,8 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
         var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category");
         var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
+        logger.LogInformation("Creating armor, Name: {ArmorName}", dto.Name);
+
         Armor armor = await repo.CreateAsync(new()
         {
             Name = dto.Name,
@@ -35,13 +37,16 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
             Categories = [ItemCategory.Armor]
         });
 
+        logger.LogInformation("Successfully created armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
         return armor;
     }
 
     public async Task DeleteAsync(int id)
     {
         var armor = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
+        logger.LogInformation("Deleting armor with ID: {ArmorId}", id);
         await repo.DeleteAsync(armor);
+        logger.LogInformation("Successfully deleted armor with ID: {ArmorId}", id);
     }
 
     public async Task<ICollection<Armor>> GetAllAsync()
@@ -62,6 +67,7 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
         var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
         var armor = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
+        logger.LogInformation("Updating armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
 
         armor.Name = dto.Name;
         armor.Description = dto.Description;
@@ -78,8 +84,10 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
         armor.IsHomebrew = dto.IsHomebrew ?? armor.IsHomebrew;
 
         await repo.UpdateAsync(armor);
+        logger.LogInformation("Successfully updated armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
     }
 
+    // TODO replace with database level sorting
     public ICollection<Armor> SortBy(ICollection<Armor> armors, string sortFilter, bool descending = false)
     {
         if(!TryResolveOption(sortFilter, SortArmorOption.AllowedValues, out string? resolved))

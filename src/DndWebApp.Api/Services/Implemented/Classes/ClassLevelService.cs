@@ -28,6 +28,8 @@ public partial class ClassLevelService(
                 ?? throw new NotFoundException($"No subclass with id {dto.ClassId} can be found");
         }
 
+        logger.LogInformation("Creating class level, Level: {ClassLevel}, ClassId: {ClassId}", dto.Level, dto.ClassId);
+
         ClassLevel level = new()
         {
             Level = dto.Level,
@@ -51,13 +53,17 @@ public partial class ClassLevelService(
         }
 
         clss.ClassLevels.Add(level);
-        return await levelRepo.CreateAsync(level);
+        level = await levelRepo.CreateAsync(level);
+        logger.LogInformation("Successfully created class level, Level: {ClassLevel}, ClassId: {ClassId}, ID: {ClassLevelId}", level.Level, level.ClassId, level.Id);
+        return level;
     }
 
     public async Task UpdateAsync(int id, ClassLevelDto dto)
     {
         var level = await levelRepo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class level with id {id} could not be found");
+
+        logger.LogInformation("Updating class level, Level: {ClassLevel}, ClassId: {ClassId}, ID: {ClassLevelId}", level.Level, level.ClassId, id);
 
         level.Level = dto.Level;
         level.ClassId = dto.ClassId;
@@ -90,22 +96,22 @@ public partial class ClassLevelService(
         }
 
         await levelRepo.UpdateAsync(level);
+        logger.LogInformation("Successfully updated class level, Level: {ClassLevel}, ClassId: {ClassId}, ID: {ClassLevelId}", level.Level, level.ClassId, id);
     }
 
     public async Task DeleteAsync(int id)
     {
         var level = await levelRepo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class level with id {id} could not be found");
-        
+
+        logger.LogInformation("Deleting class level, Level: {ClassLevel}, ID: {ClassLevelId}", level.Level, id);
         await levelRepo.DeleteAsync(level);
+        logger.LogInformation("Successfully deleted class level, Level: {ClassLevel}, ID: {ClassLevelId}", level.Level, id);
     }
 
     public async Task<ClassLevel> GetByIdAsync(int id)
     {
-        var level = await levelRepo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Class level with id {id} could not be found");
-
-        return level;
+        return await levelRepo.GetByIdAsync(id) ?? throw new NotFoundException($"Class level with id {id} could not be found");
     }
 
     public ICollection<ClassLevel> SortByLevel(ICollection<ClassLevel> levels, bool descending = false)

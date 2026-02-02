@@ -10,27 +10,20 @@ using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Util;
 using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
-public class ExternalSpeciesService : IExternalSpeciesService
+public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository subraceRepo, IAbilityRepository abilityRepo, ILogger<ExternalSpeciesService> logger) : IExternalSpeciesService
 {
-    private readonly IRaceRepository raceRepo;
-    private readonly ISubraceRepository subraceRepo;
-    private readonly IAbilityRepository abilityRepo;
     private readonly HttpClient client = new();
-
-    public ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository subraceRepo, IAbilityRepository abilityRepo)
-    {
-        this.raceRepo = raceRepo;
-        this.subraceRepo = subraceRepo;
-        this.abilityRepo = abilityRepo;
-    }
 
     public async Task FetchExternalRacesAsync(CancellationToken cancellationToken = default)
     {
         if ((await raceRepo.GetAllAsync()).Count > 0)
         {
+            logger.LogInformation("Races already exist in the database. Skipping fetch.");
             throw new InvalidOperationException("Races already exist in the database. Skipping fetch.");
         }
         
+        logger.LogInformation("Fetching external races.");
+
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/races/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
@@ -74,6 +67,8 @@ public class ExternalSpeciesService : IExternalSpeciesService
             ParseTraits(race);
             await FetchExternalSubracesAsync(race, eRace.Subraces, cancellationToken);
         }
+
+        logger.LogInformation("Successfully fetched external races. Count: {RaceCount}", result.Results.Count);
     }
 
     // TODO: For subraces, switch to an API with better data coverage
@@ -81,6 +76,8 @@ public class ExternalSpeciesService : IExternalSpeciesService
     {
         if (subraceIndexList.Count == 0)
             return;
+
+        logger.LogInformation("Fetching external subraces for race, Name: {RaceName}, SubraceCount: {SubraceCount}", race.Name, subraceIndexList.Count);
 
         foreach (var item in subraceIndexList)
         {
@@ -116,6 +113,8 @@ public class ExternalSpeciesService : IExternalSpeciesService
             await AddAbilityScoreBonusesAsTraitAsync(eSubrace, subrace, subraceRepo);
             ParseTraits(subrace);
         }
+
+        logger.LogInformation("Successfully fetched external subraces for race, Name: {RaceName}, SubraceCount: {SubraceCount}", race.Name, subraceIndexList.Count);
     }
     
     /// <summary>

@@ -16,6 +16,7 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
 {
     public async Task<Language> CreateAsync(LanguageDto dto)
     {
+        logger.LogInformation("Creating language, Name: {LanguageName}", dto.Name);
         var language = await repo.CreateAsync(new()
         {
             Name = dto.Name,
@@ -24,13 +25,16 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
             IsHomebrew = dto.IsHomebrew,
         });
 
+        logger.LogInformation("Successfully created language, Name: {LanguageName}, ID: {LanguageId}", language.Name, language.Id);
         return language;
     }
 
     public async Task DeleteAsync(int id)
     {
         var language = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found");
+        logger.LogInformation("Deleting language with Name: {LanguageName}, ID: {LanguageId}", language.Name, id);
         await repo.DeleteAsync(language);
+        logger.LogInformation("Successfully deleted language, Name: {LanguageName}, ID: {LanguageId}", language.Name, id);
     }
 
     public async Task<ICollection<Language>> GetAllAsync()

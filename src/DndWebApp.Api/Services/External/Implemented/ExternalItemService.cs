@@ -14,22 +14,20 @@ using DndWebApp.Api.Models.Items.Constants;
 using Microsoft.AspNetCore.Http.HttpResults;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 
-public class ExternalItemService : IExternalItemService
+public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemService> logger) : IExternalItemService
 {
-    private readonly IItemRepository repo;
     private readonly HttpClient client = new();
-
-    public ExternalItemService(IItemRepository repo)
-    {
-        this.repo = repo;
-    }
 
     public async Task FetchExternalBasicItemsAsync(CancellationToken cancellationToken = default)
     {
-        if ((await repo.GetAllAsync()).Count > 0)
+        var existingCount = (await repo.GetAllAsync()).Count;
+        if (existingCount > 0)
         {
+            logger.LogInformation("Items already exist in the database. Skipping fetch. ExistingCount: {ExistingCount}", existingCount);
             throw new InvalidOperationException("Items already exist in the database. Skipping fetch.");
         }
+
+        logger.LogInformation("Fetching external basic items.");
 
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/equipment/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
@@ -67,6 +65,8 @@ public class ExternalItemService : IExternalItemService
                     break;
             }
         }
+
+        logger.LogInformation("Successfully fetched external basic items. Count: {ItemCount}", result.Results.Count);
     }
 
     private Armor ToArmor(JsonDocument jsonDoc, EIndexDto item)
@@ -199,6 +199,7 @@ public class ExternalItemService : IExternalItemService
 
     public Task FetchExternalMagicalItemsAsync(CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Fetching external magical items.");
         throw new NotImplementedException();
     }
 

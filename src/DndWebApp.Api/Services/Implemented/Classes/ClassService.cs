@@ -11,6 +11,8 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
 {
     public async Task<Class> CreateAsync(ClassDto dto)
     {
+        logger.LogInformation("Creating class, Name: {ClassName}", dto.Name);
+
         var clss = await repo.CreateAsync(new()
         {
             Name = dto.Name,
@@ -19,19 +21,21 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
             ClassLevels = []
         });
 
+        logger.LogInformation("Successfully created class, Name: {ClassName}, ID: {ClassId}", clss.Name, clss.Id);
         return clss;
     }
 
     public async Task DeleteAsync(int id)
     {
         var clss = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
+        logger.LogInformation("Deleting class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
         await repo.DeleteAsync(clss);
+        logger.LogInformation("Successfully deleted class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
     }
 
     public async Task<ICollection<Class>> GetAllAsync()
     {
-        var classes = await repo.GetAllAsync();
-        return classes;
+        return await repo.GetAllAsync();
     }
 
     public async Task<Class> GetWithLevelsAsync(int id)
@@ -57,11 +61,13 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
     public async Task UpdateAsync(int id, ClassDto dto)
     {
         var clss = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
+        logger.LogInformation("Updating class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
 
         clss.Name = dto.Name;
         clss.Description = dto.Description;
         clss.HitDie = dto.HitDie;   
         await repo.UpdateAsync(clss);
+        logger.LogInformation("Successfully updated class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
     }
 
     public ICollection<Class> SortBy(ICollection<Class> classes, bool descending = false)

@@ -12,6 +12,7 @@ public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IR
 {
     public async Task<Race> CreateAsync(RaceDto dto)
     {
+        logger.LogInformation("Creating race, Name: {RaceName}", dto.Name);
         var raceDescription = new RaceDescription
         {
             General = dto.GeneralDescription,
@@ -30,13 +31,16 @@ public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IR
             Size = dto.Size
         });
 
+        logger.LogInformation("Successfully created race, Name: {RaceName}, ID: {RaceId}", race.Name, race.Id);
         return race;
     }
 
     public async Task DeleteAsync(int id)
     {
         var race = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Race with id {id} could not be found");
+        logger.LogInformation("Deleting race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
         await repo.DeleteAsync(race);
+        logger.LogInformation("Successfully deleted race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
     }
 
     public async Task<ICollection<Race>> GetAllAsync()
@@ -69,6 +73,8 @@ public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IR
         var race = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Race with id {id} could not be found");
 
+        logger.LogInformation("Updating race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
+
         race.Name = dto.Name;
         race.Speed = dto.Speed;
         race.Size = dto.Size;
@@ -80,5 +86,6 @@ public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IR
         race.RaceDescription.Languages = dto.LanguageDescription ?? "";
 
         await repo.UpdateAsync(race);
+        logger.LogInformation("Successfully updated race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
     }
 }

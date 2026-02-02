@@ -16,6 +16,8 @@ public class InventoryService(
 {
     public async Task<Inventory> CreateAsync(CreateInventoryDto dto)
     {
+        logger.LogInformation("Creating inventory for character with ID: {CharacterId}", dto.CharacterId);
+
         ICollection<EquipmentSlot> equipmentSlots = [
             new EquipmentSlot(){ Slot = EquipSlot.MainHand },
             new EquipmentSlot(){ Slot = EquipSlot.OffHand },
@@ -58,6 +60,7 @@ public class InventoryService(
         }
             
         CurrencyUtil.ConvertCurrency(inv.Currency);
+        logger.LogInformation("Successfully created inventory for character with ID: {CharacterId}, Inventory ID: {InventoryId}", dto.CharacterId, inv.Id);
         return await repo.CreateAsync(inv);
     }
 
@@ -65,10 +68,11 @@ public class InventoryService(
     {         
         var item = await itemRepo.GetByIdAsync(itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
-
+        logger.LogInformation("Adding item with ID: {ItemId} to inventory with ID: {InventoryId}", itemId, inventory.Id);
         inventory.StoredItems.Add(item);
         inventory.TotalWeight += item.Weight;
         await repo.UpdateAsync(inventory);
+        logger.LogInformation("Added item with ID: {ItemId} to inventory with ID: {InventoryId}", itemId, inventory.Id);
     }
 
     public async Task DiscardItem(Inventory inventory, int itemId)
@@ -81,11 +85,13 @@ public class InventoryService(
 
         if (inventory.StoredItems.FirstOrDefault(i => i.Id == itemId) is null)
             throw new NotFoundException($"Item with id {itemId} could not be found in inventory with id {inventory.Id}");
-            
+        
+        logger.LogInformation("Discarding item with ID: {ItemId} from inventory with ID: {InventoryId}", itemId, inventory.Id);
         await UnEquip(inventory, itemId);
         inventory.StoredItems.Remove(item);
         inventory.TotalWeight -= item.Weight;
         await repo.UpdateAsync(inventory);
+        logger.LogInformation("Discarded item with ID: {ItemId} from inventory with ID: {InventoryId}", itemId, inventory.Id);
     }
 
 
@@ -93,7 +99,9 @@ public class InventoryService(
     {
         var item = await itemRepo.GetByIdAsync(itemId)
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
-            
+        
+        logger.LogInformation("Unequipping item with ID: {ItemId} from inventory with ID: {InventoryId}", itemId, inventory.Id);
+
         foreach (var equipmentSlot in inventory.EquippedItems)
         {
             if (equipmentSlot.EquipmentId == itemId)
@@ -101,6 +109,7 @@ public class InventoryService(
                 equipmentSlot.EquipmentId = null;
                 inventory.AttunedItems += item.RequiresAttunement ? 1 : 0;
                 await repo.UpdateAsync(inventory);
+                logger.LogInformation("Unequipped item with ID: {ItemId} from inventory with ID: {InventoryId}", itemId, inventory.Id);
                 return;
             }
         }
@@ -110,6 +119,7 @@ public class InventoryService(
     public async Task UnEquip(Inventory inventory, string slot)
     {
         var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues, "Equipment Slot");
+        logger.LogInformation("Unequipping item from slot: {EquipmentSlot} in inventory with ID: {InventoryId}", resolvedSlot, inventory.Id);
 
         foreach (var equipmentSlot in inventory.EquippedItems)
         {
@@ -124,6 +134,7 @@ public class InventoryService(
                 equipmentSlot.EquipmentId = null;
                 inventory.AttunedItems += item.RequiresAttunement ? 1 : 0;
                 await repo.UpdateAsync(inventory);
+                logger.LogInformation("Unequipped item from slot: {EquipmentSlot} in inventory with ID: {InventoryId}", resolvedSlot, inventory.Id);
                 return;
             }
         }
@@ -143,6 +154,7 @@ public class InventoryService(
         if(equippableItem.MainSlot != resolvedSlot && equippableItem.SecondarySlot != resolvedSlot)
             throw new InvalidOperationException($"Item with id {itemId} cannot be equipped in slot {resolvedSlot}");
 
+        logger.LogInformation("Equipping item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, resolvedSlot, inventory.Id);
         EquipmentSlot? firstSlotFound = null;
 
         foreach (var equipmentSlot in inventory.EquippedItems)
@@ -155,6 +167,7 @@ public class InventoryService(
                     equipmentSlot.EquipmentId = itemId;
                     inventory.AttunedItems -= item.RequiresAttunement ? 1 : 0;
                     await repo.UpdateAsync(inventory);
+                    logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, resolvedSlot, inventory.Id);
                     return;
                 }
             }
@@ -163,6 +176,7 @@ public class InventoryService(
         {
             firstSlotFound.EquipmentId = itemId;
             await repo.UpdateAsync(inventory);
+            logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, resolvedSlot, inventory.Id);
             return;
         }
 
@@ -177,6 +191,7 @@ public class InventoryService(
         if(item is not IEquippable equippableItem)
             throw new InvalidOperationException($"Item with id {itemId} is not equippable");
         
+        logger.LogInformation("Equipping item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, equippableItem.MainSlot, inventory.Id);
         EquipmentSlot? firstSlotFound = null;
         EquipmentSlot? firstSecondarySlotFound = null;
 
@@ -190,6 +205,7 @@ public class InventoryService(
                     equipmentSlot.EquipmentId = itemId;
                     inventory.AttunedItems -= item.RequiresAttunement ? 1 : 0;
                     await repo.UpdateAsync(inventory);
+                    logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, equippableItem.MainSlot, inventory.Id);
                     return;
                 }
             }
@@ -203,12 +219,14 @@ public class InventoryService(
         {
             firstSlotFound.EquipmentId = itemId;
             await repo.UpdateAsync(inventory);
-            return;
+            logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, equippableItem.MainSlot, inventory.Id);
+            return; 
         } 
         else if (firstSecondarySlotFound is not null)
         {
             firstSecondarySlotFound.EquipmentId = itemId;
             await repo.UpdateAsync(inventory);
+            logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, equippableItem.SecondarySlot, inventory.Id);
             return;
         }
 
@@ -228,7 +246,9 @@ public class InventoryService(
     {
         var inventory = await repo.GetByIdAsync(id)
             ?? throw new NotFoundException($"Inventory with id {id} could not be found");
-            
+
+        logger.LogInformation("Deleting inventory with ID: {InventoryId}", id);
         await repo.DeleteAsync(inventory);
+        logger.LogInformation("Successfully deleted inventory with ID: {InventoryId}", id);
     }
 }

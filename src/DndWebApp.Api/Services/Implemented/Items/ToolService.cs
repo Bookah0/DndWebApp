@@ -18,6 +18,8 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
         var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
+        logger.LogInformation("Creating tool, Name: {ToolName}", dto.Name);
+        
         Tool tool = await repo.CreateAsync(new()
         {
             Name = dto.Name,
@@ -32,26 +34,38 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
             Properties = []
         });
 
+        logger.LogInformation("Successfully created tool, Name: {ToolName}, ID: {ToolId}", tool.Name, tool.Id);
         return tool;
     }
 
     public async Task AddProperty(ToolPropertyDto dto, int toolId)
     {
-        var tool = await repo.GetWithAllDataAsync(toolId) ?? throw new NotFoundException($"Tool with id {toolId} could not be found");
+        var tool = await repo.GetWithAllDataAsync(toolId) 
+            ?? throw new NotFoundException($"Tool with id {toolId} could not be found");
+        
+        logger.LogInformation("Adding property to tool, ToolId: {ToolId}, PropertyTitle: {PropertyTitle}", toolId, dto.Title);
         tool.Properties.Add(new ToolProperty { Title = dto.Title, Description = dto.Description });
+        await repo.UpdateAsync(tool);
+        logger.LogInformation("Successfully added property to tool, ToolId: {ToolId}, PropertyTitle: {PropertyTitle}", toolId, dto.Title);
     }
 
     public async Task AddActivity(ToolActivityDto dto, int toolId)
     {
-        var tool = await repo.GetWithAllDataAsync(toolId) ?? throw new NotFoundException($"Tool with id {toolId} could not be found");
+        var tool = await repo.GetWithAllDataAsync(toolId) 
+            ?? throw new NotFoundException($"Tool with id {toolId} could not be found");
 
+        logger.LogInformation("Adding activity to tool, ToolId: {ToolId}, ActivityTitle: {ActivityTitle}", toolId, dto.Title);
         tool.Activities.Add(new ToolActivity { Title = dto.Title, SkillId = dto.SkillId, AbilityId = dto.AbilityId, DC = dto.DC });
+        await repo.UpdateAsync(tool);
+        logger.LogInformation("Successfully added activity to tool, ToolId: {ToolId}, ActivityTitle: {ActivityTitle}", toolId, dto.Title);
     }
     
     public async Task DeleteAsync(int id)
     {
         var tool = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Tool with id {id} could not be found");
+        logger.LogInformation("Deleting tool, Name: {ToolName}, ID: {ToolId}", tool.Name, id);
         await repo.DeleteAsync(tool);
+        logger.LogInformation("Successfully deleted tool, Name: {ToolName}, ID: {ToolId}", tool.Name, id);
     }
 
     public async Task<ICollection<Tool>> GetAllAsync()
@@ -72,6 +86,7 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
         var tool = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Tool with id {id} could not be found"); ;
+        logger.LogInformation("Updating tool, Name: {ToolName}, ID: {ToolId}", dto.Name, id);
 
         tool.Name = dto.Name;
         tool.Description = dto.Description;
@@ -85,6 +100,7 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
         await repo.UpdateAsync(tool);
     }
 
+    // TODO replace with database level sorting
     public ICollection<Tool> SortBy(ICollection<Tool> tools, string sortFilter, bool descending = false)
     {
         if(!TryResolveOption(sortFilter, SortToolOption.AllowedValues, out string? resolved))

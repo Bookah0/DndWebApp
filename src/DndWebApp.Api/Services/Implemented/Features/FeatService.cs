@@ -18,20 +18,25 @@ public class FeatService(
 {
     public async Task<Feat> CreateAsync(FeatDto dto)
     {
-        var feat = new Feat
+        logger.LogInformation("Creating feat, Name: {FeatName}", dto.Name);
+
+        var feat = await repo.CreateAsync(new Feat
         {
             Name = dto.Name,
             Description = dto.Description,
             IsHomebrew = dto.IsHomebrew
-        };
+        });
 
-        return await repo.CreateAsync(feat);
+        logger.LogInformation("Successfully created feat, Name: {FeatName}, ID: {FeatId}", feat.Name, feat.Id);
+        return feat;
     }
 
     public async Task DeleteAsync(int id)
     {
         var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
+        logger.LogInformation("Deleting feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
         await repo.DeleteAsync(feat);
+        logger.LogInformation("Successfully deleted feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
     }
 
     public async Task<ICollection<Feat>> GetAllAsync()
@@ -41,17 +46,18 @@ public class FeatService(
 
     public async Task<Feat> GetByIdAsync(int id)
     {
-        return await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Feat with id {id} could not be found");
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
     }
 
     public async Task UpdateAsync(int id, FeatDto dto)
     {
         var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
+        logger.LogInformation("Updating feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
 
         feat.Name = dto.Name;
         feat.Description = dto.Description;
         await repo.UpdateAsync(feat);
+        logger.LogInformation("Successfully updated feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
     }
 
     public Task UpdateCollectionsAsync(int id, FeatDto dto)

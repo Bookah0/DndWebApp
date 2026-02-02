@@ -27,7 +27,9 @@ public partial class CharacterService(
     public async Task DeleteAsync(int id)
     {
         var character = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Character with id {id} could not be found");
+        logger.LogInformation("Deleting character, Name: {CharacterName}, ID: {CharacterId}", character.Name, id);
         await repo.DeleteAsync(character);
+        logger.LogInformation("Successfully deleted character, Name: {CharacterName}, ID: {CharacterId}", character.Name, id);
     }
 
     public async Task<ICollection<Character>> GetAllAsync()
@@ -43,8 +45,7 @@ public partial class CharacterService(
 
     public async Task<Character> GetByIdAsync(int id)
     {
-        var character = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Character with id {id} could not be found");
-        return character;
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Character with id {id} could not be found");
     }
 
     public async Task LevelUpAsync(LevelUpDto dto, int characterId)
@@ -54,6 +55,8 @@ public partial class CharacterService(
 
         var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(character.ClassId, newLvl)
             ?? throw new NotFoundException($"Class level with classId {character.ClassId} at level {newLvl} could not be found");
+
+        logger.LogInformation("Leveling up character, Name: {CharacterName}, ID: {CharacterId}, NewLevel: {NewLevel}", character.Name, characterId, newLvl);
 
         character.ProficiencyBonus = 1 + (int)Math.Ceiling((double)newLvl / 4);
         character.CurrentSpellSlots = latestLevel.SpellSlots;
@@ -68,6 +71,8 @@ public partial class CharacterService(
         {
             await ApplyFeature(feature, characterId);
         }
+
+        logger.LogInformation("Successfully leveled up character, Name: {CharacterName}, ID: {CharacterId}, NewLevel: {NewLevel}", character.Name, characterId, newLvl);
     }
 
     public async Task AddSubclassAsync(int subclassId, int characterId)
@@ -80,16 +85,20 @@ public partial class CharacterService(
         if (character.SubClassId is not null)
             throw new ValidationException($"Character already has a subclass with id {character.SubClassId}");
 
+        logger.LogInformation("Adding subclass, CharacterName: {CharacterName}, CharacterId: {CharacterId}, SubclassId: {SubclassId}", character.Name, characterId, subclassId);
         character.SubClassId = subclassId;
         character.SubClass = subclass;
         await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully added subclass, CharacterName: {CharacterName}, CharacterId: {CharacterId}, SubclassId: {SubclassId}", character.Name, characterId, subclassId);
     }
 
     public async Task EditCharacterDescriptionAsync(CharacterDescription edited, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
+        logger.LogInformation("Updating character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
         character.CharacterDescription = edited;
         await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully updated character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
     }
 
     public async Task SpendHitDice(int nDice, int characterId)
@@ -101,17 +110,23 @@ public partial class CharacterService(
 
         if (character.CombatStats.CurrentHitDice - nDice < 0)
             throw new ValidationException($"Character has {character.CombatStats.CurrentHitDice} hit dice to spend, cant spend {nDice}");
+        
+        logger.LogInformation("Spending hit dice, Name: {CharacterName}, ID: {CharacterId}, Dice: {Dice}", character.Name, characterId, nDice);
 
         character.CombatStats.CurrentHitDice -= nDice;
         await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully spent hit dice, Name: {CharacterName}, ID: {CharacterId}, Dice: {Dice}", character.Name, characterId, nDice);
     }
 
     public async Task LongRest(int characterId)
     {
-        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
-
+        var character = await repo.GetByIdAsync(characterId) 
+            ?? throw new NotFoundException($"Character with id {characterId} could not be found");
+        
         var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(character.ClassId, character.Level)
             ?? throw new NotFoundException($"Class level with classId {character.ClassId} at level {character.Level} could not be found");
+
+        logger.LogInformation("Taking long rest, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
             
         character.CombatStats.CurrentHitDice = character.CombatStats.MaxHitDice;
         character.CombatStats.CurrentHP = character.CombatStats.MaxHP;
@@ -119,6 +134,7 @@ public partial class CharacterService(
         character.CurrentSpellSlots = latestLevel.SpellSlots;
 
         await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully completed long rest, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
     }
 
     public async Task TakeDamage(int characterId, int change)
@@ -127,6 +143,7 @@ public partial class CharacterService(
             throw new ValidationException("Damage taken must be a positive value.");
 
         var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
+        logger.LogInformation("Taking damage, Name: {CharacterName}, ID: {CharacterId}, Amount: {Amount}", character.Name, characterId, change);
         character.CombatStats.TempHP -= change;
 
         if (character.CombatStats.TempHP < 0)
@@ -135,6 +152,7 @@ public partial class CharacterService(
             character.CombatStats.TempHP = 0;
         }
         await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully applied damage, Name: {CharacterName}, ID: {CharacterId}, Amount: {Amount}", character.Name, characterId, change);
     }
 
     public async Task HealDamage(int characterId, int change)
@@ -143,10 +161,12 @@ public partial class CharacterService(
             throw new ValidationException("Healing amount must be a positive value.");
 
         var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
+        logger.LogInformation("Healing damage, Name: {CharacterName}, ID: {CharacterId}, Amount: {Amount}", character.Name, characterId, change);
         character.CombatStats.CurrentHP += change;
         character.CombatStats.CurrentHP = Math.Min(character.CombatStats.CurrentHP, character.CombatStats.MaxHP);
 
         await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully healed damage, Name: {CharacterName}, ID: {CharacterId}, Amount: {Amount}", character.Name, characterId, change);
     }
 
     public async Task EditCurrentClassSlotAsync(string slotName, int change, int characterId)
@@ -159,8 +179,10 @@ public partial class CharacterService(
         var slot = character.CurrentClassSlots.FirstOrDefault(s => s.Name == slotName) 
             ?? throw new NotFoundException($"Could not find slot with name {slotName}");
 
+        logger.LogInformation("Updating class slot, Name: {CharacterName}, ID: {CharacterId}, Slot: {SlotName}, Change: {Change}", character.Name, characterId, slotName, change);
         slot.Quantity += change;
         await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully updated class slot, Name: {CharacterName}, ID: {CharacterId}, Slot: {SlotName}, Change: {Change}", character.Name, characterId, slotName, change);
     }
     
     public async Task EditCurrentSpellSlotAsync(int slotLevel, int change, int characterId)
@@ -170,8 +192,10 @@ public partial class CharacterService(
         if (character.CurrentSpellSlots is null)
             throw new ValidationException($"Character has no spellcasting");
 
+        logger.LogInformation("Updating spell slot, Name: {CharacterName}, ID: {CharacterId}, SlotLevel: {SlotLevel}, Change: {Change}", character.Name, characterId, slotLevel, change);
         character.CurrentSpellSlots[slotLevel - 1] += change;
         await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully updated spell slot, Name: {CharacterName}, ID: {CharacterId}, SlotLevel: {SlotLevel}, Change: {Change}", character.Name, characterId, slotLevel, change);
     }
 
     public ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false)

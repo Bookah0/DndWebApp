@@ -8,22 +8,19 @@ using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Util;
 
-public class ExternalSpellService : IExternalSpellService
+public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellService> logger) : IExternalSpellService
 {
-    private readonly ISpellRepository repo;
     private readonly HttpClient client = new();
-
-    public ExternalSpellService(ISpellRepository repo)
-    {
-        this.repo = repo;
-    }
 
     public async Task FetchExternalSpellsAsync(CancellationToken cancellationToken = default)
     {
         if ((await repo.GetAllAsync()).Count > 0)
         {
+            logger.LogInformation("Spells already exist in the database. Skipping fetch.");
             throw new InvalidOperationException("Spells already exist in the database. Skipping fetch.");
         }
+
+        logger.LogInformation("Fetching external spells.");
 
         var getOpenListResponse = await client.GetAsync("https://api.open5e.com/v1/spells/", cancellationToken);
         var resultOpen = await JsonSerializer.DeserializeAsync<List<EOpen5eSpellDto>>(getOpenListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
@@ -104,6 +101,8 @@ public class ExternalSpellService : IExternalSpellService
 
             await repo.CreateAsync(spell);
         }
+
+        logger.LogInformation("Successfully fetched external spells. Count: {SpellCount}", resultOpen.Count);
     }
         
     private static (string, int) ParseCastingTime(string castingTimeStr)

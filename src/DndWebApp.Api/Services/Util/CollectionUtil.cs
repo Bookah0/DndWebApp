@@ -35,4 +35,32 @@ public static class CollectionUtil
             }
         }
     }
+
+    public static bool HasDuplicates<T>(this ICollection<T> collection)
+    {
+        var seenSet = new HashSet<T>();
+        foreach (var item in collection)
+        {
+            if (!seenSet.Add(item))
+                throw new ArgumentException("Collection contains duplicate items.");
+        }
+        return false;
+    }
+
+    public static void RemoveDuplicates<T>(this ICollection<T> collection)
+    {
+        var seenSet = new HashSet<T>();
+        var itemsToRemove = new List<T>();
+
+        foreach (var item in collection)
+        {
+            if (!seenSet.Add(item))
+                itemsToRemove.Add(item);
+        }
+
+        foreach (var item in itemsToRemove)
+        {
+            collection.Remove(item);
+        }
+    }
 }

@@ -9,27 +9,18 @@ using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using static DndWebApp.Api.Services.Util.ConstantsUtil;
 
-public class ExternalClassService : IExternalClassService
+public class ExternalClassService(IClassRepository classRepo, ISubclassRepository subclassRepo, IAbilityRepository abilityRepo, IItemRepository itemRepository, ILogger<ExternalClassService> logger) : IExternalClassService
 {
-    private readonly IClassRepository classRepo;
-    private readonly ISubclassRepository subclassRepo;
-    private readonly IAbilityRepository abilityRepo;
-    private readonly IItemRepository itemRepository;
     private readonly HttpClient client = new();
 
-    public ExternalClassService(IClassRepository classRepo, ISubclassRepository subclassRepo, IAbilityRepository abilityRepo, IItemRepository itemRepository)
-    {
-        this.classRepo = classRepo;
-        this.subclassRepo = subclassRepo;
-        this.abilityRepo = abilityRepo;
-        this.itemRepository = itemRepository;
-    }
-
-    // Classes based on https://www.dnd5eapi.co/api/2014/classes/
     public async Task FetchExternalClassesAsync(CancellationToken cancellationToken = default)
     {
         if ((await classRepo.GetAllAsync()).Count > 0)
-            throw new InvalidOperationException("Classes already exist in the database. Skipping fetch.");
+        {
+            logger.LogInformation("Classes already exist in the database. Skipping fetch.");
+        }
+
+        logger.LogInformation("Fetching external classes.");
 
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/classes/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
@@ -75,11 +66,14 @@ public class ExternalClassService : IExternalClassService
 
             await classRepo.UpdateAsync(clss);
         }
+
+        logger.LogInformation("Successfully fetched external classes. Count: {ClassCount}", result.Results.Count);
     }
 
     // Class levels based on https://www.dnd5eapi.co/api/2014/classes/{class}/levels and https://www.dnd5eapi.co/api/2014/subclasses/{subclass}/levels 
     public async Task FetchExternalClassLevelsAsync(AClass clss, CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Fetching external class levels, Name: {ClassName}, ID: {ClassId}", clss.Name, clss.Id);
         HttpResponseMessage getListResponse;
 
         if (clss is Class)
@@ -147,11 +141,14 @@ public class ExternalClassService : IExternalClassService
                 });
             }
         }
+
+        logger.LogInformation("Successfully fetched external class levels, Name: {ClassName}, ID: {ClassId}", clss.Name, clss.Id);
     }
 
     // Subclasses based on https://www.dnd5eapi.co/api/2014/subclasses/
     public async Task FetchExternalSubclassesAsync(Class clss, List<EIndexDto> subclassIndexList, CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Fetching external subclasses, ClassName: {ClassName}, SubclassCount: {SubclassCount}", clss.Name, subclassIndexList.Count);
         foreach (var item in subclassIndexList)
         {
             var getListResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/subclasses/{item.Index}", cancellationToken);
@@ -180,10 +177,13 @@ public class ExternalClassService : IExternalClassService
                 clss.Subclasses.Add(subclass);
             }
         }
+
+        logger.LogInformation("Successfully fetched external subclasses, ClassName: {ClassName}, SubclassCount: {SubclassCount}", clss.Name, subclassIndexList.Count);
     }
 
     public Task FetchExternalClassFeaturesAsync(CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Fetching external class features.");
         throw new NotImplementedException();
     }
 

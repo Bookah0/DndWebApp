@@ -17,6 +17,8 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
         var dtoMainCategory =  ResolveOptionOrThrow(dto.MainCategory, ItemCategory.AllowedValues, "Item Category");
         var dtoOtherCategories = ResolveOptionOrThrow(dto.OtherCategories, ItemCategory.AllowedValues, "Item Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        
+        logger.LogInformation("Creating item, Name: {ItemName}", dto.Name);
 
         Item item = await repo.CreateAsync(new()
         {
@@ -30,13 +32,16 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
             Weight = dto.Weight ?? 0,
         });
 
+        logger.LogInformation("Successfully created item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
         return item;
     }
 
     public async Task DeleteAsync(int id)
     {
         var item = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Item with id {id} could not be found");
+        logger.LogInformation("Deleting item, Name: {ItemName}, ID: {ItemId}", item.Name, id);
         await repo.DeleteAsync(item);
+        logger.LogInformation("Successfully deleted item, Name: {ItemName}, ID: {ItemId}", item.Name, id);
     }
 
     public async Task<ICollection<Item>> GetAllAsync()
@@ -58,6 +63,7 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
         var item = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Item with id {id} could not be found");
+        logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
 
         item.Name = dto.Name;
         item.Description = dto.Description;
@@ -69,8 +75,10 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
         item.Weight = dto.Weight ?? item.Weight;
 
         await repo.UpdateAsync(item);
+        logger.LogInformation("Successfully updated item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
     }
 
+    // TODO replace with database level sorting
     public ICollection<Item> SortBy(ICollection<Item> items, string sortFilter, bool descending = false)
     {
         if(!TryResolveOption(sortFilter, SortItemOption.AllowedValues, out string? resolved))

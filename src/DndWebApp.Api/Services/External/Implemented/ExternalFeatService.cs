@@ -2,30 +2,24 @@ namespace DndWebApp.Api.Services.External.Implemented;
 
 
 using System.Text.Json;
-using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.DTOs;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
-using DndWebApp.Api.Services.Interfaces;
 
-public class ExternalFeatService : IExternalFeatService
+public class ExternalFeatService(IFeatRepository repo, ILogger<ExternalFeatService> logger) : IExternalFeatService
 {
-    private readonly IFeatRepository repo;
     private readonly HttpClient client = new();
-
-    public ExternalFeatService(IFeatRepository repo)
-    {
-        this.repo = repo;
-    }
 
     public async Task FetchExternalFeatsAsync(CancellationToken cancellationToken = default)
     {
         if ((await repo.GetAllAsync()).Count > 0)
         {
+            logger.LogInformation("Feats already exist in the database. Skipping fetch.");
             throw new InvalidOperationException("Feats already exist in the database. Skipping fetch.");
         }
+
+        logger.LogInformation("Fetching external feats.");
         
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/feats/", cancellationToken);
         var featResults = await JsonSerializer.DeserializeAsync<List<EFeatDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
@@ -60,6 +54,8 @@ public class ExternalFeatService : IExternalFeatService
             };
             await repo.CreateAsync(feat);
         }
+
+        logger.LogInformation("Successfully fetched external feats. Count: {FeatCount}", featResults.Count);
     }
 
     // TODO: Parses Features

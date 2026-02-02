@@ -11,7 +11,6 @@ namespace DndWebApp.Api.Controllers.Backgrounds;
 public class BackgroundController(IBackgroundService service, IMapper mapper) : ControllerBase
     {
 
-    // CRUD Background
     [HttpGet]
     public async Task<ActionResult<ICollection<BackgroundResponseDto>>> GetBackgrounds()
     {

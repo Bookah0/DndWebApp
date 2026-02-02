@@ -12,6 +12,7 @@ using DndWebApp.Api.Models.DTOs.Spells;
 using DndWebApp.Api.Services.Constants;
 using DndWebApp.Api.Models.Spells.Constants;
 using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 
 namespace DndWebApp.Api.Services.Implemented;
 
@@ -19,6 +20,8 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
 {
     public async Task<Spell> CreateAsync(SpellDto dto)
     {
+        logger.LogInformation("Creating spell, Name: {SpellName}", dto.Name);
+
         var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
         var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");
         var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues, "Spell Range");
@@ -67,15 +70,20 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
             }
         };
 
-        var createdSpell = await repo.CreateAsync(spell);
-        return createdSpell;
+        spell = await repo.CreateAsync(spell);
+        logger.LogInformation("Successfully created spell, Name: {SpellName} ID {SpellId}", spell.Name, spell.Id);
+        return spell;
     }
-
 
     public async Task DeleteAsync(int id)
     {
+        logger.LogInformation("Deleting spell, ID: {SpellId}", id);
+
         var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
+        var spellName = spell.Name;
         await repo.DeleteAsync(spell);
+
+        logger.LogInformation("Successfully deleted spell, Name: {SpellName} ID: {SpellId}", spellName, id);
     }
 
     public async Task<ICollection<Spell>> GetAllAsync()
@@ -84,6 +92,7 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
         return spells;
     }
 
+    // TODO move filtering logic to repository when implementing database level filtering
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto)
     {
         if (dto.Name is not null)
@@ -95,7 +104,17 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
         if (dto.MaxLevel is not null && dto.MaxLevel < 0)
             throw new ArgumentOutOfRangeException(nameof(dto), "Maximum level must be greater than or equal to zero");
 
-        await IdsExist<IClassRepository, Class>(dto.ClassIds, classRepo);
+        if (dto.ClassIds != null)
+        {
+            if (dto.ClassIds.HasDuplicates())
+                throw new ValidationException($"Duplicate class ids found in ClassIds.");
+    
+            foreach (var id in dto.ClassIds)
+            {
+                if(await classRepo.GetByIdAsync(id) is null)
+                    throw new NotFoundException($"Class with id {id} does not exist.");
+            }
+        }
 
         var dtoSchools = dto.MagicSchools != null ? ResolveOptionOrThrow(dto.MagicSchools, MagicSchool.AllowedValues, "Magic School") : null;
         var dtoTargetTypes = dto.TargetTypes != null ? ResolveOptionOrThrow(dto.TargetTypes, SpellTargetType.AllowedValues, "Spell Target Type") : null;
@@ -122,7 +141,7 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
         };
 
         if (filter.MinLevel > filter.MaxLevel)
-            throw new ArgumentOutOfRangeException(nameof(filter.MaxLevel), "Maximum level must be greater than or equal to minimum level");
+            throw new ValidationException($"Maximum level {filter.MaxLevel} must be greater than or equal to minimum level");
         if (filter.Name is not null)
             filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name);
 
@@ -138,6 +157,7 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
     public async Task UpdateAsync(int id, SpellDto dto)
     {
         var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
+        logger.LogInformation("Updating spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
 
         var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
         var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");
@@ -182,8 +202,10 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
         spell.CastingRequirements.MaterialsConsumed = dto.CastRequirementsDto.MaterialsConsumed;
 
         await repo.UpdateAsync(spell);
+        logger.LogInformation("Successfully updated spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
     }
 
+    // TODO move sorting logic to repository when implementing database level sorting
     public ICollection<Spell> SortBy(ICollection<Spell> spells, string sortFilter, bool descending = false)
     {
         if(!TryResolveOption(sortFilter, SortSpellOption.AllowedValues, out string? resolved))

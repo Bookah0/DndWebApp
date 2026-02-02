@@ -2,17 +2,8 @@ namespace DndWebApp.Api.Middlewares.ExceptionHandling;
 
 using System.Text.Json;
 
-public class ExceptionHandler
+public class ExceptionHandler(RequestDelegate next, ILogger<ExceptionHandler> logger)
 {
-    private readonly RequestDelegate next;
-    private readonly ILogger<ExceptionHandler> logger;
-
-    public ExceptionHandler(RequestDelegate next, ILogger<ExceptionHandler> logger)
-    {
-        this.next = next;
-        this.logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -21,20 +12,44 @@ public class ExceptionHandler
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An exception occurred");
+            LogError(ex);
             await HandleExceptionAsync(context, ex);
         }
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private void LogError(Exception ex)
     {
-        return exception switch
+        switch (ex)
+        {
+            case NotFoundException:
+                logger.LogError(ex, "Not found: {Message}", ex.Message);
+                break;
+            case ValidationException:   
+            case System.ComponentModel.DataAnnotations.ValidationException:
+            case ArgumentException:
+                logger.LogError(ex, "Validation error: {Message}", ex.Message);
+                break;
+            case ConflictException:
+                logger.LogError(ex, "Conflict error: {Message}", ex.Message);
+                break;
+            case UnauthorizedException:
+                logger.LogError(ex, "Unauthorized error: {Message}", ex.Message);
+                break;
+            default:
+                logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
+                break;
+        }
+    }
+
+    private static Task HandleExceptionAsync(HttpContext context, Exception ex)
+    {
+        return ex switch
         {
             CustomException e => WriteResponseAsync(context, e.StatusCode, e.Message),
-            System.ComponentModel.DataAnnotations.ValidationException => WriteResponseAsync(context, 400, exception.Message),
-            ArgumentException => WriteResponseAsync(context, 400, exception.Message),
-            NotSupportedException => WriteResponseAsync(context, 405, exception.Message),
-            InvalidOperationException => WriteResponseAsync(context, 409, exception.Message),
+            System.ComponentModel.DataAnnotations.ValidationException => WriteResponseAsync(context, 400, ex.Message),
+            ArgumentException => WriteResponseAsync(context, 400, ex.Message),
+            NotSupportedException => WriteResponseAsync(context, 405, ex.Message),
+            InvalidOperationException => WriteResponseAsync(context, 409, ex.Message),
             _ => WriteResponseAsync(context, 500, "An unexpected error occurred."),
         };
     }

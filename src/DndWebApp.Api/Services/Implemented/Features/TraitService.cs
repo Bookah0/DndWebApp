@@ -21,19 +21,20 @@ public class TraitService(
 {
     public async Task<Trait> CreateAsync(TraitDto dto)
     {
-           
         var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NotFoundException($"Trait level with id {dto.RaceId} could not be found");
-    
-        var trait = new Trait
+        logger.LogInformation("Creating trait, Name: {TraitName}, RaceId: {RaceId}", dto.Name, dto.RaceId);    
+
+        Trait trait = await repo.CreateAsync(new() 
         {
             Name = dto.Name,
             Description = dto.Description,
             RaceId = dto.RaceId,
             FromRace = race,
             IsHomebrew = dto.IsHomebrew
-        };
+        });
 
-        return await repo.CreateAsync(trait);
+        logger.LogInformation("Successfully created trait, Name: {TraitName}, ID: {TraitId}", trait.Name, trait.Id);
+        return trait;
     }
 
     public async Task DeleteAsync(int traitId)
@@ -41,7 +42,9 @@ public class TraitService(
         var trait = await repo.GetByIdAsync(traitId) 
             ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
 
+        logger.LogInformation("Deleting trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
         await repo.DeleteAsync(trait);
+        logger.LogInformation("Successfully deleted trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
     }
 
     public async Task<ICollection<Trait>> GetAllAsync()
@@ -60,6 +63,7 @@ public class TraitService(
     public async Task UpdateAsync(TraitDto dto, int traitId)
     {
         var trait = await repo.GetByIdAsync(traitId) ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
+        logger.LogInformation("Updating trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
 
         if (trait.RaceId != dto.RaceId)
         {
@@ -70,7 +74,9 @@ public class TraitService(
         trait.Name = dto.Name;
         trait.Description = dto.Description;
         trait.IsHomebrew = dto.IsHomebrew;
+
         await repo.UpdateAsync(trait);
+        logger.LogInformation("Successfully updated trait, Name: {TraitName}, ID: {TraitId}", trait.Name, trait.Id);
     }
 
     public Task UpdateCollectionsAsync(TraitDto dto, int traitId)
@@ -78,6 +84,7 @@ public class TraitService(
         throw new NotImplementedException();
     }
 
+    // TODO replace with database level sorting
     public ICollection<Trait> SortBy(ICollection<Trait> traits, string sortFilter, bool descending = false)
     {
         if(!TryResolveOption(sortFilter, SortTraitOption.AllowedValues, out string? resolved))

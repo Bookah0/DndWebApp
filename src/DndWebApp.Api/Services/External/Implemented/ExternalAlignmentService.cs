@@ -7,21 +7,21 @@ using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Util;
 
-public class ExternalAlignmentService : IExternalAlignmentService
+public class ExternalAlignmentService(IAlignmentRepository repo, ILogger<ExternalAlignmentService> logger) : IExternalAlignmentService
 {
-    private readonly IAlignmentRepository repo;
     private readonly HttpClient client = new();
-    
-    public ExternalAlignmentService(IAlignmentRepository repo)
-    {
-        this.repo = repo;
-    }
 
     public async Task FetchExternalAlignmentsAsync(CancellationToken cancellationToken = default)
     {
-        if ((await repo.GetAllAsync()).Count > 0)
-            return; // Abilities already exist in the database. Skipping fetch.
+        var existingCount = (await repo.GetAllAsync()).Count;
+        if (existingCount > 0)
+        {
+            logger.LogInformation("Skipping external alignments fetch. ExistingCount: {ExistingCount}", existingCount);
+            return;
+        }
         
+        logger.LogInformation("Fetching external alignments.");
+
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/alignments/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
@@ -45,5 +45,7 @@ public class ExternalAlignmentService : IExternalAlignmentService
 
             await repo.CreateAsync(alignment);
         }
+
+        logger.LogInformation("Successfully fetched external alignments. Count: {AlignmentCount}", result.Results.Count);
     }
 }

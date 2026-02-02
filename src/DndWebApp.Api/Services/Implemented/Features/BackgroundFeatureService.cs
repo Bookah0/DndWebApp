@@ -22,24 +22,30 @@ public class BackgroundFeatureService(
 {
     public async Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
     {
-        var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
+        var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) 
+            ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
 
-        var bgFeature = new BackgroundFeature
+        logger.LogInformation("Creating background feature, Name: {BackgroundFeatureName}, BackgroundId: {BackgroundId}", dto.Name, dto.BackgroundId);
+
+        var bgFeature = await repo.CreateAsync(new BackgroundFeature
         {
             Name = dto.Name,
             Description = dto.Description,
             BackgroundId = dto.BackgroundId,
             Background = background,
             IsHomebrew = dto.IsHomebrew
-        };
+        });
 
-        return await repo.CreateAsync(bgFeature);
+        logger.LogInformation("Successfully created background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", bgFeature.Name, bgFeature.Id);
+        return bgFeature;
     }
 
     public async Task DeleteAsync(int id)
     {
         var feature = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
+        logger.LogInformation("Deleting background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, id);
         await repo.DeleteAsync(feature);
+        logger.LogInformation("Successfully deleted background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, id);
     }
 
     public async Task<ICollection<BackgroundFeature>> GetAllAsync()
@@ -49,13 +55,14 @@ public class BackgroundFeatureService(
 
     public async Task<BackgroundFeature> GetByIdAsync(int id)
     {
-        var feature = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
-        return feature;
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
     }
 
     public async Task UpdateAsync(BackgroundFeatureDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId) ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+
+        logger.LogInformation("Updating background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, featureId);
 
         if (feature.BackgroundId != dto.BackgroundId)
         {
@@ -68,6 +75,7 @@ public class BackgroundFeatureService(
         feature.IsHomebrew = dto.IsHomebrew;
 
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully updated background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, featureId);
     }
 
     public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, string sortFilter, bool descending = false)

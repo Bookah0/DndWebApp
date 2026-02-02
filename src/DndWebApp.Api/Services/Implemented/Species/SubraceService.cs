@@ -12,6 +12,8 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
 {
     public async Task<Subrace> CreateAsync(SubraceDto dto)
     {
+        logger.LogInformation("Creating subrace, Name: {SubraceName}", dto.Name);
+
         var raceDescription = new RaceDescription
         {
             General = dto.GeneralDescription,
@@ -37,14 +39,19 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
 
         parentRace.SubRaces.Add(subrace);
         await parentRaceRepo.UpdateAsync(parentRace);
+        logger.LogInformation("Successfully created subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, subrace.Id);
 
         return subrace;
     }
 
     public async Task DeleteAsync(int id)
     {
-        var subrace = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Subrace with id {id} could not be found");
+        var subrace = await repo.GetByIdAsync(id) 
+        ?? throw new NotFoundException($"Subrace with id {id} could not be found");
+
+        logger.LogInformation("Deleting subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
         await repo.DeleteAsync(subrace);
+        logger.LogInformation("Successfully deleted subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
     }
 
     public async Task<ICollection<Subrace>> GetAllAsync()
@@ -72,6 +79,8 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
         var subrace = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Subrace with id {id} could not be found");
 
+        logger.LogInformation("Updating subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
+
         subrace.Name = dto.Name;
         subrace.Speed = dto.Speed;
         subrace.Size = dto.Size;
@@ -92,5 +101,6 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
         }
 
         await repo.UpdateAsync(subrace);
+        logger.LogInformation("Successfully updated subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
     }
 }

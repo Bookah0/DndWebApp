@@ -6,23 +6,20 @@ using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 
-public class ExternalLanguageService : IExternalLanguageService
+public class ExternalLanguageService(ILanguageRepository repo, ILogger<ExternalLanguageService> logger) : IExternalLanguageService
 {
-    private readonly ILanguageRepository repo;
     private readonly HttpClient client = new();
-
-    public ExternalLanguageService(ILanguageRepository repo)
-    {
-        this.repo = repo;
-    }
 
     public async Task FetchExternalLanguagesAsync(CancellationToken cancellationToken = default)
     {
         if ((await repo.GetAllAsync()).Count > 0)
         {
+            logger.LogInformation("Languages already exist in the database. Skipping fetch.");
             throw new InvalidOperationException("Languages already exist in the database. Skipping fetch.");
         }
         
+        logger.LogInformation("Fetching external languages.");
+
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/languages/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
@@ -52,6 +49,8 @@ public class ExternalLanguageService : IExternalLanguageService
 
             await repo.CreateAsync(language);
         }
+
+        logger.LogInformation("Successfully fetched external languages. Count: {LanguageCount}", result.Results.Count);
     }
 }
 

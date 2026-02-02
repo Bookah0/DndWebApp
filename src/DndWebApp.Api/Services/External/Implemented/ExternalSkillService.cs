@@ -7,25 +7,20 @@ using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 using DndWebApp.Api.Services.Util;
 
-public class ExternalSkillService : IExternalSkillService
+public class ExternalSkillService(ISkillRepository repo, IAbilityRepository abilityRepo, ILogger<ExternalSkillService> logger) : IExternalSkillService
 {
-    private readonly ISkillRepository repo;
-    private readonly IAbilityRepository abilityRepo;
     private readonly HttpClient client = new();
-
-    public ExternalSkillService(ISkillRepository repo, IAbilityRepository abilityRepo)
-    {
-        this.repo = repo;
-        this.abilityRepo = abilityRepo;
-    }
 
     public async Task FetchExternalSkillsAsync(CancellationToken cancellationToken = default)
     {
         if ((await repo.GetAllAsync()).Count > 0)
         {
+            logger.LogInformation("Skills already exist in the database. Skipping fetch.");
             throw new InvalidOperationException("Skills already exist in the database. Skipping fetch.");
         }
         
+        logger.LogInformation("Fetching external skills.");
+
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/skills/", cancellationToken);
         var result = await JsonSerializer.DeserializeAsync<EIndexListDto>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
@@ -57,6 +52,8 @@ public class ExternalSkillService : IExternalSkillService
 
             await repo.CreateAsync(skill);
         }
+
+        logger.LogInformation("Successfully fetched external skills. Count: {SkillCount}", result.Results.Count);
     }
 }
 

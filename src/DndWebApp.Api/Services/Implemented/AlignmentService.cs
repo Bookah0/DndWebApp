@@ -12,6 +12,7 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
 {
     public async Task<Alignment> CreateAsync(AlignmentDto dto)
     {
+        logger.LogInformation("Creating alignment, Name: {AlignmentName}", dto.Name);
         var alignment = await repo.CreateAsync(new()
         {
             Name = dto.Name,
@@ -19,13 +20,16 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
             Abbreviation = dto.Abbreviation
         });
         
+        logger.LogInformation("Successfully created alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, alignment.Id);
         return alignment;
     }
 
     public async Task DeleteAsync(int id)
     {
         var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
+        logger.LogInformation("Deleting alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
         await repo.DeleteAsync(alignment);
+        logger.LogInformation("Successfully deleted alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
     }
 
     public async Task<ICollection<Alignment>> GetAllAsync()
@@ -44,13 +48,17 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
     {
         var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
 
+        logger.LogInformation("Updating alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
+
         alignment.Name = dto.Name;
         alignment.Description = dto.Description;
         alignment.Abbreviation = dto.Abbreviation;
 
         await repo.UpdateAsync(alignment);
+        logger.LogInformation("Successfully updated alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
     }
 
+    // TODO Move to database level sorting
     public ICollection<Alignment> SortBy(ICollection<Alignment> alignments)
     {
         string[] fixedSortOrder =

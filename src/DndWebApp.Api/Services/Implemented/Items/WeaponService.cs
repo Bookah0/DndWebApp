@@ -13,6 +13,7 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
 {
     public async Task<Weapon> CreateAsync(WeaponDto dto)
     {
+        logger.LogInformation("Creating weapon, Name: {WeaponName}", dto.Name);
         var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
         var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type");
         var dtoMainDamageType = ResolveOptionOrThrow(dto.MainDamageType, DamageType.AllowedValues, "Main Damage Type");
@@ -20,7 +21,7 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
         var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues, "Weapon Property");
 
-        Weapon weapon = new()
+        Weapon weapon = await repo.CreateAsync(new()
         {
             Name = dto.Name,
             Description = dto.Description,
@@ -39,15 +40,18 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
             RequiresAttunement = dto.RequiresAttunement ?? false,
             IsHomebrew = dto.IsHomebrew ?? false,
             Categories = [ItemCategory.Weapon]
-        };
+        });
 
-        return await repo.CreateAsync(weapon);
+        logger.LogInformation("Successfully created weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);
+        return weapon;
     }
 
     public async Task DeleteAsync(int id)
     {
         var weapon = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
+        logger.LogInformation("Deleting weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, id);
         await repo.DeleteAsync(weapon);
+        logger.LogInformation("Successfully deleted weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, id);
     }
 
     public async Task<ICollection<Weapon>> GetAllAsync()
@@ -62,6 +66,8 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
 
     public async Task UpdateAsync(int id, WeaponDto dto)
     {
+        logger.LogInformation("Updating weapon, Name: {WeaponName}, ID: {WeaponId}", dto.Name, id);
+
         var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
         var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type");
         var dtoMainDamageType = ResolveOptionOrThrow(dto.MainDamageType, DamageType.AllowedValues, "Main Damage Type");
@@ -88,8 +94,10 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
         weapon.IsHomebrew = dto.IsHomebrew ?? weapon.IsHomebrew;
 
         await repo.UpdateAsync(weapon);
+        logger.LogInformation("Successfully updated weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);
     }
 
+    // TODO replace with database level sorting
     public ICollection<Weapon> SortBy(ICollection<Weapon> weapons, string sortFilter, bool descending = false)
     {
         if(!TryResolveOption(sortFilter, SortWeaponOption.AllowedValues, out string? resolved))

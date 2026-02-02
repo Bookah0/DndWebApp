@@ -26,8 +26,10 @@ public abstract class BaseFeatureService<T>(
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
+        logger.LogInformation("Adding spell with Name: {SpellName}, ID: {SpellId} to feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
         feature.SpellsGained.Add(spell);
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully added spell with Name: {SpellName}, ID: {SpellId} to feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
     }
 
     public async Task RemoveSpell(int spellId, int featureId)
@@ -38,14 +40,18 @@ public abstract class BaseFeatureService<T>(
         var spell = feature.SpellsGained.FirstOrDefault(s => s.Id == spellId)
             ?? throw new NotFoundException($"Spell with id {spellId} was not in the list of spells");
 
+        logger.LogInformation("Removing spell with Name: {SpellName}, ID: {SpellId} from feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
         feature.SpellsGained.Remove(spell);
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully removed spell with Name: {SpellName}, ID: {SpellId} from feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
     }
 
     public async Task AddProficiency(ProficiencyDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+
+        logger.LogInformation("Adding proficiency of type {ProficiencyType} with value {ProficiencyValue} to feature with Name: {FeatureName}, ID: {FeatureId}", dto.Type, dto.Value, feature.Name, feature.Id);
         
         switch (dto.Type)
         {
@@ -95,6 +101,7 @@ public abstract class BaseFeatureService<T>(
         }
 
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully added proficiency of type {ProficiencyType} with value {ProficiencyValue} to feature with Name: {FeatureName}, ID: {FeatureId}", dto.Type, dto.Value, feature.Name, feature.Id);
     }
 
     public async Task RemoveProficiency(ProficiencyDto dto, int featureId)
@@ -102,6 +109,8 @@ public abstract class BaseFeatureService<T>(
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
                 
+        logger.LogInformation("Removing proficiency of type {ProficiencyType} with value {ProficiencyValue} from feature with Name: {FeatureName}, ID: {FeatureId}", dto.Type, dto.Value, feature.Name, feature.Id);
+
         switch (dto.Type)
         {
             case "WeaponCategory":
@@ -150,6 +159,7 @@ public abstract class BaseFeatureService<T>(
         }
 
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully removed proficiency of type {ProficiencyType} with value {ProficiencyValue} from feature with Name: {FeatureName}, ID: {FeatureId}", dto.Type, dto.Value, feature.Name, feature.Id);
     }
 
     public async Task AddAbilityIncrease(int abilityId, int value, int featureId)
@@ -160,8 +170,10 @@ public abstract class BaseFeatureService<T>(
         var ability = await abilityRepo.GetByIdAsync(abilityId)
             ?? throw new NotFoundException($"Ability with id {abilityId} could not be found");
 
+        logger.LogInformation("Adding ability increase of {IncreaseValue} to ability with Name: {AbilityName}, ID: {AbilityId} for feature with Name: {FeatureName}, ID: {FeatureId}", value, ability.FullName, ability.Id, feature.Name, feature.Id);
         feature.AbilityIncreases.Add(new() { Ability = ability, AbilityId = abilityId, Value = value });
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully added ability increase of {IncreaseValue} to ability with Name: {AbilityName}, ID: {AbilityId} for feature with Name: {FeatureName}, ID: {FeatureId}", value, ability.FullName, ability.Id, feature.Name, feature.Id);
     }
 
     public async Task RemoveAbilityIncrease(int abilityId, int featureId)
@@ -172,8 +184,10 @@ public abstract class BaseFeatureService<T>(
         var abilityIncrease = feature.AbilityIncreases.FirstOrDefault(a => a.AbilityId == abilityId)
             ?? throw new NotFoundException($"AbilityIncrease with Ability id {abilityId} was not in the list of Ability Increases");
         
+        logger.LogInformation("Removing ability increase of {IncreaseValue} to ability with Name: {AbilityName}, ID: {AbilityId} for feature with Name: {FeatureName}, ID: {FeatureId}", abilityIncrease.Value, abilityIncrease.Ability.FullName, abilityIncrease.Ability.Id, feature.Name, feature.Id);
         feature.AbilityIncreases.Remove(abilityIncrease);
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully removed ability increase of {IncreaseValue} to ability with Name: {AbilityName}, ID: {AbilityId} for feature with Name: {FeatureName}, ID: {FeatureId}", abilityIncrease.Value, abilityIncrease.Ability.FullName, abilityIncrease.Ability.Id, feature.Name, feature.Id);
     }
 
     public async Task ClearAbilityIncreaseChoices(int featureId)
@@ -181,14 +195,18 @@ public abstract class BaseFeatureService<T>(
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
 
+        logger.LogInformation("Clearing all ability increase choices for feature with Name: {FeatureName}, ID: {FeatureId}", feature.Name, feature.Id);
         feature.AbilityIncreaseChoices.Clear();
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully cleared all ability increase choices for feature with Name: {FeatureName}, ID: {FeatureId}", feature.Name, feature.Id);
     }
 
     public async Task AddProficiencyChoice(ProficiencyChoiceDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+
+        logger.LogInformation("Adding proficiency choice of type {ProficiencyType} with options {ProficiencyOptions} to feature with Name: {FeatureName}, ID: {FeatureId}", dto.Type, dto.Options, feature.Name, feature.Id);
 
         switch (dto.Type)
         {
@@ -219,6 +237,7 @@ public abstract class BaseFeatureService<T>(
         }
 
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully added proficiency choice of type {ProficiencyType} with options {ProficiencyOptions} to feature with Name: {FeatureName}, ID: {FeatureId}", dto.Type, dto.Options, feature.Name, feature.Id);
     }
 
     public async Task AddAbilityIncreaseChoice(AbilityIncreaseChoiceDto dto, int featureId)
@@ -227,6 +246,7 @@ public abstract class BaseFeatureService<T>(
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
         
         ICollection<AbilityValue> options = [];
+        logger.LogInformation("Adding ability increase choice with description {Description} to feature with Name: {FeatureName}, ID: {FeatureId}", dto.Description, feature.Name, feature.Id);
 
         foreach (var abilityValueDto in dto.Options)
         {
@@ -242,6 +262,7 @@ public abstract class BaseFeatureService<T>(
         }
         feature.AbilityIncreaseChoices.Add(new() { Description = dto.Description, Options = options });
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully added ability increase choice with description {Description} to feature with Name: {FeatureName}, ID: {FeatureId}", dto.Description, feature.Name, feature.Id);
     }
 
     public async Task RemoveProficiencyChoice(string type, int choiceIndex, int featureId)
@@ -249,39 +270,34 @@ public abstract class BaseFeatureService<T>(
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
         
-        void RemoveChoiceAtIndex<PC>(ICollection<PC> choices, string choiceType)
-        {
-            if (choiceIndex < 0 || choiceIndex >= choices.Count)
-                throw new ArgumentOutOfRangeException(nameof(choiceIndex), $"Index is out of range. No {choiceType.ToLower()} choice at index {choiceIndex}.");
-            
-            choices.RemoveAt(choiceIndex);
-        }
+        logger.LogInformation("Removing proficiency choice of type {ProficiencyType} at index {ChoiceIndex} from feature with Name: {FeatureName}, ID: {FeatureId}", type, choiceIndex, feature.Name, feature.Id);
 
         switch (type)
         {
             case "Skill":
-                RemoveChoiceAtIndex(feature.SkillProficiencyChoices, type);
+                RemoveChoiceAtIndex(feature.SkillProficiencyChoices, type, choiceIndex);
                 break;
             case "Weapon Category":
-                RemoveChoiceAtIndex(feature.WeaponCategoryProficiencyChoices, type);
+                RemoveChoiceAtIndex(feature.WeaponCategoryProficiencyChoices, type, choiceIndex);
                 break;
             case "Weapon Type":
-                RemoveChoiceAtIndex(feature.WeaponTypeProficiencyChoices, type);
+                RemoveChoiceAtIndex(feature.WeaponTypeProficiencyChoices, type, choiceIndex);
                 break;
             case "Armor Category":
-                RemoveChoiceAtIndex(feature.ArmorProficiencyChoices, type);
+                RemoveChoiceAtIndex(feature.ArmorProficiencyChoices, type, choiceIndex);
                 break;
             case "Tool Category":
-                RemoveChoiceAtIndex(feature.ToolProficiencyChoices, type);
+                RemoveChoiceAtIndex(feature.ToolProficiencyChoices, type, choiceIndex);
                 break;
             case "Language":
-                RemoveChoiceAtIndex(feature.LanguageChoices, type);
+                RemoveChoiceAtIndex(feature.LanguageChoices, type, choiceIndex);
                 break;
             default:
                 throw new InvalidOperationException($"Unknown Choice type");
         }
 
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully removed proficiency choice of type {ProficiencyType} at index {ChoiceIndex} from feature with Name: {FeatureName}, ID: {FeatureId}", type, choiceIndex, feature.Name, feature.Id);
     }
 
     public async Task RemoveAbilityIncreaseChoice(int choiceIndex, int featureId)
@@ -292,11 +308,20 @@ public abstract class BaseFeatureService<T>(
         if (choiceIndex < 0 || choiceIndex >= feature.AbilityIncreaseChoices.Count)
                 throw new ArgumentOutOfRangeException($"Index is out of range. No ability increase choice at index {choiceIndex}.");
 
+        logger.LogInformation("Removing ability increase choice at index {ChoiceIndex} from feature with Name: {FeatureName}, ID: {FeatureId}", choiceIndex, feature.Name, feature.Id);
         feature.AbilityIncreaseChoices.RemoveAt(choiceIndex);
         await repo.UpdateAsync(feature);
+        logger.LogInformation("Successfully removed ability increase choice at index {ChoiceIndex} from feature with Name: {FeatureName}, ID: {FeatureId}", choiceIndex, feature.Name, feature.Id);
     }
 
     // Helpers
+    private static void RemoveChoiceAtIndex<PC>(ICollection<PC> choices, string choiceType, int choiceIndex)
+    {
+        if (choiceIndex < 0 || choiceIndex >= choices.Count)
+            throw new ArgumentOutOfRangeException(nameof(choiceIndex), $"Index is out of range. No {choiceType.ToLower()} choice at index {choiceIndex}.");
+        
+        choices.RemoveAt(choiceIndex);
+    }
 
     private static async Task<P> GetProficiencyById<P>(ProficiencyDto dto, IRepository<P> repository) where P : class
     {

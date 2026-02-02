@@ -11,6 +11,8 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
 {
     public async Task<Subclass> CreateAsync(ClassDto dto, int parentClassId)
     {
+        logger.LogInformation("Creating subclass, Name: {SubclassName}, ParentClassId: {ParentClassId}", dto.Name, parentClassId);
+
         var subclass = await repo.CreateAsync(new()
         {
             Name = dto.Name,
@@ -20,13 +22,16 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
             ParentClassId = parentClassId
         });
 
+        logger.LogInformation("Successfully created subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, subclass.Id);
         return subclass;
     }
 
     public async Task DeleteAsync(int id)
     {
         var subclass = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
+        logger.LogInformation("Deleting subclass with Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
         await repo.DeleteAsync(subclass);
+        logger.LogInformation("Successfully deleted subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
     }
 
     public async Task<ICollection<Subclass>> GetAllAsync()
@@ -44,7 +49,8 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
     public async Task UpdateAsync(int id, ClassDto dto)
     {
         var subclass = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
-        
+        logger.LogInformation("Updating subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
+
         subclass.Name = dto.Name;
         subclass.Description = dto.Description;
         subclass.HitDie = dto.HitDie;
@@ -59,6 +65,7 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
         }
         
         await repo.UpdateAsync(subclass);
+        logger.LogInformation("Successfully updated subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
     }
 
     public async Task<Subclass> GetWithLevelsAsync(int id)

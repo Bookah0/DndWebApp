@@ -15,7 +15,7 @@ public class ExternalLanguageService(ILanguageRepository repo, ILogger<ExternalL
         if ((await repo.GetAllAsync()).Count > 0)
         {
             logger.LogInformation("Languages already exist in the database. Skipping fetch.");
-            throw new InvalidOperationException("Languages already exist in the database. Skipping fetch.");
+            return;
         }
         
         logger.LogInformation("Fetching external languages.");

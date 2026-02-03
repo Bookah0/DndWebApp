@@ -1,7 +1,5 @@
 using DndWebApp.Api.Models.Characters;
-using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Spells;
-using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Models.Features;
 
@@ -36,53 +34,4 @@ public abstract class AFeature
     public ICollection<ArmorProficiencyChoice> ArmorProficiencyChoices { get; set; } = [];
     public ICollection<WeaponCategoryProficiencyChoice> WeaponCategoryProficiencyChoices { get; set; } = [];
     public ICollection<WeaponTypeProficiencyChoice> WeaponTypeProficiencyChoices { get; set; } = [];
-}
-
-[Owned]
-public class AbilityIncreaseChoice
-{
-    public required string Description { get; set; }
-    public required ICollection<AbilityValue> Options { get; set; }
-}
-
-[Owned]
-public class SkillProficiencyChoice
-{
-    public required string Description { get; set; }
-    public required ICollection<Skill> Options { get; set; }
-}
-
-[Owned]
-public class ToolProficiencyChoice
-{
-    public required string Description { get; set; }
-    public required ICollection<string> Options { get; set; }
-}
-
-[Owned]
-public class LanguageChoice
-{
-    public required string Description { get; set; }
-    public required ICollection<Language> Options { get; set; }
-}
-
-[Owned]
-public class WeaponCategoryProficiencyChoice
-{
-    public required string Description { get; set; }
-    public required ICollection<string> Options { get; set; }
-}
-
-[Owned]
-public class WeaponTypeProficiencyChoice
-{
-    public required string Description { get; set; }
-    public required ICollection<string> Options { get; set; }
-}
-
-[Owned]
-public class ArmorProficiencyChoice
-{
-    public required string Description { get; set; }
-    public required ICollection<string> Options { get; set; }
 }

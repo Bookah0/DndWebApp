@@ -37,11 +37,11 @@ public class SubraceController(ISubraceService service, IRaceService raceService
     }
 
     [HttpPatch("{subraceId}")]
-    public async Task<ActionResult> UpdateSubrace(int raceId, int subraceId, [FromBody] SubraceDto dto)
+    public async Task<ActionResult<SubraceResponseDto>> UpdateSubrace(int raceId, int subraceId, [FromBody] SubraceDto dto)
     {
         await EnsureSubraceBelongsToParentRace(raceId, subraceId);
-        await service.UpdateAsync(subraceId, dto);
-        return Ok();
+        var updatedSubrace = await service.UpdateAsync(subraceId, dto);
+        return Ok(mapper.Map<SubraceResponseDto>(updatedSubrace));
     }
 
     [HttpDelete("{subraceId}")]

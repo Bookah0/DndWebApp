@@ -11,16 +11,16 @@ using static DndWebApp.Api.Services.Util.ConstantsUtil;
 namespace DndWebApp.Api.Services.Implemented.Features;
 
 public class BackgroundFeatureService(
-    IBackgroundFeatureRepository repo,
+    IFeatureRepository<BackgroundFeature> repo,
     IBackgroundRepository backgroundRepo,
     ISpellRepository spellRepo,
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
     ILogger<BackgroundFeatureService> logger)
-    : BaseFeatureService<BackgroundFeature>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), IBackgroundFeatureService
+    : AFeatureService<BackgroundFeature, BackgroundFeatureDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
-    public async Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
+    public async override Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
     {
         var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) 
             ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
@@ -40,7 +40,7 @@ public class BackgroundFeatureService(
         return bgFeature;
     }
 
-    public async Task DeleteAsync(int id)
+    public async override Task DeleteAsync(int id)
     {
         var feature = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
         logger.LogInformation("Deleting background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, id);
@@ -48,17 +48,17 @@ public class BackgroundFeatureService(
         logger.LogInformation("Successfully deleted background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, id);
     }
 
-    public async Task<ICollection<BackgroundFeature>> GetAllAsync()
+    public async override Task<ICollection<BackgroundFeature>> GetAllAsync()
     {
         return await repo.GetAllAsync();
     }
 
-    public async Task<BackgroundFeature> GetByIdAsync(int id)
+    public async override Task<BackgroundFeature> GetByIdAsync(int id)
     {
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(BackgroundFeatureDto dto, int featureId)
+    public async override Task<BackgroundFeature> UpdateAsync(BackgroundFeatureDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId) ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
@@ -76,6 +76,7 @@ public class BackgroundFeatureService(
 
         await repo.UpdateAsync(feature);
         logger.LogInformation("Successfully updated background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, featureId);
+        return feature;
     }
 
     public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, string sortFilter, bool descending = false)
@@ -87,7 +88,7 @@ public class BackgroundFeatureService(
         {
             SortBackgroundFeatureOption.Name => OrderByMany(features, [(l => l.Name)], descending),
             SortBackgroundFeatureOption.Background => OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

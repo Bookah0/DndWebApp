@@ -10,7 +10,7 @@ public interface IAlignmentService
     Task DeleteAsync(int id);
     Task<ICollection<Alignment>> GetAllAsync();
     Task<Alignment> GetByIdAsync(int id);
-    Task UpdateAsync(int id, AlignmentDto dto);
+    Task<Alignment> UpdateAsync(int id, AlignmentDto dto);
     ICollection<Alignment> SortBy(ICollection<Alignment> alignments);
 
 }

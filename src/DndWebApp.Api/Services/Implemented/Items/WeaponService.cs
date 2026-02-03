@@ -6,10 +6,11 @@ using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
 using static DndWebApp.Api.Services.Util.ConstantsUtil;
 using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Services.Interfaces.Items;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
-public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logger)
+public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logger) : IWeaponService
 {
     public async Task<Weapon> CreateAsync(WeaponDto dto)
     {
@@ -64,7 +65,7 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(int id, WeaponDto dto)
+    public async Task<Weapon> UpdateAsync(WeaponDto dto, int id)
     {
         logger.LogInformation("Updating weapon, Name: {WeaponName}, ID: {WeaponId}", dto.Name, id);
 
@@ -95,6 +96,7 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
 
         await repo.UpdateAsync(weapon);
         logger.LogInformation("Successfully updated weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);
+        return weapon;
     }
 
     // TODO replace with database level sorting
@@ -111,7 +113,7 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
             SortWeaponOption.Value => OrderByMany(weapons, [(i => i.Value), (i => i.Name)], descending),
             SortWeaponOption.Weight => OrderByMany(weapons, [(i => i.Weight), (i => i.Name)], descending),
             SortWeaponOption.Rarity => OrderByMany(weapons, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

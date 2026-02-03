@@ -10,10 +10,10 @@ public interface IBackgroundService
     Task<ICollection<Background>> GetAllAsync();
     Task<Background> GetByIdAsync(int id);
     Task<Background> GetWithFeaturesAsync(int id);
-    Task UpdateAsync(int id, BackgroundDto dto);
-    Task AddStartingItemsAsync(int id, int itemId);
+    Task<Background> UpdateAsync(int id, BackgroundDto dto);
+    Task<Background> AddStartingItemsAsync(int id, int itemId);
     Task RemoveStartingItemsAsync(int id, int itemId);
-    Task AddStartingItemChoiceAsync(int id, StartingItemOptionDto dto);
+    Task<Background> AddStartingItemChoiceAsync(int id, StartingItemOptionDto dto);
     Task RemoveStartingItemChoiceAsync(int id, int optionId);
 
 }

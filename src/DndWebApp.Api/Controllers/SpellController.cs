@@ -33,10 +33,10 @@ public class SpellController(ISpellService service, IMapper mapper) : Controller
     }
 
     [HttpPatch("{spellId}")]
-    public async Task<ActionResult> UpdateSpell(int spellId, [FromBody] SpellDto dto)
+    public async Task<ActionResult<SpellResponseDto>> UpdateSpell(int spellId, [FromBody] SpellDto dto)
     {
-        await service.UpdateAsync(spellId, dto);
-        return Ok();
+        var updatedSpell = await service.UpdateAsync(spellId, dto);
+        return Ok(mapper.Map<SpellResponseDto>(updatedSpell));
     }
 
     [HttpDelete("{spellId}")]

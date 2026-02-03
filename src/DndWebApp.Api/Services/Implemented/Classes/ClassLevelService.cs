@@ -1,6 +1,7 @@
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
+using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
 using static DndWebApp.Api.Services.Util.SortUtil;
@@ -10,7 +11,7 @@ public partial class ClassLevelService(
     IClassRepository classRepo,
     ISubclassRepository subclassRepo,
     IClassLevelRepository levelRepo,
-    IClassFeatureRepository featureRepo,
+    IFeatureRepository<ClassFeature> featureRepo,
     ILogger<ClassService> logger) : IClassLevelService
 {
     public async Task<ClassLevel> CreateAsync(ClassLevelDto dto)
@@ -58,7 +59,7 @@ public partial class ClassLevelService(
         return level;
     }
 
-    public async Task UpdateAsync(int id, ClassLevelDto dto)
+    public async Task<ClassLevel> UpdateAsync(int id, ClassLevelDto dto)
     {
         var level = await levelRepo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class level with id {id} could not be found");
@@ -97,6 +98,7 @@ public partial class ClassLevelService(
 
         await levelRepo.UpdateAsync(level);
         logger.LogInformation("Successfully updated class level, Level: {ClassLevel}, ClassId: {ClassId}, ID: {ClassLevelId}", level.Level, level.ClassId, id);
+        return level;
     }
 
     public async Task DeleteAsync(int id)

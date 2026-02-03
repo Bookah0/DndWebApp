@@ -46,7 +46,7 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
         return subclass;
     }
 
-    public async Task UpdateAsync(int id, ClassDto dto)
+    public async Task<Subclass> UpdateAsync(int id, ClassDto dto)
     {
         var subclass = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
         logger.LogInformation("Updating subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
@@ -66,6 +66,7 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
         
         await repo.UpdateAsync(subclass);
         logger.LogInformation("Successfully updated subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
+        return subclass;
     }
 
     public async Task<Subclass> GetWithLevelsAsync(int id)

@@ -11,7 +11,7 @@ public static class ItemCategory
     public const string Gem = "Gem";
     public const string Jewelry = "Jewelry";
     public const string Instrument = "Instrument";
-    public const string LandVehicle = "LandVehicle";
+    public const string Vehicle = "Vehicle";
     public const string Mount = "Mount";
     public const string Poison = "Poison";
     public const string Potion = "Potion";
@@ -25,10 +25,10 @@ public static class ItemCategory
     public const string Tools = "Tools";
     public const string TradeGood = "TradeGood";
     public const string Wand = "Wand";
-    public const string WaterborneVehicle = "WaterborneVehicle";
     public const string Weapon = "Weapon";
     public const string WondrousItem = "WondrousItem";
     public const string Utility = "Utility";
+    public const string Miscellaneous = "Miscellaneous";
 
     public static readonly IReadOnlySet<string> AllowedValues = new HashSet<string>
     {
@@ -41,7 +41,7 @@ public static class ItemCategory
         Gem,
         Jewelry,
         Instrument,
-        LandVehicle,
+        Vehicle,
         Mount,
         Poison,
         Potion,
@@ -55,10 +55,10 @@ public static class ItemCategory
         Tools,
         TradeGood,
         Wand,
-        WaterborneVehicle,
         Weapon,
         WondrousItem,
-        Utility
+        Utility,
+        Miscellaneous
     };
 }
 

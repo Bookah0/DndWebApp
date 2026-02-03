@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<Inventory> Inventories { get; set; }
 
     public DbSet<Ability> AbilityScores { get; set; }
+    public DbSet<AbilityValue> AbilityValues { get; set; }
     public DbSet<Skill> Skills { get; set; }
 
     public DbSet<Alignment> Alignments { get; set; }
@@ -42,6 +43,13 @@ public class AppDbContext : DbContext
 
     public DbSet<Spell> Spells { get; set; }
 
+    public DbSet<AbilityIncreaseChoice> AbilityIncreaseChoices { get; set; }
+    public DbSet<SkillProficiencyChoice> SkillProficiencyChoices { get; set; }
+    public DbSet<ToolProficiencyChoice> ToolProficiencyChoices { get; set; }
+    public DbSet<LanguageChoice> LanguageChoices { get; set; }
+    public DbSet<ArmorProficiencyChoice> ArmorProficiencyChoices { get; set; }
+    public DbSet<WeaponCategoryProficiencyChoice> WeaponCategoryProficiencyChoices { get; set; }
+    public DbSet<WeaponTypeProficiencyChoice> WeaponTypeProficiencyChoices { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,32 +98,38 @@ public static class FeatureConfigurationExtensions
         builder.HasMany(f => f.AbilityIncreases)
             .WithMany()
             .UsingEntity(j => j.ToTable("AbilityIncreases"));
-
-        builder.HasMany(f => f.AbilityIncreaseChoices)
-            .WithMany()
-            .UsingEntity(j => j.ToTable("AbilityIncreaseOptions"));
-
+        
         builder.HasMany(c => c.SpellsGained)
             .WithMany()
             .UsingEntity(j => j.ToTable("SpellsGained"));
 
-        builder.OwnsMany(c => c.ArmorProficiencyChoices, ch =>
-            ch.ToJson("ArmorOptions"));
+        builder.HasMany(f => f.AbilityIncreaseChoices)
+            .WithOne()
+            .HasForeignKey(a => a.FeatureId);
 
-        builder.OwnsMany(c => c.WeaponTypeProficiencyChoices, ch =>
-            ch.ToJson("WeaponTypeOptions"));
+        builder.HasMany(f => f.SkillProficiencyChoices)
+            .WithOne()
+            .HasForeignKey(s => s.FeatureId);
 
-        builder.OwnsMany(c => c.WeaponCategoryProficiencyChoices, ch =>
-                ch.ToJson("WeaponCategoryOptions"));
+        builder.HasMany(f => f.ToolProficiencyChoices)
+            .WithOne()
+            .HasForeignKey(t => t.FeatureId);
 
-        builder.OwnsMany(c => c.LanguageChoices, ch =>
-                ch.ToJson("LanguageOptions"));
+        builder.HasMany(f => f.LanguageChoices)
+            .WithOne()  
+            .HasForeignKey(l => l.FeatureId);
+        
+        builder.HasMany(f => f.ArmorProficiencyChoices)
+            .WithOne()
+            .HasForeignKey(a => a.FeatureId);
 
-        builder.OwnsMany(c => c.ToolProficiencyChoices, ch =>
-                ch.ToJson("ToolOptions"));
+        builder.HasMany(f => f.WeaponCategoryProficiencyChoices)
+            .WithOne()
+            .HasForeignKey(wc => wc.FeatureId);
 
-        builder.OwnsMany(c => c.SkillProficiencyChoices, ch =>
-                ch.ToJson("SkillOptions"));
+        builder.HasMany(f => f.WeaponTypeProficiencyChoices)
+            .WithOne()
+            .HasForeignKey(wt => wt.FeatureId);
     }
 
     public static void ConfigureProficiencies(this EntityTypeBuilder<Character> builder)

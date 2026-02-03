@@ -7,7 +7,7 @@ using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.External.Interfaces;
 
-public class ExternalFeatService(IFeatRepository repo, ILogger<ExternalFeatService> logger) : IExternalFeatService
+public class ExternalFeatService(IFeatureRepository<Feat> repo, ILogger<ExternalFeatService> logger) : IExternalFeatService
 {
     private readonly HttpClient client = new();
 
@@ -16,30 +16,20 @@ public class ExternalFeatService(IFeatRepository repo, ILogger<ExternalFeatServi
         if ((await repo.GetAllAsync()).Count > 0)
         {
             logger.LogInformation("Feats already exist in the database. Skipping fetch.");
-            throw new InvalidOperationException("Feats already exist in the database. Skipping fetch.");
+            return;
         }
 
         logger.LogInformation("Fetching external feats.");
         
-        var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/feats/", cancellationToken);
-        var featResults = await JsonSerializer.DeserializeAsync<List<EFeatDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
+        var getListResponse = await client.GetAsync("https://api.open5e.com/v1/feats/", cancellationToken);
+        var featResults = await JsonSerializer.DeserializeAsync<EOpen5eResponseDto<EFeatDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
         
         if (featResults is null || featResults.Count == 0)
         {
-            throw new InvalidOperationException("No feats found on page 1 in external API.");
+            throw new InvalidOperationException("No feats found in external APIs.");
         }
 
-        getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/feats/?page=2", cancellationToken);
-        var featResults2 = await JsonSerializer.DeserializeAsync<List<EFeatDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
-
-        if (featResults2 is null || featResults2.Count == 0)
-        {
-            throw new InvalidOperationException("No feats found on page 2 in external API.");
-        }
-
-        featResults.AddRange(featResults2);
-
-        foreach (var eFeat in featResults)
+        foreach (var eFeat in featResults.Results)
         {
             if (eFeat is null)
             {

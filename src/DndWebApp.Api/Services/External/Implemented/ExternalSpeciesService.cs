@@ -1,6 +1,7 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Constants;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
@@ -19,7 +20,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
         if ((await raceRepo.GetAllAsync()).Count > 0)
         {
             logger.LogInformation("Races already exist in the database. Skipping fetch.");
-            throw new InvalidOperationException("Races already exist in the database. Skipping fetch.");
+            return;
         }
         
         logger.LogInformation("Fetching external races.");
@@ -132,8 +133,8 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
 
         foreach (var abilityIncrease in eSpecies.AbilityBonuses)
         {
-            var ability = await abilityRepo.GetByNameAsync(abilityIncrease.AbilityScore.Name)
-                ?? throw new ArgumentException($"Ability with short name {abilityIncrease.AbilityScore.Name} not found.");
+            var ability = await abilityRepo.GetByShortNameAsync(abilityIncrease.AbilityScore.Name)
+                ?? throw new NotFoundException($"Ability with short name {abilityIncrease.AbilityScore.Name} not found.");
 
             abilityIncreases.Add(new AbilityValue
             {

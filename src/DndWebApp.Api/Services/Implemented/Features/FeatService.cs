@@ -8,15 +8,15 @@ using static DndWebApp.Api.Services.Util.SortUtil;
 namespace DndWebApp.Api.Services.Implemented.Features;
 
 public class FeatService(
-    IFeatRepository repo,
+    IFeatureRepository<Feat> repo,
     ISpellRepository spellRepo,
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
     ILogger<FeatService> logger)
-    : BaseFeatureService<Feat>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), IFeatService
+    : AFeatureService<Feat, FeatDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
-    public async Task<Feat> CreateAsync(FeatDto dto)
+    public async override Task<Feat> CreateAsync(FeatDto dto)
     {
         logger.LogInformation("Creating feat, Name: {FeatName}", dto.Name);
 
@@ -31,7 +31,7 @@ public class FeatService(
         return feat;
     }
 
-    public async Task DeleteAsync(int id)
+    public async override Task DeleteAsync(int id)
     {
         var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
         logger.LogInformation("Deleting feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
@@ -39,17 +39,17 @@ public class FeatService(
         logger.LogInformation("Successfully deleted feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
     }
 
-    public async Task<ICollection<Feat>> GetAllAsync()
+    public async override Task<ICollection<Feat>> GetAllAsync()
     {
         return await repo.GetAllAsync();
     }
 
-    public async Task<Feat> GetByIdAsync(int id)
+    public async override Task<Feat> GetByIdAsync(int id)
     {
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(int id, FeatDto dto)
+    public async override Task<Feat> UpdateAsync(FeatDto dto, int id)
     {
         var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
         logger.LogInformation("Updating feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
@@ -58,11 +58,7 @@ public class FeatService(
         feat.Description = dto.Description;
         await repo.UpdateAsync(feat);
         logger.LogInformation("Successfully updated feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
-    }
-
-    public Task UpdateCollectionsAsync(int id, FeatDto dto)
-    {
-        throw new NotImplementedException();
+        return feat;
     }
 
     public ICollection<Feat> SortBy(ICollection<Feat> feats, bool descending = false)

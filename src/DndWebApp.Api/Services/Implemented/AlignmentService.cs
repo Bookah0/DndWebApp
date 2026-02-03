@@ -34,17 +34,15 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
 
     public async Task<ICollection<Alignment>> GetAllAsync()
     {
-        var alignments = await repo.GetAllAsync();
-        return alignments;
+        return await repo.GetAllAsync();
     }
 
     public async Task<Alignment> GetByIdAsync(int id)
     {
-        var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
-        return alignment;
+        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
     }
 
-    public async Task UpdateAsync(int id, AlignmentDto dto)
+    public async Task<Alignment> UpdateAsync(int id, AlignmentDto dto)
     {
         var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
 
@@ -56,6 +54,7 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
 
         await repo.UpdateAsync(alignment);
         logger.LogInformation("Successfully updated alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
+        return alignment;
     }
 
     // TODO Move to database level sorting

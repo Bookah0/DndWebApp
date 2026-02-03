@@ -32,10 +32,10 @@ public class WeaponController(IWeaponService service, IMapper mapper) : Controll
     }
 
     [HttpPatch("{weaponId}")]
-    public async Task<ActionResult> UpdateWeapon(int weaponId, [FromBody] WeaponDto dto)
+    public async Task<ActionResult<WeaponResponseDto>> UpdateWeapon(int weaponId, [FromBody] WeaponDto dto)
     {
-        await service.UpdateAsync(dto, weaponId);
-        return Ok();
+        var updatedWeapon = await service.UpdateAsync(dto, weaponId);
+        return Ok(mapper.Map<WeaponResponseDto>(updatedWeapon));
     }
 
 

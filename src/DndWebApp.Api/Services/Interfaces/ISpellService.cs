@@ -12,6 +12,6 @@ public interface ISpellService
     Task<ICollection<Spell>> GetAllAsync();
     Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto);
     Task<Spell> GetByIdAsync(int id);
-    Task UpdateAsync(int id, SpellDto dto);
+    Task<Spell> UpdateAsync(int id, SpellDto dto);
     ICollection<Spell> SortBy(ICollection<Spell> spells, string sortFilter, bool descending = false);
 }

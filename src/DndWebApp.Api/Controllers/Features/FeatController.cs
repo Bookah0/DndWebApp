@@ -4,12 +4,15 @@ using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
+using DndWebApp.Api.Models.Features;
+using DndWebApp.Api.Models.Items;
+using DndWebApp.Api.Controllers.Features;
 
 namespace DndWebApp.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]s")]
-public class FeatController(IFeatService service, IMapper mapper) : ControllerBase
+[Route("api/feats")]
+public class FeatController(IFeatureService<Feat, FeatDto> service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<FeatResponseDto>>> GetFeats()
@@ -33,10 +36,10 @@ public class FeatController(IFeatService service, IMapper mapper) : ControllerBa
     }
 
     [HttpPatch("{featId}")]
-    public async Task<ActionResult> UpdateFeat(int featId, [FromBody] FeatDto dto)
+    public async Task<ActionResult<FeatResponseDto>> UpdateFeat(int featId, [FromBody] FeatDto dto)
     {
-        await service.UpdateAsync(featId, dto);
-        return Ok();
+        var updatedFeat = await service.UpdateAsync(dto, featId);
+        return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
     }
 
     [HttpDelete("{featId}")]
@@ -48,10 +51,10 @@ public class FeatController(IFeatService service, IMapper mapper) : ControllerBa
 
     // Spell management endpoints
     [HttpPost("{featId}/spells/{spellId}")]
-    public async Task<ActionResult> AddSpell(int featId, int spellId)
+    public async Task<ActionResult<FeatResponseDto>> AddSpell(int featId, int spellId)
     {
-        await service.AddSpell(spellId, featId);
-        return Ok();
+        var updatedFeat = await service.AddSpell(spellId, featId);
+        return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
     }
     
     [HttpDelete("{featId}/spells/{spellId}")]
@@ -63,10 +66,10 @@ public class FeatController(IFeatService service, IMapper mapper) : ControllerBa
 
     // Proficiency management endpoints
     [HttpPost("{featId}/proficiencies")]
-    public async Task<ActionResult> AddProficiency(int featId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<FeatResponseDto>> AddProficiency(int featId, [FromBody] ProficiencyDto proficiency)
     {
-        await service.AddProficiency(proficiency, featId);
-        return Ok();
+        var updatedFeat = await service.AddProficiency(proficiency, featId);
+        return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
     }
 
     [HttpDelete("{featId}/proficiencies")]
@@ -76,46 +79,18 @@ public class FeatController(IFeatService service, IMapper mapper) : ControllerBa
         return Ok();
     }
 
-    [HttpPost("{featId}/proficiency-choices")]
-    public async Task<ActionResult> AddProficiencyChoice(int featId, [FromBody] ProficiencyChoiceDto dto)
-    {
-        await service.AddProficiencyChoice(dto, featId);
-        return Ok();
-    }
-
-    [HttpDelete("{featId}/proficiency-choices/{type}/{choiceIndex}")]
-    public async Task<ActionResult> RemoveProficiencyChoice(int featId, string type, int choiceIndex)
-    {
-        await service.RemoveProficiencyChoice(type, choiceIndex, featId);
-        return Ok();
-    }
-
     // Ability increase management endpoints
     [HttpPost("{featId}/ability-increases")]
-    public async Task<ActionResult> AddAbilityIncrease(int featId, [FromBody] AbilityValueDto increase)
+    public async Task<ActionResult<FeatResponseDto>> AddAbilityIncrease(int featId, [FromBody] AbilityValueDto increase)
     {
-        await service.AddAbilityIncrease(increase.AbilityId, increase.Value, featId);
-        return Ok();
+        var updatedFeat = await service.AddAbilityIncrease(increase.AbilityId, increase.Value, featId);
+        return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
     }
 
     [HttpDelete("{featId}/ability-increases")]
     public async Task<ActionResult> RemoveAbilityIncrease(int featId, [FromBody] AbilityValueDto increase)
     {
         await service.RemoveAbilityIncrease(increase.AbilityId, featId);
-        return Ok();
-    }
-
-    [HttpPost("{featId}/ability-increase-choices")]
-    public async Task<ActionResult> AddAbilityIncreaseChoice(int featId, [FromBody] AbilityIncreaseChoiceDto increaseChoice)
-    {
-        await service.AddAbilityIncreaseChoice(increaseChoice, featId);
-        return Ok();
-    }
-
-    [HttpDelete("{featId}/ability-increase-choices/{choiceIndex}")]
-    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int featId, int choiceIndex)
-    {
-        await service.RemoveAbilityIncreaseChoice(choiceIndex, featId);
         return Ok();
     }
 }

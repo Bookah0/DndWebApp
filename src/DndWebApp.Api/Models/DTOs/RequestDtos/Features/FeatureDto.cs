@@ -4,7 +4,7 @@ using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
 namespace DndWebApp.Api.Models.DTOs.Features;
 
 
-public class FeatureDto
+public class AFeatureDto
 {
     [Required]
     [MinLength(1)]
@@ -28,7 +28,7 @@ public class FeatureDto
     public ProficiencyChoicesDto? ProficiencyChoices { get; set; }
 }
 
-public class FeatDto : FeatureDto
+public class FeatDto : AFeatureDto
 {
     [MinLength(1)]
     [MaxLength(500)]
@@ -47,14 +47,14 @@ public class FeatDto : FeatureDto
     public int? FromBackgroundId { get; set; }
 }
 
-public class BackgroundFeatureDto : FeatureDto
+public class BackgroundFeatureDto : AFeatureDto
 {
     [Required]
     [Range(1, int.MaxValue)]
     public required int BackgroundId { get; set; }
 }
 
-public class ClassFeatureDto : FeatureDto
+public class ClassFeatureDto : AFeatureDto
 {
     [Required]
     [Range(1, int.MaxValue)]
@@ -65,15 +65,9 @@ public class ClassFeatureDto : FeatureDto
     public required int ClassId { get; set; }
 }
 
-public class TraitDto : FeatureDto
+public class TraitDto : AFeatureDto
 {
     [Required]
     [Range(1, int.MaxValue)]
     public required int RaceId { get; set; }
-}
-
-public class AbilityValueResponseDto
-{
-    public required string AbilityType { get; set; }
-    public required int Increase { get; set; }
 }

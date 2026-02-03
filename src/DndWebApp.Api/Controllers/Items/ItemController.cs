@@ -32,10 +32,10 @@ public class ItemController(IItemService service, IMapper mapper) : ControllerBa
     }
 
     [HttpPatch("{itemId}")]
-    public async Task<ActionResult> UpdateItem(int itemId, [FromBody] ItemDto dto)
+    public async Task<ActionResult<ItemResponseDto>> UpdateItem(int itemId, [FromBody] ItemDto dto)
     {
-        await service.UpdateAsync(dto, itemId);
-        return Ok();
+        var updatedItem = await service.UpdateAsync(dto, itemId);
+        return Ok(mapper.Map<ItemResponseDto>(updatedItem));
     }
 
 

@@ -9,5 +9,5 @@ public interface IUserService
     Task DeleteAsync(int id);
     Task<ICollection<object>> GetAllAsync();
     Task<object> GetByIdAsync(int id);
-    Task UpdateAsync(int id, object dto);
+    Task<object> UpdateAsync(int id, object dto);
 }

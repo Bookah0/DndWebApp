@@ -68,7 +68,7 @@ public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IR
         return await repo.GetWithSubracesAsync(id) ?? throw new NotFoundException($"Race with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(int id, RaceDto dto)
+    public async Task<Race> UpdateAsync(int id, RaceDto dto)
     {
         var race = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Race with id {id} could not be found");
@@ -87,5 +87,6 @@ public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IR
 
         await repo.UpdateAsync(race);
         logger.LogInformation("Successfully updated race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
+        return race;
     }
 }

@@ -11,6 +11,6 @@ public interface ILanguageService
     Task DeleteAsync(int id); 
     Task<ICollection<Language>> GetAllAsync(); 
     Task<Language> GetByIdAsync(int id); 
-    Task UpdateAsync(int id, LanguageDto dto); 
+    Task<Language> UpdateAsync(int id, LanguageDto dto); 
     ICollection<Language> SortBy(ICollection<Language> languages, string sortFilter, bool descending = false);
 }

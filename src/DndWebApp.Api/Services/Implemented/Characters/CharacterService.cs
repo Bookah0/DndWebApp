@@ -48,7 +48,7 @@ public partial class CharacterService(
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Character with id {id} could not be found");
     }
 
-    public async Task LevelUpAsync(LevelUpDto dto, int characterId)
+    public async Task<Character> LevelUpAsync(LevelUpDto dto, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
         var newLvl = character.Level + 1;
@@ -73,9 +73,10 @@ public partial class CharacterService(
         }
 
         logger.LogInformation("Successfully leveled up character, Name: {CharacterName}, ID: {CharacterId}, NewLevel: {NewLevel}", character.Name, characterId, newLvl);
+        return character;
     }
 
-    public async Task AddSubclassAsync(int subclassId, int characterId)
+    public async Task<Character> AddSubclassAsync(int subclassId, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
 
@@ -90,18 +91,20 @@ public partial class CharacterService(
         character.SubClass = subclass;
         await repo.UpdateAsync(character);
         logger.LogInformation("Successfully added subclass, CharacterName: {CharacterName}, CharacterId: {CharacterId}, SubclassId: {SubclassId}", character.Name, characterId, subclassId);
+        return character;
     }
 
-    public async Task EditCharacterDescriptionAsync(CharacterDescription edited, int characterId)
+    public async Task<Character> EditCharacterDescriptionAsync(CharacterDescription edited, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
         logger.LogInformation("Updating character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
         character.CharacterDescription = edited;
         await repo.UpdateAsync(character);
         logger.LogInformation("Successfully updated character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
+        return character;
     }
 
-    public async Task SpendHitDice(int nDice, int characterId)
+    public async Task<Character> SpendHitDice(int nDice, int characterId)
     {
         if(nDice < 0)
             throw new ValidationException("Number of hit dice to spend must be a positive value.");
@@ -116,9 +119,10 @@ public partial class CharacterService(
         character.CombatStats.CurrentHitDice -= nDice;
         await repo.UpdateAsync(character);
         logger.LogInformation("Successfully spent hit dice, Name: {CharacterName}, ID: {CharacterId}, Dice: {Dice}", character.Name, characterId, nDice);
+        return character;
     }
 
-    public async Task LongRest(int characterId)
+    public async Task<Character> LongRest(int characterId)
     {
         var character = await repo.GetByIdAsync(characterId) 
             ?? throw new NotFoundException($"Character with id {characterId} could not be found");
@@ -135,9 +139,10 @@ public partial class CharacterService(
 
         await repo.UpdateAsync(character);
         logger.LogInformation("Successfully completed long rest, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
+        return character;
     }
 
-    public async Task TakeDamage(int characterId, int change)
+    public async Task<Character> TakeDamage(int characterId, int change)
     {
         if(change < 0)
             throw new ValidationException("Damage taken must be a positive value.");
@@ -153,9 +158,10 @@ public partial class CharacterService(
         }
         await repo.UpdateAsync(character);
         logger.LogInformation("Successfully applied damage, Name: {CharacterName}, ID: {CharacterId}, Amount: {Amount}", character.Name, characterId, change);
+        return character;
     }
 
-    public async Task HealDamage(int characterId, int change)
+    public async Task<Character> HealDamage(int characterId, int change)
     {
         if(change < 0)
             throw new ValidationException("Healing amount must be a positive value.");
@@ -167,9 +173,10 @@ public partial class CharacterService(
 
         await repo.UpdateAsync(character);
         logger.LogInformation("Successfully healed damage, Name: {CharacterName}, ID: {CharacterId}, Amount: {Amount}", character.Name, characterId, change);
+        return character;
     }
 
-    public async Task EditCurrentClassSlotAsync(string slotName, int change, int characterId)
+    public async Task<Character> EditCurrentClassSlotAsync(string slotName, int change, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
 
@@ -183,9 +190,10 @@ public partial class CharacterService(
         slot.Quantity += change;
         await repo.UpdateAsync(character);
         logger.LogInformation("Successfully updated class slot, Name: {CharacterName}, ID: {CharacterId}, Slot: {SlotName}, Change: {Change}", character.Name, characterId, slotName, change);
+        return character;
     }
     
-    public async Task EditCurrentSpellSlotAsync(int slotLevel, int change, int characterId)
+    public async Task<Character> EditCurrentSpellSlotAsync(int slotLevel, int change, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
 
@@ -196,6 +204,7 @@ public partial class CharacterService(
         character.CurrentSpellSlots[slotLevel - 1] += change;
         await repo.UpdateAsync(character);
         logger.LogInformation("Successfully updated spell slot, Name: {CharacterName}, ID: {CharacterId}, SlotLevel: {SlotLevel}, Change: {Change}", character.Name, characterId, slotLevel, change);
+        return character;
     }
 
     public ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false)
@@ -208,7 +217,7 @@ public partial class CharacterService(
             SortCharacterOption.Name => OrderByMany(characters, [(c => c.Name)], descending),
             SortCharacterOption.Level => OrderByMany(characters, [(c => c.Level), (c => c.Name)], descending),
             SortCharacterOption.TimeCreated => OrderByMany(characters, [(c => c.TimeCreated), (c => c.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 

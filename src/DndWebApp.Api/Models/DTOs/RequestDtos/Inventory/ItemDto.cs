@@ -15,7 +15,7 @@ public class ItemDto
     public required string Description { get; set; }
 
     [Required]
-    [Range(1, int.MaxValue)]
+    [Range(0, int.MaxValue)]
     public required int Value { get; set; }
 
     [Required]
@@ -25,8 +25,10 @@ public class ItemDto
 
     public List<string> OtherCategories { get; set; } = [];
 
+    [Required]
+    [MinLength(1)]
     [MaxLength(50)]
-    public string? Rarity { get; set; }
+    public required string Rarity { get; set; }
 
     public bool? RequiresAttunement { get; set; }
 

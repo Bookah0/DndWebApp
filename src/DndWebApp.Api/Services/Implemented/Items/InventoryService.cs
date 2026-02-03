@@ -64,15 +64,18 @@ public class InventoryService(
         return await repo.CreateAsync(inv);
     }
 
-    public async Task AddItem(Inventory inventory, int itemId)
+    public async Task<Inventory> AddItem(Inventory inventory, int itemId)
     {         
         var item = await itemRepo.GetByIdAsync(itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+
         logger.LogInformation("Adding item with ID: {ItemId} to inventory with ID: {InventoryId}", itemId, inventory.Id);
         inventory.StoredItems.Add(item);
         inventory.TotalWeight += item.Weight;
+
         await repo.UpdateAsync(inventory);
-        logger.LogInformation("Added item with ID: {ItemId} to inventory with ID: {InventoryId}", itemId, inventory.Id);
+        logger.LogInformation("Added item with ID: {ItemId} to inventory with ID: {InventoryId}", itemId, inventory.Id);   
+        return inventory;
     }
 
     public async Task DiscardItem(Inventory inventory, int itemId)
@@ -141,7 +144,7 @@ public class InventoryService(
         throw new NotFoundException($"Could not find a slot of that type in the inventory with id {inventory.Id}");
     }
 
-    public async Task Equip(Inventory inventory, int itemId, string slot)
+    public async Task<Inventory> Equip(Inventory inventory, int itemId, string slot)
     {
         var item = await itemRepo.GetByIdAsync(itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
@@ -168,7 +171,7 @@ public class InventoryService(
                     inventory.AttunedItems -= item.RequiresAttunement ? 1 : 0;
                     await repo.UpdateAsync(inventory);
                     logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, resolvedSlot, inventory.Id);
-                    return;
+                    return inventory;
                 }
             }
         }
@@ -177,13 +180,13 @@ public class InventoryService(
             firstSlotFound.EquipmentId = itemId;
             await repo.UpdateAsync(inventory);
             logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, resolvedSlot, inventory.Id);
-            return;
+            return inventory;
         }
 
         throw new NotFoundException($"Could not find a slot of that type in the inventory with id {inventory.Id}");
     }
 
-    public async Task Equip(Inventory inventory, int itemId)
+    public async Task<Inventory> Equip(Inventory inventory, int itemId)
     {
         var item = await itemRepo.GetByIdAsync(itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
@@ -206,7 +209,7 @@ public class InventoryService(
                     inventory.AttunedItems -= item.RequiresAttunement ? 1 : 0;
                     await repo.UpdateAsync(inventory);
                     logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, equippableItem.MainSlot, inventory.Id);
-                    return;
+                    return inventory;
                 }
             }
             else if (equippableItem.SecondarySlot is not null && equipmentSlot.Slot == equippableItem.SecondarySlot)
@@ -220,14 +223,14 @@ public class InventoryService(
             firstSlotFound.EquipmentId = itemId;
             await repo.UpdateAsync(inventory);
             logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, equippableItem.MainSlot, inventory.Id);
-            return; 
+            return inventory;
         } 
         else if (firstSecondarySlotFound is not null)
         {
             firstSecondarySlotFound.EquipmentId = itemId;
             await repo.UpdateAsync(inventory);
             logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, equippableItem.SecondarySlot, inventory.Id);
-            return;
+            return inventory;
         }
 
         throw new NotFoundException($"Could not find a slot of that type in the inventory with id {inventory.Id}");

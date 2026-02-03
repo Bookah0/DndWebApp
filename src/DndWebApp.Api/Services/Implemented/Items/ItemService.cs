@@ -56,7 +56,7 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
         return item;
     }
 
-    public async Task UpdateAsync(ItemDto dto, int id)
+    public async Task<Item> UpdateAsync(ItemDto dto, int id)
     {
         var dtoMainCategory =  ResolveOptionOrThrow(dto.MainCategory, ItemCategory.AllowedValues, "Item Category");
         var dtoOtherCategories = ResolveOptionOrThrow(dto.OtherCategories, ItemCategory.AllowedValues, "Item Category");
@@ -76,6 +76,7 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
 
         await repo.UpdateAsync(item);
         logger.LogInformation("Successfully updated item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
+        return item;
     }
 
     // TODO replace with database level sorting
@@ -91,7 +92,7 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
             SortItemOption.Value => OrderByMany(items, [(i => i.Value), (i => i.Name)], descending),
             SortItemOption.Weight => OrderByMany(items, [(i => i.Weight), (i => i.Name)], descending),
             SortItemOption.Rarity => OrderByMany(items, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

@@ -10,6 +10,6 @@ public interface IWeaponService
     Task DeleteAsync(int id);
     Task<ICollection<Weapon>> GetAllAsync();
     Task<Weapon> GetByIdAsync(int id);
-    Task UpdateAsync(WeaponDto dto, int id);
+    Task<Weapon> UpdateAsync(WeaponDto dto, int id);
     ICollection<Weapon> SortBy(ICollection<Weapon> weapons, string sortFilter, bool descending = false);
 }

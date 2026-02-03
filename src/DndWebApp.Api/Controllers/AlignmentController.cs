@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DndWebApp.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]s")]
+[Route("api/alignments")]
 public class AlignmentController(IAlignmentService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]

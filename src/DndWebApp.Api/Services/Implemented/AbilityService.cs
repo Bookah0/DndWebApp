@@ -45,7 +45,7 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
         return ability;
     }
 
-    public async Task UpdateAsync(int id, AbilityDto dto)
+    public async Task<Ability> UpdateAsync(int id, AbilityDto dto)
     {
         var ability = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Ability could not be found");
         logger.LogInformation("Updating ability, FullName: {AbilityFullName}, ID: {AbilityId}", ability.FullName, id);
@@ -56,6 +56,7 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
 
         await repo.UpdateAsync(ability);
         logger.LogInformation("Successfully updated ability, FullName: {AbilityFullName}, ID: {AbilityId}", ability.FullName, id);
+        return ability;
     }
 
     public int GetModifier(AbilityValue val)

@@ -61,7 +61,7 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
         return armor;
     }
 
-    public async Task UpdateAsync(ArmorDto dto, int id)
+    public async Task<Armor> UpdateAsync(ArmorDto dto, int id)
     {
         var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category");
         var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
@@ -85,6 +85,7 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
 
         await repo.UpdateAsync(armor);
         logger.LogInformation("Successfully updated armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
+        return armor;
     }
 
     // TODO replace with database level sorting
@@ -101,7 +102,7 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
             SortArmorOption.Value => OrderByMany(armors, [(i => i.Value), (i => i.Name)], descending),
             SortArmorOption.Weight => OrderByMany(armors, [(i => i.Weight), (i => i.Name)], descending),
             SortArmorOption.Rarity => OrderByMany(armors, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

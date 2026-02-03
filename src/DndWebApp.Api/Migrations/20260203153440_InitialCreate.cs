@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -13,36 +14,6 @@ namespace DndWebApp.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AbilityScores",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ShortName = table.Column<string>(type: "text", nullable: false),
-                    FullName = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AbilityScores", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AbilityValue",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AbilityId = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    Value = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AbilityValue", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AClass",
                 columns: table => new
                 {
@@ -50,21 +21,16 @@ namespace DndWebApp.Api.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    HitDie = table.Column<string>(type: "text", nullable: false),
+                    HitDie = table.Column<int>(type: "integer", nullable: false),
                     IsHomebrew = table.Column<bool>(type: "boolean", nullable: false),
                     SpellcastingAbilityId = table.Column<int>(type: "integer", nullable: true),
+                    SpellcastingAbility = table.Column<string>(type: "text", nullable: true),
                     Discriminator = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
-                    ClassId = table.Column<int>(type: "integer", nullable: true),
                     ParentClassId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AClass", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AClass_AClass_ClassId",
-                        column: x => x.ClassId,
-                        principalTable: "AClass",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AClass_AClass_ParentClassId",
                         column: x => x.ParentClassId,
@@ -132,22 +98,6 @@ namespace DndWebApp.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Languages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Family = table.Column<string>(type: "text", nullable: false),
-                    Script = table.Column<string>(type: "text", nullable: false),
-                    IsHomebrew = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Languages", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Spells",
                 columns: table => new
                 {
@@ -158,17 +108,17 @@ namespace DndWebApp.Api.Migrations
                     IsHomebrew = table.Column<bool>(type: "boolean", nullable: false),
                     Level = table.Column<int>(type: "integer", nullable: false),
                     EffectsAtHigherLevels = table.Column<string>(type: "text", nullable: false),
-                    Duration = table.Column<int>(type: "integer", nullable: false),
+                    Duration = table.Column<string>(type: "text", nullable: false),
                     DurationValue = table.Column<int>(type: "integer", nullable: false),
-                    CastingTime = table.Column<int>(type: "integer", nullable: false),
+                    CastingTime = table.Column<string>(type: "text", nullable: false),
                     CastingTimeValue = table.Column<int>(type: "integer", nullable: false),
                     ReactionCondition = table.Column<string>(type: "text", nullable: false),
-                    MagicSchool = table.Column<int>(type: "integer", nullable: false),
+                    MagicSchool = table.Column<string>(type: "text", nullable: false),
                     DamageRoll = table.Column<string>(type: "text", nullable: false),
-                    DamageTypes = table.Column<int[]>(type: "integer[]", nullable: false),
-                    SpellTypes = table.Column<int[]>(type: "integer[]", nullable: false),
-                    SpellTargeting_TargetType = table.Column<int>(type: "integer", nullable: false),
-                    SpellTargeting_Range = table.Column<int>(type: "integer", nullable: false),
+                    DamageTypes = table.Column<string[]>(type: "text[]", nullable: false),
+                    SpellTypes = table.Column<string[]>(type: "text[]", nullable: false),
+                    SpellTargeting_TargetType = table.Column<string>(type: "text", nullable: false),
+                    SpellTargeting_Range = table.Column<string>(type: "text", nullable: false),
                     SpellTargeting_RangeValue = table.Column<int>(type: "integer", nullable: false),
                     SpellTargeting_ShapeType = table.Column<string>(type: "text", nullable: true),
                     SpellTargeting_ShapeWidth = table.Column<string>(type: "text", nullable: true),
@@ -182,27 +132,6 @@ namespace DndWebApp.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Spells", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Skills",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    AbilityId = table.Column<int>(type: "integer", nullable: false),
-                    IsHomebrew = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Skills", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Skills_AbilityScores_AbilityId",
-                        column: x => x.AbilityId,
-                        principalTable: "AbilityScores",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -230,20 +159,20 @@ namespace DndWebApp.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StartingEquipmentOption",
+                name: "StartingEquipmentChoice",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    OptionIds = table.Column<int[]>(type: "integer[]", nullable: false),
+                    NumberOfChoices = table.Column<int>(type: "integer", nullable: true),
                     ClassId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StartingEquipmentOption", x => x.Id);
+                    table.PrimaryKey("PK_StartingEquipmentChoice", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StartingEquipmentOption_AClass_ClassId",
+                        name: "FK_StartingEquipmentChoice_AClass_ClassId",
                         column: x => x.ClassId,
                         principalTable: "AClass",
                         principalColumn: "Id",
@@ -279,7 +208,7 @@ namespace DndWebApp.Api.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     EquipmentId = table.Column<int>(type: "integer", nullable: true),
-                    Slot = table.Column<int>(type: "integer", nullable: false)
+                    Slot = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -300,8 +229,8 @@ namespace DndWebApp.Api.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Categories = table.Column<int[]>(type: "integer[]", nullable: false),
-                    Rarity = table.Column<int>(type: "integer", nullable: true),
+                    Categories = table.Column<string[]>(type: "text[]", nullable: false),
+                    Rarity = table.Column<string>(type: "text", nullable: true),
                     RequiresAttunement = table.Column<bool>(type: "boolean", nullable: false),
                     Weight = table.Column<int>(type: "integer", nullable: false),
                     Value = table.Column<int>(type: "integer", nullable: false),
@@ -311,20 +240,21 @@ namespace DndWebApp.Api.Migrations
                     ClassId = table.Column<int>(type: "integer", nullable: true),
                     Discriminator = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     InventoryId = table.Column<int>(type: "integer", nullable: true),
-                    Category = table.Column<int>(type: "integer", nullable: true),
+                    ArmorCategory = table.Column<string>(type: "text", nullable: true),
                     BaseArmorClass = table.Column<int>(type: "integer", nullable: true),
                     PlusDexMod = table.Column<bool>(type: "boolean", nullable: true),
                     ModCap = table.Column<int>(type: "integer", nullable: true),
                     StrengthScoreRequired = table.Column<int>(type: "integer", nullable: true),
                     StealthDisadvantage = table.Column<bool>(type: "boolean", nullable: true),
-                    ToolType = table.Column<int>(type: "integer", nullable: true),
-                    WeaponCategory = table.Column<int>(type: "integer", nullable: true),
-                    WeaponType = table.Column<int>(type: "integer", nullable: true),
-                    Properties = table.Column<int[]>(type: "integer[]", nullable: true),
-                    DamageTypes = table.Column<int[]>(type: "integer[]", nullable: true),
+                    ToolType = table.Column<string>(type: "text", nullable: true),
+                    WeaponCategory = table.Column<string>(type: "text", nullable: true),
+                    WeaponType = table.Column<string>(type: "text", nullable: true),
+                    Slot = table.Column<string>(type: "text", nullable: true),
+                    Properties = table.Column<string[]>(type: "text[]", nullable: true),
+                    DamageTypes = table.Column<string[]>(type: "text[]", nullable: true),
                     DamageDice = table.Column<string>(type: "text", nullable: true),
                     Range = table.Column<int>(type: "integer", nullable: true),
-                    VersitileDamageDice = table.Column<string>(type: "text", nullable: true),
+                    VersatileDamageDice = table.Column<string>(type: "text", nullable: true),
                     LongRange = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -393,6 +323,35 @@ namespace DndWebApp.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "StartingEquipmentOption",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StartingEquipmentChoiceId = table.Column<int>(type: "integer", nullable: false),
+                    EquipmentId = table.Column<int>(type: "integer", nullable: true),
+                    AnyOfArmorCategory = table.Column<string>(type: "text", nullable: true),
+                    AnyOfWeaponCategory = table.Column<string>(type: "text", nullable: true),
+                    AnyOfWeaponType = table.Column<string>(type: "text", nullable: true),
+                    Quantity = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StartingEquipmentOption", x => new { x.StartingEquipmentChoiceId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_StartingEquipmentOption_Items_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "Items",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_StartingEquipmentOption_StartingEquipmentChoice_StartingEqu~",
+                        column: x => x.StartingEquipmentChoiceId,
+                        principalTable: "StartingEquipmentChoice",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ToolActivity",
                 columns: table => new
                 {
@@ -437,21 +396,17 @@ namespace DndWebApp.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AbilityIncreaseOptions",
+                name: "AbilityIncreaseChoices",
                 columns: table => new
                 {
-                    AFeature1Id = table.Column<int>(type: "integer", nullable: false),
-                    AbilityIncreaseOptionsId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AbilityIncreaseOptions", x => new { x.AFeature1Id, x.AbilityIncreaseOptionsId });
-                    table.ForeignKey(
-                        name: "FK_AbilityIncreaseOptions_AbilityValue_AbilityIncreaseOptionsId",
-                        column: x => x.AbilityIncreaseOptionsId,
-                        principalTable: "AbilityValue",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_AbilityIncreaseChoices", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -464,10 +419,46 @@ namespace DndWebApp.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AbilityIncreases", x => new { x.AFeatureId, x.AbilityIncreasesId });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AbilityScores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ShortName = table.Column<string>(type: "text", nullable: false),
+                    FullName = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    AFeatureId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbilityScores", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AbilityValues",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AbilityId = table.Column<int>(type: "integer", nullable: false),
+                    Value = table.Column<int>(type: "integer", nullable: false),
+                    AbilityIncreaseChoiceId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AbilityValues", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AbilityIncreases_AbilityValue_AbilityIncreasesId",
-                        column: x => x.AbilityIncreasesId,
-                        principalTable: "AbilityValue",
+                        name: "FK_AbilityValues_AbilityIncreaseChoices_AbilityIncreaseChoiceId",
+                        column: x => x.AbilityIncreaseChoiceId,
+                        principalTable: "AbilityIncreaseChoices",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AbilityValues_AbilityScores_AbilityId",
+                        column: x => x.AbilityId,
+                        principalTable: "AbilityScores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -481,32 +472,24 @@ namespace DndWebApp.Api.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     IsHomebrew = table.Column<bool>(type: "boolean", nullable: false),
-                    DamageResistanceGained = table.Column<int[]>(type: "integer[]", nullable: false),
-                    DamageImmunityGained = table.Column<int[]>(type: "integer[]", nullable: false),
-                    DamageWeaknessGained = table.Column<int[]>(type: "integer[]", nullable: false),
-                    SavingThrowProficiencies = table.Column<int[]>(type: "integer[]", nullable: false),
-                    SkillProficiencies = table.Column<int[]>(type: "integer[]", nullable: false),
-                    WeaponCategoryProficiencies = table.Column<int[]>(type: "integer[]", nullable: false),
-                    WeaponTypeProficiencies = table.Column<int[]>(type: "integer[]", nullable: false),
-                    ArmorProficiencies = table.Column<int[]>(type: "integer[]", nullable: false),
-                    ToolProficiencies = table.Column<int[]>(type: "integer[]", nullable: false),
-                    Languages = table.Column<int[]>(type: "integer[]", nullable: false),
+                    DamageResistanceGained = table.Column<string[]>(type: "text[]", nullable: false),
+                    DamageImmunityGained = table.Column<string[]>(type: "text[]", nullable: false),
+                    DamageWeaknessGained = table.Column<string[]>(type: "text[]", nullable: false),
+                    ToolProficiencies = table.Column<string[]>(type: "text[]", nullable: false),
+                    WeaponCategoryProficiencies = table.Column<string[]>(type: "text[]", nullable: false),
+                    WeaponTypeProficiencies = table.Column<string[]>(type: "text[]", nullable: false),
+                    ArmorProficiencies = table.Column<string[]>(type: "text[]", nullable: false),
                     BackgroundId = table.Column<int>(type: "integer", nullable: true),
                     Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
                     BackgroundId1 = table.Column<int>(type: "integer", nullable: true),
-                    ClassLevelId = table.Column<int>(type: "integer", nullable: true),
+                    LevelId = table.Column<int>(type: "integer", nullable: true),
+                    ClassId = table.Column<int>(type: "integer", nullable: true),
                     Prerequisite = table.Column<string>(type: "text", nullable: true),
                     FromClassId = table.Column<int>(type: "integer", nullable: true),
                     FromRaceId = table.Column<int>(type: "integer", nullable: true),
                     FromBackgroundId = table.Column<int>(type: "integer", nullable: true),
                     Trait_FromRaceId = table.Column<int>(type: "integer", nullable: true),
-                    RaceId = table.Column<int>(type: "integer", nullable: true),
-                    ArmorOptions = table.Column<string>(type: "jsonb", nullable: true),
-                    LanguageOptions = table.Column<string>(type: "jsonb", nullable: true),
-                    SkillOptions = table.Column<string>(type: "jsonb", nullable: true),
-                    ToolOptions = table.Column<string>(type: "jsonb", nullable: true),
-                    WeaponCategoryOptions = table.Column<string>(type: "jsonb", nullable: true),
-                    WeaponTypeOptions = table.Column<string>(type: "jsonb", nullable: true)
+                    RaceId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -533,9 +516,70 @@ namespace DndWebApp.Api.Migrations
                         principalTable: "Backgrounds",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_AFeature_ClassLevels_ClassLevelId",
-                        column: x => x.ClassLevelId,
+                        name: "FK_AFeature_ClassLevels_LevelId",
+                        column: x => x.LevelId,
                         principalTable: "ClassLevels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ArmorProficiencyChoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Options = table.Column<string[]>(type: "text[]", nullable: false),
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArmorProficiencyChoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ArmorProficiencyChoices_AFeature_FeatureId",
+                        column: x => x.FeatureId,
+                        principalTable: "AFeature",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LanguageChoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LanguageChoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LanguageChoices_AFeature_FeatureId",
+                        column: x => x.FeatureId,
+                        principalTable: "AFeature",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SkillProficiencyChoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SkillProficiencyChoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SkillProficiencyChoices_AFeature_FeatureId",
+                        column: x => x.FeatureId,
+                        principalTable: "AFeature",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -565,6 +609,133 @@ namespace DndWebApp.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ToolProficiencyChoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Options = table.Column<string[]>(type: "text[]", nullable: false),
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ToolProficiencyChoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ToolProficiencyChoices_AFeature_FeatureId",
+                        column: x => x.FeatureId,
+                        principalTable: "AFeature",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WeaponCategoryProficiencyChoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Options = table.Column<string[]>(type: "text[]", nullable: false),
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WeaponCategoryProficiencyChoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WeaponCategoryProficiencyChoices_AFeature_FeatureId",
+                        column: x => x.FeatureId,
+                        principalTable: "AFeature",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WeaponTypeProficiencyChoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Options = table.Column<string[]>(type: "text[]", nullable: false),
+                    FeatureId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WeaponTypeProficiencyChoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WeaponTypeProficiencyChoices_AFeature_FeatureId",
+                        column: x => x.FeatureId,
+                        principalTable: "AFeature",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Languages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Family = table.Column<string>(type: "text", nullable: false),
+                    Script = table.Column<string>(type: "text", nullable: false),
+                    TypicalSpeakers = table.Column<List<string>>(type: "text[]", nullable: false),
+                    IsExotic = table.Column<bool>(type: "boolean", nullable: false),
+                    IsHomebrew = table.Column<bool>(type: "boolean", nullable: false),
+                    AFeatureId = table.Column<int>(type: "integer", nullable: true),
+                    LanguageChoiceId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Languages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Languages_AFeature_AFeatureId",
+                        column: x => x.AFeatureId,
+                        principalTable: "AFeature",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Languages_LanguageChoices_LanguageChoiceId",
+                        column: x => x.LanguageChoiceId,
+                        principalTable: "LanguageChoices",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Skills",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    AbilityId = table.Column<int>(type: "integer", nullable: false),
+                    IsHomebrew = table.Column<bool>(type: "boolean", nullable: false),
+                    AFeatureId = table.Column<int>(type: "integer", nullable: true),
+                    SkillProficiencyChoiceId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Skills", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Skills_AFeature_AFeatureId",
+                        column: x => x.AFeatureId,
+                        principalTable: "AFeature",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Skills_AbilityScores_AbilityId",
+                        column: x => x.AbilityId,
+                        principalTable: "AbilityScores",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Skills_SkillProficiencyChoices_SkillProficiencyChoiceId",
+                        column: x => x.SkillProficiencyChoiceId,
+                        principalTable: "SkillProficiencyChoices",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CharacterAbilityScores",
                 columns: table => new
                 {
@@ -575,9 +746,9 @@ namespace DndWebApp.Api.Migrations
                 {
                     table.PrimaryKey("PK_CharacterAbilityScores", x => new { x.AbilityScoresId, x.CharacterId });
                     table.ForeignKey(
-                        name: "FK_CharacterAbilityScores_AbilityValue_AbilityScoresId",
+                        name: "FK_CharacterAbilityScores_AbilityValues_AbilityScoresId",
                         column: x => x.AbilityScoresId,
-                        principalTable: "AbilityValue",
+                        principalTable: "AbilityValues",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -713,14 +884,14 @@ namespace DndWebApp.Api.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    RaceDescription_GeneralDescription = table.Column<string>(type: "text", nullable: false),
-                    RaceDescription_AgingDescription = table.Column<string>(type: "text", nullable: false),
-                    RaceDescription_CommonAlignmentDescription = table.Column<string>(type: "text", nullable: false),
-                    RaceDescription_SizeDescription = table.Column<string>(type: "text", nullable: false),
-                    RaceDescription_LanguageDescription = table.Column<string>(type: "text", nullable: false),
+                    RaceDescription_General = table.Column<string>(type: "text", nullable: false),
+                    RaceDescription_Aging = table.Column<string>(type: "text", nullable: false),
+                    RaceDescription_CommonAlignment = table.Column<string>(type: "text", nullable: false),
+                    RaceDescription_Size = table.Column<string>(type: "text", nullable: false),
+                    RaceDescription_Languages = table.Column<string>(type: "text", nullable: false),
                     IsHomebrew = table.Column<bool>(type: "boolean", nullable: false),
                     Speed = table.Column<int>(type: "integer", nullable: false),
-                    Size = table.Column<int>(type: "integer", nullable: false),
+                    Size = table.Column<string>(type: "text", nullable: false),
                     Discriminator = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     CharacterId = table.Column<int>(type: "integer", nullable: true),
                     ParentRaceId = table.Column<int>(type: "integer", nullable: true)
@@ -742,9 +913,9 @@ namespace DndWebApp.Api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AbilityIncreaseOptions_AbilityIncreaseOptionsId",
-                table: "AbilityIncreaseOptions",
-                column: "AbilityIncreaseOptionsId");
+                name: "IX_AbilityIncreaseChoices_FeatureId",
+                table: "AbilityIncreaseChoices",
+                column: "FeatureId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AbilityIncreases_AbilityIncreasesId",
@@ -752,9 +923,19 @@ namespace DndWebApp.Api.Migrations
                 column: "AbilityIncreasesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AClass_ClassId",
-                table: "AClass",
-                column: "ClassId");
+                name: "IX_AbilityScores_AFeatureId",
+                table: "AbilityScores",
+                column: "AFeatureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbilityValues_AbilityId",
+                table: "AbilityValues",
+                column: "AbilityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AbilityValues_AbilityIncreaseChoiceId",
+                table: "AbilityValues",
+                column: "AbilityIncreaseChoiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AClass_ParentClassId",
@@ -772,11 +953,6 @@ namespace DndWebApp.Api.Migrations
                 column: "BackgroundId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AFeature_ClassLevelId",
-                table: "AFeature",
-                column: "ClassLevelId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AFeature_FromBackgroundId",
                 table: "AFeature",
                 column: "FromBackgroundId");
@@ -792,9 +968,19 @@ namespace DndWebApp.Api.Migrations
                 column: "FromRaceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AFeature_LevelId",
+                table: "AFeature",
+                column: "LevelId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AFeature_Trait_FromRaceId",
                 table: "AFeature",
                 column: "Trait_FromRaceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArmorProficiencyChoices_FeatureId",
+                table: "ArmorProficiencyChoices",
+                column: "FeatureId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CharacterAbilityScores_CharacterId",
@@ -862,9 +1048,39 @@ namespace DndWebApp.Api.Migrations
                 column: "InventoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LanguageChoices_FeatureId",
+                table: "LanguageChoices",
+                column: "FeatureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Languages_AFeatureId",
+                table: "Languages",
+                column: "AFeatureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Languages_LanguageChoiceId",
+                table: "Languages",
+                column: "LanguageChoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SkillProficiencyChoices_FeatureId",
+                table: "SkillProficiencyChoices",
+                column: "FeatureId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Skills_AbilityId",
                 table: "Skills",
                 column: "AbilityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Skills_AFeatureId",
+                table: "Skills",
+                column: "AFeatureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Skills_SkillProficiencyChoiceId",
+                table: "Skills",
+                column: "SkillProficiencyChoiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Species_CharacterId",
@@ -887,19 +1103,39 @@ namespace DndWebApp.Api.Migrations
                 column: "SpellsGainedId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StartingEquipmentOption_ClassId",
-                table: "StartingEquipmentOption",
+                name: "IX_StartingEquipmentChoice_ClassId",
+                table: "StartingEquipmentChoice",
                 column: "ClassId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StartingEquipmentOption_EquipmentId",
+                table: "StartingEquipmentOption",
+                column: "EquipmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StartingItemOption_BackgroundId",
                 table: "StartingItemOption",
                 column: "BackgroundId");
 
+            migrationBuilder.CreateIndex(
+                name: "IX_ToolProficiencyChoices_FeatureId",
+                table: "ToolProficiencyChoices",
+                column: "FeatureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WeaponCategoryProficiencyChoices_FeatureId",
+                table: "WeaponCategoryProficiencyChoices",
+                column: "FeatureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WeaponTypeProficiencyChoices_FeatureId",
+                table: "WeaponTypeProficiencyChoices",
+                column: "FeatureId");
+
             migrationBuilder.AddForeignKey(
-                name: "FK_AbilityIncreaseOptions_AFeature_AFeature1Id",
-                table: "AbilityIncreaseOptions",
-                column: "AFeature1Id",
+                name: "FK_AbilityIncreaseChoices_AFeature_FeatureId",
+                table: "AbilityIncreaseChoices",
+                column: "FeatureId",
                 principalTable: "AFeature",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -911,6 +1147,21 @@ namespace DndWebApp.Api.Migrations
                 principalTable: "AFeature",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AbilityIncreases_AbilityValues_AbilityIncreasesId",
+                table: "AbilityIncreases",
+                column: "AbilityIncreasesId",
+                principalTable: "AbilityValues",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AbilityScores_AFeature_AFeatureId",
+                table: "AbilityScores",
+                column: "AFeatureId",
+                principalTable: "AFeature",
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AFeature_Species_FromRaceId",
@@ -975,13 +1226,13 @@ namespace DndWebApp.Api.Migrations
                 table: "Characters");
 
             migrationBuilder.DropTable(
-                name: "AbilityIncreaseOptions");
-
-            migrationBuilder.DropTable(
                 name: "AbilityIncreases");
 
             migrationBuilder.DropTable(
                 name: "Alignments");
+
+            migrationBuilder.DropTable(
+                name: "ArmorProficiencyChoices");
 
             migrationBuilder.DropTable(
                 name: "CharacterAbilityScores");
@@ -1020,22 +1271,43 @@ namespace DndWebApp.Api.Migrations
                 name: "ToolActivity");
 
             migrationBuilder.DropTable(
+                name: "ToolProficiencyChoices");
+
+            migrationBuilder.DropTable(
                 name: "ToolProperty");
 
             migrationBuilder.DropTable(
-                name: "AbilityValue");
+                name: "WeaponCategoryProficiencyChoices");
+
+            migrationBuilder.DropTable(
+                name: "WeaponTypeProficiencyChoices");
+
+            migrationBuilder.DropTable(
+                name: "AbilityValues");
+
+            migrationBuilder.DropTable(
+                name: "LanguageChoices");
+
+            migrationBuilder.DropTable(
+                name: "SkillProficiencyChoices");
+
+            migrationBuilder.DropTable(
+                name: "Spells");
+
+            migrationBuilder.DropTable(
+                name: "StartingEquipmentChoice");
+
+            migrationBuilder.DropTable(
+                name: "Items");
+
+            migrationBuilder.DropTable(
+                name: "AbilityIncreaseChoices");
 
             migrationBuilder.DropTable(
                 name: "AbilityScores");
 
             migrationBuilder.DropTable(
                 name: "AFeature");
-
-            migrationBuilder.DropTable(
-                name: "Spells");
-
-            migrationBuilder.DropTable(
-                name: "Items");
 
             migrationBuilder.DropTable(
                 name: "ClassLevels");

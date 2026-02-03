@@ -1,6 +1,7 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Repositories.Interfaces;
@@ -16,7 +17,7 @@ public class ExternalSkillService(ISkillRepository repo, IAbilityRepository abil
         if ((await repo.GetAllAsync()).Count > 0)
         {
             logger.LogInformation("Skills already exist in the database. Skipping fetch.");
-            throw new InvalidOperationException("Skills already exist in the database. Skipping fetch.");
+            return;
         }
         
         logger.LogInformation("Fetching external skills.");
@@ -39,8 +40,8 @@ public class ExternalSkillService(ISkillRepository repo, IAbilityRepository abil
                 throw new InvalidOperationException($"Failed to deserialize skill {item.Index}.");
             }
 
-            var ability = await abilityRepo.GetByNameAsync(eSkill.Ability.Name)
-                ?? throw new ArgumentException($"Ability with short name {eSkill.Ability.Name} not found.");
+            var ability = await abilityRepo.GetByShortNameAsync(eSkill.Ability.Name)
+                ?? throw new NotFoundException($"Ability with short name {eSkill.Ability.Name} not found.");
 
             var skill = new Skill
             {

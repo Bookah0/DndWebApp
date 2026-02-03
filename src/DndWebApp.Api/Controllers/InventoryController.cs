@@ -20,11 +20,11 @@ public class InventoryController(IInventoryService service, IMapper mapper) : Co
     }
 
     [HttpPost("{itemId}")]
-    public async Task<ActionResult> AddItem(int itemId, int characterId)
+    public async Task<ActionResult<InventoryResponseDto>> AddItem(int itemId, int characterId)
     {
         var inventory = await service.GetByCharacterIdAsync(characterId);
-        await service.AddItem(inventory, itemId);
-        return Ok();
+        var updatedInventory = await service.AddItem(inventory, itemId);
+        return Ok(mapper.Map<InventoryResponseDto>(updatedInventory));
     }
 
 
@@ -37,19 +37,19 @@ public class InventoryController(IInventoryService service, IMapper mapper) : Co
     }
 
     [HttpPatch("/equipment/{itemId}/{slot}")]
-    public async Task<ActionResult> EquipItem(int itemId, int characterId, string slot)
+    public async Task<ActionResult<InventoryResponseDto>> EquipItem(int itemId, int characterId, string slot)
     {
         var inventory = await service.GetByCharacterIdAsync(characterId);
-        await service.Equip(inventory, itemId, slot);
-        return Ok();
+        var updatedInventory = await service.Equip(inventory, itemId, slot);
+        return Ok(mapper.Map<InventoryResponseDto>(updatedInventory));
     }
 
     [HttpPatch("/equipment/{itemId}")]
-    public async Task<ActionResult> EquipItem(int itemId, int characterId)
+    public async Task<ActionResult<InventoryResponseDto>> EquipItem(int itemId, int characterId)
     {
         var inventory = await service.GetByCharacterIdAsync(characterId);
-        await service.Equip(inventory, itemId);
-        return Ok();
+        var updatedInventory = await service.Equip(inventory, itemId);
+        return Ok(mapper.Map<InventoryResponseDto>(updatedInventory));
     }
 
     [HttpDelete("/equipment/{itemId}")]

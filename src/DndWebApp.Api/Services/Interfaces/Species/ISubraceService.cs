@@ -11,5 +11,5 @@ public interface ISubraceService
     Task<Subrace> GetByIdAsync(int id);
     Task<Subrace> GetWithTraitsAsync(int id);
     Task<Subrace> GetWithAllDataAsync(int id);
-    Task UpdateAsync(int id, SubraceDto dto);
+    Task<Subrace> UpdateAsync(int id, SubraceDto dto);
 }

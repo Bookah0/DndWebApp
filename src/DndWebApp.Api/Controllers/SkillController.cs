@@ -32,10 +32,10 @@ public class SkillController(ISkillService service, IMapper mapper) : Controller
     }
 
     [HttpPatch("{skillId}")]
-    public async Task<ActionResult> UpdateSkill(int skillId, [FromBody] SkillDto dto)
+    public async Task<ActionResult<SkillResponseDto>> UpdateSkill(int skillId, [FromBody] SkillDto dto)
     {
-        await service.UpdateAsync(skillId, dto);
-        return Ok();
+        var updated = await service.UpdateAsync(skillId, dto);
+        return Ok(mapper.Map<SkillResponseDto>(updated));
     }
 
     [HttpDelete("{skillId}")]

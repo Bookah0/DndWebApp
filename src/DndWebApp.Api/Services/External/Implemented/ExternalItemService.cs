@@ -24,7 +24,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         if (existingCount > 0)
         {
             logger.LogInformation("Items already exist in the database. Skipping fetch. ExistingCount: {ExistingCount}", existingCount);
-            throw new InvalidOperationException("Items already exist in the database. Skipping fetch.");
+            return;
         }
 
         logger.LogInformation("Fetching external basic items.");
@@ -58,7 +58,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
                     break;
                 case "waterborne-vehicles":
                 case "mounts-and-vehicles":
-                    await repo.CreateAsync(ToVehicle(jsonDoc, item, category));
+                    await repo.CreateAsync(ToVehicle(jsonDoc, item));
                     break;
                 default:
                     await repo.CreateAsync(ToItem(jsonDoc, item));
@@ -150,21 +150,18 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         };
     }
 
-    private Vehicle ToVehicle(JsonDocument jsonDoc, EIndexDto item, string category)
+    private Vehicle ToVehicle(JsonDocument jsonDoc, EIndexDto item)
     {
         var eVehicle = jsonDoc.RootElement.Deserialize<EVehicleDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize vehicle: {item.Index}");
 
         int? capacityValue = int.TryParse(eVehicle.Capacity?.Split(' ')[0], out var cap) ? cap : null;
-        string? capacityUnit = eVehicle.Capacity?.Split(' ')[1] ?? null;
-        
-        var itemCategory = ResolveOptionOrThrow(eVehicle.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
-
+        string? capacityUnit = eVehicle.Capacity?.Split(' ')[1] ?? null;;
         return new Vehicle
         {
             Name = eVehicle.Name,
             Description = eVehicle.Description == null ? "" : string.Join(" ", eVehicle.Description),
-            Categories = [itemCategory],
+            Categories = [ItemCategory.Mount, ItemCategory.Vehicle],
             Rarity = ItemRarity.Common,
             Weight = eVehicle.Weight,
             Value = GetConvertedValue(eVehicle.Cost.Quantity, eVehicle.Cost.Unit),
@@ -233,7 +230,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             CurrencyUtil.Electrum => value * 50,
             CurrencyUtil.Gold => value * 100,
             CurrencyUtil.Platinum => value * 1000,
-            _ => throw new ArgumentOutOfRangeException($"Unknown currency unit: {unit}"),
+            _ => throw new ValidationException($"Unknown currency unit: {unit}"),
         };
     }
 }

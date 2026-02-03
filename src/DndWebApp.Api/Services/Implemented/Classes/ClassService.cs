@@ -58,7 +58,7 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(int id, ClassDto dto)
+    public async Task<Class> UpdateAsync(int id, ClassDto dto)
     {
         var clss = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
         logger.LogInformation("Updating class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
@@ -68,6 +68,7 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
         clss.HitDie = dto.HitDie;   
         await repo.UpdateAsync(clss);
         logger.LogInformation("Successfully updated class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
+        return clss;
     }
 
     public ICollection<Class> SortBy(ICollection<Class> classes, bool descending = false)

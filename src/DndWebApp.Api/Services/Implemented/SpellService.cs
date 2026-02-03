@@ -31,12 +31,11 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
         var dtoDamageTypes = ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type");
 
         if (dto.Level <= 0)
-            throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
+            throw new ValidationException($"Spell level is set to {dto.Level}. It must be greater than 0");
         if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet)
-            throw new ArgumentOutOfRangeException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
+            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
         if (dto.TargetingDto.RangeValue % 5 != 0 && dtoSpellRange == SpellRange.Feet)
-            throw new ArgumentOutOfRangeException($"Range value is set to {dto.TargetingDto.RangeValue}. It must be 5*n (feet).");
-
+            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue}. It must be 5*n (feet).");
         var spell = new Spell()
         {
             Name = dto.Name,
@@ -77,9 +76,13 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
 
     public async Task DeleteAsync(int id)
     {
-        logger.LogInformation("Deleting spell, ID: {SpellId}", id);
+        var spell = await repo.GetByIdAsync(id) 
+            ?? throw new NotFoundException("Spell could not be found");
+    
+        if(!spell.IsHomebrew)
+            throw new ValidationException("Cannot delete a base spell.");
 
-        var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
+        logger.LogInformation("Deleting spell, ID: {SpellId}", id);
         var spellName = spell.Name;
         await repo.DeleteAsync(spell);
 
@@ -98,12 +101,11 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
         if (dto.Name is not null)
             dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
         if (dto.MinLevel is not null && dto.MaxLevel is not null && dto.MinLevel > dto.MaxLevel)
-            throw new ArgumentOutOfRangeException(nameof(dto), "Maximum level must be greater than or equal to minimum level");
+            throw new ValidationException("Maximum level must be greater than or equal to minimum level");
         if (dto.MinLevel is not null && dto.MinLevel < 0)
-            throw new ArgumentOutOfRangeException(nameof(dto), "Minimum level must be greater than or equal to zero");
+            throw new ValidationException("Minimum level must be greater than or equal to zero");
         if (dto.MaxLevel is not null && dto.MaxLevel < 0)
-            throw new ArgumentOutOfRangeException(nameof(dto), "Maximum level must be greater than or equal to zero");
-
+            throw new ValidationException("Maximum level must be greater than or equal to zero");
         if (dto.ClassIds != null)
         {
             if (dto.ClassIds.HasDuplicates())
@@ -150,13 +152,13 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
 
     public async Task<Spell> GetByIdAsync(int id)
     {
-        var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
+        var spell = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Spell could not be found");
         return spell;
     }
 
-    public async Task UpdateAsync(int id, SpellDto dto)
+    public async Task<Spell> UpdateAsync(int id, SpellDto dto)
     {
-        var spell = await repo.GetByIdAsync(id) ?? throw new NullReferenceException("Spell could not be found");
+        var spell = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Spell could not be found");
         logger.LogInformation("Updating spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
 
         var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
@@ -168,12 +170,11 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
         var dtoDamageTypes = ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type");
 
         if (dto.Level <= 0)
-            throw new ArgumentOutOfRangeException($"Spell level is set to {dto.Level}. It must be greater than 0");
+            throw new ValidationException($"Spell level is set to {dto.Level}. It must be greater than 0");
         if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet)
-            throw new ArgumentOutOfRangeException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
+            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
         if (dto.TargetingDto.RangeValue % 5 != 0 && dtoSpellRange == SpellRange.Feet)
-            throw new ArgumentOutOfRangeException($"Range value is set to {dto.TargetingDto.RangeValue}. It must be 5*n (feet).");
-
+            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue}. It must be 5*n (feet).");
         spell.Name = dto.Name;
         spell.Description = dto.Description;
         spell.IsHomebrew = dto.IsHomebrew;
@@ -203,6 +204,7 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
 
         await repo.UpdateAsync(spell);
         logger.LogInformation("Successfully updated spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
+        return spell;
     }
 
     // TODO move sorting logic to repository when implementing database level sorting
@@ -219,7 +221,7 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
             SortSpellOption.Duration => OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
             SortSpellOption.Target => OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
             SortSpellOption.Range => OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

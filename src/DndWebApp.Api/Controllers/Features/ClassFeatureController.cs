@@ -46,11 +46,11 @@ public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDt
     }
 
     [HttpPatch("{featureId}")]
-    public async Task<ActionResult> UpdateClassFeature(int classId, int featureId, [FromBody] ClassFeatureDto dto)
+    public async Task<ActionResult<ClassFeatureResponseDto>> UpdateClassFeature(int classId, int featureId, [FromBody] ClassFeatureDto dto)
     {
         await EnsureFeatureBelongsToClass(classId, featureId);
-        await service.UpdateAsync(dto, featureId);
-        return Ok();
+        var updatedFeature = await service.UpdateAsync(dto, featureId);
+        return Ok(mapper.Map<ClassFeatureResponseDto>(updatedFeature));
     }
 
     [HttpDelete("{featureId}")]
@@ -63,11 +63,11 @@ public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDt
 
     // Spell management endpoints
     [HttpPost("{featureId}/spells/{spellId}")]
-    public async Task<ActionResult> AddSpell(int classId, int featureId, int spellId)
+    public async Task<ActionResult<ClassFeatureResponseDto>> AddSpell(int classId, int featureId, int spellId)
     {
         await EnsureFeatureBelongsToClass(classId, featureId);
-        await service.AddSpell(spellId, featureId);
-        return Ok();
+        var updatedFeature = await service.AddSpell(spellId, featureId);
+        return Ok(mapper.Map<ClassFeatureResponseDto>(updatedFeature));
     }
 
     [HttpDelete("{featureId}/spells/{spellId}")]
@@ -80,11 +80,11 @@ public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDt
 
     // Proficiency management endpoints
     [HttpPost("{featureId}/proficiencies")]
-    public async Task<ActionResult> AddProficiency(int classId, int featureId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<ClassFeatureResponseDto>> AddProficiency(int classId, int featureId, [FromBody] ProficiencyDto proficiency)
     {
         await EnsureFeatureBelongsToClass(classId, featureId);
-        await service.AddProficiency(proficiency, featureId);
-        return Ok();
+        var updatedFeature = await service.AddProficiency(proficiency, featureId);
+        return Ok(mapper.Map<ClassFeatureResponseDto>(updatedFeature));
     }
 
     [HttpDelete("{featureId}/proficiencies")]
@@ -97,11 +97,11 @@ public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDt
 
     // Ability increase management endpoints
     [HttpPost("{featureId}/ability-increases")]
-    public async Task<ActionResult> AddAbilityIncrease(int classId, int featureId, [FromBody] AbilityValueDto increase)
+    public async Task<ActionResult<ClassFeatureResponseDto>> AddAbilityIncrease(int classId, int featureId, [FromBody] AbilityValueDto increase)
     {
         await EnsureFeatureBelongsToClass(classId, featureId);
-        await service.AddAbilityIncrease(increase.AbilityId, increase.Value, featureId);
-        return Ok();
+        var updatedFeature = await service.AddAbilityIncrease(increase.AbilityId, increase.Value, featureId);
+        return Ok(mapper.Map<ClassFeatureResponseDto>(updatedFeature));
     }
 
     [HttpDelete("{featureId}/ability-increases")]

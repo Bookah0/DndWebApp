@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DndWebApp.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]s")]
+[Route("api/abilities")]
 public class AbilityController(IAbilityService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]

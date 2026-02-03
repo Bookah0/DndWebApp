@@ -14,8 +14,10 @@ public static class ConstantsUtil
         foreach (var input in inputs)
         {
             if (TryResolveOption(input, allowedSet, out var resolvedOption))
+            {
                 resolved.Add(resolvedOption!);
-        
+                continue;
+            }
             throw new NotFoundException($"{constantsGroupName} {input} not recognized.");
         }
         return resolved;
@@ -114,7 +116,7 @@ public static class ConstantsUtil
             WeaponType.Longbow => EquipSlot.Ranged,
             WeaponType.Net => EquipSlot.Ranged,
             
-            _ => throw new ArgumentException($"Unknown weapon type: {weaponType}")
+            _ => throw new ValidationException($"Unknown weapon type: {weaponType}")
         };
     }
 }

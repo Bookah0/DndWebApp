@@ -33,10 +33,10 @@ public class RaceController(IRaceService service, IMapper mapper) : ControllerBa
     }
 
     [HttpPatch("{raceId}")]
-    public async Task<ActionResult> UpdateRace(int raceId, [FromBody] RaceDto dto)
+    public async Task<ActionResult<RaceResponseDto>> UpdateRace(int raceId, [FromBody] RaceDto dto)
     {
-        await service.UpdateAsync(raceId, dto);
-        return Ok();
+        var updatedRace = await service.UpdateAsync(raceId, dto);
+        return Ok(mapper.Map<RaceResponseDto>(updatedRace));
     }
 
     [HttpDelete("{raceId}")]

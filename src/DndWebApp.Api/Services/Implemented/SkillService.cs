@@ -33,6 +33,8 @@ public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo,
     {
         var skill = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException("Skill could not be found");
+        if(!skill.IsHomebrew)
+            throw new ValidationException("Cannot delete a base skill.");
         
         logger.LogInformation("Deleting skill with Name: {SkillName}, ID: {SkillId}", skill.Name, id);
         await repo.DeleteAsync(skill);
@@ -58,7 +60,7 @@ public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo,
         return skill;
     }
 
-    public async Task UpdateAsync(int id, SkillDto dto)
+    public async Task<Skill> UpdateAsync(int id, SkillDto dto)
     {
         var skill = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Skill could not be found");
         logger.LogInformation("Updating skill, Name: {SkillName}, ID: {SkillId}", skill.Name, id);
@@ -74,6 +76,7 @@ public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo,
     
         await repo.UpdateAsync(skill);
         logger.LogInformation("Successfully updated skill, Name: {SkillName}, ID: {SkillId}", skill.Name, skill.Id);
+        return skill;
     }
 
     // TODO move sorting logic to repository when implementing database level sorting
@@ -88,7 +91,7 @@ public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo,
         {
             SortSkillOption.Name => OrderByMany(skills, [(s => s.Name)], descending),
             SortSkillOption.Ability => OrderByMany(skills, [(s => abilityOrder[s.Ability!.FullName]), (s => s.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}"),
         };
     }
 }

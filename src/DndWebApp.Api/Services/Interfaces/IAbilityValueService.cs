@@ -10,5 +10,5 @@ public interface IAbilityValueService
     Task<ICollection<AbilityValue>> GetAllAsync();
     Task<AbilityValue> GetByIdAsync(int id);
     Task<AbilityValue> GetWithAbilityAsync(int id);
-    Task SetValueAsync(int id, int newValue);
+    Task<AbilityValue> SetValueAsync(int id, int newValue);
 }

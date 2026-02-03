@@ -49,7 +49,7 @@ public class FeatService(
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
     }
 
-    public async override Task UpdateAsync(FeatDto dto, int id)
+    public async override Task<Feat> UpdateAsync(FeatDto dto, int id)
     {
         var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
         logger.LogInformation("Updating feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
@@ -58,6 +58,7 @@ public class FeatService(
         feat.Description = dto.Description;
         await repo.UpdateAsync(feat);
         logger.LogInformation("Successfully updated feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
+        return feat;
     }
 
     public ICollection<Feat> SortBy(ICollection<Feat> feats, bool descending = false)

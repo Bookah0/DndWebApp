@@ -74,7 +74,7 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
         return await repo.GetWithTraitsAsync(id) ?? throw new NotFoundException($"Subrace with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(int id, SubraceDto dto)
+    public async Task<Subrace> UpdateAsync(int id, SubraceDto dto)
     {
         var subrace = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Subrace with id {id} could not be found");
@@ -102,5 +102,6 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
 
         await repo.UpdateAsync(subrace);
         logger.LogInformation("Successfully updated subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
+        return subrace;
     }
 }

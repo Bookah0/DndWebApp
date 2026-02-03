@@ -41,12 +41,12 @@ public class SubclassLevelController(ISubclassService service, IClassService cla
     }
 
     [HttpPatch("{levelId}")]
-    public async Task<ActionResult> UpdateClassLevel(int subclassId, int levelId, int classId, [FromBody] ClassLevelDto dto)
+    public async Task<ActionResult<ClassLevelResponseDto>> UpdateClassLevel(int subclassId, int levelId, int classId, [FromBody] ClassLevelDto dto)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
         await EnsureLevelBelongsToSubclass(subclassId, levelId);
-        await levelService.UpdateAsync(levelId, dto);
-        return Ok();
+        var updatedLevel = await levelService.UpdateAsync(levelId, dto);
+        return Ok(mapper.Map<ClassLevelResponseDto>(updatedLevel));
     }
 
     [HttpDelete("{levelId}")]

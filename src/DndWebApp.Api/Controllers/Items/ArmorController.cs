@@ -32,10 +32,10 @@ public class ArmorController(IArmorService service, IMapper mapper) : Controller
     }
 
     [HttpPatch("{armorId}")]
-    public async Task<ActionResult> UpdateArmor(int armorId, [FromBody] ArmorDto dto)
+    public async Task<ActionResult<ArmorResponseDto>> UpdateArmor(int armorId, [FromBody] ArmorDto dto)
     {
-        await service.UpdateAsync(dto, armorId);
-        return Ok();
+        var updatedArmor = await service.UpdateAsync(dto, armorId);
+        return Ok(mapper.Map<ArmorResponseDto>(updatedArmor));
     }
 
 

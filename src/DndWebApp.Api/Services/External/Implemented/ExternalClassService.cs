@@ -1,6 +1,7 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.Features;
@@ -42,7 +43,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
             if (eClass.SpellcastingAbility is not null)
             {
                 spellcastingAbility = await abilityRepo.GetByShortNameAsync(eClass.SpellcastingAbility.SpellcastingAbility.Name)
-                    ?? throw new ArgumentException($"Ability with short name {eClass.SpellcastingAbility.SpellcastingAbility.Index} not found.");
+                    ?? throw new NotFoundException($"Ability with short name {eClass.SpellcastingAbility.SpellcastingAbility.Index} not found.");
             }
 
             var clss = new Class
@@ -198,7 +199,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
         foreach (var eItem in eClass.StartingEquipment)
         {
             var item = await itemRepository.GetByNameAsync(eItem.Equipment.Name)
-                ?? throw new ArgumentException($"Item with name {eItem.Equipment.Name} not found.");
+                ?? throw new NotFoundException($"Item with name {eItem.Equipment.Name} not found.");
 
             clss.StartingEquipment.Add(item);
         }
@@ -226,7 +227,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
                 if (eOption.Equipment is not null)
                 {
                     var item = await itemRepository.GetByNameAsync(eOption.Equipment.Name)
-                        ?? throw new ArgumentException($"Item with name {eOption.Equipment.Name} not found.");
+                        ?? throw new NotFoundException($"Item with name {eOption.Equipment.Name} not found.");
 
                     var option = new StartingEquipmentOption
                     {

@@ -53,7 +53,7 @@ public class AbilityValueService(IAbilityValueRepository repo, IAbilityRepositor
         return await repo.GetWithAbilityAsync(id) ?? throw new NotFoundException("Ability value could not be found");
     }
 
-    public async Task SetValueAsync(int id, int newValue)
+    public async Task<AbilityValue> SetValueAsync(int id, int newValue)
     {
         var abilityValue = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException("Ability value could not be found");
@@ -64,5 +64,6 @@ public class AbilityValueService(IAbilityValueRepository repo, IAbilityRepositor
         await repo.UpdateAsync(abilityValue);
 
         logger.LogInformation("Successfully updated ability value, ID: {AbilityValueId}, NewValue: {NewValue}", id, newValue);
+        return abilityValue;
     }
 }

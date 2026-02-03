@@ -44,11 +44,11 @@ public class BackgroundFeatureController(IFeatureService<BackgroundFeature, Back
     }
 
     [HttpPatch("{featureId}")]
-    public async Task<ActionResult> UpdateBackgroundFeature(int featureId, int backgroundId, [FromBody] BackgroundFeatureDto dto)
+    public async Task<ActionResult<BackgroundFeatureResponseDto>> UpdateBackgroundFeature(int featureId, int backgroundId, [FromBody] BackgroundFeatureDto dto)
     {
         await EnsureFeatureBelongsToBackground(backgroundId, featureId);
-        await service.UpdateAsync(dto, featureId);
-        return Ok();
+        var updatedFeature = await service.UpdateAsync(dto, featureId);
+        return Ok(mapper.Map<BackgroundFeatureResponseDto>(updatedFeature));
     }
 
     [HttpDelete("{featureId}")]
@@ -61,11 +61,11 @@ public class BackgroundFeatureController(IFeatureService<BackgroundFeature, Back
 
     // Spell management endpoints
     [HttpPost("{featureId}/spells/{spellId}")]
-    public async Task<ActionResult> AddSpell(int featureId, int spellId, int backgroundId)
+    public async Task<ActionResult<BackgroundFeatureResponseDto>> AddSpell(int featureId, int spellId, int backgroundId)
     {
         await EnsureFeatureBelongsToBackground(backgroundId, featureId);
-        await service.AddSpell(spellId, featureId);
-        return Ok();
+        var updatedFeature = await service.AddSpell(spellId, featureId);
+        return Ok(mapper.Map<BackgroundFeatureResponseDto>(updatedFeature));
     }
     
     [HttpDelete("{featureId}/spells/{spellId}")]
@@ -78,11 +78,11 @@ public class BackgroundFeatureController(IFeatureService<BackgroundFeature, Back
 
     // Proficiency management endpoints
     [HttpPost("{featureId}/proficiencies")]
-    public async Task<ActionResult> AddProficiency(int featureId, int backgroundId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<BackgroundFeatureResponseDto>> AddProficiency(int featureId, int backgroundId, [FromBody] ProficiencyDto proficiency)
     {
         await EnsureFeatureBelongsToBackground(backgroundId, featureId);
-        await service.AddProficiency(proficiency, featureId);
-        return Ok();
+        var updatedFeature = await service.AddProficiency(proficiency, featureId);
+        return Ok(mapper.Map<BackgroundFeatureResponseDto>(updatedFeature));
     }
 
     [HttpDelete("{featureId}/proficiencies")]
@@ -95,11 +95,11 @@ public class BackgroundFeatureController(IFeatureService<BackgroundFeature, Back
 
     // Ability increase management endpoints
     [HttpPost("{featureId}/ability-increases")]
-    public async Task<ActionResult> AddAbilityIncrease(int featureId, int backgroundId, [FromBody] AbilityValueDto increase)
+    public async Task<ActionResult<BackgroundFeatureResponseDto>> AddAbilityIncrease(int featureId, int backgroundId, [FromBody] AbilityValueDto increase)
     {
         await EnsureFeatureBelongsToBackground(backgroundId, featureId);
-        await service.AddAbilityIncrease(increase.AbilityId, increase.Value, featureId);
-        return Ok();
+        var updatedFeature = await service.AddAbilityIncrease(increase.AbilityId, increase.Value, featureId);
+        return Ok(mapper.Map<BackgroundFeatureResponseDto>(updatedFeature));
     }
 
     [HttpDelete("{featureId}/ability-increases")]

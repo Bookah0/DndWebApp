@@ -6,7 +6,49 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DndWebApp.Api.Controllers.Features;
 
-public abstract class BaseChoicesController<F, FD>(IChoiceService<F> choiceService, IFeatureService<F, FD> featureService) : ControllerBase where F : AFeature where FD : AFeatureDto
+[ApiController]
+[Route("api/races/{raceId}/traits/{traitId}")]
+public class RaceTraitChoicesController : ChoicesControllerBase<Trait, TraitDto>
+{
+    public RaceTraitChoicesController(IChoiceService<Trait> service, IFeatureService<Trait, TraitDto> featureService) : base(service, featureService) { }
+}
+
+[ApiController]
+[Route("api/races/{raceId}/subraces/{subraceId}/traits/{traitId}")]
+public class SubraceTraitChoicesController : ChoicesControllerBase<Trait, TraitDto>
+{
+    public SubraceTraitChoicesController(IChoiceService<Trait> service, IFeatureService<Trait, TraitDto> featureService) : base(service, featureService) { }
+}
+
+[ApiController]
+[Route("api/classes/{classId}/features/{featureId}")]
+public class ClassChoicesController : ChoicesControllerBase<ClassFeature, ClassFeatureDto>
+{
+    public ClassChoicesController(IChoiceService<ClassFeature> service, IFeatureService<ClassFeature, ClassFeatureDto> featureService) : base(service, featureService) { }
+}
+
+[ApiController]
+[Route("api/classes/{classId}/subclasses/{subclassId}/features/{featureId}")]
+public class SubclassClassChoicesController : ChoicesControllerBase<ClassFeature, ClassFeatureDto>
+{
+    public SubclassClassChoicesController(IChoiceService<ClassFeature> service, IFeatureService<ClassFeature, ClassFeatureDto> featureService) : base(service, featureService) { }
+}
+
+[ApiController]
+[Route("api/backgrounds/{backgroundId}/features/{featureId}")]
+public class BackgroundChoicesController : ChoicesControllerBase<BackgroundFeature, BackgroundFeatureDto>
+{
+    public BackgroundChoicesController(IChoiceService<BackgroundFeature> service, IFeatureService<BackgroundFeature, BackgroundFeatureDto> featureService) : base(service, featureService) { }
+}
+
+[ApiController]
+[Route("api/feats/{featId}")]
+public class FeatChoicesController : ChoicesControllerBase<Feat, FeatDto>
+{
+    public FeatChoicesController(IChoiceService<Feat> service, IFeatureService<Feat, FeatDto> featureService) : base(service, featureService) { }
+}
+
+public abstract class ChoicesControllerBase<F, FD>(IChoiceService<F> choiceService, IFeatureService<F, FD> featureService) : ControllerBase where F : AFeature where FD : AFeatureDto
 {
     [HttpPost("ability-increases/choices")] 
     public async Task<ActionResult> AddAbilityIncreaseChoice(int featureId, AbilityIncreaseChoiceDto dto)

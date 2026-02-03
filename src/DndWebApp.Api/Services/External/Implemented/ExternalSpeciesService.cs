@@ -1,6 +1,7 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Characters.Constants;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
@@ -133,7 +134,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
         foreach (var abilityIncrease in eSpecies.AbilityBonuses)
         {
             var ability = await abilityRepo.GetByShortNameAsync(abilityIncrease.AbilityScore.Name)
-                ?? throw new ArgumentException($"Ability with short name {abilityIncrease.AbilityScore.Name} not found.");
+                ?? throw new NotFoundException($"Ability with short name {abilityIncrease.AbilityScore.Name} not found.");
 
             abilityIncreases.Add(new AbilityValue
             {

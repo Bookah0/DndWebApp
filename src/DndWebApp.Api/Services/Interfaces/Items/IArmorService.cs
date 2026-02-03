@@ -11,6 +11,6 @@ public interface IArmorService
     Task DeleteAsync(int id);
     Task<ICollection<Armor>> GetAllAsync();
     Task<Armor> GetByIdAsync(int id);
-    Task UpdateAsync(ArmorDto dto, int id);
+    Task<Armor> UpdateAsync(ArmorDto dto, int id);
     ICollection<Armor> SortBy(ICollection<Armor> armors, string sortFilter, bool descending = false);
 }

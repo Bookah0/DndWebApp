@@ -7,7 +7,49 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DndWebApp.Api.Controllers.Features;
 
-public abstract class BaseOptionsController<F>(IChoiceService<F> choiceService) : ControllerBase where F : AFeature
+[ApiController]
+[Route("api/races/{raceId}/traits/{traitId}")]
+public class RaceTraitOptionsController : OptionsControllerBase<Trait>
+{
+    public RaceTraitOptionsController(IChoiceService<Trait> service) : base(service) { }
+}
+
+[ApiController]
+[Route("api/races/{raceId}/subraces/{subraceId}/traits/{traitId}")]
+public class SubraceTraitOptionsController : OptionsControllerBase<Trait>
+{
+    public SubraceTraitOptionsController(IChoiceService<Trait> service) : base(service) { }
+}
+
+[ApiController]
+[Route("api/classes/{classId}/features/{featureId}")]
+public class ClassOptionsController : OptionsControllerBase<ClassFeature>
+{
+    public ClassOptionsController(IChoiceService<ClassFeature> service) : base(service) { }
+}
+
+[ApiController]
+[Route("api/classes/{classId}/subclasses/{subclassId}/features/{featureId}")]
+public class SubclassClassOptionsController : OptionsControllerBase<ClassFeature>
+{
+    public SubclassClassOptionsController(IChoiceService<ClassFeature> service) : base(service) { }
+}
+
+[ApiController]
+[Route("api/backgrounds/{backgroundId}/features/{featureId}")]
+public class BackgroundOptionsController : OptionsControllerBase<BackgroundFeature>
+{
+    public BackgroundOptionsController(IChoiceService<BackgroundFeature> service) : base(service) { }
+}
+
+[ApiController]
+[Route("api/feats/{featId}")]
+public class FeatOptionsController : OptionsControllerBase<Feat>
+{
+    public FeatOptionsController(IChoiceService<Feat> service) : base(service) { }
+}
+
+public abstract class OptionsControllerBase<F>(IChoiceService<F> choiceService) : ControllerBase where F : AFeature
 {
     [HttpPost("ability-increases/choices/{choiceId}/options")] 
     public async Task<ActionResult> AddAbilityIncreaseOption(int featId, int choiceId, [FromBody] AbilityValueDto dto)

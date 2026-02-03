@@ -36,20 +36,20 @@ public class SubclassController(ISubclassService service, IClassService classSer
     }
 
     [HttpPatch("{subclassId}")]
-    public async Task<ActionResult> UpdateSubclass(int subclassId, int classId, [FromBody] ClassDto dto)
+    public async Task<ActionResult<SubclassResponseDto>> UpdateSubclass(int subclassId, int classId, [FromBody] ClassDto dto)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
-        await service.UpdateAsync(subclassId, dto);
-        return Ok();
+        var updatedSubclass = await service.UpdateAsync(subclassId, dto);
+        return Ok(mapper.Map<SubclassResponseDto>(updatedSubclass));
     }
 
     [HttpPatch("{subclassId}/{newParentClassId}")]
-    public async Task<ActionResult> UpdateSubclass(int subclassId, int newParentClassId, int classId, [FromBody] ClassDto dto)
+    public async Task<ActionResult<SubclassResponseDto>> UpdateSubclass(int subclassId, int newParentClassId, int classId, [FromBody] ClassDto dto)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
-        await service.UpdateAsync(subclassId, dto);
+        var updatedSubclass = await service.UpdateAsync(subclassId, dto);
         await EnsureSubclassBelongsToParentClass(newParentClassId, subclassId);
-        return Ok();
+        return Ok(mapper.Map<SubclassResponseDto>(updatedSubclass));
     }
 
     [HttpDelete("{subclassId}")]

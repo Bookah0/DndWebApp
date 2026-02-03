@@ -12,6 +12,6 @@ public interface IClassService
     Task<Class> GetWithSubclassesAsync(int id);
     Task<Class> GetWithLevelsAsync(int id);
     Task<Class> GetWithFeaturesAsync(int id);
-    Task UpdateAsync(int id, ClassDto dto);
+    Task<Class> UpdateAsync(int id, ClassDto dto);
     ICollection<Class> SortBy(ICollection<Class> classes, bool descending = false);
 }

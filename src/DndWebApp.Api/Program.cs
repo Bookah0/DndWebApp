@@ -110,6 +110,7 @@ using (var scope = app.Services.CreateScope())
     
     if (app.Environment.IsDevelopment())
     {
+        /*
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogInformation("Starting external data fetch");
         
@@ -133,6 +134,7 @@ using (var scope = app.Services.CreateScope())
         await languageService.FetchExternalLanguagesAsync();
         var skillService = scope.ServiceProvider.GetRequiredService<IExternalSkillService>();
         await skillService.FetchExternalSkillsAsync();
+        */
     }
 }
 

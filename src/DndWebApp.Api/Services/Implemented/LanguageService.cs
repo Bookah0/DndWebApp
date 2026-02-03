@@ -31,7 +31,12 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
 
     public async Task DeleteAsync(int id)
     {
-        var language = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found");
+        var language = await repo.GetByIdAsync(id) 
+            ?? throw new NotFoundException("Language could not be found");
+        
+        if(!language.IsHomebrew)
+            throw new ValidationException("Cannot delete a base language.");
+        
         logger.LogInformation("Deleting language with Name: {LanguageName}, ID: {LanguageId}", language.Name, id);
         await repo.DeleteAsync(language);
         logger.LogInformation("Successfully deleted language, Name: {LanguageName}, ID: {LanguageId}", language.Name, id);
@@ -49,9 +54,10 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
         return language;
     }
 
-    public async Task UpdateAsync(int id, LanguageDto dto)
+    public async Task<Language> UpdateAsync(int id, LanguageDto dto)
     {
         var language = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found");
+        logger.LogInformation("Updating language, Name: {LanguageName}, ID: {LanguageId}", language.Name, id);
 
         language.Name = dto.Name;
         language.Script = dto.Script;
@@ -59,6 +65,8 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
         language.IsHomebrew = dto.IsHomebrew;
 
         await repo.UpdateAsync(language);
+        logger.LogInformation("Successfully updated language, Name: {LanguageName}, ID: {LanguageId}", language.Name, language.Id);
+        return language;
     }
 
     public ICollection<Language> SortBy(ICollection<Language> languages, string sortFilter, bool descending = false)
@@ -71,7 +79,7 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
             SortLanguageOption.Name => OrderByMany(languages, [(l => l.Name)], descending),
             SortLanguageOption.Family => OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
             SortLanguageOption.Script => OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

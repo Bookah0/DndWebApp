@@ -1,6 +1,7 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Models.Spells;
 using DndWebApp.Api.Models.Spells.Constants;
@@ -86,7 +87,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
             };
 
             await repo.CreateAsync(spell);
-            
+
             /*
             Code for combining data from both APIs - currently disabled
 
@@ -175,7 +176,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
                 return (castingTime, value);
         }
 
-        throw new ArgumentException($"Casting time '{castingTimeStr}' not recognized.");
+        throw new NotFoundException($"Casting time '{castingTimeStr}' not recognized.");
     }
 
     private static (string, int) ParseSpellDuration(string durationStr)
@@ -205,7 +206,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
             "special" => (SpellDuration.Special, 0),
             "until dispelled" => (SpellDuration.UntilDispelled, 0),
             "permanent; one generation" => (SpellDuration.Permanent, 0),
-            _ => throw new ArgumentException($"Duration '{durationStr}' not recognized.")
+            _ => throw new ValidationException($"Duration '{durationStr}' not recognized.")
         };
     }
 
@@ -218,14 +219,14 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
             {
                 "feet" => (SpellRange.Feet, distance),
                 "mile" => (SpellRange.Mile, distance),
-                _ => throw new ArgumentException($"Range '{rangeStr}' not recognized.")
+                _ => throw new ValidationException($"Range '{rangeStr}' not recognized.")
             };
         }
         return rangeStr.ToLower() switch
         {
             "self" => (SpellRange.Self, 0),
             "touch" => (SpellRange.Touch, 1),
-            _ => throw new ArgumentException($"Range '{rangeStr}' not recognized.")
+            _ => throw new ValidationException($"Range '{rangeStr}' not recognized.")
         };
     }
 

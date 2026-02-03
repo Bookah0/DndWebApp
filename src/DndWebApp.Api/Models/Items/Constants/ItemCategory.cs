@@ -28,6 +28,7 @@ public static class ItemCategory
     public const string Weapon = "Weapon";
     public const string WondrousItem = "WondrousItem";
     public const string Utility = "Utility";
+    public const string Miscellaneous = "Miscellaneous";
 
     public static readonly IReadOnlySet<string> AllowedValues = new HashSet<string>
     {
@@ -56,7 +57,8 @@ public static class ItemCategory
         Wand,
         Weapon,
         WondrousItem,
-        Utility
+        Utility,
+        Miscellaneous
     };
 }
 

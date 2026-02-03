@@ -65,7 +65,7 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         return await repo.GetWithFeaturesAsync(id) ?? throw new NotFoundException($"Background with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(int id, BackgroundDto dto)
+    public async Task<Background> UpdateAsync(int id, BackgroundDto dto)
     {
         var background = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Background with id {id} could not be found");
@@ -85,9 +85,10 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
 
         await repo.UpdateAsync(background);
         logger.LogInformation("Successfully updated background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
+        return background;
     }
 
-    public async Task AddStartingItemsAsync(int id, int itemId)
+    public async Task<Background> AddStartingItemsAsync(int id, int itemId)
     {
         var item = await itemRepo.GetByIdAsync(itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} could not be found");
@@ -97,8 +98,10 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
 
         logger.LogInformation("Adding starting item with Name: {ItemName} ID: {ItemId} to background, Name: {BackgroundName}, ID: {BackgroundId}", item.Name, itemId, background.Name, id);
         background.StartingItems.Add(item);
+        
         await repo.UpdateAsync(background);
         logger.LogInformation("Successfully added starting item with Name: {ItemName} ID: {ItemId} to background, Name: {BackgroundName}, ID: {BackgroundId}", item.Name, itemId, background.Name, id);
+        return background;
     }
 
     public async Task RemoveStartingItemsAsync(int id, int itemId)
@@ -115,7 +118,7 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         logger.LogInformation("Successfully removed starting item with Name: {ItemName} ID: {ItemId} from background, Name: {BackgroundName}, ID: {BackgroundId}", item.Name, itemId, background.Name, id);
     }
 
-    public async Task AddStartingItemChoiceAsync(int id, StartingItemOptionDto dto)
+    public async Task<Background> AddStartingItemChoiceAsync(int id, StartingItemOptionDto dto)
     {
         foreach (var itemId in dto.ItemOptionIds)
         {
@@ -135,6 +138,7 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
 
         await repo.UpdateAsync(background);
         logger.LogInformation("Successfully added starting item option to background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
+        return background;
     }
 
     public async Task RemoveStartingItemChoiceAsync(int id, int optionId)

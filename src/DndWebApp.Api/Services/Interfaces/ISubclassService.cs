@@ -11,6 +11,6 @@ public interface ISubclassService
     Task<Subclass> GetByIdAsync(int id);
     Task<Subclass> GetWithLevelsAsync(int id);
     Task<Subclass> GetWithFeaturesAsync(int id);
-    Task UpdateAsync(int id, ClassDto dto);
+    Task<Subclass> UpdateAsync(int id, ClassDto dto);
     ICollection<Subclass> SortBy(ICollection<Subclass> classes, bool descending = false);
 }

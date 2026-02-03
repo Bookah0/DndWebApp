@@ -1,6 +1,7 @@
 using AutoMapper;
 using DndWebApp.Api.Models.DTOs.Inventory;
 using DndWebApp.Api.Models.DTOs.ResponseDtos;
+using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Services.Interfaces.Items;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,31 +33,31 @@ public class ToolController(IToolService service, IMapper mapper) : ControllerBa
     }
 
     [HttpPatch("{toolId}")]
-    public async Task<ActionResult> UpdateTool(int toolId, [FromBody] ToolDto dto)
+    public async Task<ActionResult<ToolResponseDto>> UpdateTool(int toolId, [FromBody] ToolDto dto)
     {
-        await service.UpdateAsync(dto, toolId);
-        return Ok();
+        var updatedTool = await service.UpdateAsync(dto, toolId);
+        return Ok(mapper.Map<ToolResponseDto>(updatedTool));
     }
 
 
     [HttpDelete("{toolId}")]
-    public async Task<ActionResult> DeleteTrait(int toolId)
+    public async Task<ActionResult> DeleteTool(int toolId)
     {
         await service.DeleteAsync(toolId);
         return Ok();
     }
 
     [HttpPatch("{toolId}/properties")]
-    public async Task<ActionResult> AddProperty(int toolId, [FromBody] ToolPropertyDto dto)
+    public async Task<ActionResult<ToolResponseDto>> AddProperty(int toolId, [FromBody] ToolPropertyDto dto)
     {
-        await service.AddProperty(dto, toolId);
-        return Ok();
+        var updatedTool = await service.AddProperty(dto, toolId);
+        return Ok(mapper.Map<ToolResponseDto>(updatedTool));
     }
 
     [HttpPatch("{toolId}/activities")]
-    public async Task<ActionResult> AddActivity(int toolId, [FromBody] ToolActivityDto dto)
+    public async Task<ActionResult<ToolResponseDto>> AddActivity(int toolId, [FromBody] ToolActivityDto dto)
     {
-        await service.AddActivity(dto, toolId);
-        return Ok();
+        var updatedTool = await service.AddActivity(dto, toolId);
+        return Ok(mapper.Map<ToolResponseDto>(updatedTool));
     }
 }

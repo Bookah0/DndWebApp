@@ -71,9 +71,3 @@ public class TraitDto : AFeatureDto
     [Range(1, int.MaxValue)]
     public required int RaceId { get; set; }
 }
-
-public class AbilityValueResponseDto
-{
-    public required string AbilityType { get; set; }
-    public required int Increase { get; set; }
-}

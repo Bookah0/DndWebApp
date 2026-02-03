@@ -1,6 +1,7 @@
 namespace DndWebApp.Api.Services.External.Implemented;
 
 using System.Text.Json;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.ExternalDTOs;
 using DndWebApp.Api.Repositories.Interfaces;
@@ -40,7 +41,7 @@ public class ExternalSkillService(ISkillRepository repo, IAbilityRepository abil
             }
 
             var ability = await abilityRepo.GetByShortNameAsync(eSkill.Ability.Name)
-                ?? throw new ArgumentException($"Ability with short name {eSkill.Ability.Name} not found.");
+                ?? throw new NotFoundException($"Ability with short name {eSkill.Ability.Name} not found.");
 
             var skill = new Skill
             {

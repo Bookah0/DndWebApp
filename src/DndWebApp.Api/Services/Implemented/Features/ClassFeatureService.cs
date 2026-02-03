@@ -60,7 +60,7 @@ public class ClassFeatureService(
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
     }
 
-    public async override Task UpdateAsync(ClassFeatureDto dto, int id)
+    public async override Task<ClassFeature> UpdateAsync(ClassFeatureDto dto, int id)
     {
         var feature = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
@@ -78,6 +78,7 @@ public class ClassFeatureService(
         feature.IsHomebrew = dto.IsHomebrew;
         await repo.UpdateAsync(feature);
         logger.LogInformation("Successfully updated class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
+        return feature;
     }
 
     public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, string sortFilter, bool descending = false)
@@ -89,7 +90,7 @@ public class ClassFeatureService(
         {
             SortClassFeatureOption.Name => OrderByMany(features, [(l => l.Name)], descending),
             SortClassFeatureOption.Class => OrderByMany(features, [(l => l.Level!.Class.Name), (l => l.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

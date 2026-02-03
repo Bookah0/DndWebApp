@@ -42,13 +42,13 @@ public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapp
     }
 
     [HttpPatch("{traitId}")]
-    public async Task<ActionResult> UpdateTrait(int raceId, int traitId, [FromBody] TraitDto dto)
+    public async Task<ActionResult<TraitResponseDto>> UpdateTrait(int raceId, int traitId, [FromBody] TraitDto dto)
     {
         if(dto.RaceId != raceId)
             throw new ValidationException($"Trait race id {dto.RaceId} does not match route race id {raceId}");
 
-        await service.UpdateAsync(dto, traitId);
-        return Ok();
+        var updatedTrait = await service.UpdateAsync(dto, traitId);
+        return Ok(mapper.Map<TraitResponseDto>(updatedTrait));
     }
 
     [HttpDelete("{traitId}")]
@@ -61,11 +61,11 @@ public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapp
 
     // Spell management endpoints
     [HttpPost("{traitId}/spells/{spellId}")]
-    public async Task<ActionResult> AddSpell(int raceId, int traitId, int spellId)
+    public async Task<ActionResult<TraitResponseDto>> AddSpell(int raceId, int traitId, int spellId)
     {
         await EnsureTraitBelongsToRace(raceId, traitId);
-        await service.AddSpell(spellId, traitId);
-        return Ok();
+        var updatedTrait = await service.AddSpell(spellId, traitId);
+        return Ok(mapper.Map<TraitResponseDto>(updatedTrait));
     }
     
     [HttpDelete("{traitId}/spells/{spellId}")]
@@ -78,11 +78,11 @@ public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapp
 
     // Proficiency management endpoints
     [HttpPost("{traitId}/proficiencies")]
-    public async Task<ActionResult> AddProficiency(int raceId, int traitId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<TraitResponseDto>> AddProficiency(int raceId, int traitId, [FromBody] ProficiencyDto proficiency)
     {
         await EnsureTraitBelongsToRace(raceId, traitId);
-        await service.AddProficiency(proficiency, traitId);
-        return Ok();
+        var updatedTrait = await service.AddProficiency(proficiency, traitId);
+        return Ok(mapper.Map<TraitResponseDto>(updatedTrait));
     }
 
     [HttpDelete("{traitId}/proficiencies")]
@@ -95,11 +95,11 @@ public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapp
 
     // Ability increase management endpoints
     [HttpPost("{traitId}/ability-increases")]
-    public async Task<ActionResult> AddAbilityIncrease(int raceId, int traitId, [FromBody] AbilityValueDto increase)
+    public async Task<ActionResult<TraitResponseDto>> AddAbilityIncrease(int raceId, int traitId, [FromBody] AbilityValueDto increase)
     {
         await EnsureTraitBelongsToRace(raceId, traitId);
-        await service.AddAbilityIncrease(increase.AbilityId, increase.Value, traitId);
-        return Ok();
+        var updatedTrait = await service.AddAbilityIncrease(increase.AbilityId, increase.Value, traitId);
+        return Ok(mapper.Map<TraitResponseDto>(updatedTrait));
     }
 
     [HttpDelete("{traitId}/ability-increases")]

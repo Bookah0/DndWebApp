@@ -11,12 +11,12 @@ public interface IFeatureService<T, TD> where T : AFeature where TD : AFeatureDt
     Task<T> GetWithProficienciesAsync(int id);
     Task<ICollection<T>> GetAllAsync();
     Task<T> CreateAsync(TD dto);
-    Task UpdateAsync(TD dto, int id);
+    Task<T> UpdateAsync(TD dto, int id);
     Task DeleteAsync(int id);
-    Task AddSpell(int spellId, int featureId);
+    Task<T> AddSpell(int spellId, int featureId);
     Task RemoveSpell(int spellId, int featureId);
-    Task AddProficiency(ProficiencyDto dto, int featureId);
+    Task<T> AddProficiency(ProficiencyDto dto, int featureId);
     Task RemoveProficiency(ProficiencyDto dto, int featureId);
-    Task AddAbilityIncrease(int abilityId, int value, int featureId);
+    Task<T> AddAbilityIncrease(int abilityId, int value, int featureId);
     Task RemoveAbilityIncrease(int abilityId, int featureId);
 }

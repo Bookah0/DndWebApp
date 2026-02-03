@@ -38,26 +38,30 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
         return tool;
     }
 
-    public async Task AddProperty(ToolPropertyDto dto, int toolId)
+    public async Task<Tool> AddProperty(ToolPropertyDto dto, int toolId)
     {
         var tool = await repo.GetWithAllDataAsync(toolId) 
             ?? throw new NotFoundException($"Tool with id {toolId} could not be found");
         
         logger.LogInformation("Adding property to tool, ToolId: {ToolId}, PropertyTitle: {PropertyTitle}", toolId, dto.Title);
         tool.Properties.Add(new ToolProperty { Title = dto.Title, Description = dto.Description });
+
         await repo.UpdateAsync(tool);
         logger.LogInformation("Successfully added property to tool, ToolId: {ToolId}, PropertyTitle: {PropertyTitle}", toolId, dto.Title);
+        return tool;
     }
 
-    public async Task AddActivity(ToolActivityDto dto, int toolId)
+    public async Task<Tool> AddActivity(ToolActivityDto dto, int toolId)
     {
         var tool = await repo.GetWithAllDataAsync(toolId) 
             ?? throw new NotFoundException($"Tool with id {toolId} could not be found");
 
         logger.LogInformation("Adding activity to tool, ToolId: {ToolId}, ActivityTitle: {ActivityTitle}", toolId, dto.Title);
         tool.Activities.Add(new ToolActivity { Title = dto.Title, SkillId = dto.SkillId, AbilityId = dto.AbilityId, DC = dto.DC });
+
         await repo.UpdateAsync(tool);
         logger.LogInformation("Successfully added activity to tool, ToolId: {ToolId}, ActivityTitle: {ActivityTitle}", toolId, dto.Title);
+        return tool;
     }
     
     public async Task DeleteAsync(int id)
@@ -80,7 +84,7 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
         return tool;
     }
 
-    public async Task UpdateAsync(ToolDto dto, int id)
+    public async Task<Tool> UpdateAsync(ToolDto dto, int id)
     {
         var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
@@ -98,6 +102,8 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
         tool.Weight = dto.Weight ?? tool.Weight;
 
         await repo.UpdateAsync(tool);
+        logger.LogInformation("Successfully updated tool, Name: {ToolName}, ID: {ToolId}", tool.Name, tool.Id);
+        return tool;
     }
 
     // TODO replace with database level sorting
@@ -112,7 +118,7 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
             SortToolOption.Category => OrderByMany(tools, [(i => i.ToolType), (i => i.Name)], descending),
             SortToolOption.Value => OrderByMany(tools, [(i => i.Value), (i => i.Name)], descending),
             SortToolOption.Rarity => OrderByMany(tools, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

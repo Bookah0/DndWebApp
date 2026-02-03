@@ -5,18 +5,18 @@ using DndWebApp.Api.Repositories.Interfaces;
 
 namespace DndWebApp.Api.Services.Interfaces.Features;
 
-public interface IChoiceService<out T> where T : AFeature
+public interface IChoiceService<T> where T : AFeature
 {
     Task ClearChoices<C>(int featureId) where C : IFeatureChoice;
-    Task AddChoice<CDto>(CDto dto, int featureId) where CDto : AChoiceDto;
+    Task<T> AddChoice<CDto>(CDto dto, int featureId) where CDto : AChoiceDto;
     Task RemoveChoice<C>(int choiceId, int featureId) where C : IFeatureChoice;
-    Task AddSkillOptions(int choiceId, ICollection<int> newSkillIds);
-    Task AddLanguageOptions(int choiceId, ICollection<int> newLanguageIds);
-    Task AddAbilityOptions(int choiceId, ICollection<AbilityValueDto> newAbilityValues);
-    Task AddWeaponCategoryOptions(int choiceId, ICollection<string> newCategories);
-    Task AddWeaponTypeOptions(int choiceId, ICollection<string> newTypes);
-    Task AddToolCategoryOptions(int choiceId, ICollection<string> newCategories);
-    Task AddArmorCategoryOptions(int choiceId, ICollection<string> newCategories);
+    Task<SkillProficiencyChoice> AddSkillOptions(int choiceId, ICollection<int> newSkillIds);
+    Task<LanguageChoice> AddLanguageOptions(int choiceId, ICollection<int> newLanguageIds);
+    Task<AbilityIncreaseChoice> AddAbilityOptions(int choiceId, ICollection<AbilityValueDto> newAbilityValues);
+    Task<WeaponCategoryProficiencyChoice> AddWeaponCategoryOptions(int choiceId, ICollection<string> newCategories);
+    Task<WeaponTypeProficiencyChoice> AddWeaponTypeOptions(int choiceId, ICollection<string> newTypes);
+    Task<ToolProficiencyChoice> AddToolCategoryOptions(int choiceId, ICollection<string> newCategories);
+    Task<ArmorProficiencyChoice> AddArmorCategoryOptions(int choiceId, ICollection<string> newCategories);
     Task RemoveSkillOptions(int choiceId, ICollection<int> skillIdsToRemove);
     Task RemoveLanguageOptions(int choiceId, ICollection<int> languageIdsToRemove);
     Task RemoveAbilityOptions(int choiceId, ICollection<int> valuesToRemove);

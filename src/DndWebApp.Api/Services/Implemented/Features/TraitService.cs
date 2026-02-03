@@ -60,7 +60,7 @@ public class TraitService(
         return trait;
     }
 
-    public async override Task UpdateAsync(TraitDto dto, int traitId)
+    public async override Task<Trait> UpdateAsync(TraitDto dto, int traitId)
     {
         var trait = await repo.GetByIdAsync(traitId) ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
         logger.LogInformation("Updating trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
@@ -77,6 +77,7 @@ public class TraitService(
 
         await repo.UpdateAsync(trait);
         logger.LogInformation("Successfully updated trait, Name: {TraitName}, ID: {TraitId}", trait.Name, trait.Id);
+        return trait;
     }
 
     // TODO replace with database level sorting
@@ -89,7 +90,7 @@ public class TraitService(
         {
             SortTraitOption.Name => OrderByMany(traits, [(t => t.Name)], descending),
             SortTraitOption.Race => OrderByMany(traits, [(t => t!.Name), (t => t.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

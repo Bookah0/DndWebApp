@@ -33,10 +33,10 @@ public class BackgroundController(IBackgroundService service, IMapper mapper) : 
     }
 
     [HttpPatch("{backgroundId}")]
-    public async Task<ActionResult> UpdateBackground(int backgroundId, [FromBody] BackgroundDto dto)
+    public async Task<ActionResult<BackgroundResponseDto>> UpdateBackground(int backgroundId, [FromBody] BackgroundDto dto)
     {
-        await service.UpdateAsync(backgroundId, dto);
-        return Ok();
+        var updatedBackground = await service.UpdateAsync(backgroundId, dto);
+        return Ok(mapper.Map<BackgroundResponseDto>(updatedBackground));
     }
 
     [HttpDelete("{backgroundId}")]
@@ -47,10 +47,10 @@ public class BackgroundController(IBackgroundService service, IMapper mapper) : 
     }
 
     [HttpPost("{backgroundId}/starting-items")]
-    public async Task<ActionResult> AddStartingItem(int backgroundId, [FromBody] int itemId)
+    public async Task<ActionResult<BackgroundResponseDto>> AddStartingItem(int backgroundId, [FromBody] int itemId)
     {
-        await service.AddStartingItemsAsync(backgroundId, itemId);
-        return Ok();
+        var updatedBackground = await service.AddStartingItemsAsync(backgroundId, itemId);
+        return Ok(mapper.Map<BackgroundResponseDto>(updatedBackground));
     }
 
     [HttpDelete("{backgroundId}/starting-items/{itemId}")]
@@ -61,10 +61,10 @@ public class BackgroundController(IBackgroundService service, IMapper mapper) : 
     }
 
     [HttpPost("{backgroundId}/starting-items/options")]
-    public async Task<ActionResult> AddStartingItemOption(int backgroundId, [FromBody] StartingItemOptionDto dto)
+    public async Task<ActionResult<BackgroundResponseDto>> AddStartingItemOption(int backgroundId, [FromBody] StartingItemOptionDto dto)
     {
-        await service.AddStartingItemChoiceAsync(backgroundId, dto);
-        return Ok();
+        var updatedBackground = await service.AddStartingItemChoiceAsync(backgroundId, dto);
+        return Ok(mapper.Map<BackgroundResponseDto>(updatedBackground));
     }
 
     [HttpDelete("{backgroundId}/starting-items/options/{optionId}")]

@@ -35,10 +35,10 @@ public class ClassController(IClassService service, IMapper mapper) : Controller
     }
 
     [HttpPatch("{classId}")]
-    public async Task<ActionResult> UpdateClass(int classId, [FromBody] ClassDto dto)
+    public async Task<ActionResult<ClassResponseDto>> UpdateClass(int classId, [FromBody] ClassDto dto)
     {
-        await service.UpdateAsync(classId, dto);
-        return Ok();
+        var updatedClass = await service.UpdateAsync(classId, dto);
+        return Ok(mapper.Map<ClassResponseDto>(updatedClass));
     }
 
     [HttpDelete("{classId}")]

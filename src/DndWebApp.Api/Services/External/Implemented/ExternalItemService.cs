@@ -230,7 +230,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             CurrencyUtil.Electrum => value * 50,
             CurrencyUtil.Gold => value * 100,
             CurrencyUtil.Platinum => value * 1000,
-            _ => throw new ArgumentOutOfRangeException($"Unknown currency unit: {unit}"),
+            _ => throw new ValidationException($"Unknown currency unit: {unit}"),
         };
     }
 }

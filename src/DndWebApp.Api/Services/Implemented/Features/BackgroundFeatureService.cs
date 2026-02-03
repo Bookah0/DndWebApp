@@ -58,7 +58,7 @@ public class BackgroundFeatureService(
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
     }
 
-    public async override Task UpdateAsync(BackgroundFeatureDto dto, int featureId)
+    public async override Task<BackgroundFeature> UpdateAsync(BackgroundFeatureDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId) ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
 
@@ -76,6 +76,7 @@ public class BackgroundFeatureService(
 
         await repo.UpdateAsync(feature);
         logger.LogInformation("Successfully updated background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, featureId);
+        return feature;
     }
 
     public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, string sortFilter, bool descending = false)
@@ -87,7 +88,7 @@ public class BackgroundFeatureService(
         {
             SortBackgroundFeatureOption.Name => OrderByMany(features, [(l => l.Name)], descending),
             SortBackgroundFeatureOption.Background => OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),
-            _ => throw new ArgumentOutOfRangeException(nameof(sortFilter), "Invalid sort option provided.")
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }
 }

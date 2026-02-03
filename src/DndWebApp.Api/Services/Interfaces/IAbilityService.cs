@@ -9,7 +9,7 @@ public interface IAbilityService
     Task DeleteAsync(int id);
     Task<ICollection<Ability>> GetAllAsync();
     Task<Ability> GetByIdAsync(int id);
-    Task UpdateAsync(int id, AbilityDto dto);
+    Task<Ability> UpdateAsync(int id, AbilityDto dto);
     int GetModifier(AbilityValue val);
     ICollection<Ability> SortBy(ICollection<Ability> abilities);
 }

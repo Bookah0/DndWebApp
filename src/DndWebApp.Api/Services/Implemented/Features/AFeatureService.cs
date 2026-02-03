@@ -22,13 +22,13 @@ public abstract class AFeatureService<T, TD>(
     public abstract Task<T> GetByIdAsync(int id);
     public abstract Task<ICollection<T>> GetAllAsync();
     public abstract Task<T> CreateAsync(TD dto);
-    public abstract Task UpdateAsync(TD dto, int id);
+    public abstract Task<T> UpdateAsync(TD dto, int id);
     public abstract Task DeleteAsync(int id);
 
     public Task<T> GetWithChoicesAsync(int id) => repo.GetWithChoicesAsync(id) ?? throw new NotFoundException($"Feature with id {id} could not be found");
     public Task<T> GetWithProficienciesAsync(int id) => repo.GetWithProficienciesAsync(id) ?? throw new NotFoundException($"Feature with id {id} could not be found");
 
-    public async Task AddSpell(int spellId, int featureId)
+    public async Task<T> AddSpell(int spellId, int featureId)
     {
         var spell = await spellRepo.GetByIdAsync(spellId)
             ?? throw new NotFoundException($"Spell with id {spellId} could not be found");
@@ -40,6 +40,7 @@ public abstract class AFeatureService<T, TD>(
         feature.SpellsGained.Add(spell);
         await repo.UpdateAsync(feature);
         logger.LogInformation("Successfully added spell with Name: {SpellName}, ID: {SpellId} to feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
+        return feature;
     }
 
     public async Task RemoveSpell(int spellId, int featureId)
@@ -56,7 +57,7 @@ public abstract class AFeatureService<T, TD>(
         logger.LogInformation("Successfully removed spell with Name: {SpellName}, ID: {SpellId} from feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
     }
 
-    public async Task AddProficiency(ProficiencyDto dto, int featureId)
+    public async Task<T> AddProficiency(ProficiencyDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
@@ -112,6 +113,7 @@ public abstract class AFeatureService<T, TD>(
 
         await repo.UpdateAsync(feature);
         logger.LogInformation("Successfully added proficiency of type {ProficiencyType} with value {ProficiencyValue} to feature with Name: {FeatureName}, ID: {FeatureId}", dto.Type, dto.Value, feature.Name, feature.Id);
+        return feature;
     }
 
     public async Task RemoveProficiency(ProficiencyDto dto, int featureId)
@@ -172,7 +174,7 @@ public abstract class AFeatureService<T, TD>(
         logger.LogInformation("Successfully removed proficiency of type {ProficiencyType} with value {ProficiencyValue} from feature with Name: {FeatureName}, ID: {FeatureId}", dto.Type, dto.Value, feature.Name, feature.Id);
     }
 
-    public async Task AddAbilityIncrease(int abilityId, int value, int featureId)
+    public async Task<T> AddAbilityIncrease(int abilityId, int value, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId)
             ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
@@ -184,6 +186,7 @@ public abstract class AFeatureService<T, TD>(
         feature.AbilityIncreases.Add(new() { Ability = ability, AbilityId = abilityId, Value = value });
         await repo.UpdateAsync(feature);
         logger.LogInformation("Successfully added ability increase of {IncreaseValue} to ability with Name: {AbilityName}, ID: {AbilityId} for feature with Name: {FeatureName}, ID: {FeatureId}", value, ability.FullName, ability.Id, feature.Name, feature.Id);
+        return feature;
     }
 
     public async Task RemoveAbilityIncrease(int abilityId, int featureId)

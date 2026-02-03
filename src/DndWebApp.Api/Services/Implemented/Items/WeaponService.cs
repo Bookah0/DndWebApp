@@ -6,10 +6,11 @@ using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
 using static DndWebApp.Api.Services.Util.ConstantsUtil;
 using DndWebApp.Api.Models.Items.Constants;
+using DndWebApp.Api.Services.Interfaces.Items;
 
 namespace DndWebApp.Api.Services.Implemented.Items;
 
-public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logger)
+public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logger) : IWeaponService
 {
     public async Task<Weapon> CreateAsync(WeaponDto dto)
     {
@@ -64,7 +65,7 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(int id, WeaponDto dto)
+    public async Task UpdateAsync(WeaponDto dto, int id)
     {
         logger.LogInformation("Updating weapon, Name: {WeaponName}, ID: {WeaponId}", dto.Name, id);
 

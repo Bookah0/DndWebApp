@@ -106,18 +106,18 @@ public class SubclassFeatureController(
     }
 
     [HttpPost("{featureId}/proficiency-choices")]
-    public async Task<ActionResult> AddProficiencyChoice(int subclassId, int featureId, int classId, [FromBody] ProficiencyChoiceDto dto)
+    public async Task<ActionResult> AddProficiencyChoice(int subclassId, int featureId, int classId, [FromBody] AChoiceDto dto)
     {
         await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
         await service.AddProficiencyChoice(dto, featureId);
         return Ok();
     }
 
-    [HttpDelete("{featureId}/proficiency-choices/{choiceIndex}")]
-    public async Task<ActionResult> RemoveProficiencyChoice(int subclassId, int featureId, int choiceIndex, int classId, [FromQuery] string type)
+    [HttpDelete("{featureId}/proficiency-choices/{choiceId}")]
+    public async Task<ActionResult> RemoveProficiencyChoice(int subclassId, int featureId, int choiceId, int classId, [FromQuery] string type)
     {
         await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
-        await service.RemoveProficiencyChoice(type, choiceIndex, featureId);
+        await service.RemoveProficiencyChoice(type, choiceId, featureId);
         return Ok();
     }
 
@@ -146,11 +146,11 @@ public class SubclassFeatureController(
         return Ok();
     }
 
-    [HttpDelete("{featureId}/ability-increase-choices/{choiceIndex}")]
-    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int subclassId, int featureId, int choiceIndex, int classId)
+    [HttpDelete("{featureId}/ability-increase-choices/{choiceId}")]
+    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int subclassId, int featureId, int choiceId, int classId)
     {
         await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
-        await service.RemoveAbilityIncreaseChoice(choiceIndex, featureId);
+        await service.RemoveProficiencyChoice("Ability increase", choiceId, featureId);
         return Ok();
     }
 

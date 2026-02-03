@@ -77,16 +77,16 @@ public class FeatController(IFeatService service, IMapper mapper) : ControllerBa
     }
 
     [HttpPost("{featId}/proficiency-choices")]
-    public async Task<ActionResult> AddProficiencyChoice(int featId, [FromBody] ProficiencyChoiceDto dto)
+    public async Task<ActionResult> AddProficiencyChoice(int featId, [FromBody] AChoiceDto dto)
     {
         await service.AddProficiencyChoice(dto, featId);
         return Ok();
     }
 
-    [HttpDelete("{featId}/proficiency-choices/{type}/{choiceIndex}")]
-    public async Task<ActionResult> RemoveProficiencyChoice(int featId, string type, int choiceIndex)
+    [HttpDelete("{featId}/proficiency-choices/{type}/{choiceId}")]
+    public async Task<ActionResult> RemoveProficiencyChoice(int featId, string type, int choiceId)
     {
-        await service.RemoveProficiencyChoice(type, choiceIndex, featId);
+        await service.RemoveProficiencyChoice(type, choiceId, featId);
         return Ok();
     }
 
@@ -112,10 +112,10 @@ public class FeatController(IFeatService service, IMapper mapper) : ControllerBa
         return Ok();
     }
 
-    [HttpDelete("{featId}/ability-increase-choices/{choiceIndex}")]
-    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int featId, int choiceIndex)
+    [HttpDelete("{featId}/ability-increase-choices/{choiceId}")]
+    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int featId, int choiceId)
     {
-        await service.RemoveAbilityIncreaseChoice(choiceIndex, featId);
+        await service.RemoveProficiencyChoice("Ability increase", choiceId, featId);
         return Ok();
     }
 }

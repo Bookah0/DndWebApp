@@ -16,8 +16,17 @@ public class TraitService(
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
+
+    IChoiceRepository<AbilityIncreaseChoice> abilityChoiceRepo,
+    IChoiceRepository<SkillProficiencyChoice> skillChoiceRepo,
+    IChoiceRepository<LanguageChoice> languageChoiceRepo,
+    IChoiceRepository<ToolProficiencyChoice> toolChoiceRepo,
+    IChoiceRepository<ArmorProficiencyChoice> armorChoiceRepo,
+    IChoiceRepository<WeaponCategoryProficiencyChoice> weaponCategoryChoiceRepo,
+    IChoiceRepository<WeaponTypeProficiencyChoice> weaponTypeChoiceRepo,
+
     ILogger<TraitService> logger)
-    : BaseFeatureService<Trait>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), ITraitService
+    : AFeatureService<Trait>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), ITraitService
 {
     public async Task<Trait> CreateAsync(TraitDto dto)
     {

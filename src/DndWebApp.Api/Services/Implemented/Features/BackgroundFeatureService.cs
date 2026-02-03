@@ -18,7 +18,7 @@ public class BackgroundFeatureService(
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
     ILogger<BackgroundFeatureService> logger)
-    : BaseFeatureService<BackgroundFeature>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), IBackgroundFeatureService
+    : AFeatureService<BackgroundFeature>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), IBackgroundFeatureService
 {
     public async Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
     {

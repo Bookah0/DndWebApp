@@ -7,7 +7,7 @@ namespace DndWebApp.Api.Services.Util;
 
 public static class ConstantsUtil
 {
-    public static ICollection<string> ResolveOptionOrThrow(ICollection<string> inputs, IReadOnlySet<string> allowedSet, string constantsGroupName)
+    public static ICollection<string> ResolveOptionOrThrow(ICollection<string> inputs, IReadOnlySet<string> allowedSet, string constantsGroupName = "Constant")
     {
         ICollection<string> resolved = [];
 
@@ -21,7 +21,7 @@ public static class ConstantsUtil
         return resolved;
     }
 
-    public static string ResolveOptionOrThrow(string input, IReadOnlySet<string> allowedSet, string constantsGroupName)
+    public static string ResolveOptionOrThrow(string input, IReadOnlySet<string> allowedSet, string constantsGroupName = "Constant")
     {
         if (TryResolveOption(input, allowedSet, out var resolved))
             return resolved!;

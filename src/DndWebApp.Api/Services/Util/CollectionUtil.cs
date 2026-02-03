@@ -10,6 +10,17 @@ public static class CollectionUtil
         }
     }
 
+    public static void RemoveMany<T>(this ICollection<T> collection, IEnumerable<T> items)
+    {
+        foreach (var item in items)
+        {
+            var removed = collection.Remove(item);
+
+            if(!removed)
+                throw new ArgumentException("One or more items to remove were not found in the collection.");
+        }
+    }
+
     public static void RemoveAt<T>(this ICollection<T> collection, int index)
     {
         if (collection is IList<T> list)

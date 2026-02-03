@@ -14,7 +14,7 @@ public class FeatService(
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
     ILogger<FeatService> logger)
-    : BaseFeatureService<Feat>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), IFeatService
+    : AFeatureService<Feat>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), IFeatService
 {
     public async Task<Feat> CreateAsync(FeatDto dto)
     {

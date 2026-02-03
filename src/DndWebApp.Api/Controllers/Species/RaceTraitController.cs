@@ -94,7 +94,7 @@ public class RaceTraitController(ITraitService service, IMapper mapper) : Contro
     }
 
     [HttpPost("{traitId}/proficiency-choices")]
-    public async Task<ActionResult> AddProficiencyChoice(int raceId, int traitId, [FromBody] ProficiencyChoiceDto dto)
+    public async Task<ActionResult> AddProficiencyChoice(int raceId, int traitId, [FromBody] AChoiceDto dto)
     {
         await EnsureTraitBelongsToRace(raceId, traitId);
         await service.AddProficiencyChoice(dto, traitId);

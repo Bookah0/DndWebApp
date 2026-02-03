@@ -17,37 +17,86 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
         if ((await repo.GetAllAsync()).Count > 0)
         {
             logger.LogInformation("Spells already exist in the database. Skipping fetch.");
-            throw new InvalidOperationException("Spells already exist in the database. Skipping fetch.");
+            return;
         }
 
         logger.LogInformation("Fetching external spells.");
 
         var getOpenListResponse = await client.GetAsync("https://api.open5e.com/v1/spells/", cancellationToken);
-        var resultOpen = await JsonSerializer.DeserializeAsync<List<EOpen5eSpellDto>>(getOpenListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
+        var resultOpen = await JsonSerializer.DeserializeAsync<EOpen5eResponseDto<EOpen5eSpellDto>>(getOpenListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
 
         if (resultOpen is null || resultOpen.Count == 0)
         {
             throw new InvalidOperationException("No spells found in external APIs.");
         }
 
-        var seenIndexes = new HashSet<string>();
+        logger.LogInformation("Fetched {SpellCount} spells from Open5e.", resultOpen.Count);
 
-        foreach (var eOpenSpell in resultOpen)
-        {
-            if (seenIndexes.Contains(eOpenSpell.Index) || eOpenSpell is null)
+        foreach (var eOpenSpell in resultOpen.Results)
+        {   
+            var (range, rangeValue) = ParseSpellRange(eOpenSpell!.Range);
+            var (castingTime, timeValue) = ParseCastingTime(eOpenSpell!.CastingTime);
+            var (duration, durationValue) = ParseSpellDuration(eOpenSpell!.Duration);
+
+            var spellTargeting = new SpellTargeting
             {
-                continue;
+                TargetType = ParseTargetType(),
+                Range = range,
+                RangeValue = rangeValue,
+                ShapeType = "",
+            };
+
+            List<string> spellTypes = [];
+            if (eOpenSpell?.IsRitual == true)
+            {
+                spellTypes.Add(SpellType.Ritual);
             }
-            seenIndexes.Add(eOpenSpell.Index);
+            if (duration != SpellDuration.Instantaneous)
+            {
+                spellTypes.Add(SpellType.Concentration);
+            }
+            if (castingTime == CastingTime.Reaction)
+            {
+                spellTypes.Add(SpellType.Reaction);
+            }
+
+            var castingRequirements = new CastingRequirements
+            {
+                Verbal = eOpenSpell?.RequiresVerbalComponents == true,
+                Somatic = eOpenSpell?.RequiresSomaticComponents == true,
+                Materials = eOpenSpell?.Material ?? null,
+            };
+
+            var eMagicSchool = eOpenSpell!.School;
+
+            var spell = new Spell
+            {
+                Name = eOpenSpell!.Name,
+                Description = eOpenSpell!.Description,
+                Level = eOpenSpell!.SpellLevel,
+                EffectsAtHigherLevels = eOpenSpell?.HigherLevels ?? "",
+                Duration = duration,
+                DurationValue = durationValue,
+                CastingTime = castingTime,
+                CastingTimeValue = timeValue,
+                MagicSchool = ConstantsUtil.ResolveOptionOrThrow(eMagicSchool, MagicSchool.AllowedValues, "Magic School"),
+                SpellTargeting = spellTargeting,
+                SpellTypes = spellTypes,
+                CastingRequirements = castingRequirements
+            };
+
+            await repo.CreateAsync(spell);
+            
+            /*
+            Code for combining data from both APIs - currently disabled
+
+            if (eOpenSpell is null)
+                continue;
 
             var get5eResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/spells/{eOpenSpell.Index}", cancellationToken);
-            var e5eSpell = await JsonSerializer.DeserializeAsync<EDnd5eApiSpellDto>(get5eResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
-
-            if (e5eSpell is null)
-            {
-                throw new InvalidOperationException($"Failed to deserialize spell from https://www.dnd5eapi.co/api/2014/spells/{eOpenSpell.Index}");
-            }
-
+            var e5eSpell = await JsonSerializer.DeserializeAsync<EDnd5eApiSpellDto>(get5eResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken) 
+                ?? throw new InvalidOperationException($"Failed to deserialize spell from https://www.dnd5eapi.co/api/2014/spells/{eOpenSpell.Index}");
+            
             var (range, rangeValue) = e5eSpell != null ? ParseSpellRange(e5eSpell.Range) : ParseSpellRange(eOpenSpell!.Range);
             var (castingTime, timeValue) = e5eSpell != null ? ParseCastingTime(e5eSpell.CastingTime) : ParseCastingTime(eOpenSpell!.CastingTime);
             var (duration, durationValue) = e5eSpell != null ? ParseSpellDuration(e5eSpell.Duration) : ParseSpellDuration(eOpenSpell!.Duration);
@@ -99,27 +148,34 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
                 CastingRequirements = castingRequirements
             };
 
-            await repo.CreateAsync(spell);
+            await repo.CreateAsync(spell);*/
         }
 
         logger.LogInformation("Successfully fetched external spells. Count: {SpellCount}", resultOpen.Count);
     }
-        
+
     private static (string, int) ParseCastingTime(string castingTimeStr)
     {
-        return castingTimeStr.ToLower() switch
+        var castingTimeMap = new (string pattern, string castingTime, int value)[]
         {
-            "1 action" => (CastingTime.Action, 1),
-            "1 bonus action" => (CastingTime.BonusAction, 1),
-            "1 reaction" => (CastingTime.Reaction, 1),
-            "1 minute" => (CastingTime.Minute, 1),
-            "10 minutes" => (CastingTime.Minute, 10),
-            "1 hour" => (CastingTime.Hour, 1),
-            "8 hours" => (CastingTime.Hour, 8),
-            "12 hours" => (CastingTime.Hour, 12),
-            "24 hours" => (CastingTime.Hour, 24),
-            _ => throw new ArgumentException($"Casting time '{castingTimeStr}' not recognized.")
+            ("1 action", CastingTime.Action, 1),
+            ("1 bonus action", CastingTime.BonusAction, 1),
+            ("1 reaction", CastingTime.Reaction, 1),
+            ("1 minute", CastingTime.Minute, 1),
+            ("5 minutes", CastingTime.Minute, 5),
+            ("10 minutes", CastingTime.Minute, 10),
+            ("1 hour", CastingTime.Hour, 1),
+            ("8 hours", CastingTime.Hour, 8),
+            ("24 hours", CastingTime.Hour, 24),
         };
+
+        foreach (var (pattern, castingTime, value) in castingTimeMap)
+        {
+            if (castingTimeStr.StartsWith(pattern, StringComparison.CurrentCultureIgnoreCase))
+                return (castingTime, value);
+        }
+
+        throw new ArgumentException($"Casting time '{castingTimeStr}' not recognized.");
     }
 
     private static (string, int) ParseSpellDuration(string durationStr)
@@ -132,25 +188,43 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
             "concentration, up to 1 hour" => (SpellDuration.Hour, 1),
             "concentration, up to 8 hours" => (SpellDuration.Hour, 8),
             "concentration, up to 24 hours" => (SpellDuration.Hour, 24),
+            "up to 1 minute" => (SpellDuration.Minute, 1),
+            "up to 10 minutes" => (SpellDuration.Minute, 10),
+            "up to 1 hour" => (SpellDuration.Hour, 1),
+            "up to 8 hours" => (SpellDuration.Hour, 8),
+            "up to 24 hours" => (SpellDuration.Hour, 24),
+            "1 minute" => (SpellDuration.Minute, 1),
+            "5 minutes" => (SpellDuration.Minute, 5),
+            "10 minutes" => (SpellDuration.Minute, 10),
+            "1 hour" => (SpellDuration.Hour, 1),
+            "8 hours" => (SpellDuration.Hour, 8),
+            "24 hours" => (SpellDuration.Hour, 24),
+            "up to 6 rounds" => (SpellDuration.Round, 6),
+            "1 round" => (SpellDuration.Round, 1),
+            "7 days" => (SpellDuration.Day, 7),
             "special" => (SpellDuration.Special, 0),
+            "until dispelled" => (SpellDuration.UntilDispelled, 0),
+            "permanent; one generation" => (SpellDuration.Permanent, 0),
             _ => throw new ArgumentException($"Duration '{durationStr}' not recognized.")
         };
     }
 
     private static (string, int) ParseSpellRange(string rangeStr)
     {
+        var split = rangeStr.Split(' ');
+        if (int.TryParse(split[0], out int distance))
+        {
+            return split[1].ToLower() switch
+            {
+                "feet" => (SpellRange.Feet, distance),
+                "mile" => (SpellRange.Mile, distance),
+                _ => throw new ArgumentException($"Range '{rangeStr}' not recognized.")
+            };
+        }
         return rangeStr.ToLower() switch
         {
             "self" => (SpellRange.Self, 0),
             "touch" => (SpellRange.Touch, 1),
-            "30 feet" => (SpellRange.Feet, 30),
-            "60 feet" => (SpellRange.Feet, 60),
-            "90 feet" => (SpellRange.Feet, 90),
-            "120 feet" => (SpellRange.Feet, 120),
-            "150 feet" => (SpellRange.Feet, 150),
-            "300 feet" => (SpellRange.Feet, 300),
-            "500 feet" => (SpellRange.Feet, 500),
-            "1 mile" => (SpellRange.Mile, 1),
             _ => throw new ArgumentException($"Range '{rangeStr}' not recognized.")
         };
     }

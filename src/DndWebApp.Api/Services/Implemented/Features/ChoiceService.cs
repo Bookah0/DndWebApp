@@ -18,7 +18,7 @@ public class ChoiceService<T>
     IAbilityValueRepository abilityValueRepo,
     ILanguageRepository languageRepo,
     ISkillRepository skillRepo,
-    IBaseFeatureService<T> featureService,
+    IFeatureService<T, AFeatureDto> featureService,
 
     IChoiceRepository<AbilityIncreaseChoice> abilityChoiceRepo,
     IChoiceRepository<SkillProficiencyChoice> skillChoiceRepo,
@@ -228,23 +228,23 @@ public class ChoiceService<T>
         await languageChoiceRepo.UpdateAsync(choice);
     }
 
-    public async Task RemoveAbilityOptions(int choiceId, ICollection<AbilityValueDto> valuesToRemove)
+    public async Task RemoveAbilityOptions(int choiceId, ICollection<int> idsToRemove)
     {
         var choice = await abilityChoiceRepo.GetByIdAsync(choiceId)
             ?? throw new NotFoundException($"Ability Increase choice with id {choiceId} could not be found");
 
-        foreach (var dto in valuesToRemove)
+        foreach (var id in idsToRemove)
         {
-            var ability = await abilityRepo.GetByIdAsync(dto.AbilityId)
-                ?? throw new NotFoundException($"Ability with id {dto.AbilityId} could not be found");
+            var ability = await abilityRepo.GetByIdAsync(id)
+                ?? throw new NotFoundException($"Ability with id {id} could not be found");
 
-            var abilityValue = choice.Options.FirstOrDefault(av => av.AbilityId == dto.AbilityId && av.Value == dto.Value) 
-                ?? throw new NotFoundException($"Ability value with AbilityId {dto.AbilityId} and Value {dto.Value} could not be found in choice with id {choiceId}");
+            var abilityValue = choice.Options.FirstOrDefault(av => av.AbilityId == id) 
+                ?? throw new NotFoundException($"Ability value with AbilityId {id} could not be found in choice with id {choiceId}");
 
             var removed = choice.Options.Remove(abilityValue);
 
             if (!removed)
-                throw new ValidationException($"Ability with id {dto.AbilityId} is not an option of choice with id {choiceId}");
+                throw new ValidationException($"Ability with id {id} is not an option of choice with id {choiceId}");
         }
         await abilityChoiceRepo.UpdateAsync(choice);
     }

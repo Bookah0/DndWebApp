@@ -10,25 +10,16 @@ using static DndWebApp.Api.Services.Util.ConstantsUtil;
 namespace DndWebApp.Api.Services.Implemented.Features;
 
 public class TraitService(
-    ITraitRepository repo,
+    IFeatureRepository<Trait> repo,
     IRaceRepository raceRepo,
     ISpellRepository spellRepo,
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
-
-    IChoiceRepository<AbilityIncreaseChoice> abilityChoiceRepo,
-    IChoiceRepository<SkillProficiencyChoice> skillChoiceRepo,
-    IChoiceRepository<LanguageChoice> languageChoiceRepo,
-    IChoiceRepository<ToolProficiencyChoice> toolChoiceRepo,
-    IChoiceRepository<ArmorProficiencyChoice> armorChoiceRepo,
-    IChoiceRepository<WeaponCategoryProficiencyChoice> weaponCategoryChoiceRepo,
-    IChoiceRepository<WeaponTypeProficiencyChoice> weaponTypeChoiceRepo,
-
     ILogger<TraitService> logger)
-    : AFeatureService<Trait>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), ITraitService
+    : AFeatureService<Trait, TraitDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
-    public async Task<Trait> CreateAsync(TraitDto dto)
+    public async override Task<Trait> CreateAsync(TraitDto dto)
     {
         var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NotFoundException($"Trait level with id {dto.RaceId} could not be found");
         logger.LogInformation("Creating trait, Name: {TraitName}, RaceId: {RaceId}", dto.Name, dto.RaceId);    
@@ -46,7 +37,7 @@ public class TraitService(
         return trait;
     }
 
-    public async Task DeleteAsync(int traitId)
+    public async override Task DeleteAsync(int traitId)
     {
         var trait = await repo.GetByIdAsync(traitId) 
             ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
@@ -56,12 +47,12 @@ public class TraitService(
         logger.LogInformation("Successfully deleted trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
     }
 
-    public async Task<ICollection<Trait>> GetAllAsync()
+    public async override Task<ICollection<Trait>> GetAllAsync()
     {
         return await repo.GetAllAsync();
     }
 
-    public async Task<Trait> GetByIdAsync(int traitId)
+    public async override Task<Trait> GetByIdAsync(int traitId)
     {
         var trait = await repo.GetByIdAsync(traitId) 
             ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
@@ -69,7 +60,7 @@ public class TraitService(
         return trait;
     }
 
-    public async Task UpdateAsync(TraitDto dto, int traitId)
+    public async override Task UpdateAsync(TraitDto dto, int traitId)
     {
         var trait = await repo.GetByIdAsync(traitId) ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
         logger.LogInformation("Updating trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
@@ -86,11 +77,6 @@ public class TraitService(
 
         await repo.UpdateAsync(trait);
         logger.LogInformation("Successfully updated trait, Name: {TraitName}, ID: {TraitId}", trait.Name, trait.Id);
-    }
-
-    public Task UpdateCollectionsAsync(TraitDto dto, int traitId)
-    {
-        throw new NotImplementedException();
     }
 
     // TODO replace with database level sorting

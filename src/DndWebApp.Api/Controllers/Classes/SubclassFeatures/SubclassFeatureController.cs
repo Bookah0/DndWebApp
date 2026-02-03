@@ -13,7 +13,7 @@ namespace DndWebApp.Api.Controllers.Classes;
 [ApiController]
 [Route("api/classes/{classId}/subclasses/{subclassId}/features")]
 public class SubclassFeatureController(
-    IClassFeatureService service, 
+    IFeatureService<ClassFeature, ClassFeatureDto> service, 
     ISubclassService subclassService, 
     IClassService classService, 
     IMapper mapper) : ControllerBase
@@ -105,22 +105,6 @@ public class SubclassFeatureController(
         return Ok();
     }
 
-    [HttpPost("{featureId}/proficiency-choices")]
-    public async Task<ActionResult> AddProficiencyChoice(int subclassId, int featureId, int classId, [FromBody] AChoiceDto dto)
-    {
-        await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
-        await service.AddProficiencyChoice(dto, featureId);
-        return Ok();
-    }
-
-    [HttpDelete("{featureId}/proficiency-choices/{choiceId}")]
-    public async Task<ActionResult> RemoveProficiencyChoice(int subclassId, int featureId, int choiceId, int classId, [FromQuery] string type)
-    {
-        await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
-        await service.RemoveProficiencyChoice(type, choiceId, featureId);
-        return Ok();
-    }
-
     // Ability increase management endpoints
     [HttpPost("{featureId}/ability-increases")]
     public async Task<ActionResult> AddAbilityIncrease(int subclassId, int featureId, int classId, [FromBody] AbilityValueDto increase)
@@ -135,22 +119,6 @@ public class SubclassFeatureController(
     {
         await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
         await service.RemoveAbilityIncrease(increase.AbilityId, featureId);
-        return Ok();
-    }
-
-    [HttpPost("{featureId}/ability-increase-choices")]
-    public async Task<ActionResult> AddAbilityIncreaseChoice(int subclassId, int featureId, int classId, [FromBody] AbilityIncreaseChoiceDto increaseChoice)
-    {
-        await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
-        await service.AddAbilityIncreaseChoice(increaseChoice, featureId);
-        return Ok();
-    }
-
-    [HttpDelete("{featureId}/ability-increase-choices/{choiceId}")]
-    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int subclassId, int featureId, int choiceId, int classId)
-    {
-        await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
-        await service.RemoveProficiencyChoice("Ability increase", choiceId, featureId);
         return Ok();
     }
 

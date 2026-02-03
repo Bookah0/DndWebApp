@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using DndWebApp.Api.Data;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Repositories.Implemented;
@@ -18,6 +17,10 @@ using DndWebApp.Api.Services.Interfaces.Species;
 using DndWebApp.Api.Services.Implemented.Classes;
 using DndWebApp.Api.Services.Interfaces.Items;
 using DndWebApp.Api.Services.Implemented.Items;
+using DndWebApp.Api.Models.Features;
+using DndWebApp.Api.Models.DTOs.Features;
+using DndWebApp.Api.Models.Characters;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,28 +30,31 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     npgsql => npgsql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-
 // Repositories
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
+builder.Services.AddScoped<IBackgroundRepository, BackgroundRepository>();
 builder.Services.AddScoped<IAbilityRepository, AbilityRepository>();
 builder.Services.AddScoped<IAlignmentRepository, AlignmentRepository>();
-builder.Services.AddScoped<IBackgroundRepository, BackgroundRepository>();
-builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
-builder.Services.AddScoped<IClassLevelRepository, ClassLevelRepository>();
-builder.Services.AddScoped<IClassRepository, ClassRepository>();
-builder.Services.AddScoped<IClassFeatureRepository, ClassFeatureRepository>();
-builder.Services.AddScoped<IFeatRepository, FeatRepository>();
-builder.Services.AddScoped<IBackgroundFeatureRepository, BackgroundFeatureRepository>();
-builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
-builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
-builder.Services.AddScoped<IRaceRepository, RaceRepository>();
 builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 builder.Services.AddScoped<ISpellRepository, SpellRepository>();
-builder.Services.AddScoped<ISubclassRepository, SubclassRepository>();
-builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
+
+builder.Services.AddScoped<IFeatureRepository<ClassFeature>, ClassFeatureRepository>();
+builder.Services.AddScoped<IFeatureRepository<Feat>, FeatRepository>();
+builder.Services.AddScoped<IFeatureRepository<BackgroundFeature>, BackgroundFeatureRepository>();
+builder.Services.AddScoped<IFeatureRepository<Trait>, TraitRepository>();
+
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IToolRepository, ToolRepository>();
-builder.Services.AddScoped<ITraitRepository, TraitRepository>();
+
+builder.Services.AddScoped<IRaceRepository, RaceRepository>();
+builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
+
+builder.Services.AddScoped<IClassLevelRepository, ClassLevelRepository>();
+builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<ISubclassRepository, SubclassRepository>();
 
 // Core services
 builder.Services.AddScoped<IAbilityService, AbilityService>();
@@ -66,10 +72,10 @@ builder.Services.AddScoped<ISubraceService, SubraceService>();
 
 // Feature services
 //builder.Services.AddScoped(typeof(IBaseFeatureService<>), typeof(BaseFeatureService<>));
-builder.Services.AddScoped<IBackgroundFeatureService, BackgroundFeatureService>();
-builder.Services.AddScoped<IClassFeatureService, ClassFeatureService>();
-builder.Services.AddScoped<IFeatService, FeatService>();
-builder.Services.AddScoped<ITraitService, TraitService>();
+builder.Services.AddScoped<IFeatureService<BackgroundFeature, BackgroundFeatureDto>, BackgroundFeatureService>();
+builder.Services.AddScoped<IFeatureService<ClassFeature, ClassFeatureDto>, ClassFeatureService>();
+builder.Services.AddScoped<IFeatureService<Feat, FeatDto>, FeatService>();
+builder.Services.AddScoped<IFeatureService<Trait, TraitDto>, TraitService>();
 
 // Item services
 builder.Services.AddScoped<IArmorService, ArmorService>();
@@ -91,13 +97,11 @@ builder.Services.AddScoped<IExternalSpeciesService, ExternalSpeciesService>();
 builder.Services.AddScoped<IExternalSpellService, ExternalSpellService>();
 
 builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen();
-
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandler>();
-
-app.Run();
+app.UseHttpsRedirection();
+app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -106,6 +110,9 @@ using (var scope = app.Services.CreateScope())
     
     if (app.Environment.IsDevelopment())
     {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("Starting external data fetch");
+        
         var alignmentService = scope.ServiceProvider.GetRequiredService<IExternalAlignmentService>();
         await alignmentService.FetchExternalAlignmentsAsync();
         var abilityService = scope.ServiceProvider.GetRequiredService<IExternalAbilityService>();
@@ -129,6 +136,4 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseHttpsRedirection();
-app.MapControllers();
 app.Run();

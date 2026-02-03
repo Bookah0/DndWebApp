@@ -8,14 +8,11 @@ public class EFeatDto
     public required string Name { get; set; }
 
     [JsonPropertyName("desc")]
-    public required List<string> Description { get; set; }
-
-    [JsonPropertyName("has_prerequisite")]
-    public required bool HasPrerequisite { get; set; }
+    public required string Description { get; set; }
 
     [JsonPropertyName("prerequisite")]
     public string? Prerequisite { get; set; }
 
-    [JsonPropertyName("benefits")]
-    public List<string> Benefits { get; set; } = [];
+    [JsonPropertyName("effects_desc")]
+    public List<string> EffectsDescriptions { get; set; } = [];
 }

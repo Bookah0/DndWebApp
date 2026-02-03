@@ -14,7 +14,7 @@ namespace DndWebApp.Api.Controllers.Features;
 
 [ApiController]
 [Route("api/races/{raceId}/traits")]
-public class RaceTraitController(ITraitService service, IMapper mapper) : ControllerBase
+public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapper mapper) : ControllerBase
 {
     
     [HttpGet]
@@ -93,22 +93,6 @@ public class RaceTraitController(ITraitService service, IMapper mapper) : Contro
         return Ok();
     }
 
-    [HttpPost("{traitId}/proficiency-choices")]
-    public async Task<ActionResult> AddProficiencyChoice(int raceId, int traitId, [FromBody] AChoiceDto dto)
-    {
-        await EnsureTraitBelongsToRace(raceId, traitId);
-        await service.AddProficiencyChoice(dto, traitId);
-        return Ok();
-    }
-
-    [HttpDelete("{traitId}/proficiency-choices/{type}/{choiceIndex}")]
-    public async Task<ActionResult> RemoveProficiencyChoice(int raceId, int traitId, string type, int choiceIndex)
-    {
-        await EnsureTraitBelongsToRace(raceId, traitId);
-        await service.RemoveProficiencyChoice(type, choiceIndex, traitId);
-        return Ok();
-    }
-
     // Ability increase management endpoints
     [HttpPost("{traitId}/ability-increases")]
     public async Task<ActionResult> AddAbilityIncrease(int raceId, int traitId, [FromBody] AbilityValueDto increase)
@@ -123,22 +107,6 @@ public class RaceTraitController(ITraitService service, IMapper mapper) : Contro
     {
         await EnsureTraitBelongsToRace(raceId, traitId);
         await service.RemoveAbilityIncrease(increase.AbilityId, traitId);
-        return Ok();
-    }
-
-    [HttpPost("{traitId}/ability-increase-choices")]
-    public async Task<ActionResult> AddAbilityIncreaseChoice(int raceId, int traitId, [FromBody] AbilityIncreaseChoiceDto increaseChoice)
-    {
-        await EnsureTraitBelongsToRace(raceId, traitId);
-        await service.AddAbilityIncreaseChoice(increaseChoice, traitId);
-        return Ok();
-    }
-
-    [HttpDelete("{traitId}/ability-increase-choices/{choiceIndex}")]
-    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int raceId, int traitId, int choiceIndex)
-    {
-        await EnsureTraitBelongsToRace(raceId, traitId);
-        await service.RemoveAbilityIncreaseChoice(choiceIndex, traitId);
         return Ok();
     }
 

@@ -14,5 +14,5 @@ public class ELanguageDto
     public required List<string> TypicalSpeakers { get; set; }
     
     [JsonPropertyName("script")]
-    public required string Script { get; set; }
+    public string? Script { get; set; }
 }

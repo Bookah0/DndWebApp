@@ -1,6 +1,7 @@
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
+using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
 using DndWebApp.Api.Services.Interfaces;
 using static DndWebApp.Api.Services.Util.SortUtil;
@@ -10,7 +11,7 @@ public partial class ClassLevelService(
     IClassRepository classRepo,
     ISubclassRepository subclassRepo,
     IClassLevelRepository levelRepo,
-    IClassFeatureRepository featureRepo,
+    IFeatureRepository<ClassFeature> featureRepo,
     ILogger<ClassService> logger) : IClassLevelService
 {
     public async Task<ClassLevel> CreateAsync(ClassLevelDto dto)

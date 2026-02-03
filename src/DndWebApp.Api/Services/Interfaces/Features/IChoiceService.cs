@@ -19,7 +19,7 @@ public interface IChoiceService<out T> where T : AFeature
     Task AddArmorCategoryOptions(int choiceId, ICollection<string> newCategories);
     Task RemoveSkillOptions(int choiceId, ICollection<int> skillIdsToRemove);
     Task RemoveLanguageOptions(int choiceId, ICollection<int> languageIdsToRemove);
-    Task RemoveAbilityOptions(int choiceId, ICollection<AbilityValueDto> valuesToRemove);
+    Task RemoveAbilityOptions(int choiceId, ICollection<int> valuesToRemove);
     Task RemoveWeaponCategoryOptions(int choiceId, ICollection<string> categoriesToRemove);
     Task RemoveWeaponTypeOptions(int choiceId, ICollection<string> typesToRemove);
     Task RemoveToolCategoryOptions(int choiceId, ICollection<string> categoriesToRemove);

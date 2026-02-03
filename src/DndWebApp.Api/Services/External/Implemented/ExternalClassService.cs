@@ -18,6 +18,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
         if ((await classRepo.GetAllAsync()).Count > 0)
         {
             logger.LogInformation("Classes already exist in the database. Skipping fetch.");
+            return;
         }
 
         logger.LogInformation("Fetching external classes.");
@@ -40,7 +41,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
 
             if (eClass.SpellcastingAbility is not null)
             {
-                spellcastingAbility = await abilityRepo.GetByNameAsync(eClass.SpellcastingAbility.SpellcastingAbility.Name)
+                spellcastingAbility = await abilityRepo.GetByShortNameAsync(eClass.SpellcastingAbility.SpellcastingAbility.Name)
                     ?? throw new ArgumentException($"Ability with short name {eClass.SpellcastingAbility.SpellcastingAbility.Index} not found.");
             }
 
@@ -48,7 +49,8 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
             {
                 Name = eClass.Name,
                 Description = "",
-                HitDie = eClass.HitDie,
+                //HitDie = eClass.HitDie,
+                HitDie = 6,
                 ClassLevels = [],
                 SpellcastingAbilityId = spellcastingAbility?.Id ?? null,
                 Subclasses = [],
@@ -163,7 +165,8 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
                 {
                     Name = eSubclass.Name,
                     Description = string.Join("\n", eSubclass.Description),
-                    HitDie = clss.HitDie,
+                    //HitDie = eClass.HitDie,
+                    HitDie = 6,
                     ClassLevels = [],
                     ParentClass = clss,
                     ParentClassId = clss.Id

@@ -5,12 +5,13 @@ using DndWebApp.Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
 using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Services.Interfaces.Species;
+using DndWebApp.Api.Models.Features;
 
 namespace DndWebApp.Api.Controllers.Features;
 
 [ApiController]
 [Route("api/races/{raceId}/subraces/{subraceId}/traits")]
-public class SubraceTraitController(ITraitService service, ISubraceService subraceService, IRaceService raceService, IMapper mapper) : ControllerBase
+public class SubraceTraitController(IFeatureService<Trait, TraitDto> service, ISubraceService subraceService, IRaceService raceService, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<TraitResponseDto>>> GetTraits(int raceId, int subraceId)

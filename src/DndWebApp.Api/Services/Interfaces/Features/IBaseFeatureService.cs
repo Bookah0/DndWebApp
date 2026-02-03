@@ -4,13 +4,15 @@ using DndWebApp.Api.Models.Features;
 
 namespace DndWebApp.Api.Services.Interfaces.Features;
 
-public interface IBaseFeatureService<T> where T : AFeature
+public interface IFeatureService<T, TD> where T : AFeature where TD : AFeatureDto
 {
-    Task<T> CreateAsync(AFeatureDto dto);
-    Task DeleteAsync(int id);
-    Task<ICollection<T>> GetAllAsync();
     Task<T> GetByIdAsync(int id);
-    Task UpdateAsync(int id, AFeatureDto dto);
+    Task<T> GetWithChoicesAsync(int id);
+    Task<T> GetWithProficienciesAsync(int id);
+    Task<ICollection<T>> GetAllAsync();
+    Task<T> CreateAsync(TD dto);
+    Task UpdateAsync(TD dto, int id);
+    Task DeleteAsync(int id);
     Task AddSpell(int spellId, int featureId);
     Task RemoveSpell(int spellId, int featureId);
     Task AddProficiency(ProficiencyDto dto, int featureId);

@@ -6,12 +6,13 @@ using DndWebApp.Api.Models.DTOs.ResponseDtos;
 using DndWebApp.Api.Services.Interfaces;
 using DndWebApp.Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
+using DndWebApp.Api.Models.Features;
 
 namespace DndWebApp.Api.Controllers.Features;
 
 [ApiController]
 [Route("api/backgrounds/{backgroundId}/features")]
-public class BackgroundFeatureController(IBackgroundFeatureService service, IBackgroundService backgroundService, IMapper mapper) : ControllerBase
+public class BackgroundFeatureController(IFeatureService<BackgroundFeature, BackgroundFeatureDto> service, IBackgroundService backgroundService, IMapper mapper) : ControllerBase
 {   
     [HttpGet]
     public async Task<ActionResult<ICollection<BackgroundFeatureResponseDto>>> GetBackgroundFeatures(int backgroundId)
@@ -92,22 +93,6 @@ public class BackgroundFeatureController(IBackgroundFeatureService service, IBac
         return Ok();
     }
 
-    [HttpPost("{featureId}/proficiency-choices")]
-    public async Task<ActionResult> AddProficiencyChoice(int featureId, int backgroundId, [FromBody] AChoiceDto dto)
-    {
-        await EnsureFeatureBelongsToBackground(backgroundId, featureId);
-        await service.AddProficiencyChoice(dto, featureId);
-        return Ok();
-    }
-
-    [HttpDelete("{featureId}/proficiency-choices/{type}/{choiceId}")]
-    public async Task<ActionResult> RemoveProficiencyChoice(int featureId, int backgroundId, string type, int choiceId)
-    {
-        await EnsureFeatureBelongsToBackground(backgroundId, featureId);
-        await service.RemoveProficiencyChoice(type, choiceId, featureId);
-        return Ok();
-    }
-
     // Ability increase management endpoints
     [HttpPost("{featureId}/ability-increases")]
     public async Task<ActionResult> AddAbilityIncrease(int featureId, int backgroundId, [FromBody] AbilityValueDto increase)
@@ -122,22 +107,6 @@ public class BackgroundFeatureController(IBackgroundFeatureService service, IBac
     {
         await EnsureFeatureBelongsToBackground(backgroundId, featureId);
         await service.RemoveAbilityIncrease(increase.AbilityId, featureId);
-        return Ok();
-    }
-
-    [HttpPost("{featureId}/ability-increase-choices")]
-    public async Task<ActionResult> AddAbilityIncreaseChoice(int featureId, int backgroundId, [FromBody] AbilityIncreaseChoiceDto increaseChoice)
-    {
-        await EnsureFeatureBelongsToBackground(backgroundId, featureId);
-        await service.AddAbilityIncreaseChoice(increaseChoice, featureId);
-        return Ok();
-    }
-
-    [HttpDelete("{featureId}/ability-increase-choices/{choiceId}")]
-    public async Task<ActionResult> RemoveAbilityIncreaseChoice(int featureId, int backgroundId, int choiceId)
-    {
-        await EnsureFeatureBelongsToBackground(backgroundId, featureId);
-        await service.RemoveProficiencyChoice("Ability increase", choiceId, featureId);
         return Ok();
     }
 

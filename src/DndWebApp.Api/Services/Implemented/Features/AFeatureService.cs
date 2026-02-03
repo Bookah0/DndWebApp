@@ -10,20 +10,23 @@ using DndWebApp.Api.Services.Util;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
-public abstract class AFeatureService<T>(
-    IRepository<T> repo,
+public abstract class AFeatureService<T, TD>(
+    IFeatureRepository<T> repo,
     ISpellRepository spellRepo,
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
-    IChoiceService<T> choiceService,
-    ILogger<AFeatureService<T>> logger) : IBaseFeatureService<T> where T : AFeature
+    ILogger<AFeatureService<T, TD>> logger) 
+    : IFeatureService<T, TD> where T : AFeature where TD : AFeatureDto
 {
-    public abstract Task<T> CreateAsync(AFeatureDto dto);
-    public abstract Task DeleteAsync(int id);
-    public abstract Task<ICollection<T>> GetAllAsync();
     public abstract Task<T> GetByIdAsync(int id);
-    public abstract Task UpdateAsync(int id, AFeatureDto dto);
+    public abstract Task<ICollection<T>> GetAllAsync();
+    public abstract Task<T> CreateAsync(TD dto);
+    public abstract Task UpdateAsync(TD dto, int id);
+    public abstract Task DeleteAsync(int id);
+
+    public Task<T> GetWithChoicesAsync(int id) => repo.GetWithChoicesAsync(id) ?? throw new NotFoundException($"Feature with id {id} could not be found");
+    public Task<T> GetWithProficienciesAsync(int id) => repo.GetWithProficienciesAsync(id) ?? throw new NotFoundException($"Feature with id {id} could not be found");
 
     public async Task AddSpell(int spellId, int featureId)
     {

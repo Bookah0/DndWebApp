@@ -6,21 +6,20 @@ using DndWebApp.Api.Services.Interfaces.Features;
 using DndWebApp.Api.Services.Constants;
 using static DndWebApp.Api.Services.Util.SortUtil;
 using static DndWebApp.Api.Services.Util.ConstantsUtil;
-using DndWebApp.Api.Models.Characters;
 
 namespace DndWebApp.Api.Services.Implemented.Features;
 
 public class ClassFeatureService(
-    IClassFeatureRepository repo,
+    IFeatureRepository<ClassFeature> repo,
     IClassLevelRepository classLevelRepo,
     ISpellRepository spellRepo,
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
     ILogger<ClassFeatureService> logger)
-    : AFeatureService<ClassFeature>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger), IClassFeatureService
+    : AFeatureService<ClassFeature, ClassFeatureDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
-    public async Task<ClassFeature> CreateAsync(ClassFeatureDto dto)
+    public async override Task<ClassFeature> CreateAsync(ClassFeatureDto dto)
     {
         var level = await classLevelRepo.GetByIdAsync(dto.LevelId) 
             ?? throw new NotFoundException($"Class Level with id {dto.LevelId} could not be found");
@@ -41,7 +40,7 @@ public class ClassFeatureService(
         return classFeature;
     }
 
-    public async Task DeleteAsync(int id)
+    public async override Task DeleteAsync(int id)
     {
         var feature = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
@@ -51,17 +50,17 @@ public class ClassFeatureService(
         logger.LogInformation("Successfully deleted class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
     }
 
-    public async Task<ICollection<ClassFeature>> GetAllAsync()
+    public async override Task<ICollection<ClassFeature>> GetAllAsync()
     {
         return await repo.GetAllAsync();
     }
 
-    public async Task<ClassFeature> GetByIdAsync(int id)
+    public async override Task<ClassFeature> GetByIdAsync(int id)
     {
         return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
     }
 
-    public async Task UpdateAsync(ClassFeatureDto dto, int id)
+    public async override Task UpdateAsync(ClassFeatureDto dto, int id)
     {
         var feature = await repo.GetByIdAsync(id) 
             ?? throw new NotFoundException($"Class Feature with id {id} could not be found");

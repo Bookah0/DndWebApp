@@ -1,4 +1,5 @@
 using DndWebApp.Api.Data;
+using DndWebApp.Api.Middlewares.ExceptionHandling;
 using DndWebApp.Api.Models.DTOs.Features;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Repositories.Interfaces;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented.Features;
 
-public class FeatRepository : IFeatRepository
+public class FeatRepository : IFeatureRepository<Feat>
 {
     private readonly AppDbContext context;
 
@@ -23,8 +24,7 @@ public class FeatRepository : IFeatRepository
     }
 
     public async Task<ICollection<Feat>> GetAllAsync() => await context.Feats.ToListAsync();
-    public async Task<Feat?> GetByIdAsync(int id) => await context.Feats.FirstOrDefaultAsync(f => f.Id == id);
-    public async Task<Feat?> GetByNameAsync(string name) => await context.Feats.FirstOrDefaultAsync(f => f.Name == name);
+    public async Task<Feat> GetByIdAsync(int id) => await context.Feats.FirstOrDefaultAsync(f => f.Id == id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
 
 
     public async Task DeleteAsync(Feat entity)
@@ -39,21 +39,55 @@ public class FeatRepository : IFeatRepository
         await context.SaveChangesAsync();
     }
     
-    public async Task<Feat?> GetWithAllDataAsync(int id)
+    public async Task<Feat> GetWithAllDataAsync(int id)
     {
         return await context.Feats
             .AsSplitQuery()
             .Include(f => f.AbilityIncreases)
             .Include(f => f.SpellsGained)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .Include(f => f.AbilityIncreases)
+            .Include(f => f.ArmorProficiencies)
+            .Include(f => f.WeaponTypeProficiencies)
+            .Include(f => f.SkillProficiencies)
+            .Include(f => f.Languages)
+            .Include(f => f.ToolProficiencies)
+            .Include(f => f.WeaponCategoryProficiencies)
+            .Include(f => f.AbilityIncreaseChoices)
+            .Include(f => f.ArmorProficiencyChoices)
+            .Include(f => f.WeaponTypeProficiencyChoices)
+            .Include(f => f.SkillProficiencyChoices)
+            .Include(f => f.LanguageChoices)
+            .Include(f => f.ToolProficiencyChoices)
+            .Include(f => f.WeaponCategoryProficiencyChoices)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new NotFoundException($"Feat with id {id} could not be found");
     }
 
-    public async Task<ICollection<Feat>> GetAllWithAllDataAsync()
+    public async Task<Feat> GetWithProficienciesAsync(int id)
     {
         return await context.Feats
-            .AsSplitQuery()
             .Include(f => f.AbilityIncreases)
-            .Include(f => f.SpellsGained)
-            .ToListAsync();
+            .Include(f => f.ArmorProficiencies)
+            .Include(f => f.WeaponTypeProficiencies)
+            .Include(f => f.SkillProficiencies)
+            .Include(f => f.Languages)
+            .Include(f => f.ToolProficiencies)
+            .Include(f => f.WeaponCategoryProficiencies)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new NotFoundException($"Feat with id {id} could not be found");
+    }
+
+    public async Task<Feat> GetWithChoicesAsync(int id)
+    {
+        return await context.Feats
+            .Include(f => f.AbilityIncreaseChoices)
+            .Include(f => f.ArmorProficiencyChoices)
+            .Include(f => f.WeaponTypeProficiencyChoices)
+            .Include(f => f.SkillProficiencyChoices)
+            .Include(f => f.LanguageChoices)
+            .Include(f => f.ToolProficiencyChoices)
+            .Include(f => f.WeaponCategoryProficiencyChoices)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new NotFoundException($"Feat with id {id} could not be found");
     }
 }

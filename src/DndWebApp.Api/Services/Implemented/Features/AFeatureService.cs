@@ -16,7 +16,7 @@ public abstract class AFeatureService<T, TD>(
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
-    ILogger<AFeatureService<T, TD>> logger) 
+    ILogger logger) 
     : IFeatureService<T, TD> where T : AFeature where TD : AFeatureDto
 {
     public abstract Task<T> GetByIdAsync(int id);
@@ -43,7 +43,8 @@ public abstract class AFeatureService<T, TD>(
     public async Task RemoveSpell(int spellId, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId);
-        var spell = feature.SpellsGained.FirstOrDefault(s => s.Id == spellId);
+        var spell = feature.SpellsGained.FirstOrDefault(s => s.Id == spellId)
+            ?? throw new NotFoundException($"Spell with id {spellId} was not found in the feature's spell list");
 
         logger.LogInformation("Removing spell with Name: {SpellName}, ID: {SpellId} from feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
         feature.SpellsGained.Remove(spell);

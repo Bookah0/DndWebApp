@@ -77,7 +77,7 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
         {
             SortLanguageOption.Name => OrderByMany(languages, [(l => l.Name)], descending),
             SortLanguageOption.Family => OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
-            SortLanguageOption.Script => OrderByMany(languages, [(l => l.Script), (l => l.Name)], descending),
+            SortLanguageOption.Script => OrderByMany(languages, [(l => l.Script!), (l => l.Name)], descending),
             _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }

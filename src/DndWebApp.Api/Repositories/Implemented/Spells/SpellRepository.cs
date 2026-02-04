@@ -5,15 +5,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented.Spells;
 
-public class SpellRepository : ISpellRepository
+public class SpellRepository(AppDbContext context) : ISpellRepository
 {
-    private readonly AppDbContext context;
+    public async Task<Spell> GetByIdAsync(int id) => 
+        await context.Spells.FindAsync(id)
+            ?? throw new Exception($"Spell with id {id} could not be found");
 
-    public SpellRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
+    public async Task<Spell> GetWithClassesAsync(int id) =>
+        await context.Spells
+            .Include(s => s.Classes)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Spell with id {id} could not be found");
 
+    public async Task<ICollection<Spell>> GetAllAsync() => await context.Spells.ToListAsync();
+    
+    public async Task<ICollection<Spell>> GetAllWithClassesAsync() =>
+        await context.Spells
+            .Include(s => s.Classes)
+            .ToListAsync();
+    
     public async Task<Spell> CreateAsync(Spell entity)
     {
         await context.Spells.AddAsync(entity!);
@@ -26,27 +36,11 @@ public class SpellRepository : ISpellRepository
         context.Spells.Remove(entity);
         await context.SaveChangesAsync();
     }
+
     public async Task UpdateAsync(Spell updatedEntity)
     {
         context.Spells.Update(updatedEntity);
         await context.SaveChangesAsync();
-    }
-
-    public async Task<ICollection<Spell>> GetAllAsync() => await context.Spells.ToListAsync();
-    public async Task<Spell?> GetByIdAsync(int id) => await context.Spells.FindAsync(id);
-
-    public async Task<Spell?> GetWithClassesAsync(int id)
-    {
-        return await context.Spells
-            .Include(s => s.Classes)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<ICollection<Spell>> GetAllWithClassesAsync()
-    {
-        return await context.Spells
-            .Include(s => s.Classes)
-            .ToListAsync();
     }
     
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)
@@ -91,4 +85,5 @@ public class SpellRepository : ISpellRepository
 
         return await query.ToListAsync();
     }
+
 }

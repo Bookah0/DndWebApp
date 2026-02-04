@@ -6,5 +6,5 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface ILanguageRepository : IRepository<Language>
 {
-    Task<Language?> GetByNameAsync(string name);
+    Task<Language> GetByNameAsync(string name);
 }

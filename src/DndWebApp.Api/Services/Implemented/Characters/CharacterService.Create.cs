@@ -13,20 +13,17 @@ public partial class CharacterService : ICharacterService
 {
     public async Task<Character> CreateAsync(CharacterDto dto)
     {
-        var race = await raceRepo.GetWithTraitsAsync(dto.RaceId)
-            ?? throw new NotFoundException($"Race with id {dto.RaceId} could not be found");
+        var race = await raceRepo.GetWithTraitsAsync(dto.RaceId);
+        var clss = await classRepo.GetWithClassLevelFeaturesAsync(dto.ClassId);
+        var background = await backgroundRepo.GetWithFeaturesAsync(dto.BackgroundId);
 
-        var clss = await classRepo.GetWithClassLevelFeaturesAsync(dto.ClassId)
-            ?? throw new NotFoundException($"Class with id {dto.ClassId} could not be found");
+        var subrace = dto.SubraceId is not null 
+            ? await subraceRepo.GetWithTraitsAsync((int)dto.SubraceId!) 
+            : null;
 
-        var background = await backgroundRepo.GetWithFeaturesAsync(dto.BackgroundId)
-            ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
-
-        var subrace = dto.SubraceId is not null ? await subraceRepo.GetWithTraitsAsync((int)dto.SubraceId!)
-            ?? throw new NotFoundException($"Subrace with id {dto.SubraceId} could not be found") : null;
-
-        var subclass = dto.SubClassId is not null ? await subclassRepo.GetWithClassLevelFeaturesAsync((int)dto.SubClassId!)
-            ?? throw new NotFoundException($"Subclass with id {dto.SubClassId} could not be found") : null;
+        var subclass = dto.SubClassId is not null
+            ? await subclassRepo.GetWithClassLevelFeaturesAsync((int)dto.SubClassId!) 
+            : null;
 
         logger.LogInformation("Creating character, Name: {CharacterName}, ClassId: {ClassId}, RaceId: {RaceId}", dto.Name, dto.ClassId, dto.RaceId);
 
@@ -126,9 +123,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task<int[]?> GetSpellSlotsOfLatestLevel(int classId, int level)
     {
-        var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(classId, level)
-            ?? throw new NotFoundException($"Class level with classId {classId} at level {level} could not be found");
-
+        var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(classId, level);
         return latestLevel.SpellSlots;
     }
 
@@ -165,16 +160,12 @@ public partial class CharacterService : ICharacterService
 
         for (int l = 1; l <= dto.Level; l++)
         {
-            var classLevel = await levelRepo.GetWithFeaturesByClassIdAsync(clss.Id, l)
-                ?? throw new NotFoundException($"Class level with id {clss.Id} at level {l} could not be found");
-
+            var classLevel = await levelRepo.GetWithFeaturesByClassIdAsync(clss.Id, l);
             allFeatures.AddRange(classLevel.NewFeatures);
 
             if (dto.SubClassId is not null && subclass is not null)
             {
-                var subclassLevel = await levelRepo.GetWithFeaturesByClassIdAsync(subclass.Id, l)
-                    ?? throw new NotFoundException($"Subclass level with id {subclass.Id} at level {l} could not be found");
-
+                var subclassLevel = await levelRepo.GetWithFeaturesByClassIdAsync(subclass.Id, l);
                 allFeatures.AddRange(subclassLevel.NewFeatures);
             }
         }
@@ -184,7 +175,7 @@ public partial class CharacterService : ICharacterService
 
     public async Task ApplyFeature(AFeature feature, int characterId)
     {
-        var character = await repo.GetByIdAsync(characterId) ?? throw new NotFoundException($"Character with id {characterId} could not be found");
+        var character = await repo.GetByIdAsync(characterId);
         await ApplyFeature(feature, character);
     }
 

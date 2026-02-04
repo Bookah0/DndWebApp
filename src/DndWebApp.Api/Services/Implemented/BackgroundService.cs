@@ -39,36 +39,20 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
 
     public async Task DeleteAsync(int id)
     {
-        var background = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background with id {id} could not be found");
+        var background = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting background with Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
         await repo.DeleteAsync(background);
         logger.LogInformation("Successfully deleted background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
     }
 
-    public async Task<ICollection<Background>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async Task<Background> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background with id {id} could not be found");
-    }
-
-    public async Task<Background> GetWithAllDataAsync(int id)
-    {
-        return await repo.GetWithAllDataAsync(id) ?? throw new NotFoundException($"Background with id {id} could not be found");
-    }
-
-    public async Task<Background> GetWithFeaturesAsync(int id)
-    {
-        return await repo.GetWithFeaturesAsync(id) ?? throw new NotFoundException($"Background with id {id} could not be found");
-    }
+    public async Task<ICollection<Background>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Background> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+    public async Task<Background> GetWithAllDataAsync(int id) => await repo.GetWithAllDataAsync(id);
+    public async Task<Background> GetWithFeaturesAsync(int id) => await repo.GetWithFeaturesAsync(id);
 
     public async Task<Background> UpdateAsync(int id, BackgroundDto dto)
     {
-        var background = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Background with id {id} could not be found");
+        var background = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
 
@@ -90,11 +74,8 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
 
     public async Task<Background> AddStartingItemsAsync(int id, int itemId)
     {
-        var item = await itemRepo.GetByIdAsync(itemId) 
-            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
-        
-        var background = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Background with id {id} could not be found");
+        var item = await itemRepo.GetByIdAsync(itemId);
+        var background = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Adding starting item with Name: {ItemName} ID: {ItemId} to background, Name: {BackgroundName}, ID: {BackgroundId}", item.Name, itemId, background.Name, id);
         background.StartingItems.Add(item);
@@ -106,8 +87,7 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
 
     public async Task RemoveStartingItemsAsync(int id, int itemId)
     {
-        var background = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Background with id {id} could not be found");
+        var background = await repo.GetByIdAsync(id);
 
         var item = background.StartingItems.FirstOrDefault(i => i.Id == itemId) 
             ?? throw new NotFoundException($"Item with id {itemId} is not a starting item for background with id {id}");
@@ -122,12 +102,11 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
     {
         foreach (var itemId in dto.ItemOptionIds)
         {
-            if(await itemRepo.GetByIdAsync(itemId) is null)
+            if(!await itemRepo.ExistsAsync(itemId))
                 throw new NotFoundException($"Item with id {itemId} could not be found");
         }
 
-        var background = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Background with id {id} could not be found");
+        var background = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Adding starting item option to background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
         background.StartingItemsOptions.Add(new StartingItemOption
@@ -143,8 +122,7 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
 
     public async Task RemoveStartingItemChoiceAsync(int id, int optionId)
     {
-        var background = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Background with id {id} could not be found");
+        var background = await repo.GetByIdAsync(id);
 
         var option = background.StartingItemsOptions.FirstOrDefault(o => o.Id == optionId) 
             ?? throw new NotFoundException($"Starting Item Option with id {optionId} is not a starting item option for background with id {id}");

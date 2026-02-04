@@ -3,5 +3,5 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface IAbilityValueRepository : IRepository<AbilityValue>
 {
-    Task<AbilityValue?> GetWithAbilityAsync(int id);
+    Task<AbilityValue> GetWithAbilityAsync(int id);
 }

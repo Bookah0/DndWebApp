@@ -5,6 +5,6 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface IBackgroundRepository : IRepository<Background>
 {
-    Task<Background?> GetWithFeaturesAsync(int id);
-    Task<Background?> GetWithAllDataAsync(int id);
+    Task<Background> GetWithFeaturesAsync(int id);
+    Task<Background> GetWithAllDataAsync(int id);
 }

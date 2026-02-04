@@ -38,7 +38,7 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
 
     public async Task DeleteAsync(int id)
     {
-        var item = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Item with id {id} could not be found");
+        var item = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting item, Name: {ItemName}, ID: {ItemId}", item.Name, id);
         await repo.DeleteAsync(item);
         logger.LogInformation("Successfully deleted item, Name: {ItemName}, ID: {ItemId}", item.Name, id);
@@ -52,7 +52,7 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
 
     public async Task<Item> GetByIdAsync(int id)
     {
-        var item = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Item with id {id} could not be found");
+        var item = await repo.GetByIdAsync(id);
         return item;
     }
 
@@ -62,7 +62,7 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
         var dtoOtherCategories = ResolveOptionOrThrow(dto.OtherCategories, ItemCategory.AllowedValues, "Item Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
-        var item = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Item with id {id} could not be found");
+        var item = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
 
         item.Name = dto.Name;

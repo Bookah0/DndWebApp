@@ -6,15 +6,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented;
 
-public class BackgroundRepository : IBackgroundRepository
+public class BackgroundRepository(AppDbContext context) : IBackgroundRepository
 {
-    private readonly AppDbContext context;
+    public async Task<Background> GetByIdAsync(int id) => 
+        await context.Backgrounds.FindAsync(id)
+        ?? throw new Exception($"Background with id {id} could not be found");
 
-    public BackgroundRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
+    public async Task<Background> GetWithFeaturesAsync(int id) =>
+        await context.Backgrounds
+            .AsSplitQuery()
+            .Include(b => b.Features)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Background with id {id} could not be found");
+    
+    public async Task<Background> GetWithAllDataAsync(int id) =>
+        await context.Backgrounds
+            .AsSplitQuery()
+            .Include(b => b.Features)
+            .Include(b => b.StartingItems)
+            .Include(b => b.StartingItemsOptions)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Background with id {id} could not be found");
 
+    public async Task<ICollection<Background>> GetAllAsync() => await context.Backgrounds.ToListAsync();
+    
     public async Task<Background> CreateAsync(Background entity)
     {
         await context.Backgrounds.AddAsync(entity!);
@@ -31,25 +46,5 @@ public class BackgroundRepository : IBackgroundRepository
     {
         context.Backgrounds.Update(updatedEntity);
         await context.SaveChangesAsync();
-    }
-
-    public async Task<ICollection<Background>> GetAllAsync() => await context.Backgrounds.ToListAsync();
-    public async Task<Background?> GetByIdAsync(int id) => await context.Backgrounds.FindAsync(id);
-    public async Task<Background?> GetWithFeaturesAsync(int id)
-    {
-        return await context.Backgrounds
-            .AsSplitQuery()
-            .Include(b => b.Features)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-    
-    public async Task<Background?> GetWithAllDataAsync(int id)
-    {
-        return await context.Backgrounds
-            .AsSplitQuery()
-            .Include(b => b.Features)
-            .Include(b => b.StartingItems)
-            .Include(b => b.StartingItemsOptions)
-            .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

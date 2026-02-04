@@ -5,14 +5,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented;
 
-public class AbilityValueRepository : IAbilityValueRepository
+public class AbilityValueRepository(AppDbContext context) : IAbilityValueRepository
 {
-    private readonly AppDbContext context;
+    public async Task<AbilityValue> GetByIdAsync(int id) => 
+        await context.AbilityValues.FindAsync(id)
+            ?? throw new Exception($"AbilityValue with id {id} could not be found");
 
-    public AbilityValueRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
+    public async Task<AbilityValue> GetWithAbilityAsync(int id) =>
+        await context.AbilityValues
+            .Include(a => a.Ability)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"AbilityValue with id {id} could not be found");
+
+    public async Task<ICollection<AbilityValue>> GetAllAsync() => await context.AbilityValues.ToListAsync();
 
     public async Task<AbilityValue> CreateAsync(AbilityValue entity)
     {
@@ -31,15 +36,4 @@ public class AbilityValueRepository : IAbilityValueRepository
         context.AbilityValues.Update(updatedEntity);
         await context.SaveChangesAsync();
     }
-
-    public async Task<ICollection<AbilityValue>> GetAllAsync() => await context.AbilityValues.ToListAsync();
-    public async Task<AbilityValue?> GetByIdAsync(int id) => await context.AbilityValues.FindAsync(id);
-
-    public async Task<AbilityValue?> GetWithAbilityAsync(int id)
-    {
-        return await context.AbilityValues
-            .Include(a => a.Ability)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
 }

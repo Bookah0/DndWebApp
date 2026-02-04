@@ -23,8 +23,7 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
             Languages = dto.LanguageDescription ?? ""
         };
 
-        var parentRace = await parentRaceRepo.GetByIdAsync(dto.ParentRaceId) 
-            ?? throw new NotFoundException($"Parent race with id {dto.ParentRaceId} could not be found");
+        var parentRace = await parentRaceRepo.GetByIdAsync(dto.ParentRaceId);
         
         var subrace = await repo.CreateAsync(new()
         {
@@ -46,38 +45,20 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
 
     public async Task DeleteAsync(int id)
     {
-        var subrace = await repo.GetByIdAsync(id) 
-        ?? throw new NotFoundException($"Subrace with id {id} could not be found");
-
+        var subrace = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
         await repo.DeleteAsync(subrace);
         logger.LogInformation("Successfully deleted subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
     }
 
-    public async Task<ICollection<Subrace>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async Task<Subrace> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Subrace with id {id} could not be found");
-    }
-
-    public async Task<Subrace> GetWithAllDataAsync(int id)
-    {
-        return await repo.GetWithAllDataAsync(id) ?? throw new NotFoundException($"Subrace with id {id} could not be found");
-    }
-
-    public async Task<Subrace> GetWithTraitsAsync(int id)
-    {
-        return await repo.GetWithTraitsAsync(id) ?? throw new NotFoundException($"Subrace with id {id} could not be found");
-    }
+    public async Task<ICollection<Subrace>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Subrace> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+    public async Task<Subrace> GetWithAllDataAsync(int id) => await repo.GetWithAllDataAsync(id);
+    public async Task<Subrace> GetWithTraitsAsync(int id) => await repo.GetWithTraitsAsync(id);
 
     public async Task<Subrace> UpdateAsync(int id, SubraceDto dto)
     {
-        var subrace = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Subrace with id {id} could not be found");
+        var subrace = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
 
@@ -93,9 +74,8 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
 
         if(dto.NewParentRaceId is not null)
         {
-            var newParentRace = await parentRaceRepo.GetByIdAsync((int)dto.NewParentRaceId) 
-                ?? throw new NotFoundException($"Parent Race with id {(int)dto.NewParentRaceId} could not be found");
-
+            var newParentRace = await parentRaceRepo.GetByIdAsync((int)dto.NewParentRaceId);
+            
             subrace.ParentRaceId = (int)dto.NewParentRaceId;
             subrace.ParentRace = newParentRace;
         }

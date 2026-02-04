@@ -34,14 +34,13 @@ public class ChoiceService<T>
 
     public async Task ClearChoices<C>(int featureId) where C : IFeatureChoice
     {
-        var feature = await featureService.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+        var feature = await featureService.GetByIdAsync(featureId);
 
         if (!repositoryGetters.TryGetValue(typeof(C), out var repo))
-            throw new InvalidOperationException($"Unknown Choice type: {typeof(C).Name}");
+            throw new ValidationException($"Unknown Choice type: {typeof(C).Name}");
         
         if (!collectionGetters.TryGetValue(typeof(C), out var collectionGetter))
-            throw new InvalidOperationException($"Unknown Choice type: {typeof(C).Name}");
+            throw new ValidationException($"Unknown Choice type: {typeof(C).Name}");
 
         var choices = (ICollection<C>)collectionGetter.DynamicInvoke(feature)!;
 
@@ -59,8 +58,7 @@ public class ChoiceService<T>
 
     public async Task<T> AddChoice<CDto>(CDto dto, int featureId) where CDto : AChoiceDto
     {
-        var feature = await featureService.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+        var feature = await featureService.GetByIdAsync(featureId);
         
         if (!dtoToEntityMap.TryGetValue(typeof(CDto), out var entityType))
             throw new InvalidOperationException($"Unknown Choice type: {typeof(CDto).Name}");
@@ -80,14 +78,12 @@ public class ChoiceService<T>
 
     public async Task RemoveChoice<C>(int choiceId, int featureId) where C : IFeatureChoice
     {
-        var feature = await featureService.GetByIdAsync(featureId)
-            ?? throw new NotFoundException($"Feature with id {featureId} could not be found");
+        var feature = await featureService.GetByIdAsync(featureId);
         
         if (!repositoryGetters.TryGetValue(typeof(C), out var repo))
             throw new InvalidOperationException($"Unknown Choice type: {typeof(C).Name}");
 
-        var choice = await ((IChoiceRepository<C>)repo).GetByIdAsync(choiceId) 
-            ?? throw new NotFoundException($"Choice with id {choiceId} could not be found");
+        var choice = await ((IChoiceRepository<C>)repo).GetByIdAsync(choiceId) ;
 
         if (choice.FeatureId != feature.Id)
             throw new ValidationException($"Choice with id {choiceId} does not belong to feature with id {feature.Id}");
@@ -99,14 +95,11 @@ public class ChoiceService<T>
 
     public async Task<SkillProficiencyChoice> AddSkillOptions(int choiceId, ICollection<int> newSkillIds)
     {
-        var choice = await skillChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Skill choice with id {choiceId} could not be found");
+        var choice = await skillChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var id in newSkillIds)
         {
-            var skill = await skillRepo.GetByIdAsync(id)
-                ?? throw new NotFoundException($"Skill with id {id} could not be found");
-
+            var skill = await skillRepo.GetByIdAsync(id);
             choice.Options.Add(skill);
         }
         await skillChoiceRepo.UpdateAsync(choice);
@@ -115,14 +108,11 @@ public class ChoiceService<T>
 
     public async Task<LanguageChoice> AddLanguageOptions(int choiceId, ICollection<int> newLanguageIds)
     {
-        var choice = await languageChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Language choice with id {choiceId} could not be found");
+        var choice = await languageChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var id in newLanguageIds)
         {
-            var language = await languageRepo.GetByIdAsync(id)
-                ?? throw new NotFoundException($"Language with id {id} could not be found");
-
+            var language = await languageRepo.GetByIdAsync(id);
             choice.Options.Add(language);
         }
         await languageChoiceRepo.UpdateAsync(choice);
@@ -131,13 +121,11 @@ public class ChoiceService<T>
 
     public async Task<AbilityIncreaseChoice> AddAbilityOptions(int choiceId, ICollection<AbilityValueDto> newAbilityValues)
     {
-        var choice = await abilityChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Ability Increase choice with id {choiceId} could not be found");
+        var choice = await abilityChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var dto in newAbilityValues)
         {
-            var ability = await abilityRepo.GetByIdAsync(dto.AbilityId)
-                ?? throw new NotFoundException($"Ability with id {dto.AbilityId} could not be found");
+            var ability = await abilityRepo.GetByIdAsync(dto.AbilityId);
 
             var abilityValue = new AbilityValue
             {
@@ -154,8 +142,7 @@ public class ChoiceService<T>
 
     public async Task<WeaponCategoryProficiencyChoice> AddWeaponCategoryOptions(int choiceId, ICollection<string> newCategories)
     {
-        var choice = await weaponCategoryChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Weapon Category choice with id {choiceId} could not be found");
+        var choice = await weaponCategoryChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var category in newCategories)
         {
@@ -168,8 +155,7 @@ public class ChoiceService<T>
 
     public async Task<WeaponTypeProficiencyChoice> AddWeaponTypeOptions(int choiceId, ICollection<string> newTypes)
     {
-        var choice = await weaponTypeChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Weapon Type choice with id {choiceId} could not be found");
+        var choice = await weaponTypeChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var type in newTypes)
         {
@@ -182,8 +168,7 @@ public class ChoiceService<T>
 
     public async Task<ToolProficiencyChoice> AddToolCategoryOptions(int choiceId, ICollection<string> newCategories)
     {
-        var choice = await toolChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Tool choice with id {choiceId} could not be found");
+        var choice = await toolChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var category in newCategories)
         {
@@ -196,8 +181,7 @@ public class ChoiceService<T>
 
     public async Task<ArmorProficiencyChoice> AddArmorCategoryOptions(int choiceId, ICollection<string> newCategories)
     {
-        var choice = await armorChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Armor choice with id {choiceId} could not be found");
+        var choice = await armorChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var category in newCategories)
         {
@@ -210,13 +194,11 @@ public class ChoiceService<T>
 
     public async Task RemoveSkillOptions(int choiceId, ICollection<int> skillIdsToRemove)
     {
-        var choice = await skillChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Skill choice with id {choiceId} could not be found");
+        var choice = await skillChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var id in skillIdsToRemove)
         {
-            var skill = await skillRepo.GetByIdAsync(id)
-                ?? throw new NotFoundException($"Skill with id {id} could not be found");
+            var skill = await skillRepo.GetByIdAsync(id);
 
             if (!choice.Options.Remove(skill))
                 throw new ValidationException($"Skill with id {id} is not an option of choice with id {choiceId}");
@@ -227,13 +209,11 @@ public class ChoiceService<T>
 
     public async Task RemoveLanguageOptions(int choiceId, ICollection<int> languageIdsToRemove)
     {
-        var choice = await languageChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Language choice with id {choiceId} could not be found");
+        var choice = await languageChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var id in languageIdsToRemove)
         {
-            var language = await languageRepo.GetByIdAsync(id)
-                ?? throw new NotFoundException($"Language with id {id} could not be found");
+            var language = await languageRepo.GetByIdAsync(id);
 
             if (!choice.Options.Remove(language))
                 throw new ValidationException($"Language with id {id} is not an option of choice with id {choiceId}");
@@ -243,13 +223,11 @@ public class ChoiceService<T>
 
     public async Task RemoveAbilityOptions(int choiceId, ICollection<int> idsToRemove)
     {
-        var choice = await abilityChoiceRepo.GetByIdAsync(choiceId)
-            ?? throw new NotFoundException($"Ability Increase choice with id {choiceId} could not be found");
+        var choice = await abilityChoiceRepo.GetByIdAsync(choiceId);
 
         foreach (var id in idsToRemove)
         {
-            var ability = await abilityRepo.GetByIdAsync(id)
-                ?? throw new NotFoundException($"Ability with id {id} could not be found");
+            var ability = await abilityRepo.GetByIdAsync(id);
 
             var abilityValue = choice.Options.FirstOrDefault(av => av.AbilityId == id) 
                 ?? throw new NotFoundException($"Ability value with AbilityId {id} could not be found in choice with id {choiceId}");
@@ -262,28 +240,28 @@ public class ChoiceService<T>
 
     public async Task RemoveWeaponCategoryOptions(int choiceId, ICollection<string> categoriesToRemove)
     {
-        var choice = await weaponCategoryChoiceRepo.GetByIdAsync(choiceId) ?? throw new NotFoundException($"Weapon Category choice with id {choiceId} could not be found");
+        var choice = await weaponCategoryChoiceRepo.GetByIdAsync(choiceId);
         choice.Options.RemoveMany(categoriesToRemove);
         await weaponCategoryChoiceRepo.UpdateAsync(choice);
     }
 
     public async Task RemoveWeaponTypeOptions(int choiceId, ICollection<string> typesToRemove)
     {
-        var choice = await weaponTypeChoiceRepo.GetByIdAsync(choiceId) ?? throw new NotFoundException($"Weapon Type choice with id {choiceId} could not be found");
+        var choice = await weaponTypeChoiceRepo.GetByIdAsync(choiceId);
         choice.Options.RemoveMany(typesToRemove);
         await weaponTypeChoiceRepo.UpdateAsync(choice);
     }
 
     public async Task RemoveToolCategoryOptions(int choiceId, ICollection<string> categoriesToRemove)
     {
-        var choice = await toolChoiceRepo.GetByIdAsync(choiceId) ?? throw new NotFoundException($"Tool choice with id {choiceId} could not be found");
+        var choice = await toolChoiceRepo.GetByIdAsync(choiceId);
         choice.Options.RemoveMany(categoriesToRemove);
         await toolChoiceRepo.UpdateAsync(choice);
     }
 
     public async Task RemoveArmorCategoryOptions(int choiceId, ICollection<string> categoriesToRemove)
     {
-        var choice = await armorChoiceRepo.GetByIdAsync(choiceId) ?? throw new NotFoundException($"Armor choice with id {choiceId} could not be found");
+        var choice = await armorChoiceRepo.GetByIdAsync(choiceId);
         choice.Options.RemoveMany(categoriesToRemove);
         await armorChoiceRepo.UpdateAsync(choice);
     }

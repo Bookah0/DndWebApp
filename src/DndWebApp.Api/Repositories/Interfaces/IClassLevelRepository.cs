@@ -5,7 +5,7 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface IClassLevelRepository : IRepository<ClassLevel>
 {
-    Task<ClassLevel?> GetWithAllDataAsync(int id);
+    Task<ClassLevel> GetWithAllDataAsync(int id);
     Task<ICollection<ClassLevel>> GetAllWithAllDataAsync();
-    Task<ClassLevel?> GetWithFeaturesByClassIdAsync(int classId, int level);
+    Task<ClassLevel> GetWithFeaturesByClassIdAsync(int classId, int level);
 }

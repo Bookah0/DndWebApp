@@ -26,25 +26,18 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
 
     public async Task DeleteAsync(int id)
     {
-        var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
+        var alignment = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
         await repo.DeleteAsync(alignment);
         logger.LogInformation("Successfully deleted alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
     }
 
-    public async Task<ICollection<Alignment>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async Task<Alignment> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
-    }
-
+    public async Task<ICollection<Alignment>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Alignment> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+    
     public async Task<Alignment> UpdateAsync(int id, AlignmentDto dto)
     {
-        var alignment = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Alignment could not be found");
+        var alignment = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
 

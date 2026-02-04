@@ -5,8 +5,8 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface ICharacterRepository : IRepository<Character>
 {
-    Task<CharacterDescriptionDto?> GetCharacterDescriptionAsync(int id);
-    Task<Character?> GetWithAllDataAsync(int id);
-    Task<Character?> GetWithCombatStatsAsync(int characterId);
-    Task<Character?> GetWithCharacterDescriptionAsync(int characterId);
+    Task<CharacterDescriptionDto> GetCharacterDescriptionAsync(int id);
+    Task<Character> GetWithAllDataAsync(int id);
+    Task<Character> GetWithCombatStatsAsync(int characterId);
+    Task<Character> GetWithCharacterDescriptionAsync(int characterId);
 }

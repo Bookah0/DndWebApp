@@ -28,7 +28,7 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
 
     public async Task DeleteAsync(int id)
     {
-        var subclass = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
+        var subclass = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting subclass with Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
         await repo.DeleteAsync(subclass);
         logger.LogInformation("Successfully deleted subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
@@ -40,15 +40,11 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
         return subclasses;
     }
 
-    public async Task<Subclass> GetByIdAsync(int id)
-    {
-        var subclass = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
-        return subclass;
-    }
+    public async Task<Subclass> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Subclass> UpdateAsync(int id, ClassDto dto)
     {
-        var subclass = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
+        var subclass = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
 
         subclass.Name = dto.Name;
@@ -57,9 +53,7 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
         
         if(dto.NewParentClassId is not null)
         {
-            var newParentClass = await classRepo.GetByIdAsync((int)dto.NewParentClassId) 
-                ?? throw new NotFoundException($"Parent Class with id {(int)dto.NewParentClassId} could not be found");
-
+            var newParentClass = await classRepo.GetByIdAsync((int)dto.NewParentClassId);
             subclass.ParentClassId = (int)dto.NewParentClassId;
             subclass.ParentClass = newParentClass;
         }
@@ -69,15 +63,9 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
         return subclass;
     }
 
-    public async Task<Subclass> GetWithLevelsAsync(int id)
-    {
-        return await repo.GetWithClassLevelsAsync(id) ?? throw new NotFoundException($"No subclass with id {id} can be found");
-    }
-
-    public async Task<Subclass> GetWithFeaturesAsync(int id)
-    {
-        return await repo.GetWithClassLevelFeaturesAsync(id) ?? throw new NotFoundException($"No subclass with id {id} can be found");
-    }
+    public async Task<Subclass> GetWithLevelsAsync(int id) => await repo.GetWithClassLevelsAsync(id);
+    public async Task<Subclass> GetWithFeaturesAsync(int id) => await repo.GetWithClassLevelFeaturesAsync(id);
+    
 
     public ICollection<Subclass> SortBy(ICollection<Subclass> subclasses, bool descending = false)
     {

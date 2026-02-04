@@ -76,8 +76,7 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
 
     public async Task DeleteAsync(int id)
     {
-        var spell = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException("Spell could not be found");
+        var spell = await repo.GetByIdAsync(id);
     
         if(!spell.IsHomebrew)
             throw new ValidationException("Cannot delete a base spell.");
@@ -89,76 +88,12 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
         logger.LogInformation("Successfully deleted spell, Name: {SpellName} ID: {SpellId}", spellName, id);
     }
 
-    public async Task<ICollection<Spell>> GetAllAsync()
-    {
-        var spells = await repo.GetAllAsync();
-        return spells;
-    }
-
-    // TODO move filtering logic to repository when implementing database level filtering
-    public async Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto)
-    {
-        if (dto.Name is not null)
-            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
-        if (dto.MinLevel is not null && dto.MaxLevel is not null && dto.MinLevel > dto.MaxLevel)
-            throw new ValidationException("Maximum level must be greater than or equal to minimum level");
-        if (dto.MinLevel is not null && dto.MinLevel < 0)
-            throw new ValidationException("Minimum level must be greater than or equal to zero");
-        if (dto.MaxLevel is not null && dto.MaxLevel < 0)
-            throw new ValidationException("Maximum level must be greater than or equal to zero");
-        if (dto.ClassIds != null)
-        {
-            if (dto.ClassIds.HasDuplicates())
-                throw new ValidationException($"Duplicate class ids found in ClassIds.");
-    
-            foreach (var id in dto.ClassIds)
-            {
-                if(await classRepo.GetByIdAsync(id) is null)
-                    throw new NotFoundException($"Class with id {id} does not exist.");
-            }
-        }
-
-        var dtoSchools = dto.MagicSchools != null ? ResolveOptionOrThrow(dto.MagicSchools, MagicSchool.AllowedValues, "Magic School") : null;
-        var dtoTargetTypes = dto.TargetTypes != null ? ResolveOptionOrThrow(dto.TargetTypes, SpellTargetType.AllowedValues, "Spell Target Type") : null;
-        var dtoSpellRanges = dto.Range != null ? ResolveOptionOrThrow(dto.Range, SpellRange.AllowedValues, "Spell Range") : null;
-        var dtoDurations = dto.Durations != null ? ResolveOptionOrThrow(dto.Durations, SpellDuration.AllowedValues, "Spell Duration") : null;
-        var dtoCastTimes = dto.CastingTimes != null ? ResolveOptionOrThrow(dto.CastingTimes, CastingTime.AllowedValues, "Casting Time") : null;
-        var dtoSpellTypes = dto.SpellTypes != null ? ResolveOptionOrThrow(dto.SpellTypes, SpellType.AllowedValues, "Spell Type") : null;
-        var dtoDamageTypes = dto.DamageTypes != null ? ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type") : null;
-
-        var filter = new SpellFilter()
-        {
-            Name = dto.Name,
-            MinLevel = dto.MinLevel,
-            MaxLevel = dto.MaxLevel,
-            IsHomebrew = dto.IsHomebrew,
-            ClassIds = dto.ClassIds,
-            Durations = dtoDurations,
-            CastingTimes = dtoCastTimes,
-            MagicSchools = dtoSchools,
-            SpellTypes = dtoSpellTypes,
-            TargetType = dtoTargetTypes,
-            Range = dtoSpellRanges,
-            DamageTypes = dtoDamageTypes,
-        };
-
-        if (filter.MinLevel > filter.MaxLevel)
-            throw new ValidationException($"Maximum level {filter.MaxLevel} must be greater than or equal to minimum level");
-        if (filter.Name is not null)
-            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name);
-
-        return await repo.FilterAllAsync(filter);
-    }
-
-    public async Task<Spell> GetByIdAsync(int id)
-    {
-        var spell = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Spell could not be found");
-        return spell;
-    }
+    public async Task<ICollection<Spell>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Spell> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Spell> UpdateAsync(int id, SpellDto dto)
     {
-        var spell = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Spell could not be found");
+        var spell = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
 
         var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
@@ -223,5 +158,60 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
             SortSpellOption.Range => OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
             _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
+    }
+
+    // TODO move filtering logic to repository when implementing database level filtering
+    public async Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto)
+    {
+        if (dto.Name is not null)
+            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
+        if (dto.MinLevel is not null && dto.MaxLevel is not null && dto.MinLevel > dto.MaxLevel)
+            throw new ValidationException("Maximum level must be greater than or equal to minimum level");
+        if (dto.MinLevel is not null && dto.MinLevel < 0)
+            throw new ValidationException("Minimum level must be greater than or equal to zero");
+        if (dto.MaxLevel is not null && dto.MaxLevel < 0)
+            throw new ValidationException("Maximum level must be greater than or equal to zero");
+        if (dto.ClassIds != null)
+        {
+            if (dto.ClassIds.HasDuplicates())
+                throw new ValidationException($"Duplicate class ids found in ClassIds.");
+    
+            foreach (var id in dto.ClassIds)
+            {
+                if(!await classRepo.ExistsAsync(id))
+                    throw new NotFoundException($"Class with id {id} does not exist.");
+            }
+        }
+
+        var dtoSchools = dto.MagicSchools != null ? ResolveOptionOrThrow(dto.MagicSchools, MagicSchool.AllowedValues, "Magic School") : null;
+        var dtoTargetTypes = dto.TargetTypes != null ? ResolveOptionOrThrow(dto.TargetTypes, SpellTargetType.AllowedValues, "Spell Target Type") : null;
+        var dtoSpellRanges = dto.Range != null ? ResolveOptionOrThrow(dto.Range, SpellRange.AllowedValues, "Spell Range") : null;
+        var dtoDurations = dto.Durations != null ? ResolveOptionOrThrow(dto.Durations, SpellDuration.AllowedValues, "Spell Duration") : null;
+        var dtoCastTimes = dto.CastingTimes != null ? ResolveOptionOrThrow(dto.CastingTimes, CastingTime.AllowedValues, "Casting Time") : null;
+        var dtoSpellTypes = dto.SpellTypes != null ? ResolveOptionOrThrow(dto.SpellTypes, SpellType.AllowedValues, "Spell Type") : null;
+        var dtoDamageTypes = dto.DamageTypes != null ? ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type") : null;
+
+        var filter = new SpellFilter()
+        {
+            Name = dto.Name,
+            MinLevel = dto.MinLevel,
+            MaxLevel = dto.MaxLevel,
+            IsHomebrew = dto.IsHomebrew,
+            ClassIds = dto.ClassIds,
+            Durations = dtoDurations,
+            CastingTimes = dtoCastTimes,
+            MagicSchools = dtoSchools,
+            SpellTypes = dtoSpellTypes,
+            TargetType = dtoTargetTypes,
+            Range = dtoSpellRanges,
+            DamageTypes = dtoDamageTypes,
+        };
+
+        if (filter.MinLevel > filter.MaxLevel)
+            throw new ValidationException($"Maximum level {filter.MaxLevel} must be greater than or equal to minimum level");
+        if (filter.Name is not null)
+            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name);
+
+        return await repo.FilterAllAsync(filter);
     }
 }

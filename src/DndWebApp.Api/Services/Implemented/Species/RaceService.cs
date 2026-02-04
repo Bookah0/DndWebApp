@@ -37,41 +37,21 @@ public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IR
 
     public async Task DeleteAsync(int id)
     {
-        var race = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Race with id {id} could not be found");
+        var race = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
         await repo.DeleteAsync(race);
         logger.LogInformation("Successfully deleted race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
     }
 
-    public async Task<ICollection<Race>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async Task<Race> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Race with id {id} could not be found");
-    }
-
-    public async Task<Race> GetWithAllDataAsync(int id)
-    {
-        return await repo.GetWithAllDataAsync(id) ?? throw new NotFoundException($"Race with id {id} could not be found");
-    }
-
-    public async Task<Race> GetWithTraitsAsync(int id)
-    {
-        return await repo.GetWithTraitsAsync(id) ?? throw new NotFoundException($"Race with id {id} could not be found");
-    }
-
-    public async Task<Race> GetWithSubracesAsync(int id)
-    {
-        return await repo.GetWithSubracesAsync(id) ?? throw new NotFoundException($"Race with id {id} could not be found");
-    }
+    public async Task<ICollection<Race>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Race> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+    public async Task<Race> GetWithAllDataAsync(int id) => await repo.GetWithAllDataAsync(id);
+    public async Task<Race> GetWithTraitsAsync(int id) => await repo.GetWithTraitsAsync(id);
+    public async Task<Race> GetWithSubracesAsync(int id) => await repo.GetWithSubracesAsync(id);
 
     public async Task<Race> UpdateAsync(int id, RaceDto dto)
     {
-        var race = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Race with id {id} could not be found");
+        var race = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
 

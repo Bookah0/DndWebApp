@@ -38,13 +38,9 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
             if (eClass is null)
                 throw new InvalidOperationException($"Failed to deserialize class {item.Index}.");
 
-            Ability? spellcastingAbility = null;
-
-            if (eClass.SpellcastingAbility is not null)
-            {
-                spellcastingAbility = await abilityRepo.GetByShortNameAsync(eClass.SpellcastingAbility.SpellcastingAbility.Name)
-                    ?? throw new NotFoundException($"Ability with short name {eClass.SpellcastingAbility.SpellcastingAbility.Index} not found.");
-            }
+            var spellcastingAbility = eClass.SpellcastingAbility is not null
+                ? await abilityRepo.GetByShortNameAsync(eClass.SpellcastingAbility.SpellcastingAbility.Name)
+                : null;
 
             var clss = new Class
             {
@@ -198,9 +194,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
 
         foreach (var eItem in eClass.StartingEquipment)
         {
-            var item = await itemRepository.GetByNameAsync(eItem.Equipment.Name)
-                ?? throw new NotFoundException($"Item with name {eItem.Equipment.Name} not found.");
-
+            var item = await itemRepository.GetByNameAsync(eItem.Equipment.Name);
             clss.StartingEquipment.Add(item);
         }
     }
@@ -226,8 +220,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
             {
                 if (eOption.Equipment is not null)
                 {
-                    var item = await itemRepository.GetByNameAsync(eOption.Equipment.Name)
-                        ?? throw new NotFoundException($"Item with name {eOption.Equipment.Name} not found.");
+                    var item = await itemRepository.GetByNameAsync(eOption.Equipment.Name);
 
                     var option = new StartingEquipmentOption
                     {

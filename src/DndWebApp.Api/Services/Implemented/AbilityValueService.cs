@@ -13,8 +13,7 @@ public class AbilityValueService(IAbilityValueRepository repo, IAbilityRepositor
         if(dto.Value == 0)
             throw new ValidationException("Ability value cannot be zero");
 
-        var ability = await abilityRepo.GetByIdAsync(dto.AbilityId) 
-            ?? throw new NotFoundException("Ability could not be found");
+        var ability = await abilityRepo.GetByIdAsync(dto.AbilityId) ;
 
         logger.LogInformation("Creating ability value, AbilityName: {AbilityName}, Value: {Value}", ability.FullName, dto.Value);
 
@@ -30,9 +29,7 @@ public class AbilityValueService(IAbilityValueRepository repo, IAbilityRepositor
 
     public async Task DeleteAsync(int id)
     {
-        var abilityValue = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException("Ability value could not be found");
-
+        var abilityValue = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting ability value, ID: {AbilityValueId}", id);
         await repo.DeleteAsync(abilityValue);
         logger.LogInformation("Successfully deleted ability value, ID: {AbilityValueId}", id);
@@ -43,23 +40,15 @@ public class AbilityValueService(IAbilityValueRepository repo, IAbilityRepositor
         return await repo.GetAllAsync();
     }
 
-    public async Task<AbilityValue> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException("Ability value could not be found");
-    }
+    public async Task<AbilityValue> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<AbilityValue> GetWithAbilityAsync(int id)
-    {
-        return await repo.GetWithAbilityAsync(id) ?? throw new NotFoundException("Ability value could not be found");
-    }
+    public async Task<AbilityValue> GetWithAbilityAsync(int id) => await repo.GetWithAbilityAsync(id);
 
     public async Task<AbilityValue> SetValueAsync(int id, int newValue)
     {
-        var abilityValue = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException("Ability value could not be found");
+        var abilityValue = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating ability value, ID: {AbilityValueId}, OldValue: {OldValue}, NewValue: {NewValue}", id, abilityValue.Value, newValue);
-
         abilityValue.Value = newValue;
         await repo.UpdateAsync(abilityValue);
 

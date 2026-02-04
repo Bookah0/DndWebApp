@@ -6,6 +6,7 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface IItemRepository : IRepository<Item>
 {
+    Task<bool> ExistsAsync(int itemId);
     Task<ICollection<Item>> GetAllMiscItemsAsync();
-    Task<Item?> GetByNameAsync(string name);
+    Task<Item> GetByNameAsync(string name);
 }

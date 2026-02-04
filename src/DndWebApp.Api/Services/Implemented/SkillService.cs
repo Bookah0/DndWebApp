@@ -13,8 +13,7 @@ public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo,
 {
     public async Task<Skill> CreateAsync(SkillDto dto)
     {
-        var ability = await abilityRepo.GetByIdAsync(dto.AbilityId) 
-            ?? throw new NotFoundException("Ability could not be found");
+        var ability = await abilityRepo.GetByIdAsync(dto.AbilityId);
 
         logger.LogInformation("Creating skill, Name: {SkillName}, AbilityId: {AbilityId}", dto.Name, dto.AbilityId);
 
@@ -31,8 +30,7 @@ public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo,
 
     public async Task DeleteAsync(int id)
     {
-        var skill = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException("Skill could not be found");
+        var skill = await repo.GetByIdAsync(id);
         if(!skill.IsHomebrew)
             throw new ValidationException("Cannot delete a base skill.");
         
@@ -42,32 +40,18 @@ public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo,
         logger.LogInformation("Successfully deleted skill, Name: {SkillName}, ID: {SkillId}", skill.Name, skill.Id);
     }
 
-    public async Task<ICollection<Skill>> GetAllAsync()
-    {
-        var skills = await repo.GetAllAsync();
-        return skills;
-    }
-
-    public async Task<ICollection<Skill>> GetAllWithAbilityAsync()
-    {
-        var skills = await repo.GetAllWithAbilityAsync();
-        return skills;
-    }
-
-    public async Task<Skill> GetByIdAsync(int id)
-    {
-        var skill = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Skill could not be found");
-        return skill;
-    }
+    public async Task<ICollection<Skill>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<ICollection<Skill>> GetAllWithAbilityAsync() => await repo.GetAllWithAbilityAsync();
+    public async Task<Skill> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Skill> UpdateAsync(int id, SkillDto dto)
     {
-        var skill = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Skill could not be found");
+        var skill = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating skill, Name: {SkillName}, ID: {SkillId}", skill.Name, id);
 
         if (skill.AbilityId != dto.AbilityId)
         {
-            skill.Ability = await abilityRepo.GetByIdAsync(dto.AbilityId) ?? throw new NotFoundException("Ability could not be found");
+            skill.Ability = await abilityRepo.GetByIdAsync(dto.AbilityId);
             skill.AbilityId = dto.AbilityId;
         }
 

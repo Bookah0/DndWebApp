@@ -53,8 +53,7 @@ public class InventoryService(
 
         foreach (var itemId in dto.ItemIds)
         {
-            var item = await itemRepo.GetByIdAsync(itemId)
-                ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+            var item = await itemRepo.GetByIdAsync(itemId);
                 
             inv.StoredItems.Add(item);
         }
@@ -66,8 +65,7 @@ public class InventoryService(
 
     public async Task<Inventory> AddItem(Inventory inventory, int itemId)
     {         
-        var item = await itemRepo.GetByIdAsync(itemId) 
-            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+        var item = await itemRepo.GetByIdAsync(itemId) ;
 
         logger.LogInformation("Adding item with ID: {ItemId} to inventory with ID: {InventoryId}", itemId, inventory.Id);
         inventory.StoredItems.Add(item);
@@ -80,8 +78,7 @@ public class InventoryService(
 
     public async Task DiscardItem(Inventory inventory, int itemId)
     {
-        var item = await itemRepo.GetByIdAsync(itemId) 
-            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+        var item = await itemRepo.GetByIdAsync(itemId) ;
         
         if(inventory.StoredItems.FirstOrDefault(i => i.Id == itemId) is null)
              throw new NotFoundException($"Item with id {itemId} could not be found in inventory with id {inventory.Id}");
@@ -100,8 +97,7 @@ public class InventoryService(
 
     public async Task UnEquip(Inventory inventory, int itemId)
     {
-        var item = await itemRepo.GetByIdAsync(itemId)
-            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+        var item = await itemRepo.GetByIdAsync(itemId);
         
         logger.LogInformation("Unequipping item with ID: {ItemId} from inventory with ID: {InventoryId}", itemId, inventory.Id);
 
@@ -131,8 +127,7 @@ public class InventoryService(
                 if(equipmentSlot.EquipmentId is null)
                     throw new NotFoundException($"No item is equipped in slot {resolvedSlot} in inventory with id {inventory.Id}");
 
-                var item = await itemRepo.GetByIdAsync((int)equipmentSlot.EquipmentId)
-                    ?? throw new NotFoundException($"Item with id {equipmentSlot.EquipmentId} could not be found");
+                var item = await itemRepo.GetByIdAsync((int)equipmentSlot.EquipmentId);
 
                 equipmentSlot.EquipmentId = null;
                 inventory.AttunedItems += item.RequiresAttunement ? 1 : 0;
@@ -146,8 +141,7 @@ public class InventoryService(
 
     public async Task<Inventory> Equip(Inventory inventory, int itemId, string slot)
     {
-        var item = await itemRepo.GetByIdAsync(itemId) 
-            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+        var item = await itemRepo.GetByIdAsync(itemId) ;
         
         if(item is not IEquippable equippableItem)
             throw new InvalidOperationException($"Item with id {itemId} is not equippable");
@@ -188,11 +182,10 @@ public class InventoryService(
 
     public async Task<Inventory> Equip(Inventory inventory, int itemId)
     {
-        var item = await itemRepo.GetByIdAsync(itemId) 
-            ?? throw new NotFoundException($"Item with id {itemId} could not be found");
+        var item = await itemRepo.GetByIdAsync(itemId) ;
         
         if(item is not IEquippable equippableItem)
-            throw new InvalidOperationException($"Item with id {itemId} is not equippable");
+            throw new ValidationException($"Item with id {itemId} is not equippable");
         
         logger.LogInformation("Equipping item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, equippableItem.MainSlot, inventory.Id);
         EquipmentSlot? firstSlotFound = null;
@@ -238,18 +231,13 @@ public class InventoryService(
 
     public async Task<Inventory> GetByCharacterIdAsync(int characterId)
     {
-        var character = await characterRepo.GetByIdAsync(characterId)
-            ?? throw new NotFoundException($"Character with id {characterId} could not be found");
-        
-        return await repo.GetByIdAsync(character.InventoryId)
-            ?? throw new NotFoundException($"Inventory for character with id {characterId} could not be found");
+        var character = await characterRepo.GetByIdAsync(characterId);
+        return await repo.GetByIdAsync(character.InventoryId);
     }
 
     public async Task DeleteAsync(int id)
     {
-        var inventory = await repo.GetByIdAsync(id)
-            ?? throw new NotFoundException($"Inventory with id {id} could not be found");
-
+        var inventory = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting inventory with ID: {InventoryId}", id);
         await repo.DeleteAsync(inventory);
         logger.LogInformation("Successfully deleted inventory with ID: {InventoryId}", id);

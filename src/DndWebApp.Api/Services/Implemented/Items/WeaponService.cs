@@ -49,21 +49,14 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
 
     public async Task DeleteAsync(int id)
     {
-        var weapon = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
+        var weapon = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, id);
         await repo.DeleteAsync(weapon);
         logger.LogInformation("Successfully deleted weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, id);
     }
 
-    public async Task<ICollection<Weapon>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async Task<Weapon> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
-    }
+    public async Task<ICollection<Weapon>> GetAllAsync() =>await repo.GetAllAsync();
+    public async Task<Weapon> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Weapon> UpdateAsync(WeaponDto dto, int id)
     {
@@ -76,7 +69,7 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
         var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues, "Weapon Property");
 
-        var weapon = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Weapon with id {id} could not be found");
+        var weapon = await repo.GetByIdAsync(id);
 
         weapon.Name = dto.Name;
         weapon.Description = dto.Description;

@@ -21,7 +21,7 @@ public class TraitService(
 {
     public async override Task<Trait> CreateAsync(TraitDto dto)
     {
-        var race = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NotFoundException($"Trait level with id {dto.RaceId} could not be found");
+        var race = await raceRepo.GetByIdAsync(dto.RaceId);
         logger.LogInformation("Creating trait, Name: {TraitName}, RaceId: {RaceId}", dto.Name, dto.RaceId);    
 
         Trait trait = await repo.CreateAsync(new() 
@@ -39,35 +39,23 @@ public class TraitService(
 
     public async override Task DeleteAsync(int traitId)
     {
-        var trait = await repo.GetByIdAsync(traitId) 
-            ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
-
+        var trait = await repo.GetByIdAsync(traitId);
         logger.LogInformation("Deleting trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
         await repo.DeleteAsync(trait);
         logger.LogInformation("Successfully deleted trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
     }
 
-    public async override Task<ICollection<Trait>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async override Task<Trait> GetByIdAsync(int traitId)
-    {
-        var trait = await repo.GetByIdAsync(traitId) 
-            ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
-
-        return trait;
-    }
+    public async override Task<ICollection<Trait>> GetAllAsync() => await repo.GetAllAsync();
+    public async override Task<Trait> GetByIdAsync(int traitId) => await repo.GetByIdAsync(traitId);
 
     public async override Task<Trait> UpdateAsync(TraitDto dto, int traitId)
     {
-        var trait = await repo.GetByIdAsync(traitId) ?? throw new NotFoundException($"Trait with id {traitId} could not be found");
+        var trait = await repo.GetByIdAsync(traitId);
         logger.LogInformation("Updating trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
 
         if (trait.RaceId != dto.RaceId)
         {
-            trait.FromRace = await raceRepo.GetByIdAsync(dto.RaceId) ?? throw new NotFoundException($"Race with id {dto.RaceId} could not be found");
+            trait.FromRace = await raceRepo.GetByIdAsync(dto.RaceId);
             trait.RaceId = dto.RaceId;
         }
 

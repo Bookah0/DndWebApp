@@ -176,7 +176,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
                 return (castingTime, value);
         }
 
-        throw new NotFoundException($"Casting time '{castingTimeStr}' not recognized.");
+        throw new ValidationException($"Casting time '{castingTimeStr}' not recognized.");
     }
 
     private static (string, int) ParseSpellDuration(string durationStr)

@@ -213,7 +213,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             }
         }
 
-        throw new NotFoundException($"Unknown weapon type: {eWeapon.Name}");
+        throw new ValidationException($"Unknown weapon type: {eWeapon.Name}");
     }
 
     private int GetConvertedValue(int value, string unit)

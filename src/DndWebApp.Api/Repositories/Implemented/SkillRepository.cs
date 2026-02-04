@@ -5,14 +5,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented;
 
-public class SkillRepository : ISkillRepository
+public class SkillRepository(AppDbContext context) : ISkillRepository
 {
-    private readonly AppDbContext context;
+    public async Task<Skill> GetByIdAsync(int id) => 
+        await context.Skills.FindAsync(id)
+            ?? throw new Exception($"Skill with id {id} could not be found");
 
-    public SkillRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
+    public async Task<Skill> GetByNameAsync(string name) => 
+        await context.Skills.FirstOrDefaultAsync(s => s.Name == name)
+            ?? throw new Exception($"Skill with name {name} could not be found");
+
+    public async Task<Skill> GetWithAbilityAsync(int id) =>
+        await context.Skills
+            .Include(s => s.Ability)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Skill with id {id} could not be found");
+
+    public async Task<ICollection<Skill>> GetAllAsync() => await context.Skills.ToListAsync();
+
+    public async Task<ICollection<Skill>> GetAllWithAbilityAsync() =>
+        await context.Skills
+            .Include(s => s.Ability)
+            .ToListAsync();
 
     public async Task<Skill> CreateAsync(Skill entity)
     {
@@ -30,23 +44,5 @@ public class SkillRepository : ISkillRepository
     {
         context.Skills.Update(updatedEntity);
         await context.SaveChangesAsync();
-    }
-
-    public async Task<ICollection<Skill>> GetAllAsync() => await context.Skills.ToListAsync();
-    public async Task<Skill?> GetByIdAsync(int id) => await context.Skills.FindAsync(id);
-    public async Task<Skill?> GetByNameAsync(string name) => await context.Skills.FirstOrDefaultAsync(s => s.Name == name);
-
-    public async Task<Skill?> GetWithAbilityAsync(int id)
-    {
-        return await context.Skills
-            .Include(s => s.Ability)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<ICollection<Skill>> GetAllWithAbilityAsync()
-    {
-        return await context.Skills
-            .Include(s => s.Ability)
-            .ToListAsync();
     }
 }

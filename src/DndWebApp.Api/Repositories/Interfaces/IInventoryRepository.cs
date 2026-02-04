@@ -6,5 +6,5 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface IInventoryRepository : IRepository<Inventory>
 {
-    Task<Inventory?> GetWithStoredItemsAsync(int id);
+    Task<Inventory> GetWithStoredItemsAsync(int id);
 }

@@ -18,7 +18,7 @@ public static class ConstantsUtil
                 resolved.Add(resolvedOption!);
                 continue;
             }
-            throw new NotFoundException($"{constantsGroupName} {input} not recognized.");
+            throw new ValidationException($"{constantsGroupName} {input} not recognized.");
         }
         return resolved;
     }
@@ -28,7 +28,7 @@ public static class ConstantsUtil
         if (TryResolveOption(input, allowedSet, out var resolved))
             return resolved!;
         
-        throw new NotFoundException($"{constantsGroupName} {input} not recognized.");
+        throw new ValidationException($"{constantsGroupName} {input} not recognized.");
     }
 
     public static bool TryResolveOption(string input, IReadOnlySet<string> allowedSet, out string? resolved)

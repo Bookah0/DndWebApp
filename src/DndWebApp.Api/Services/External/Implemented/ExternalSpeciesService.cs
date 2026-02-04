@@ -133,8 +133,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
 
         foreach (var abilityIncrease in eSpecies.AbilityBonuses)
         {
-            var ability = await abilityRepo.GetByShortNameAsync(abilityIncrease.AbilityScore.Name)
-                ?? throw new NotFoundException($"Ability with short name {abilityIncrease.AbilityScore.Name} not found.");
+            var ability = await abilityRepo.GetByShortNameAsync(abilityIncrease.AbilityScore.Name);
 
             abilityIncreases.Add(new AbilityValue
             {

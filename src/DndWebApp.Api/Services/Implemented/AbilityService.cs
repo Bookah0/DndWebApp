@@ -27,27 +27,18 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
 
     public async Task DeleteAsync(int id)
     {
-        var ability = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Ability could not be found");
+        var ability = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting ability with FullName: {AbilityFullName}, ID: {AbilityId}", ability.FullName, id);
         await repo.DeleteAsync(ability);
         logger.LogInformation("Successfully deleted ability, FullName: {AbilityFullName}, ID: {AbilityId}", ability.FullName, id);
     }
 
-    public async Task<ICollection<Ability>> GetAllAsync()
-    {
-        var abilities = await repo.GetAllAsync();
-        return abilities;
-    }
-
-    public async Task<Ability> GetByIdAsync(int id)
-    {
-        var ability = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Ability could not be found");
-        return ability;
-    }
+    public async Task<ICollection<Ability>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Ability> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Ability> UpdateAsync(int id, AbilityDto dto)
     {
-        var ability = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Ability could not be found");
+        var ability = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating ability, FullName: {AbilityFullName}, ID: {AbilityId}", ability.FullName, id);
 
         ability.FullName = dto.FullName;

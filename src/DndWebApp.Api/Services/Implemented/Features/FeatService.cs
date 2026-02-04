@@ -33,25 +33,18 @@ public class FeatService(
 
     public async override Task DeleteAsync(int id)
     {
-        var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
+        var feat = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
         await repo.DeleteAsync(feat);
         logger.LogInformation("Successfully deleted feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
     }
 
-    public async override Task<ICollection<Feat>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async override Task<Feat> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
-    }
+    public async override Task<ICollection<Feat>> GetAllAsync() => await repo.GetAllAsync();
+    public async override Task<Feat> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async override Task<Feat> UpdateAsync(FeatDto dto, int id)
     {
-        var feat = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Feat with id {id} could not be found");
+        var feat = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
 
         feat.Name = dto.Name;

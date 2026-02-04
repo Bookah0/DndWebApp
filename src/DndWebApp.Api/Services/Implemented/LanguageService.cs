@@ -31,8 +31,7 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
 
     public async Task DeleteAsync(int id)
     {
-        var language = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException("Language could not be found");
+        var language = await repo.GetByIdAsync(id);
         
         if(!language.IsHomebrew)
             throw new ValidationException("Cannot delete a base language.");
@@ -50,13 +49,13 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
 
     public async Task<Language> GetByIdAsync(int id)
     {
-        var language = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found"); 
+        var language = await repo.GetByIdAsync(id); 
         return language;
     }
 
     public async Task<Language> UpdateAsync(int id, LanguageDto dto)
     {
-        var language = await repo.GetByIdAsync(id) ?? throw new NotFoundException("Language could not be found");
+        var language = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating language, Name: {LanguageName}, ID: {LanguageId}", language.Name, id);
 
         language.Name = dto.Name;

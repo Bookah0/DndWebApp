@@ -43,30 +43,21 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
 
     public async Task DeleteAsync(int id)
     {
-        var armor = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
+        var armor = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting armor with ID: {ArmorId}", id);
         await repo.DeleteAsync(armor);
         logger.LogInformation("Successfully deleted armor with ID: {ArmorId}", id);
     }
 
-    public async Task<ICollection<Armor>> GetAllAsync()
-    {
-        var armors = await repo.GetAllAsync();
-        return armors;
-    }
-
-    public async Task<Armor> GetByIdAsync(int id)
-    {
-        var armor = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
-        return armor;
-    }
+    public async Task<ICollection<Armor>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Armor> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Armor> UpdateAsync(ArmorDto dto, int id)
     {
         var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category");
         var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
-        var armor = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Armor with id {id} could not be found");
+        var armor = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
 
         armor.Name = dto.Name;

@@ -6,39 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented;
 
-public class CharacterRepository : ICharacterRepository
+public class CharacterRepository(AppDbContext context) : ICharacterRepository
 {
-    private readonly AppDbContext context;
+    public async Task<Character> GetByIdAsync(int id) => 
+        await context.Characters.FindAsync(id)
+        ?? throw new Exception($"Character with id {id} could not be found");
 
-    public CharacterRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
-
-    public async Task<Character> CreateAsync(Character entity)
-    {
-        await context.Characters.AddAsync(entity!);
-        await context.SaveChangesAsync();
-        return entity;
-    }
-
-    public async Task DeleteAsync(Character entity)
-    {
-        context.Characters.Remove(entity);
-        await context.SaveChangesAsync();
-    }
-    public async Task UpdateAsync(Character updatedEntity)
-    {
-        context.Characters.Update(updatedEntity);
-        await context.SaveChangesAsync();
-    }
-
-    public async Task<ICollection<Character>> GetAllAsync() => await context.Characters.ToListAsync();
-    public async Task<Character?> GetByIdAsync(int id) => await context.Characters.FindAsync(id);
-
-    public async Task<CharacterDescriptionDto?> GetCharacterDescriptionAsync(int id)
-    {
-        return await context.Characters
+    public async Task<CharacterDescriptionDto> GetCharacterDescriptionAsync(int id) =>
+        await context.Characters
             .AsNoTracking()
             .Where(x => x.Id == id)
             .Select(r => new CharacterDescriptionDto
@@ -58,26 +33,23 @@ public class CharacterRepository : ICharacterRepository
                 Backstory = r.CharacterDescription.Backstory,
                 CharacterPictureUrl = r.CharacterDescription.CharacterPictureUrl!
             })
-            .FirstOrDefaultAsync();
-    }
+            .FirstOrDefaultAsync()
+            ?? throw new Exception($"Character with id {id} could not be found");
 
-    public async Task<Character?> GetWithCombatStatsAsync(int id)
-    {
-        return await context.Characters
+    public async Task<Character> GetWithCombatStatsAsync(int id) =>
+        await context.Characters
             .Include(c => c.CombatStats)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Character with id {id} could not be found");
 
-    public async Task<Character?> GetWithCharacterDescriptionAsync(int id)
-    {
-        return await context.Characters
+    public async Task<Character> GetWithCharacterDescriptionAsync(int id) =>
+        await context.Characters
             .Include(c => c.CharacterDescription)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Character with id {id} could not be found");
 
-    public async Task<Character?> GetWithAllDataAsync(int id)
-    {
-        return await context.Characters
+    public async Task<Character> GetWithAllDataAsync(int id) =>
+        await context.Characters
             .Include(f => f.Class)
             .Include(f => f.SubClass)
             .Include(f => f.Background)
@@ -99,6 +71,26 @@ public class CharacterRepository : ICharacterRepository
             .Include(c => c.Languages)
             .Include(f => f.OtherRaces)
             .Include(f => f.ReadySpells)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Character with id {id} could not be found");
+
+    public async Task<ICollection<Character>> GetAllAsync() => await context.Characters.ToListAsync();
+    
+    public async Task<Character> CreateAsync(Character entity)
+    {
+        await context.Characters.AddAsync(entity!);
+        await context.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task DeleteAsync(Character entity)
+    {
+        context.Characters.Remove(entity);
+        await context.SaveChangesAsync();
+    }
+    public async Task UpdateAsync(Character updatedEntity)
+    {
+        context.Characters.Update(updatedEntity);
+        await context.SaveChangesAsync();
     }
 }

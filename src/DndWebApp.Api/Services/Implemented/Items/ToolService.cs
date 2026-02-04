@@ -40,9 +40,7 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
 
     public async Task<Tool> AddProperty(ToolPropertyDto dto, int toolId)
     {
-        var tool = await repo.GetWithAllDataAsync(toolId) 
-            ?? throw new NotFoundException($"Tool with id {toolId} could not be found");
-        
+        var tool = await repo.GetWithAllDataAsync(toolId) ;
         logger.LogInformation("Adding property to tool, ToolId: {ToolId}, PropertyTitle: {PropertyTitle}", toolId, dto.Title);
         tool.Properties.Add(new ToolProperty { Title = dto.Title, Description = dto.Description });
 
@@ -53,8 +51,7 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
 
     public async Task<Tool> AddActivity(ToolActivityDto dto, int toolId)
     {
-        var tool = await repo.GetWithAllDataAsync(toolId) 
-            ?? throw new NotFoundException($"Tool with id {toolId} could not be found");
+        var tool = await repo.GetWithAllDataAsync(toolId);
 
         logger.LogInformation("Adding activity to tool, ToolId: {ToolId}, ActivityTitle: {ActivityTitle}", toolId, dto.Title);
         tool.Activities.Add(new ToolActivity { Title = dto.Title, SkillId = dto.SkillId, AbilityId = dto.AbilityId, DC = dto.DC });
@@ -66,30 +63,21 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
     
     public async Task DeleteAsync(int id)
     {
-        var tool = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Tool with id {id} could not be found");
+        var tool = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting tool, Name: {ToolName}, ID: {ToolId}", tool.Name, id);
         await repo.DeleteAsync(tool);
         logger.LogInformation("Successfully deleted tool, Name: {ToolName}, ID: {ToolId}", tool.Name, id);
     }
 
-    public async Task<ICollection<Tool>> GetAllAsync()
-    {
-        var tools = await repo.GetAllAsync();
-        return tools;
-    }
-
-    public async Task<Tool> GetByIdAsync(int id)
-    {
-        var tool = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Tool with id {id} could not be found");
-        return tool;
-    }
+    public async Task<ICollection<Tool>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Tool> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Tool> UpdateAsync(ToolDto dto, int id)
     {
         var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
-        var tool = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Tool with id {id} could not be found"); ;
+        var tool = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating tool, Name: {ToolName}, ID: {ToolId}", dto.Name, id);
 
         tool.Name = dto.Name;

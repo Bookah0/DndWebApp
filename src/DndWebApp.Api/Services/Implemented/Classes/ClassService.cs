@@ -27,40 +27,21 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
 
     public async Task DeleteAsync(int id)
     {
-        var clss = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
+        var clss = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
         await repo.DeleteAsync(clss);
         logger.LogInformation("Successfully deleted class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
     }
 
-    public async Task<ICollection<Class>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async Task<Class> GetWithLevelsAsync(int id)
-    {
-        return await repo.GetWithLevelsAsync(id) ?? throw new NotFoundException($"No class with id {id} can be found");
-    }
-
-    public async Task<Class> GetWithFeaturesAsync(int id)
-    {
-        return await repo.GetWithClassLevelFeaturesAsync(id) ?? throw new NotFoundException($"No class with id {id} can be found");
-    }
-
-    public async Task<Class> GetWithSubclassesAsync(int id)
-    {
-        return await repo.GetWithSubclassesAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
-    }
-    
-    public async Task<Class> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
-    }
+    public async Task<ICollection<Class>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Class> GetWithLevelsAsync(int id) => await repo.GetWithLevelsAsync(id);
+    public async Task<Class> GetWithFeaturesAsync(int id) => await repo.GetWithClassLevelFeaturesAsync(id);
+    public async Task<Class> GetWithSubclassesAsync(int id) => await repo.GetWithSubclassesAsync(id);
+    public async Task<Class> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Class> UpdateAsync(int id, ClassDto dto)
     {
-        var clss = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class with id {id} could not be found");
+        var clss = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
 
         clss.Name = dto.Name;

@@ -22,8 +22,7 @@ public class BackgroundFeatureService(
 {
     public async override Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
     {
-        var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) 
-            ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
+        var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId);
 
         logger.LogInformation("Creating background feature, Name: {BackgroundFeatureName}, BackgroundId: {BackgroundId}", dto.Name, dto.BackgroundId);
 
@@ -42,31 +41,25 @@ public class BackgroundFeatureService(
 
     public async override Task DeleteAsync(int id)
     {
-        var feature = await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
+        var feature = await repo.GetByIdAsync(id);
         logger.LogInformation("Deleting background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, id);
         await repo.DeleteAsync(feature);
         logger.LogInformation("Successfully deleted background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, id);
     }
 
-    public async override Task<ICollection<BackgroundFeature>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
+    public async override Task<ICollection<BackgroundFeature>> GetAllAsync() => await repo.GetAllAsync();
 
-    public async override Task<BackgroundFeature> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Background Feature with id {id} could not be found");
-    }
+    public async override Task<BackgroundFeature> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async override Task<BackgroundFeature> UpdateAsync(BackgroundFeatureDto dto, int featureId)
     {
-        var feature = await repo.GetByIdAsync(featureId) ?? throw new NotFoundException($"Background Feature with id {featureId} could not be found");
+        var feature = await repo.GetByIdAsync(featureId);
 
         logger.LogInformation("Updating background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, featureId);
 
         if (feature.BackgroundId != dto.BackgroundId)
         {
-            feature.Background = await backgroundRepo.GetByIdAsync(dto.BackgroundId) ?? throw new NotFoundException($"Background with id {dto.BackgroundId} could not be found");
+            feature.Background = await backgroundRepo.GetByIdAsync(dto.BackgroundId);
             feature.BackgroundId = dto.BackgroundId;
         }
 

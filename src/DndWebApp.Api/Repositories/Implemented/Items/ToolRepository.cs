@@ -5,14 +5,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented.Items;
 
-public class ToolRepository : IToolRepository
+public class ToolRepository(AppDbContext context) : IToolRepository
 {
-    private readonly AppDbContext context;
+    public async Task<Tool> GetByIdAsync(int id) => 
+        await context.Tools.FirstOrDefaultAsync(t => t.Id == id)
+            ?? throw new Exception($"Tool with id {id} could not be found");
 
-    public ToolRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
+    public async Task<Tool> GetWithAllDataAsync(int id) => 
+        await context.Tools
+            .Include(t => t.Properties)
+            .Include(t => t.Activities)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Tool with id {id} could not be found");
+
+    public async Task<ICollection<Tool>> GetAllAsync() => await context.Tools.ToListAsync();
+
+    public async Task<ICollection<Tool>> GetAllWithAllDataAsync() => 
+        await context.Tools
+            .Include(t => t.Properties)
+            .Include(t => t.Activities)
+            .ToListAsync();
 
     public async Task<Tool> CreateAsync(Tool entity)
     {
@@ -21,10 +33,7 @@ public class ToolRepository : IToolRepository
         return entity;
     }
 
-    public async Task<ICollection<Tool>> GetAllAsync() => await context.Tools.ToListAsync();
-    public async Task<Tool?> GetByIdAsync(int id) => await context.Tools.FirstOrDefaultAsync(t => t.Id == id);
-
-    public async Task DeleteAsync(Tool entity)
+        public async Task DeleteAsync(Tool entity)
     {
         context.Tools.Remove(entity);
         await context.SaveChangesAsync();
@@ -34,21 +43,5 @@ public class ToolRepository : IToolRepository
     {
         context.Tools.Update(updatedEntity);
         await context.SaveChangesAsync();
-    }
-
-    public async Task<Tool?> GetWithAllDataAsync(int id)
-    {
-        return await context.Tools
-            .Include(t => t.Properties)
-            .Include(t => t.Activities)
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<ICollection<Tool>> GetAllWithAllDataAsync()
-    {
-        return await context.Tools
-            .Include(t => t.Properties)
-            .Include(t => t.Activities)
-            .ToListAsync();
     }
 }

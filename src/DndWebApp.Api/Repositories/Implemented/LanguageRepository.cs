@@ -5,14 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented;
 
-public class LanguageRepository : ILanguageRepository
+public class LanguageRepository(AppDbContext context) : ILanguageRepository
 {
-    private readonly AppDbContext context;
+    public async Task<Language> GetByIdAsync(int id) => 
+        await context.Languages.FindAsync(id) 
+            ?? throw new Exception($"Language with id {id} could not be found");
+    
+    public async Task<Language> GetByNameAsync(string name) => 
+        await context.Languages.FirstOrDefaultAsync(l => l.Name == name)
+            ?? throw new Exception($"Language with name {name} could not be found");
 
-    public LanguageRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
+    public async Task<ICollection<Language>> GetAllAsync() => await context.Languages.ToListAsync();
 
     public async Task<Language> CreateAsync(Language entity)
     {
@@ -32,7 +35,4 @@ public class LanguageRepository : ILanguageRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Language>> GetAllAsync() => await context.Languages.ToListAsync();
-    public async Task<Language?> GetByIdAsync(int id) => await context.Languages.FindAsync(id);
-    public async Task<Language?> GetByNameAsync(string name) => await context.Languages.FirstOrDefaultAsync(l => l.Name == name);
 }

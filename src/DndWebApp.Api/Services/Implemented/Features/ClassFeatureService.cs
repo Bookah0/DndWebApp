@@ -21,8 +21,7 @@ public class ClassFeatureService(
 {
     public async override Task<ClassFeature> CreateAsync(ClassFeatureDto dto)
     {
-        var level = await classLevelRepo.GetByIdAsync(dto.LevelId) 
-            ?? throw new NotFoundException($"Class Level with id {dto.LevelId} could not be found");
+        var level = await classLevelRepo.GetByIdAsync(dto.LevelId) ;
 
         logger.LogInformation("Creating class feature, Name: {ClassFeatureName}, LevelId: {LevelId}", dto.Name, dto.LevelId);
 
@@ -42,34 +41,25 @@ public class ClassFeatureService(
 
     public async override Task DeleteAsync(int id)
     {
-        var feature = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
+        var feature = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Deleting class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
         await repo.DeleteAsync(feature);
         logger.LogInformation("Successfully deleted class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
     }
 
-    public async override Task<ICollection<ClassFeature>> GetAllAsync()
-    {
-        return await repo.GetAllAsync();
-    }
-
-    public async override Task<ClassFeature> GetByIdAsync(int id)
-    {
-        return await repo.GetByIdAsync(id) ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
-    }
+    public async override Task<ICollection<ClassFeature>> GetAllAsync() => await repo.GetAllAsync();
+    public async override Task<ClassFeature> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async override Task<ClassFeature> UpdateAsync(ClassFeatureDto dto, int id)
     {
-        var feature = await repo.GetByIdAsync(id) 
-            ?? throw new NotFoundException($"Class Feature with id {id} could not be found");
+        var feature = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
 
         if (feature.LevelId != dto.LevelId)
         {
-            feature.Level = await classLevelRepo.GetByIdAsync(dto.LevelId) ?? throw new NotFoundException($"Class Level with id {dto.LevelId} could not be found");
+            feature.Level = await classLevelRepo.GetByIdAsync(dto.LevelId);
             feature.LevelId = dto.LevelId;
         }
 

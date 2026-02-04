@@ -40,8 +40,7 @@ public class ExternalSkillService(ISkillRepository repo, IAbilityRepository abil
                 throw new InvalidOperationException($"Failed to deserialize skill {item.Index}.");
             }
 
-            var ability = await abilityRepo.GetByShortNameAsync(eSkill.Ability.Name)
-                ?? throw new NotFoundException($"Ability with short name {eSkill.Ability.Name} not found.");
+            var ability = await abilityRepo.GetByShortNameAsync(eSkill.Ability.Name);
 
             var skill = new Skill
             {

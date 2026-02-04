@@ -7,14 +7,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DndWebApp.Api.Repositories.Implemented.Species;
 
-public class SubraceRepository : ISubraceRepository
+public class SubraceRepository(AppDbContext context) : ISubraceRepository
 {
-    private readonly AppDbContext context;
+    public async Task<Subrace> GetByIdAsync(int id) => 
+        await context.Subraces.FindAsync(id)
+            ?? throw new Exception($"Subrace with id {id} could not be found");
 
-    public SubraceRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
+    public async Task<Subrace> GetByNameAsync(string name) => 
+        await context.Subraces.FirstOrDefaultAsync(r => r.Name == name) 
+            ?? throw new Exception($"Subrace with name {name} could not be found");
+
+    public async Task<Subrace> GetWithTraitsAsync(int id) =>
+        await context.Subraces
+            .Include(r => r.Traits)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Subrace with id {id} could not be found");
+
+    public async Task<Subrace> GetWithAllDataAsync(int id) =>
+        await context.Subraces
+        .Include(r => r.Traits)
+            .Include(r => r.ParentRace)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Subrace with id {id} could not be found");
+
+    public async Task<ICollection<Subrace>> GetAllAsync() => await context.Subraces.ToListAsync();
 
     public async Task<Subrace> CreateAsync(Subrace entity)
     {
@@ -32,24 +48,5 @@ public class SubraceRepository : ISubraceRepository
     {
         context.Subraces.Update(updatedEntity);
         await context.SaveChangesAsync();
-    }
-
-    public async Task<ICollection<Subrace>> GetAllAsync() => await context.Subraces.ToListAsync();
-    public async Task<Subrace?> GetByIdAsync(int id) => await context.Subraces.FindAsync(id);
-    public async Task<Subrace?> GetByNameAsync(string name) => await context.Subraces.FirstOrDefaultAsync(r => r.Name == name);
-
-    public async Task<Subrace?> GetWithTraitsAsync(int id)
-    {
-        return await context.Subraces
-        .Include(r => r.Traits)
-        .FirstOrDefaultAsync(x => x.Id == id);
-    }
-
-    public async Task<Subrace?> GetWithAllDataAsync(int id)
-    {
-        return await context.Subraces
-        .Include(r => r.Traits)
-        .Include(r => r.ParentRace)
-        .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

@@ -6,5 +6,5 @@ namespace DndWebApp.Api.Repositories.Interfaces;
 
 public interface IToolRepository : IRepository<Tool>
 {
-    Task<Tool?> GetWithAllDataAsync(int id);
+    Task<Tool> GetWithAllDataAsync(int id);
 }

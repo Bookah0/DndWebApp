@@ -2,6 +2,7 @@ using DndWebApp.Api.Models.Characters;
 using DndWebApp.Api.Models.Features;
 using DndWebApp.Api.Models.Items;
 using DndWebApp.Api.Models.Spells;
+using DndWebApp.Api.Models.Users;
 using DndWebApp.Api.Models.World;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,10 +10,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DndWebApp.Api.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
+    public DbSet<User> Users { get; set; }
     public DbSet<Character> Characters { get; set; }
     public DbSet<Inventory> Inventories { get; set; }
 

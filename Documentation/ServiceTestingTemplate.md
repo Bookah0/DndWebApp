@@ -1,6 +1,6 @@
 using Moq;
 
-namespace DndWebApp.Tests.Services;
+namespace Tests.Services;
 
 /*
 Walkthrough:

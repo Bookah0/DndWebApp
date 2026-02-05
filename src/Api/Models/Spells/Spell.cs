@@ -1,0 +1,49 @@
+using Api.Models.Characters;
+using Microsoft.EntityFrameworkCore;
+
+namespace Api.Models.Spells;
+
+// Based on https://api.open5e.com/v1/spells
+public class Spell
+{
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public required string Description { get; set; }
+    public bool IsHomebrew { get; set; } = false;
+    public required int Level { get; set; }
+    public string EffectsAtHigherLevels { get; set; } = "";
+    public ICollection<Class> Classes { get; set; } = [];
+    public required string Duration { get; set; }
+    public int DurationValue { get; set; }
+    public required string CastingTime { get; set; }
+    public int CastingTimeValue { get; set; }
+    public string ReactionCondition { get; set; } = "";
+    public required string MagicSchool { get; set; }
+    public string DamageRoll { get; set; } = "";
+    public ICollection<string> DamageTypes { get; set; } = [];
+    public ICollection<string> SpellTypes { get; set; } = [];
+    
+    public required SpellTargeting SpellTargeting { get; set; }  
+    public CastingRequirements CastingRequirements { get; set; } = new();  
+}
+
+[Owned]
+public class SpellTargeting
+{
+    public required string TargetType { get; set; }
+    public required string Range { get; set; }
+    public int RangeValue { get; set; } = 0;
+    public string? ShapeType { get; set; }
+    public string? ShapeWidth { get; set; }
+    public string? ShapeLength { get; set; }
+}
+
+[Owned]
+public class CastingRequirements
+{
+    public bool Verbal { get; set; }
+    public bool Somatic { get; set; }
+    public string? Materials { get; set; }
+    public int? MaterialCost { get; set; }
+    public bool MaterialsConsumed { get; set; }
+}

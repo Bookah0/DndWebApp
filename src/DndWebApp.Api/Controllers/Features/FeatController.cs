@@ -1,0 +1,96 @@
+using AutoMapper;
+using DndWebApp.Api.Models.DTOs.RequestDtos.Character;
+using DndWebApp.Api.Models.DTOs.Features;
+using DndWebApp.Api.Models.DTOs.ResponseDtos;
+using DndWebApp.Api.Services.Interfaces.Features;
+using Microsoft.AspNetCore.Mvc;
+using DndWebApp.Api.Models.Features;
+using DndWebApp.Api.Models.Items;
+using DndWebApp.Api.Controllers.Features;
+
+namespace DndWebApp.Api.Controllers;
+
+[ApiController]
+[Route("api/feats")]
+public class FeatController(IFeatureService<Feat, FeatDto> service, IMapper mapper) : ControllerBase
+{
+    [HttpGet]
+    public async Task<ActionResult<ICollection<FeatResponseDto>>> GetFeats()
+    {
+        var feats = await service.GetAllAsync();
+        return Ok(mapper.Map<ICollection<FeatResponseDto>>(feats));
+    }
+
+    [HttpGet("{featId}")]
+    public async Task<ActionResult<FeatResponseDto>> GetFeat(int featId)
+    {
+        var feat = await service.GetByIdAsync(featId);
+        return Ok(mapper.Map<FeatResponseDto>(feat));
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<FeatResponseDto>> CreateFeat([FromBody] FeatDto dto)
+    {
+        var feat = await service.CreateAsync(dto);
+        return Ok(mapper.Map<FeatResponseDto>(feat));
+    }
+
+    [HttpPatch("{featId}")]
+    public async Task<ActionResult<FeatResponseDto>> UpdateFeat(int featId, [FromBody] FeatDto dto)
+    {
+        var updatedFeat = await service.UpdateAsync(dto, featId);
+        return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
+    }
+
+    [HttpDelete("{featId}")]
+    public async Task<ActionResult> DeleteFeat(int featId)
+    {
+        await service.DeleteAsync(featId);
+        return Ok();
+    }
+
+    // Spell management endpoints
+    [HttpPost("{featId}/spells/{spellId}")]
+    public async Task<ActionResult<FeatResponseDto>> AddSpell(int featId, int spellId)
+    {
+        var updatedFeat = await service.AddSpell(spellId, featId);
+        return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
+    }
+    
+    [HttpDelete("{featId}/spells/{spellId}")]
+    public async Task<ActionResult> RemoveSpell(int featId, int spellId)
+    {
+        await service.RemoveSpell(spellId, featId);
+        return Ok();
+    }
+
+    // Proficiency management endpoints
+    [HttpPost("{featId}/proficiencies")]
+    public async Task<ActionResult<FeatResponseDto>> AddProficiency(int featId, [FromBody] ProficiencyDto proficiency)
+    {
+        var updatedFeat = await service.AddProficiency(proficiency, featId);
+        return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
+    }
+
+    [HttpDelete("{featId}/proficiencies")]
+    public async Task<ActionResult> RemoveProficiency(int featId, [FromBody] ProficiencyDto proficiency)
+    {
+        await service.RemoveProficiency(proficiency, featId);
+        return Ok();
+    }
+
+    // Ability increase management endpoints
+    [HttpPost("{featId}/ability-increases")]
+    public async Task<ActionResult<FeatResponseDto>> AddAbilityIncrease(int featId, [FromBody] AbilityValueDto increase)
+    {
+        var updatedFeat = await service.AddAbilityIncrease(increase.AbilityId, increase.Value, featId);
+        return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
+    }
+
+    [HttpDelete("{featId}/ability-increases")]
+    public async Task<ActionResult> RemoveAbilityIncrease(int featId, [FromBody] AbilityValueDto increase)
+    {
+        await service.RemoveAbilityIncrease(increase.AbilityId, featId);
+        return Ok();
+    }
+}

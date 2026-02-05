@@ -1,0 +1,7 @@
+/DndWebApp/server/DndWebApp.Api/bin
+/DndWebApp/server/DndWebApp.Api/obj
+/DndWebApp/server/DndWebApp.Tests/bin
+/DndWebApp/server/DndWebApp.Tests/obj
+
+*.cache
+/src/DndWebApp.Api/obj

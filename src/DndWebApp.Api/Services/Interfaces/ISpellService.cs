@@ -1,0 +1,17 @@
+
+using DndWebApp.Api.Models.DTOs.Spells;
+using DndWebApp.Api.Models.Spells;
+using DndWebApp.Api.Services.Constants;
+
+namespace DndWebApp.Api.Services.Interfaces;
+
+public interface ISpellService
+{
+    Task<Spell> CreateAsync(SpellDto dto);
+    Task DeleteAsync(int id);
+    Task<ICollection<Spell>> GetAllAsync();
+    Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto);
+    Task<Spell> GetByIdAsync(int id);
+    Task<Spell> UpdateAsync(int id, SpellDto dto);
+    ICollection<Spell> SortBy(ICollection<Spell> spells, string sortFilter, bool descending = false);
+}

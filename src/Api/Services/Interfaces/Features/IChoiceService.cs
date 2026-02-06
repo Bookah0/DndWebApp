@@ -5,7 +5,7 @@ using Api.Repositories.Interfaces;
 
 namespace Api.Services.Interfaces.Features;
 
-public interface IChoiceService<T> where T : AFeature
+public interface IChoiceService<T> where T : Feature
 {
     Task ClearChoices<C>(int featureId) where C : IFeatureChoice;
     Task<T> AddChoice<CDto>(CDto dto, int featureId) where CDto : AChoiceDto;

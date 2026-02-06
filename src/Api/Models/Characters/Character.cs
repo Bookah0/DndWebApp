@@ -4,14 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Models.Characters;
 
-public class Character
+public class Character : CreatableEntity
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
     public required int Level { get; set; }
     public int? Experience { get; set; }
     public string PlayerName { get; set; } = "";
-    public required DateTime TimeCreated { get; set; }
 
     // Races & Subraces
     public required Race Race { get; set; }
@@ -21,7 +19,7 @@ public class Character
     public ICollection<Race> OtherRaces { get; set; } = [];
 
     // Classes & Subclasses
-    public required Class Class { get; set; }
+    public required BaseClass Class { get; set; }
     public required int ClassId { get; set; }
     public Subclass? SubClass { get; set; }
     public int? SubClassId { get; set; }

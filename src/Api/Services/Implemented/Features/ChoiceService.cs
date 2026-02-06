@@ -18,7 +18,7 @@ public class ChoiceService<T>
     IAbilityValueRepository abilityValueRepo,
     ILanguageRepository languageRepo,
     ISkillRepository skillRepo,
-    IFeatureService<T, AFeatureDto> featureService,
+    IFeatureService<T, FeatureDto> featureService,
 
     IChoiceRepository<AbilityIncreaseChoice> abilityChoiceRepo,
     IChoiceRepository<SkillProficiencyChoice> skillChoiceRepo,
@@ -29,7 +29,7 @@ public class ChoiceService<T>
     IChoiceRepository<WeaponTypeProficiencyChoice> weaponTypeChoiceRepo,
     ILogger<ChoiceService<T>> logger,
     IMapper mapper) 
-    : IChoiceService<T> where T : AFeature
+    : IChoiceService<T> where T : Feature
 {
 
     public async Task ClearChoices<C>(int featureId) where C : IFeatureChoice
@@ -270,12 +270,12 @@ public class ChoiceService<T>
     // TODO might switch maps to switches later
     private readonly Dictionary<Type, Delegate> collectionGetters = new()
     {
-        { typeof(SkillProficiencyChoice), (AFeature f) => f.SkillProficiencyChoices },
-        { typeof(WeaponCategoryProficiencyChoice), (AFeature f) => f.WeaponCategoryProficiencyChoices },
-        { typeof(ArmorProficiencyChoice), (AFeature f) => f.ArmorProficiencyChoices },
-        { typeof(ToolProficiencyChoice), (AFeature f) => f.ToolProficiencyChoices },
-        { typeof(LanguageChoice), (AFeature f) => f.LanguageChoices },
-        { typeof(WeaponTypeProficiencyChoice), (AFeature f) => f.WeaponTypeProficiencyChoices },
+        { typeof(SkillProficiencyChoice), (Feature f) => f.SkillProficiencyChoices },
+        { typeof(WeaponCategoryProficiencyChoice), (Feature f) => f.WeaponCategoryProficiencyChoices },
+        { typeof(ArmorProficiencyChoice), (Feature f) => f.ArmorProficiencyChoices },
+        { typeof(ToolProficiencyChoice), (Feature f) => f.ToolProficiencyChoices },
+        { typeof(LanguageChoice), (Feature f) => f.LanguageChoices },
+        { typeof(WeaponTypeProficiencyChoice), (Feature f) => f.WeaponTypeProficiencyChoices },
     };
 
     private readonly Dictionary<Type, object> repositoryGetters = new()

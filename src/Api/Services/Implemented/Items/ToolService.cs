@@ -8,10 +8,11 @@ using static Api.Services.Util.ValidationUtil;
 using static Api.Services.Util.ConstantsUtil;
 using Api.Models.Items.Constants;
 using Api.Services.Interfaces.Items;
+using Api.Services.Interfaces;
 
 namespace Api.Services.Implemented.Items;
 
-public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IToolService
+public class ToolService(IToolRepository repo, ICurrentUserService currentUserService, ILogger<ToolService> logger) : IToolService
 {
     public async Task<Tool> CreateAsync(ToolDto dto)
     {
@@ -29,9 +30,11 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
             Value = dto.Value,
             Rarity = dtoRarity,
             RequiresAttunement = dto.RequiresAttunement ?? false,
-            IsHomebrew = dto.IsHomebrew ?? false,
             Weight = dto.Weight ?? 0,
-            Properties = []
+            Properties = [],
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created tool, Name: {ToolName}, ID: {ToolId}", tool.Name, tool.Id);
@@ -86,9 +89,9 @@ public class ToolService(IToolRepository repo, ILogger<ToolService> logger) : IT
         tool.Value = dto.Value;
         tool.Rarity = dtoRarity;
         tool.RequiresAttunement = dto.RequiresAttunement ?? tool.RequiresAttunement;
-        tool.IsHomebrew = dto.IsHomebrew ?? tool.IsHomebrew;
         tool.Weight = dto.Weight ?? tool.Weight;
-
+        
+        tool.UpdatedAt = DateTime.UtcNow;
         await repo.UpdateAsync(tool);
         logger.LogInformation("Successfully updated tool, Name: {ToolName}, ID: {ToolId}", tool.Name, tool.Id);
         return tool;

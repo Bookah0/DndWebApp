@@ -7,7 +7,11 @@ using static Api.Services.Util.SortUtil;
 
 namespace Api.Services.Implemented.Classes;
 
-public partial class SubclassService(ISubclassRepository repo, IClassRepository classRepo, ILogger<SubclassService> logger) : ISubclassService
+public partial class SubclassService(
+    ISubclassRepository repo, 
+    IClassRepository classRepo, 
+    ICurrentUserService currentUserService, 
+    ILogger<SubclassService> logger) : ISubclassService
 {
     public async Task<Subclass> CreateAsync(ClassDto dto, int parentClassId)
     {
@@ -19,7 +23,10 @@ public partial class SubclassService(ISubclassRepository repo, IClassRepository 
             Description = dto.Description,
             HitDie = dto.HitDie,
             ClassLevels = [],
-            ParentClassId = parentClassId
+            ParentClassId = parentClassId,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, subclass.Id);

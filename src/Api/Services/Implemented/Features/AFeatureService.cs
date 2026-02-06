@@ -17,7 +17,7 @@ public abstract class AFeatureService<T, TD>(
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
     ILogger logger) 
-    : IFeatureService<T, TD> where T : AFeature where TD : AFeatureDto
+    : IFeatureService<T, TD> where T : Feature where TD : FeatureDto
 {
     public abstract Task<T> GetByIdAsync(int id);
     public abstract Task<ICollection<T>> GetAllAsync();

@@ -7,6 +7,7 @@ using Api.Services.Interfaces.Features;
 using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
 using static Api.Services.Util.ConstantsUtil;
+using Api.Services.Interfaces;
 
 namespace Api.Services.Implemented.Features;
 
@@ -17,6 +18,7 @@ public class BackgroundFeatureService(
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
+    ICurrentUserService currentUserService,
     ILogger<BackgroundFeatureService> logger)
     : AFeatureService<BackgroundFeature, BackgroundFeatureDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
@@ -32,7 +34,10 @@ public class BackgroundFeatureService(
             Description = dto.Description,
             BackgroundId = dto.BackgroundId,
             Background = background,
-            IsHomebrew = dto.IsHomebrew
+            IsHomebrew = dto.IsHomebrew,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", bgFeature.Name, bgFeature.Id);

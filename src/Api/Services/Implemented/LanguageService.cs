@@ -12,7 +12,7 @@ using static Api.Services.Util.ConstantsUtil;
 
 namespace Api.Services.Implemented;
 
-public class LanguageService(IRepository<Language> repo, ILogger<LanguageService> logger) : ILanguageService
+public class LanguageService(IRepository<Language> repo, ICurrentUserService currentUserService, ILogger<LanguageService> logger) : ILanguageService
 {
     public async Task<Language> CreateAsync(LanguageDto dto)
     {
@@ -22,7 +22,9 @@ public class LanguageService(IRepository<Language> repo, ILogger<LanguageService
             Name = dto.Name,
             Script = dto.Script,
             Family = dto.Family,
-            IsHomebrew = dto.IsHomebrew,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created language, Name: {LanguageName}, ID: {LanguageId}", language.Name, language.Id);

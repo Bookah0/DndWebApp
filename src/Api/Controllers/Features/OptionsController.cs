@@ -49,7 +49,7 @@ public class FeatOptionsController : OptionsControllerBase<Feat>
     public FeatOptionsController(IChoiceService<Feat> service) : base(service) { }
 }
 
-public abstract class OptionsControllerBase<F>(IChoiceService<F> choiceService) : ControllerBase where F : AFeature
+public abstract class OptionsControllerBase<F>(IChoiceService<F> choiceService) : ControllerBase where F : Feature
 {
     [HttpPost("ability-increases/choices/{choiceId}/options")] 
     public async Task<ActionResult> AddAbilityIncreaseOption(int featId, int choiceId, [FromBody] AbilityValueDto dto)

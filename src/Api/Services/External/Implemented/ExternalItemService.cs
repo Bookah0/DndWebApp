@@ -90,6 +90,12 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             ModCap = eArmor.ArmorClass.MaxBonus,
             StrengthScoreRequired = eArmor.StrengthMinimum,
             StealthDisadvantage = eArmor.StealthDisadvantage,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = null,
+            IsHomebrew = false,
+            IsPublic = true,
+            CloningAllowed = true
         };
     }
 
@@ -97,14 +103,14 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
     {
         var eWeapon = jsonDoc.RootElement.Deserialize<EWeaponDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize weapon: {item.Name}");
-        
-        var eDamagetype = eWeapon.Damage?.DamageType.Name 
+
+        var eDamagetype = eWeapon.Damage?.DamageType.Name
             ?? throw new InvalidOperationException($"Weapon {item.Name} missing damage object.");
         var damageType = ResolveOptionOrThrow(eDamagetype, DamageType.AllowedValues, "Damage Type");
 
         var propertyNames = eWeapon.Properties?.Select(p => p.Name).ToList() ?? [];
         var properties = ResolveOptionOrThrow(propertyNames, WeaponProperty.AllowedValues, "Weapon Property");
-        
+
         var category = ResolveOptionOrThrow(eWeapon.CategoryRange, WeaponCategory.AllowedValues, "Weapon Category");
         var itemCategory = ResolveOptionOrThrow(eWeapon.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
         var weaponType = ParseWeaponType(eWeapon);
@@ -125,6 +131,12 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             DamageDice = eWeapon.Damage?.DamageDice ?? "",
             Range = eWeapon.Range?.Normal ?? 0,
             LongRange = eWeapon.Range?.Long ?? null,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = null,
+            IsHomebrew = false,
+            IsPublic = true,
+            CloningAllowed = true
         };
     }
 
@@ -146,7 +158,13 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Value = GetConvertedValue(eTool.Cost.Quantity, eTool.Cost.Unit),
             Quantity = eTool.Cost.Quantity,
             ToolType = category,
-            Properties = []
+            Properties = [],
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = null,
+            IsHomebrew = false,
+            IsPublic = true,
+            CloningAllowed = true
         };
     }
 
@@ -156,7 +174,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             ?? throw new InvalidOperationException($"Failed to deserialize vehicle: {item.Index}");
 
         int? capacityValue = int.TryParse(eVehicle.Capacity?.Split(' ')[0], out var cap) ? cap : null;
-        string? capacityUnit = eVehicle.Capacity?.Split(' ')[1] ?? null;;
+        string? capacityUnit = eVehicle.Capacity?.Split(' ')[1] ?? null; ;
         return new Vehicle
         {
             Name = eVehicle.Name,
@@ -172,6 +190,12 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             CapacityUnit = capacityUnit,
             Landborne = eVehicle.EquipmentCategory.Index == "mounts-and-vehicles",
             Waterborne = eVehicle.EquipmentCategory.Index == "waterborne-vehicles",
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = null,
+            IsHomebrew = false,
+            IsPublic = true,
+            CloningAllowed = true
         };
     }
 
@@ -190,7 +214,13 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Rarity = ItemRarity.Common,
             Weight = eItem.Weight,
             Value = GetConvertedValue(eItem.Cost.Quantity, eItem.Cost.Unit),
-            Quantity = eItem.Cost.Quantity
+            Quantity = eItem.Cost.Quantity,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = null,
+            IsHomebrew = false,
+            IsPublic = true,
+            CloningAllowed = true
         };
     }
 
@@ -218,7 +248,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
     private int GetConvertedValue(int value, string unit)
     {
-        if(value <= 0)
+        if (value <= 0)
             return 0;
 
         var resolvedUnit = ResolveOptionOrThrow(unit, CurrencyUtil.AllowedUnits, "Currency Unit");

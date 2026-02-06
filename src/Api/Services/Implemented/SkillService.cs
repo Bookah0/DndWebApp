@@ -9,7 +9,12 @@ using Api.Models.DTOs.RequestDtos.Character;
 
 namespace Api.Services.Implemented;
 
-public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo, ILogger<SkillService> logger) : ISkillService
+public class SkillService(
+    ISkillRepository repo, 
+    IAbilityRepository abilityRepo, 
+    ICurrentUserService currentUserService, 
+    ILogger<SkillService> logger) 
+    : ISkillService
 {
     public async Task<Skill> CreateAsync(SkillDto dto)
     {
@@ -22,7 +27,9 @@ public class SkillService(ISkillRepository repo, IAbilityRepository abilityRepo,
             Name = dto.Name,
             AbilityId = dto.AbilityId,
             Ability = ability,
-            IsHomebrew = dto.IsHomebrew,
+            
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
         logger.LogInformation("Successfully created skill, Name: {SkillName}, ID: {SkillId}", skill.Name, skill.Id);
         return skill;

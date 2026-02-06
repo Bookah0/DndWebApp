@@ -8,7 +8,7 @@ using Api.Services.Interfaces.Species;
 
 namespace Api.Services.Implemented;
 
-public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IRaceService
+public class RaceService(IRaceRepository repo, ICurrentUserService currentUserService, ILogger<RaceService> logger) : IRaceService
 {
     public async Task<Race> CreateAsync(RaceDto dto)
     {
@@ -27,8 +27,10 @@ public class RaceService(IRaceRepository repo, ILogger<RaceService> logger) : IR
             Name = dto.Name,
             RaceDescription = raceDescription,
             Speed = dto.Speed,
-            IsHomebrew = dto.IsHomebrew,
-            Size = dto.Size
+            Size = dto.Size,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created race, Name: {RaceName}, ID: {RaceId}", race.Name, race.Id);

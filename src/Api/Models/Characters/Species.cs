@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Api.Models.Characters;
 
 // Based on https://api.open5e.com/v1/races/ & https://www.dnd5eapi.co/api/2014/races/
-public class Species
+public class Species : CreatableEntity
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
     public RaceDescription RaceDescription { get; set; } = new();
-    public bool IsHomebrew { get; set; } = false;
     public required int Speed { get; set; }
     public string Size { get; set; } = "Medium";
     public ICollection<Trait> Traits { get; set; } = [];

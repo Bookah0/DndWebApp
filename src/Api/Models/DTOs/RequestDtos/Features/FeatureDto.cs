@@ -4,7 +4,7 @@ using Api.Models.DTOs.RequestDtos.Character;
 namespace Api.Models.DTOs.Features;
 
 
-public class AFeatureDto
+public class FeatureDto
 {
     [Required]
     [MinLength(1)]
@@ -28,7 +28,7 @@ public class AFeatureDto
     public ProficiencyChoicesDto? ProficiencyChoices { get; set; }
 }
 
-public class FeatDto : AFeatureDto
+public class FeatDto : FeatureDto
 {
     [MinLength(1)]
     [MaxLength(500)]
@@ -47,14 +47,14 @@ public class FeatDto : AFeatureDto
     public int? FromBackgroundId { get; set; }
 }
 
-public class BackgroundFeatureDto : AFeatureDto
+public class BackgroundFeatureDto : FeatureDto
 {
     [Required]
     [Range(1, int.MaxValue)]
     public required int BackgroundId { get; set; }
 }
 
-public class ClassFeatureDto : AFeatureDto
+public class ClassFeatureDto : FeatureDto
 {
     [Required]
     [Range(1, int.MaxValue)]
@@ -65,7 +65,7 @@ public class ClassFeatureDto : AFeatureDto
     public required int ClassId { get; set; }
 }
 
-public class TraitDto : AFeatureDto
+public class TraitDto : FeatureDto
 {
     [Required]
     [Range(1, int.MaxValue)]

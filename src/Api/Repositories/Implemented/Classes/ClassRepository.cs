@@ -7,17 +7,17 @@ namespace Api.Repositories.Implemented.Classes;
 
 public class ClassRepository(AppDbContext context) : IClassRepository
 {
-    public async Task<Class> GetByIdAsync(int id) => 
+    public async Task<BaseClass> GetByIdAsync(int id) => 
         await context.Classes.FirstOrDefaultAsync(c => c.Id == id) 
             ?? throw new Exception($"Class with id {id} could not be found");
 
-    public async Task<Class> GetWithSubclassesAsync(int id) =>
+    public async Task<BaseClass> GetWithSubclassesAsync(int id) =>
         await context.Classes
             .Include(c => c.Subclasses)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Class with id {id} could not be found");
 
-    public async Task<Class> GetWithAllDataAsync(int id) =>
+    public async Task<BaseClass> GetWithAllDataAsync(int id) =>
         await context.Classes
             .Include(c => c.Subclasses)
             .Include(c => c.ClassLevels)
@@ -26,29 +26,29 @@ public class ClassRepository(AppDbContext context) : IClassRepository
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Class with id {id} could not be found");
 
-    public async Task<Class> GetWithLevelsAsync(int id) =>
+    public async Task<BaseClass> GetWithLevelsAsync(int id) =>
         await context.Classes
             .Include(c => c.ClassLevels)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Class with id {id} could not be found");
 
-    public async Task<Class> GetWithClassLevelFeaturesAsync(int id) =>
+    public async Task<BaseClass> GetWithClassLevelFeaturesAsync(int id) =>
         await context.Classes
             .Include(c => c.ClassLevels)
                 .ThenInclude(l => l.NewFeatures)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Class with id {id} could not be found");
 
-    public async Task<Class> GetWithStartingEquipmentAsync(int id) =>
+    public async Task<BaseClass> GetWithStartingEquipmentAsync(int id) =>
         await context.Classes
             .Include(c => c.StartingEquipment)
             .Include(c => c.StartingEquipmentChoices)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Class with id {id} could not be found");
 
-    public async Task<ICollection<Class>> GetAllAsync() => await context.Classes.ToListAsync();
+    public async Task<ICollection<BaseClass>> GetAllAsync() => await context.Classes.ToListAsync();
     
-    public async Task<ICollection<Class>> GetAllWithAllDataAsync() =>
+    public async Task<ICollection<BaseClass>> GetAllWithAllDataAsync() =>
         await context.Classes
             .Include(c => c.Subclasses)
             .Include(c => c.ClassLevels)
@@ -58,20 +58,20 @@ public class ClassRepository(AppDbContext context) : IClassRepository
 
     public async Task<bool> ExistsAsync(int id) => await context.Classes.AnyAsync(c => c.Id == id);
 
-    public async Task<Class> CreateAsync(Class entity)
+    public async Task<BaseClass> CreateAsync(BaseClass entity)
     {
         await context.Classes.AddAsync(entity);
         await context.SaveChangesAsync();
         return entity;
     }
 
-    public async Task DeleteAsync(Class entity)
+    public async Task DeleteAsync(BaseClass entity)
     {
         context.Classes.Remove(entity);
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Class updatedEntity)
+    public async Task UpdateAsync(BaseClass updatedEntity)
     {
         context.Classes.Update(updatedEntity);
         await context.SaveChangesAsync();

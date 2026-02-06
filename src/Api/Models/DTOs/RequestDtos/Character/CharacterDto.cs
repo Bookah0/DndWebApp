@@ -3,7 +3,7 @@ namespace Api.Models.DTOs.RequestDtos.Character;
 using System.ComponentModel.DataAnnotations;
 
 public class CharacterDto
-{
+{ 
     [Required]
     [MinLength(1)]
     [MaxLength(100)]

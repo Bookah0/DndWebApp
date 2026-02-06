@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace Api.Models.DTOs.RequestDtos.Character;
 
 public class RaceDto
-{    
+{   
+
     [Required]
     [MinLength(1)]
     [MaxLength(100)]

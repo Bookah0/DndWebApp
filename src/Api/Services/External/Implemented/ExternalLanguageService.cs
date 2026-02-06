@@ -44,7 +44,12 @@ public class ExternalLanguageService(ILanguageRepository repo, ILogger<ExternalL
                 Family = eLanguage.Type,
                 Script = eLanguage.Script,
                 TypicalSpeakers = eLanguage.TypicalSpeakers,
-                IsExotic = eLanguage.Type == "Exotic"
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
 
             await repo.CreateAsync(language);

@@ -7,9 +7,9 @@ using static Api.Services.Util.SortUtil;
 
 namespace Api.Services.Implemented.Classes;
 
-public partial class ClassService(IClassRepository repo, ILogger<ClassService> logger) : IClassService
+public partial class ClassService(IClassRepository repo, ICurrentUserService currentUserService, ILogger<ClassService> logger) : IClassService
 {
-    public async Task<Class> CreateAsync(ClassDto dto)
+    public async Task<BaseClass> CreateAsync(ClassDto dto)
     {
         logger.LogInformation("Creating class, Name: {ClassName}", dto.Name);
 
@@ -18,7 +18,10 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
             Name = dto.Name,
             Description = dto.Description,
             HitDie = dto.HitDie,
-            ClassLevels = []
+            ClassLevels = [],
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created class, Name: {ClassName}, ID: {ClassId}", clss.Name, clss.Id);
@@ -33,13 +36,13 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
         logger.LogInformation("Successfully deleted class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
     }
 
-    public async Task<ICollection<Class>> GetAllAsync() => await repo.GetAllAsync();
-    public async Task<Class> GetWithLevelsAsync(int id) => await repo.GetWithLevelsAsync(id);
-    public async Task<Class> GetWithFeaturesAsync(int id) => await repo.GetWithClassLevelFeaturesAsync(id);
-    public async Task<Class> GetWithSubclassesAsync(int id) => await repo.GetWithSubclassesAsync(id);
-    public async Task<Class> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+    public async Task<ICollection<BaseClass>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<BaseClass> GetWithLevelsAsync(int id) => await repo.GetWithLevelsAsync(id);
+    public async Task<BaseClass> GetWithFeaturesAsync(int id) => await repo.GetWithClassLevelFeaturesAsync(id);
+    public async Task<BaseClass> GetWithSubclassesAsync(int id) => await repo.GetWithSubclassesAsync(id);
+    public async Task<BaseClass> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<Class> UpdateAsync(int id, ClassDto dto)
+    public async Task<BaseClass> UpdateAsync(int id, ClassDto dto)
     {
         var clss = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
@@ -52,7 +55,7 @@ public partial class ClassService(IClassRepository repo, ILogger<ClassService> l
         return clss;
     }
 
-    public ICollection<Class> SortBy(ICollection<Class> classes, bool descending = false)
+    public ICollection<BaseClass> SortBy(ICollection<BaseClass> classes, bool descending = false)
     {
         return OrderByMany(classes, [(c => c.Name)], descending);
     }

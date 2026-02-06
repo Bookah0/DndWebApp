@@ -42,7 +42,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
                 ? await abilityRepo.GetByShortNameAsync(eClass.SpellcastingAbility.SpellcastingAbility.Name)
                 : null;
 
-            var clss = new Class
+            var clss = new BaseClass
             {
                 Name = eClass.Name,
                 Description = "",
@@ -52,7 +52,13 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
                 SpellcastingAbilityId = spellcastingAbility?.Id ?? null,
                 Subclasses = [],
                 StartingEquipment = [],
-                StartingEquipmentChoices = []
+                StartingEquipmentChoices = [],
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
 
             await classRepo.CreateAsync(clss);
@@ -70,12 +76,12 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
     }
 
     // Class levels based on https://www.dnd5eapi.co/api/2014/classes/{class}/levels and https://www.dnd5eapi.co/api/2014/subclasses/{subclass}/levels 
-    public async Task FetchExternalClassLevelsAsync(AClass clss, CancellationToken cancellationToken = default)
+    public async Task FetchExternalClassLevelsAsync(Class clss, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching external class levels, Name: {ClassName}, ID: {ClassId}", clss.Name, clss.Id);
         HttpResponseMessage getListResponse;
 
-        if (clss is Class)
+        if (clss is BaseClass)
         {
             getListResponse = await client.GetAsync($"https://www.dnd5eapi.co/api/2014/classes/{clss.Name}/levels", cancellationToken);
         }
@@ -121,6 +127,12 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
                 SpellSlots = spellSlots,
                 Class = clss,
                 ClassId = clss.Id,
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
 
             PopulateClassSpecificSlotList(level, curClassLevel);
@@ -136,7 +148,13 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
                     Level = curClassLevel,
                     LevelId = curClassLevel.Id,
                     ClassId = clss.Id,
-                    AbilityIncreaseChoices = abilityScoreIncreaseChoiceList
+                    AbilityIncreaseChoices = abilityScoreIncreaseChoiceList,
+
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = null,
+                    IsHomebrew = false,
+                    IsPublic = true,
+                    CloningAllowed = true
                 });
             }
         }
@@ -145,7 +163,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
     }
 
     // Subclasses based on https://www.dnd5eapi.co/api/2014/subclasses/
-    public async Task FetchExternalSubclassesAsync(Class clss, List<EIndexDto> subclassIndexList, CancellationToken cancellationToken = default)
+    public async Task FetchExternalSubclassesAsync(BaseClass clss, List<EIndexDto> subclassIndexList, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Fetching external subclasses, ClassName: {ClassName}, SubclassCount: {SubclassCount}", clss.Name, subclassIndexList.Count);
         foreach (var item in subclassIndexList)
@@ -166,7 +184,13 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
                     HitDie = 6,
                     ClassLevels = [],
                     ParentClass = clss,
-                    ParentClassId = clss.Id
+                    ParentClassId = clss.Id,
+
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = null,
+                    IsHomebrew = false,
+                    IsPublic = true,
+                    CloningAllowed = true
                 };
 
                 await subclassRepo.CreateAsync(subclass);
@@ -187,7 +211,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
         throw new NotImplementedException();
     }
 
-    private async Task AddStartingEquipmentAsync(EClassDto eClass, Class clss, IClassRepository classRepo)
+    private async Task AddStartingEquipmentAsync(EClassDto eClass, BaseClass clss, IClassRepository classRepo)
     {
         if (eClass.StartingEquipment is null)
             return;
@@ -199,7 +223,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
         }
     }
 
-    private async Task AddEquipmentChoicesAsync(EClassDto eClass, Class clss, IClassRepository classRepo)
+    private async Task AddEquipmentChoicesAsync(EClassDto eClass, BaseClass clss, IClassRepository classRepo)
     {
         if (eClass.StartingEquipmentChoices is null)
             return;

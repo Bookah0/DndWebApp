@@ -9,8 +9,7 @@ namespace Api.Controllers.Species;
 [ApiController]
 [Route("api/races")]
 public class RaceController(IRaceService service, IMapper mapper) : ControllerBase
-    {
-
+{
     [HttpGet]
     public async Task<ActionResult<ICollection<RaceResponseDto>>> GetRaces()
     {

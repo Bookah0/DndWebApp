@@ -108,7 +108,7 @@ public static class TestObjectFactory
         };
     }
 
-    internal static ClassLevel CreateTestLevel(Class cls)
+    internal static ClassLevel CreateTestLevel(BaseClass cls)
     {
         var classLvl = new ClassLevel()
         {
@@ -124,9 +124,9 @@ public static class TestObjectFactory
         return classLvl;
     }
 
-    internal static Class CreateTestClass(string name = "Ranger")
+    internal static BaseClass CreateTestClass(string name = "Ranger")
     {
-        var cls = new Class
+        var cls = new BaseClass
         {
             Name = name,
             Description = "Description",

@@ -59,7 +59,8 @@ public partial class CharacterService : ICharacterService
             Level = dto.Level,
             Experience = 0,
             PlayerName = dto.PlayerName,
-            TimeCreated = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
 
             Race = race,
             RaceId = dto.RaceId,
@@ -149,9 +150,9 @@ public partial class CharacterService : ICharacterService
         return abilityScores;
     }
 
-    public async Task<List<AFeature>> GetAllFeaturesAsync(CharacterDto dto, Race race, Subrace? subrace, Background background, Class clss, Subclass? subclass)
+    public async Task<List<Feature>> GetAllFeaturesAsync(CharacterDto dto, Race race, Subrace? subrace, Background background, BaseClass clss, Subclass? subclass)
     {
-        List<AFeature> allFeatures = [.. race.Traits, .. background.Features];
+        List<Feature> allFeatures = [.. race.Traits, .. background.Features];
 
         if (subrace is not null)
         {
@@ -173,13 +174,13 @@ public partial class CharacterService : ICharacterService
         return allFeatures;
     }
 
-    public async Task ApplyFeature(AFeature feature, int characterId)
+    public async Task ApplyFeature(Feature feature, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId);
         await ApplyFeature(feature, character);
     }
 
-    public async Task ApplyFeature(AFeature feature, Character character)
+    public async Task ApplyFeature(Feature feature, Character character)
     {
         var abilityDict = await GetAllAbilitiesAsDictionaryAsync();
         var languageDict = await GetAllLanguagesAsDictionaryAsync();

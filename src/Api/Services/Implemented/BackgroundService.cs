@@ -8,7 +8,12 @@ using Api.Services.Interfaces;
 
 namespace Api.Services.Implemented;
 
-public class BackgroundService(IBackgroundRepository repo, IItemRepository itemRepo, ILogger<BackgroundService> logger) : IBackgroundService
+public class BackgroundService(
+    IBackgroundRepository repo, 
+    IItemRepository itemRepo, 
+    ICurrentUserService currentUserService,
+    ILogger<BackgroundService> logger) 
+    : IBackgroundService
 {
     public async Task<Background> CreateAsync(BackgroundDto dto)
     {
@@ -28,8 +33,10 @@ public class BackgroundService(IBackgroundRepository repo, IItemRepository itemR
         {
             Name = dto.Name,
             Description = dto.Description,
-            IsHomebrew = dto.IsHomebrew,
-            StartingCurrency = StartingCurrency
+            StartingCurrency = StartingCurrency,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created background, Name: {BackgroundName}, ID: {BackgroundId}", dto.Name, background.Id);

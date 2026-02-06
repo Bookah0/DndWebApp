@@ -7,10 +7,11 @@ using static Api.Services.Util.SortUtil;
 using static Api.Services.Util.ConstantsUtil;
 using Api.Models.Items.Constants;
 using Api.Services.Interfaces.Items;
+using Api.Services.Interfaces;
 
 namespace Api.Services.Implemented.Items;
 
-public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logger) : IWeaponService
+public class WeaponService(IRepository<Weapon> repo, ICurrentUserService currentUserService, ILogger<WeaponService> logger) : IWeaponService
 {
     public async Task<Weapon> CreateAsync(WeaponDto dto)
     {
@@ -40,7 +41,10 @@ public class WeaponService(IRepository<Weapon> repo, ILogger<WeaponService> logg
             Rarity = dtoRarity,
             RequiresAttunement = dto.RequiresAttunement ?? false,
             IsHomebrew = dto.IsHomebrew ?? false,
-            Categories = [ItemCategory.Weapon]
+            Categories = [ItemCategory.Weapon],
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);

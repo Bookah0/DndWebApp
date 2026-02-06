@@ -6,6 +6,7 @@ using Api.Services.Interfaces.Features;
 using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
 using static Api.Services.Util.ConstantsUtil;
+using Api.Services.Interfaces;
 
 namespace Api.Services.Implemented.Features;
 
@@ -16,6 +17,7 @@ public class ClassFeatureService(
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
+    ICurrentUserService currentUserService,
     ILogger<ClassFeatureService> logger)
     : AFeatureService<ClassFeature, ClassFeatureDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
@@ -32,7 +34,9 @@ public class ClassFeatureService(
             LevelId = dto.LevelId,
             Level = level,
             ClassId = dto.ClassId,
-            IsHomebrew = dto.IsHomebrew
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", classFeature.Name, classFeature.Id);

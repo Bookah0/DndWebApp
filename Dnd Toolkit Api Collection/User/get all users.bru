@@ -1,0 +1,15 @@
+meta {
+  name: get all users
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5432/users
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

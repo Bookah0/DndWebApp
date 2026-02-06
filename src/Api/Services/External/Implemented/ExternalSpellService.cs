@@ -34,7 +34,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
         logger.LogInformation("Fetched {SpellCount} spells from Open5e.", resultOpen.Count);
 
         foreach (var eOpenSpell in resultOpen.Results)
-        {   
+        {
             var (range, rangeValue) = ParseSpellRange(eOpenSpell!.Range);
             var (castingTime, timeValue) = ParseCastingTime(eOpenSpell!.CastingTime);
             var (duration, durationValue) = ParseSpellDuration(eOpenSpell!.Duration);
@@ -83,7 +83,13 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
                 MagicSchool = ConstantsUtil.ResolveOptionOrThrow(eMagicSchool, MagicSchool.AllowedValues, "Magic School"),
                 SpellTargeting = spellTargeting,
                 SpellTypes = spellTypes,
-                CastingRequirements = castingRequirements
+                CastingRequirements = castingRequirements,
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
 
             await repo.CreateAsync(spell);

@@ -16,7 +16,12 @@ using Api.Middlewares.ExceptionHandling;
 
 namespace Api.Services.Implemented;
 
-public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILogger<SpellService> logger) : ISpellService
+public class SpellService(
+    ISpellRepository repo, 
+    IClassRepository classRepo, 
+    ICurrentUserService currentUserService,
+    ILogger<SpellService> logger) 
+    : ISpellService
 {
     public async Task<Spell> CreateAsync(SpellDto dto)
     {
@@ -66,7 +71,9 @@ public class SpellService(ISpellRepository repo, IClassRepository classRepo, ILo
                 Materials = dto.CastRequirementsDto.Materials,
                 MaterialCost = dto.CastRequirementsDto.MaterialCost,
                 MaterialsConsumed = dto.CastRequirementsDto.MaterialsConsumed
-            }
+            },
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         };
 
         spell = await repo.CreateAsync(spell);

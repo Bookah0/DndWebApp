@@ -7,10 +7,11 @@ using static Api.Services.Util.SortUtil;
 using static Api.Services.Util.ConstantsUtil;
 using Api.Models.Items.Constants;
 using Api.Services.Interfaces.Items;
+using Api.Services.Interfaces;
 
 namespace Api.Services.Implemented.Items;
 
-public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger) : IArmorService
+public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUserService, ILogger<ArmorService> logger) : IArmorService
 {
     public async Task<Armor> CreateAsync(ArmorDto dto)
     {
@@ -34,7 +35,10 @@ public class ArmorService(IRepository<Armor> repo, ILogger<ArmorService> logger)
             Rarity = dtoRarity,
             RequiresAttunement = dto.RequiresAttunement ?? false,
             IsHomebrew = dto.IsHomebrew ?? false,
-            Categories = [ItemCategory.Armor]
+            Categories = [ItemCategory.Armor],
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);

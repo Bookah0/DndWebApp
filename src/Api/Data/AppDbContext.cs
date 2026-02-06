@@ -23,7 +23,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Alignment> Alignments { get; set; }
     public DbSet<Language> Languages { get; set; }
 
-    public DbSet<Class> Classes { get; set; }
+    public DbSet<BaseClass> Classes { get; set; }
     public DbSet<Subclass> Subclasses { get; set; }
     public DbSet<ClassLevel> ClassLevels { get; set; }
 
@@ -55,7 +55,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<AFeature>().ConfigureProficiencyChoices();
+        modelBuilder.Entity<Feature>().ConfigureProficiencyChoices();
         modelBuilder.Entity<Character>().ConfigureProficiencies();
 
         modelBuilder.Entity<ClassLevel>()
@@ -65,7 +65,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 slot.WithOwner().HasForeignKey("ClassLevelId");
             });
 
-        modelBuilder.Entity<Class>()
+        modelBuilder.Entity<BaseClass>()
             .OwnsMany(c => c.StartingEquipmentChoices, opt =>
             {
                 opt.HasKey(o => o.Id);
@@ -93,7 +93,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
 public static class FeatureConfigurationExtensions
 {
-    public static void ConfigureProficiencyChoices(this EntityTypeBuilder<AFeature> builder)
+    public static void ConfigureProficiencyChoices(this EntityTypeBuilder<Feature> builder)
     {
         builder.HasMany(f => f.AbilityIncreases)
             .WithMany()

@@ -47,7 +47,13 @@ public class ExternalSkillService(ISkillRepository repo, IAbilityRepository abil
                 Name = eSkill.Name,
                 Description = string.Join("\n", eSkill.Description),
                 Ability = ability,
-                AbilityId = ability.Id
+                AbilityId = ability.Id,
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
 
             await repo.CreateAsync(skill);

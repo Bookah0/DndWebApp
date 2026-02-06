@@ -44,7 +44,13 @@ public class ExternalBackgroundService(IBackgroundRepository repo, ILogger<Exter
             {
                 Name = eBackground.Name,
                 Description = string.Join("\n", eBackground.Description),
-                StartingCurrency = new()
+                StartingCurrency = new(),
+           
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
 
             await repo.CreateAsync(background);

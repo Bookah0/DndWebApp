@@ -1,0 +1,16 @@
+meta {
+  name: update language
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:5432/languages/{{languageId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

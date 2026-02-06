@@ -4,7 +4,7 @@ using Api.Models.DTOs.Inventory;
 namespace Api.Models.DTOs.RequestDtos.Character;
 
 public class BackgroundDto
-{
+{  
     [Required]
     [MinLength(1)]
     [MaxLength(100)]

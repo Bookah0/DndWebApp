@@ -4,7 +4,7 @@ using Api.Models.Features;
 
 namespace Api.Repositories.Interfaces;
 
-public interface IFeatureRepository<T> : IRepository<T> where T : AFeature
+public interface IFeatureRepository<T> : IRepository<T> where T : Feature
 {
     Task<T> GetWithProficienciesAsync(int id);
     Task<T> GetWithChoicesAsync(int id);

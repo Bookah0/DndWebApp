@@ -6,14 +6,12 @@ namespace Api.Models.Characters;
 
 
 // Based on https://api.open5e.com/v2/backgrounds/
-public class Background
+public class Background : CreatableEntity
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public bool IsHomebrew { get; set; } = false;
 
-    public ICollection<AFeature> Features { get; set; } = [];
+    public ICollection<Feature> Features { get; set; } = [];
     public ICollection<Item> StartingItems { get; set; } = [];
     public ICollection<StartingItemOption> StartingItemsOptions { get; set; } = [];
     public required Currency StartingCurrency { get; set; }

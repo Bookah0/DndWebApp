@@ -6,6 +6,7 @@ using Api.Services.Interfaces.Features;
 using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
 using static Api.Services.Util.ConstantsUtil;
+using Api.Services.Interfaces;
 
 namespace Api.Services.Implemented.Features;
 
@@ -16,6 +17,7 @@ public class TraitService(
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
+    ICurrentUserService currentUserService,
     ILogger<TraitService> logger)
     : AFeatureService<Trait, TraitDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
@@ -30,7 +32,9 @@ public class TraitService(
             Description = dto.Description,
             RaceId = dto.RaceId,
             FromRace = race,
-            IsHomebrew = dto.IsHomebrew
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId()
         });
 
         logger.LogInformation("Successfully created trait, Name: {TraitName}, ID: {TraitId}", trait.Name, trait.Id);

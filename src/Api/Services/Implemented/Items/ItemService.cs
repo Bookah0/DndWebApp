@@ -7,10 +7,11 @@ using static Api.Services.Util.SortUtil;
 using static Api.Services.Util.ConstantsUtil;
 using Api.Models.Items.Constants;
 using Api.Services.Interfaces.Items;
+using Api.Services.Interfaces;
 
 namespace Api.Services.Implemented.Items;
 
-public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : IItemService
+public class ItemService(IItemRepository repo, ICurrentUserService currentUserService, ILogger<ItemService> logger) : IItemService
 {
     public async Task<Item> CreateAsync(ItemDto dto)
     {
@@ -30,6 +31,9 @@ public class ItemService(IItemRepository repo, ILogger<ItemService> logger) : II
             RequiresAttunement = dto.RequiresAttunement ?? false,
             IsHomebrew = dto.IsHomebrew ?? false,
             Weight = dto.Weight ?? 0,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId()
         });
 
         logger.LogInformation("Successfully created item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);

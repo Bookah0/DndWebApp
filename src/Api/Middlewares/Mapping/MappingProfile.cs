@@ -34,7 +34,7 @@ public class MappingProfile : Profile
         CreateMap<ClassFeature, ClassFeatureDto>();
         CreateMap<Feat, FeatDto>();
 
-        CreateMap<Class, ClassDto>();
+        CreateMap<BaseClass, ClassDto>();
         CreateMap<Subclass, ClassDto>();
         CreateMap<ClassLevel, ClassLevelDto>();
         CreateMap<Race, RaceDto>();
@@ -69,7 +69,7 @@ public class MappingProfile : Profile
         CreateMap<ClassFeature, ClassFeatureResponseDto>();
         CreateMap<Feat, FeatResponseDto>();
 
-        CreateMap<Class, ClassResponseDto>();
+        CreateMap<BaseClass, ClassResponseDto>();
         CreateMap<Subclass, SubclassResponseDto>();
         CreateMap<ClassLevel, ClassLevelResponseDto>();
         CreateMap<Race, RaceResponseDto>();

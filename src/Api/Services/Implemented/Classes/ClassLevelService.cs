@@ -12,11 +12,12 @@ public partial class ClassLevelService(
     ISubclassRepository subclassRepo,
     IClassLevelRepository levelRepo,
     IFeatureRepository<ClassFeature> featureRepo,
+    ICurrentUserService currentUserService,
     ILogger<ClassService> logger) : IClassLevelService
 {
     public async Task<ClassLevel> CreateAsync(ClassLevelDto dto)
     {
-        AClass clss = dto.IsSubclassLevel 
+        Class clss = dto.IsSubclassLevel 
             ?  await classRepo.GetByIdAsync(dto.ClassId)
             : await subclassRepo.GetByIdAsync(dto.ClassId);
         
@@ -30,7 +31,10 @@ public partial class ClassLevelService(
             Class = clss,
             SpellsKnown = dto.SpellsKnown,
             CantripsKnown = dto.CantripsKnown,
-            SpellSlots = dto.SpellSlotsAtLevel
+            SpellSlots = dto.SpellSlotsAtLevel,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         };
 
         foreach (var featureId in dto.NewFeatureIds)
@@ -62,14 +66,14 @@ public partial class ClassLevelService(
 
         if (level.ClassId != dto.ClassId)
         {
-            AClass? newClass;
+            Class? newClass;
 
             if (!dto.IsSubclassLevel)
             {
                 newClass = await classRepo.GetByIdAsync(dto.ClassId);
                 level.Class = newClass;
                 newClass.ClassLevels.Add(level);
-                await classRepo.UpdateAsync((Class)newClass);
+                await classRepo.UpdateAsync((BaseClass)newClass);
             }
             else
             {

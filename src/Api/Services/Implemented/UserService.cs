@@ -1,0 +1,88 @@
+using AutoMapper;
+using Api.Models.DTOs.RequestDtos;
+using Api.Models.DTOs.ResponseDtos;
+using Api.Models.Users;
+using Api.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace Api.Services.Implemented;
+
+public class UserService(UserManager<User> userManager) : IUserService
+{
+    public async Task<User> GetByEmailAsync(string email) =>
+        await userManager.Users.FirstOrDefaultAsync(u => u.Email == email)
+            ?? throw new KeyNotFoundException($"User with email '{email}' not found.");
+    
+    public async Task<User> GetByIdAsync(Guid id) =>
+        await userManager.Users.FirstOrDefaultAsync(u => u.Id == id)
+            ?? throw new KeyNotFoundException($"User with id '{id}' not found.");
+
+    public async Task<User> GetByUsernameAsync(string username) =>
+        await userManager.Users.FirstOrDefaultAsync(u => u.UserName == username)
+            ?? throw new KeyNotFoundException($"User with username '{username}' not found.");
+
+    public async Task<ICollection<User>> GetAllAsync() => await userManager.Users.ToListAsync();
+
+    public async Task<User> CreateAsync(RegisterUserRequestDto requestDto)
+    {
+        if(requestDto.Password != requestDto.ConfirmPassword)
+            throw new ArgumentException("Passwords do not match.");
+
+        var user = new User
+        {
+            UserName = requestDto.Username,
+            Email = requestDto.Email,
+            CreatedAt = DateTime.UtcNow,
+            PasswordHash = requestDto.Password
+        };
+
+        var result = await userManager.CreateAsync(user);
+        
+        if(!result.Succeeded)
+            throw new Exception($"Failed to register user");
+        
+        await userManager.AddToRoleAsync(user, "User");
+        return user;
+    }
+
+    public async Task<User> ValidateLoginCredentials(LoginUserRequestDto requestDto)
+    {
+        var user = await userManager.Users.FirstOrDefaultAsync(u => u.UserName == requestDto.UsernameOrEmail || u.Email == requestDto.UsernameOrEmail)
+            ?? throw new ArgumentException($"Invalid login credentials.");  
+        await CheckPasswordAsync(requestDto.UsernameOrEmail, requestDto.Password);
+        return user;
+    }
+
+    public async Task<User> CheckPasswordAsync(Guid id, string password)
+    {
+        var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == id)
+            ?? throw new KeyNotFoundException($"User with id '{id}' not found.");
+
+        if(!await userManager.CheckPasswordAsync(user, password))
+            throw new ArgumentException($"Invalid login credentials.");
+
+        return user;
+    }
+
+    public async Task<User> CheckPasswordAsync(string usernameOrEmail, string password)
+    {
+        var user = await userManager.Users.FirstOrDefaultAsync(u => u.UserName == usernameOrEmail || u.Email == usernameOrEmail)
+                    ?? throw new ArgumentException($"Invalid login credentials.");  
+
+        if(!await userManager.CheckPasswordAsync(user, password))
+            throw new ArgumentException($"Invalid login credentials.");
+
+        return user;
+    }
+
+    public Task DeleteAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User> UpdateAsync(Guid userId, UpdateUserRequestDto requestDto)
+    {
+        throw new NotImplementedException();
+    }
+}

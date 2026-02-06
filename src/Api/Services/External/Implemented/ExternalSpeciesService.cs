@@ -22,7 +22,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
             logger.LogInformation("Races already exist in the database. Skipping fetch.");
             return;
         }
-        
+
         logger.LogInformation("Fetching external races.");
 
         var getListResponse = await client.GetAsync("https://www.dnd5eapi.co/api/2014/races/", cancellationToken);
@@ -59,7 +59,13 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
                 RaceDescription = description,
                 Size = ResolveOptionOrThrow(eRace.Size, CreatureSize.AllowedValues, "Creature Size"),
                 Traits = [],
-                SubRaces = []
+                SubRaces = [],
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
 
             await raceRepo.CreateAsync(race);
@@ -107,7 +113,13 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
                 Size = race.Size,
                 Traits = [],
                 ParentRace = race,
-                ParentRaceId = race.Id
+                ParentRaceId = race.Id,
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
 
             await subraceRepo.CreateAsync(subrace);
@@ -117,7 +129,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
 
         logger.LogInformation("Successfully fetched external subraces for race, Name: {RaceName}, SubraceCount: {SubraceCount}", race.Name, subraceIndexList.Count);
     }
-    
+
     /// <summary>
     /// Helper method that converts ability score bonuses from the external species DTO into a Trait which is added to the given species entity. 
     /// Made generic to work for both Race and Subrace.
@@ -148,7 +160,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
             }
             else
             {
-                traitDescription += $"\n- {ability.FullName}: +{abilityIncrease.Bonus}";                
+                traitDescription += $"\n- {ability.FullName}: +{abilityIncrease.Bonus}";
             }
         }
 
@@ -156,10 +168,15 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
         {
             Name = $"Ability Score Increases",
             Description = traitDescription,
-            IsHomebrew = false,
             FromRace = species,
             RaceId = species.Id,
-            AbilityIncreases = abilityIncreases
+            AbilityIncreases = abilityIncreases,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = null,
+            IsHomebrew = false,
+            IsPublic = true,
+            CloningAllowed = true
         };
 
         species.Traits.Add(increaseTrait);
@@ -169,6 +186,6 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
     // TODO: Parses Traits
     private static void ParseTraits(Species species)
     {
-        
+
     }
 }

@@ -6,9 +6,8 @@ namespace Api.Models.Items;
 // https://api.open5e.com/v1/magicitems/
 // https://api.open5e.com/v1/weapons/
 // https://api.open5e.com/v1/armor/
-public class Item
+public class Item : CreatableEntity
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required ICollection<string> Categories { get; set; }
@@ -17,7 +16,6 @@ public class Item
     public int Weight { get; set; }
     public int Value { get; set; }
     public int Quantity { get; set; } = 1;
-    public bool IsHomebrew { get; set; } = false;
 }
 
 

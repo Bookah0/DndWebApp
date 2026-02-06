@@ -1,0 +1,16 @@
+meta {
+  name: login
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:5432/auth/login
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

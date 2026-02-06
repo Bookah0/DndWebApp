@@ -48,7 +48,7 @@ public class FeatChoicesController : ChoicesControllerBase<Feat, FeatDto>
     public FeatChoicesController(IChoiceService<Feat> service, IFeatureService<Feat, FeatDto> featureService) : base(service, featureService) { }
 }
 
-public abstract class ChoicesControllerBase<F, FD>(IChoiceService<F> choiceService, IFeatureService<F, FD> featureService) : ControllerBase where F : AFeature where FD : AFeatureDto
+public abstract class ChoicesControllerBase<F, FD>(IChoiceService<F> choiceService, IFeatureService<F, FD> featureService) : ControllerBase where F : Feature where FD : FeatureDto
 {
     [HttpPost("ability-increases/choices")] 
     public async Task<ActionResult> AddAbilityIncreaseChoice(int featureId, AbilityIncreaseChoiceDto dto)

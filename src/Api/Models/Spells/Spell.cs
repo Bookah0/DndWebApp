@@ -4,15 +4,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Api.Models.Spells;
 
 // Based on https://api.open5e.com/v1/spells
-public class Spell
+public class Spell : CreatableEntity
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public bool IsHomebrew { get; set; } = false;
     public required int Level { get; set; }
     public string EffectsAtHigherLevels { get; set; } = "";
-    public ICollection<Class> Classes { get; set; } = [];
+    public ICollection<BaseClass> Classes { get; set; } = [];
     public required string Duration { get; set; }
     public int DurationValue { get; set; }
     public required string CastingTime { get; set; }

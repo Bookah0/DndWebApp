@@ -20,10 +20,10 @@ public class ExternalFeatService(IFeatureRepository<Feat> repo, ILogger<External
         }
 
         logger.LogInformation("Fetching external feats.");
-        
+
         var getListResponse = await client.GetAsync("https://api.open5e.com/v1/feats/", cancellationToken);
         var featResults = await JsonSerializer.DeserializeAsync<EOpen5eResponseDto<EFeatDto>>(getListResponse.Content.ReadAsStream(cancellationToken), cancellationToken: cancellationToken);
-        
+
         if (featResults is null || featResults.Count == 0)
         {
             throw new InvalidOperationException("No feats found in external APIs.");
@@ -41,6 +41,12 @@ public class ExternalFeatService(IFeatureRepository<Feat> repo, ILogger<External
                 Name = eFeat.Name,
                 Description = string.Join("\n", eFeat.Description),
                 Prerequisite = eFeat.Prerequisite ?? "",
+
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = null,
+                IsHomebrew = false,
+                IsPublic = true,
+                CloningAllowed = true
             };
             await repo.CreateAsync(feat);
         }
@@ -51,8 +57,7 @@ public class ExternalFeatService(IFeatureRepository<Feat> repo, ILogger<External
     // TODO: Parses Features
     private static void ParseFeatBenefits(Feat feat)
     {
-        
+
     }
 }
 
-        

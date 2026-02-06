@@ -2,6 +2,7 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
+using Api.Services.Interfaces;
 using Api.Services.Interfaces.Features;
 using static Api.Services.Util.SortUtil;
 
@@ -13,6 +14,7 @@ public class FeatService(
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
+    ICurrentUserService currentUserService,
     ILogger<FeatService> logger)
     : AFeatureService<Feat, FeatDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
@@ -24,7 +26,9 @@ public class FeatService(
         {
             Name = dto.Name,
             Description = dto.Description,
-            IsHomebrew = dto.IsHomebrew
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created feat, Name: {FeatName}, ID: {FeatId}", feat.Name, feat.Id);

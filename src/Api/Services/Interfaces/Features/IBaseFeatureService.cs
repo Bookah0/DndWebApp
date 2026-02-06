@@ -4,7 +4,7 @@ using Api.Models.Features;
 
 namespace Api.Services.Interfaces.Features;
 
-public interface IFeatureService<T, TD> where T : AFeature where TD : AFeatureDto
+public interface IFeatureService<T, TD> where T : Feature where TD : FeatureDto
 {
     Task<T> GetByIdAsync(int id);
     Task<T> GetWithChoicesAsync(int id);

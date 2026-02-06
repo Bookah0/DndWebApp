@@ -30,8 +30,6 @@ public class ToolDto
 
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
-
-    public bool? IsHomebrew { get; set; }
 }
 
 public class ToolPropertyDto

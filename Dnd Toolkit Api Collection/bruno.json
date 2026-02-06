@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Dnd Toolkit Api Collection",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

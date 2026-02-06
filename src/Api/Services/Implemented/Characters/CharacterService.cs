@@ -22,6 +22,7 @@ public partial class CharacterService(
     IAbilityRepository abilityRepo,
     ISkillRepository skillRepo,
     ILanguageRepository languageRepo,
+    ICurrentUserService currentUserService,
     ILogger<CharacterService> logger) : ICharacterService
 {
     public async Task DeleteAsync(int id)
@@ -199,7 +200,7 @@ public partial class CharacterService(
         {
             SortCharacterOption.Name => OrderByMany(characters, [(c => c.Name)], descending),
             SortCharacterOption.Level => OrderByMany(characters, [(c => c.Level), (c => c.Name)], descending),
-            SortCharacterOption.TimeCreated => OrderByMany(characters, [(c => c.TimeCreated), (c => c.Name)], descending),
+            SortCharacterOption.TimeCreated => OrderByMany(characters, [(c => c.CreatedAt), (c => c.Name)], descending),
             _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }

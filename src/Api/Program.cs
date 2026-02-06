@@ -19,8 +19,10 @@ using Api.Services.Interfaces.Items;
 using Api.Services.Implemented.Items;
 using Api.Models.Features;
 using Api.Models.DTOs.Features;
-using Api.Models.Characters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Api.Models.Users;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,8 +99,14 @@ builder.Services.AddScoped<IExternalSpeciesService, ExternalSpeciesService>();
 builder.Services.AddScoped<IExternalSpellService, ExternalSpellService>();
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<UserManager<User>>();
+builder.Services.AddScoped<SignInManager<User>>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
 var app = builder.Build();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseMiddleware<ExceptionHandler>();
 app.UseHttpsRedirection();
 app.MapControllers();

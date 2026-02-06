@@ -8,7 +8,12 @@ using Api.Services.Interfaces.Species;
 
 namespace Api.Services.Implemented;
 
-public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceRepo, ILogger<SubraceService> logger) : ISubraceService
+public class SubraceService(
+    ISubraceRepository repo, 
+    IRaceRepository parentRaceRepo, 
+    ICurrentUserService currentUserService, 
+    ILogger<SubraceService> logger) 
+    : ISubraceService
 {
     public async Task<Subrace> CreateAsync(SubraceDto dto)
     {
@@ -32,8 +37,10 @@ public class SubraceService(ISubraceRepository repo, IRaceRepository parentRaceR
             ParentRaceId = dto.ParentRaceId,
             ParentRace = parentRace,
             Speed = dto.Speed,
-            IsHomebrew = dto.IsHomebrew,
-            Size = dto.Size
+            Size = dto.Size,
+
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = currentUserService.GetCurrentUserId(),
         });
 
         parentRace.SubRaces.Add(subrace);

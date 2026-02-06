@@ -3,6 +3,7 @@ using Api.Models.Features;
 using Api.Models.Items;
 using Api.Models.Spells;
 using Api.Models.World;
+using Api.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;

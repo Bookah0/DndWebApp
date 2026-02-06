@@ -1,4 +1,4 @@
-namespace DndWebApp.Api.Models.DTOs.RequestDtos;
+namespace Api.Models.DTOs.RequestDtos;
 
 public class GetUserRequestDto
 {

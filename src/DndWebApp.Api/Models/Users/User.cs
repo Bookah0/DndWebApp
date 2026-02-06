@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace DndWebApp.Api.Models.Users;
+namespace Api.Models.Users;
 
 public class User : IdentityUser<Guid>
 {

@@ -1,12 +1,12 @@
 using AutoMapper;
-using DndWebApp.Api.Models.DTOs.Inventory;
-using DndWebApp.Api.Models.DTOs.RequestDtos;
-using DndWebApp.Api.Models.DTOs.ResponseDtos;
-using DndWebApp.Api.Repositories.Interfaces;
-using DndWebApp.Api.Services.Interfaces.Items;
+using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos;
+using Api.Models.DTOs.ResponseDtos;
+using Api.Repositories.Interfaces;
+using Api.Services.Interfaces.Items;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DndWebApp.Api.Controllers.Users;
+namespace Api.Controllers.Users;
 
 [ApiController]
 [Route("api/users")]

@@ -1,4 +1,4 @@
-namespace DndWebApp.Api.Models.DTOs.ResponseDtos;
+namespace Api.Models.DTOs.ResponseDtos;
 
 public class GetUserResponseDto
 {

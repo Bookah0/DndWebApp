@@ -1,12 +1,12 @@
 using AutoMapper;
-using DndWebApp.Api.Models.DTOs.RequestDtos;
-using DndWebApp.Api.Models.DTOs.ResponseDtos;
-using DndWebApp.Api.Models.Users;
-using DndWebApp.Api.Repositories.Interfaces;
+using Api.Models.DTOs.RequestDtos;
+using Api.Models.DTOs.ResponseDtos;
+using Api.Models.Users;
+using Api.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace DndWebApp.Api.Repositories.Implemented;
+namespace Api.Repositories.Implemented;
 
 public class UserRepository(UserManager<User> userManager, IMapper mapper) : IUserRepository
 {

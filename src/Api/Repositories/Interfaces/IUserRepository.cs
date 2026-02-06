@@ -1,10 +1,9 @@
-using DndWebApp.Api.Models.DTOs.RequestDtos;
-using DndWebApp.Api.Models.DTOs.ResponseDtos;
-using DndWebApp.Api.Models.Users;
-using DndWebApp.Api.Repositories.Interfaces;
+using Api.Models.DTOs.RequestDtos;
+using Api.Models.DTOs.ResponseDtos;
+using Api.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace DndWebApp.Api.Repositories.Interfaces;
+namespace Api.Repositories.Interfaces;
 
 public interface IUserRepository
 {

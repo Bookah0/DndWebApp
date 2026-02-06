@@ -17,7 +17,7 @@ namespace Api.Controllers.Characters;
 public class CharacterController(ICharacterService service, IMapper mapper) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<CharacterResponseDto>> CreateCharacter(int userId, [FromBody] CharacterDto dto)
+    public async Task<ActionResult<CharacterResponseDto>> CreateCharacter(int userId, [FromBody] CreateCharacterRequestDto dto)
     {
         /*
         if(userId != dto.UserId)
@@ -69,7 +69,7 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     }
 
     [HttpPatch("{characterId}/description")]
-    public async Task<ActionResult<CharacterResponseDto>> EditCharacterDescription(int characterId, int userId, [FromBody] CharacterDescriptionDto edited)
+    public async Task<ActionResult<CharacterResponseDto>> EditCharacterDescription(int characterId, int userId, [FromBody] UpdateCharacterRequestDto edited)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
         var characterDescription = mapper.Map<CharacterDescription>(edited);

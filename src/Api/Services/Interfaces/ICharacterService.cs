@@ -6,7 +6,7 @@ namespace Api.Services.Interfaces;
 
 public interface ICharacterService
 {
-    Task<Character> CreateAsync(CharacterDto dto);
+    Task<Character> CreateAsync(CreateCharacterRequestDto dto);
     Task DeleteAsync(int id);
     Task<ICollection<Character>> GetAllAsync();
     Task<Character> GetByIdAsync(int id);

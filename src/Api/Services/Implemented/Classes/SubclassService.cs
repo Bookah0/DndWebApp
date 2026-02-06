@@ -1,3 +1,4 @@
+using Api.Controllers.Features;
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
 using Api.Models.DTOs.RequestDtos.Character;
@@ -13,7 +14,7 @@ public partial class SubclassService(
     ICurrentUserService currentUserService, 
     ILogger<SubclassService> logger) : ISubclassService
 {
-    public async Task<Subclass> CreateAsync(ClassDto dto, int parentClassId)
+    public async Task<Subclass> CreateAsync(CreateSubclassRequestDto dto, int parentClassId)
     {
         logger.LogInformation("Creating subclass, Name: {SubclassName}, ParentClassId: {ParentClassId}", dto.Name, parentClassId);
 
@@ -49,19 +50,22 @@ public partial class SubclassService(
 
     public async Task<Subclass> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<Subclass> UpdateAsync(int id, ClassDto dto)
+    public async Task<Subclass> UpdateAsync(int id, UpdateSubclassRequestDto dto)
     {
         var subclass = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
 
-        subclass.Name = dto.Name;
-        subclass.Description = dto.Description;
-        subclass.HitDie = dto.HitDie;
+        subclass.Name = dto.Name ?? subclass.Name;
+        subclass.Description = dto.Description ?? subclass.Description;
+        subclass.HitDie = dto.HitDie ?? subclass.HitDie;
+        subclass.IsPublic = dto.IsPublic ?? subclass.IsPublic;
+        subclass.CloningAllowed = dto.CloningAllowed ?? subclass.CloningAllowed;
+        subclass.UpdatedAt = DateTime.UtcNow;
         
-        if(dto.NewParentClassId is not null)
+        if(dto.ParentClassId is not null && dto.ParentClassId != subclass.ParentClassId)
         {
-            var newParentClass = await classRepo.GetByIdAsync((int)dto.NewParentClassId);
-            subclass.ParentClassId = (int)dto.NewParentClassId;
+            var newParentClass = await classRepo.GetByIdAsync((int)dto.ParentClassId);
+            subclass.ParentClassId = (int)dto.ParentClassId;
             subclass.ParentClass = newParentClass;
         }
         

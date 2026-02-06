@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Models.DTOs.RequestDtos.Character;
 
-public class AbilityDto
+public class AbilityRequestDto
 {
     [Required]
     [MinLength(1)]

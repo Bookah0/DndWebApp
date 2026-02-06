@@ -11,7 +11,7 @@ namespace Api.Services.Implemented;
 
 public partial class CharacterService : ICharacterService
 {
-    public async Task<Character> CreateAsync(CharacterDto dto)
+    public async Task<Character> CreateAsync(CreateCharacterRequestDto dto)
     {
         var race = await raceRepo.GetWithTraitsAsync(dto.RaceId);
         var clss = await classRepo.GetWithClassLevelFeaturesAsync(dto.ClassId);
@@ -58,7 +58,7 @@ public partial class CharacterService : ICharacterService
             Name = dto.Name,
             Level = dto.Level,
             Experience = 0,
-            PlayerName = dto.PlayerName,
+            PlayerName = dto.PlayerName ?? "",
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
 
@@ -98,7 +98,7 @@ public partial class CharacterService : ICharacterService
     }
 
 
-    public CharacterDescription? GetCharacterDescription(CharacterDto dto)
+    public CharacterDescription? GetCharacterDescription(CreateCharacterRequestDto dto)
     {
         if (dto.CharacterDescription is null)
             return null;
@@ -106,19 +106,19 @@ public partial class CharacterService : ICharacterService
         return new CharacterDescription()
         {
             AlignmentId = dto.CharacterDescription.AlignmentId,
-            PersonalityTraits = dto.CharacterDescription.PersonalityTraits,
-            Ideals = dto.CharacterDescription.Ideals,
-            Bonds = dto.CharacterDescription.Bonds,
-            Flaws = dto.CharacterDescription.Flaws,
+            PersonalityTraits = dto.CharacterDescription.PersonalityTraits ?? "",
+            Ideals = dto.CharacterDescription.Ideals ?? "",
+            Bonds = dto.CharacterDescription.Bonds ?? "",
+            Flaws = dto.CharacterDescription.Flaws ?? "",
             Age = dto.CharacterDescription.Age,
             Height = dto.CharacterDescription.Height,
             Weight = dto.CharacterDescription.Weight,
-            Eyes = dto.CharacterDescription.Eyes,
-            Skin = dto.CharacterDescription.Skin,
-            Hair = dto.CharacterDescription.Hair,
-            AlliesAndOrganizations = dto.CharacterDescription.AlliesAndOrganizations,
-            Backstory = dto.CharacterDescription.Backstory,
-            CharacterPictureUrl = dto.CharacterDescription.CharacterPictureUrl,
+            Eyes = dto.CharacterDescription.Eyes ?? "",
+            Skin = dto.CharacterDescription.Skin ?? "",
+            Hair = dto.CharacterDescription.Hair ?? "",
+            AlliesAndOrganizations = dto.CharacterDescription.AlliesAndOrganizations ?? "",
+            Backstory = dto.CharacterDescription.Backstory ?? "",
+            CharacterPictureUrl = dto.CharacterDescription.CharacterPictureUrl ?? "",
         };
     }
 
@@ -128,16 +128,16 @@ public partial class CharacterService : ICharacterService
         return latestLevel.SpellSlots;
     }
 
-    public ICollection<AbilityValue> InitAbilityScoreList(CharacterDto dto, Dictionary<string, Ability> repoDict)
+    public ICollection<AbilityValue> InitAbilityScoreList(CreateCharacterRequestDto dto, Dictionary<string, Ability> repoDict)
     {
         var dtoValues = new Dictionary<string, int>
         {
-            { AbilityType.Strength, dto.AbilityScores.Strength },
-            { AbilityType.Dexterity, dto.AbilityScores.Dexterity },
-            { AbilityType.Constitution, dto.AbilityScores.Constitution },
-            { AbilityType.Intelligence, dto.AbilityScores.Intelligence },
-            { AbilityType.Wisdom, dto.AbilityScores.Wisdom },
-            { AbilityType.Charisma, dto.AbilityScores.Charisma }
+            { AbilityType.Strength, dto.AbilityScores.Str },
+            { AbilityType.Dexterity, dto.AbilityScores.Dex },
+            { AbilityType.Constitution, dto.AbilityScores.Con },
+            { AbilityType.Intelligence, dto.AbilityScores.Int },
+            { AbilityType.Wisdom, dto.AbilityScores.Wis },
+            { AbilityType.Charisma, dto.AbilityScores.Cha }
         };
 
         ICollection<AbilityValue> abilityScores = [.. dtoValues
@@ -150,7 +150,7 @@ public partial class CharacterService : ICharacterService
         return abilityScores;
     }
 
-    public async Task<List<Feature>> GetAllFeaturesAsync(CharacterDto dto, Race race, Subrace? subrace, Background background, BaseClass clss, Subclass? subclass)
+    public async Task<List<Feature>> GetAllFeaturesAsync(CreateCharacterRequestDto dto, Race race, Subrace? subrace, Background background, BaseClass clss, Subclass? subclass)
     {
         List<Feature> allFeatures = [.. race.Traits, .. background.Features];
 

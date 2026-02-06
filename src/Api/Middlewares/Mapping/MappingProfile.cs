@@ -18,12 +18,14 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         // Entity to Request DTO
-        CreateMap<Character, CharacterDto>();
+        CreateMap<Character, CreateCharacterRequestDto>();
+        CreateMap<Character, UpdateCharacterRequestDto>();
         CreateMap<Inventory, CreateInventoryDto>();
         CreateMap<Inventory, UpdateInventoryDto>();
-        CreateMap<Background, BackgroundDto>();
-        CreateMap<Alignment, AlignmentDto>();
-        CreateMap<Ability, AbilityDto>();
+        CreateMap<Background, CreateBackgroundRequestDto>();
+        CreateMap<Background, UpdateBackgroundRequestDto>();
+        CreateMap<Alignment, AlignmentRequestDto>();
+        CreateMap<Ability, AbilityRequestDto>();
         CreateMap<AbilityValue, AbilityValueDto>();
         CreateMap<Skill, SkillDto>();
         CreateMap<Language, LanguageDto>();
@@ -34,8 +36,10 @@ public class MappingProfile : Profile
         CreateMap<ClassFeature, ClassFeatureDto>();
         CreateMap<Feat, FeatDto>();
 
-        CreateMap<BaseClass, ClassDto>();
-        CreateMap<Subclass, ClassDto>();
+        CreateMap<BaseClass, CreateClassRequestDto>();
+        CreateMap<Subclass, CreateSubclassRequestDto>();
+        CreateMap<BaseClass, UpdateClassRequestDto>();
+        CreateMap<Subclass, UpdateSubclassRequestDto>();
         CreateMap<ClassLevel, ClassLevelDto>();
         CreateMap<Race, RaceDto>();
         CreateMap<Subrace, SubraceDto>();
@@ -89,12 +93,14 @@ public class MappingProfile : Profile
         CreateMap<ArmorProficiencyChoice, ArmorProficiencyChoiceResponseDto>();
 
         // Request DTO to Entity
-        CreateMap<CharacterDto, CharacterResponseDto>();
+        CreateMap<CreateCharacterRequestDto, CharacterResponseDto>();
+        CreateMap<UpdateCharacterRequestDto, CharacterResponseDto>();
         CreateMap<CreateInventoryDto, InventoryResponseDto>();
         CreateMap<UpdateInventoryDto, InventoryResponseDto>();
-        CreateMap<BackgroundDto, BackgroundResponseDto>();
-        CreateMap<AlignmentDto, AlignmentResponseDto>();
-        CreateMap<AbilityDto, AbilityResponseDto>();
+        CreateMap<CreateBackgroundRequestDto, BackgroundResponseDto>();
+        CreateMap<UpdateBackgroundRequestDto, BackgroundResponseDto>();
+        CreateMap<AlignmentRequestDto, AlignmentResponseDto>();
+        CreateMap<AbilityRequestDto, AbilityResponseDto>();
         CreateMap<AbilityValueDto, AbilityValueResponseDto>();
         CreateMap<SkillDto, SkillResponseDto>();
         CreateMap<LanguageDto, LanguageResponseDto>();
@@ -105,8 +111,10 @@ public class MappingProfile : Profile
         CreateMap<ClassFeatureDto, ClassFeatureResponseDto>();
         CreateMap<FeatDto, FeatResponseDto>();
 
-        CreateMap<ClassDto, ClassResponseDto>();
-        CreateMap<ClassDto, SubclassResponseDto>();
+        CreateMap<CreateClassRequestDto, ClassResponseDto>();
+        CreateMap<UpdateClassRequestDto, ClassResponseDto>();
+        CreateMap<CreateSubclassRequestDto, SubclassResponseDto>();
+        CreateMap<UpdateSubclassRequestDto, SubclassResponseDto>();
         CreateMap<ClassLevelDto, ClassLevelResponseDto>();
         CreateMap<RaceDto, RaceResponseDto>();
         CreateMap<SubraceDto, SubraceResponseDto>();

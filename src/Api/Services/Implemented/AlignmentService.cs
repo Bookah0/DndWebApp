@@ -10,7 +10,7 @@ namespace Api.Services.Implemented;
 
 public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentService> logger) : IAlignmentService
 {
-    public async Task<Alignment> CreateAsync(AlignmentDto dto)
+    public async Task<Alignment> CreateAsync(AlignmentRequestDto dto)
     {
         logger.LogInformation("Creating alignment, Name: {AlignmentName}", dto.Name);
         var alignment = await repo.CreateAsync(new()
@@ -35,7 +35,7 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
     public async Task<ICollection<Alignment>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Alignment> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
     
-    public async Task<Alignment> UpdateAsync(int id, AlignmentDto dto)
+    public async Task<Alignment> UpdateAsync(int id, AlignmentRequestDto dto)
     {
         var alignment = await repo.GetByIdAsync(id);
 

@@ -2,6 +2,7 @@
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
 using Api.Models.DTOs.RequestDtos.Character;
+using Api.Models.Features;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
@@ -12,21 +13,22 @@ public class BackgroundService(
     IBackgroundRepository repo, 
     IItemRepository itemRepo, 
     ICurrentUserService currentUserService,
+    IFeatureRepository<BackgroundFeature> featureRepo,
     ILogger<BackgroundService> logger) 
     : IBackgroundService
 {
-    public async Task<Background> CreateAsync(BackgroundDto dto)
+    public async Task<Background> CreateAsync(CreateBackgroundRequestDto dto)
     {
         logger.LogInformation("Creating background, Name: {BackgroundName}", dto.Name);
 
         var StartingCurrency = new Currency
         {
-            Brass = dto.Currency.Brass,
-            Copper = dto.Currency.Copper,
-            Electrum = dto.Currency.Electrum,
-            Gold = dto.Currency.Gold,
-            Platinum = dto.Currency.Platinum,
-            Silver = dto.Currency.Silver
+            Brass = dto.StartingCurrency.Brass,
+            Copper = dto.StartingCurrency.Copper,
+            Electrum = dto.StartingCurrency.Electrum,
+            Gold = dto.StartingCurrency.Gold,
+            Platinum = dto.StartingCurrency.Platinum,
+            Silver = dto.StartingCurrency.Silver
         };
         
         var background = await repo.CreateAsync(new()
@@ -34,7 +36,6 @@ public class BackgroundService(
             Name = dto.Name,
             Description = dto.Description,
             StartingCurrency = StartingCurrency,
-
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
         });
@@ -57,26 +58,59 @@ public class BackgroundService(
     public async Task<Background> GetWithAllDataAsync(int id) => await repo.GetWithAllDataAsync(id);
     public async Task<Background> GetWithFeaturesAsync(int id) => await repo.GetWithFeaturesAsync(id);
 
-    public async Task<Background> UpdateAsync(int id, BackgroundDto dto)
+    public async Task<Background> UpdateAsync(int id, UpdateBackgroundRequestDto dto)
     {
         var background = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
 
-        background.Name = dto.Name;
-        background.Description = dto.Description;
-        background.IsHomebrew = dto.IsHomebrew;
+        background.Name = dto.Name ?? background.Name;
+        background.Description = dto.Description ?? background.Description;
+        background.IsPublic = dto.IsPublic ?? background.IsPublic;
+        background.CloningAllowed = dto.CloningAllowed ?? background.CloningAllowed; 
 
-        background.StartingCurrency.Brass = dto.Currency.Brass;
-        background.StartingCurrency.Copper = dto.Currency.Copper;
-        background.StartingCurrency.Electrum = dto.Currency.Electrum;
-        background.StartingCurrency.Gold = dto.Currency.Gold;
-        background.StartingCurrency.Platinum = dto.Currency.Platinum;
-        background.StartingCurrency.Silver = dto.Currency.Silver;
+        if(dto.StartingCurrency is not null)
+        {
+            background.StartingCurrency = new Currency
+            {
+                Brass = dto.StartingCurrency.Brass,
+                Copper = dto.StartingCurrency.Copper,
+                Electrum = dto.StartingCurrency.Electrum,
+                Gold = dto.StartingCurrency.Gold,
+                Platinum = dto.StartingCurrency.Platinum,
+                Silver = dto.StartingCurrency.Silver
+            };
+        }
 
         await repo.UpdateAsync(background);
         logger.LogInformation("Successfully updated background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
         return background;
+    }
+
+    public async Task<Background> AddFeatureAsync(int id, int featureId)
+    {
+        var feature = await featureRepo.GetByIdAsync(featureId);
+        var background = await repo.GetByIdAsync(id);
+
+        logger.LogInformation("Adding feature with Name: {FeatureName} ID: {FeatureId} to background, Name: {BackgroundName}, ID: {BackgroundId}", feature.Name, featureId, background.Name, id);
+        background.Features.Add(feature);
+        
+        await repo.UpdateAsync(background);
+        logger.LogInformation("Successfully added feature with Name: {FeatureName} ID: {FeatureId} to background, Name: {BackgroundName}, ID: {BackgroundId}", feature.Name, featureId, background.Name, id);
+        return background;
+    }
+
+    public async Task RemoveFeatureAsync(int id, int featureId)
+    {
+        var background = await repo.GetByIdAsync(id);
+
+        var feature = background.Features.FirstOrDefault(f => f.Id == featureId) 
+            ?? throw new NotFoundException($"Feature with id {featureId} is not a feature for background with id {id}");
+
+        logger.LogInformation("Removing feature with Name: {FeatureName} ID: {FeatureId} from background, Name: {BackgroundName}, ID: {BackgroundId}", feature.Name, featureId, background.Name, id);
+        background.Features.Remove(feature);
+        await repo.UpdateAsync(background);
+        logger.LogInformation("Successfully removed feature with Name: {FeatureName} ID: {FeatureId} from background, Name: {BackgroundName}, ID: {BackgroundId}", feature.Name, featureId, background.Name, id);
     }
 
     public async Task<Background> AddStartingItemsAsync(int id, int itemId)

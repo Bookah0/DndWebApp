@@ -5,12 +5,12 @@ namespace Api.Services.Interfaces;
 
 public interface IBackgroundService
 {
-    Task<Background> CreateAsync(BackgroundDto dto);
+    Task<Background> CreateAsync(CreateBackgroundRequestDto dto);
     Task DeleteAsync(int id);
     Task<ICollection<Background>> GetAllAsync();
     Task<Background> GetByIdAsync(int id);
     Task<Background> GetWithFeaturesAsync(int id);
-    Task<Background> UpdateAsync(int id, BackgroundDto dto);
+    Task<Background> UpdateAsync(int id, UpdateBackgroundRequestDto dto);
     Task<Background> AddStartingItemsAsync(int id, int itemId);
     Task RemoveStartingItemsAsync(int id, int itemId);
     Task<Background> AddStartingItemChoiceAsync(int id, StartingItemOptionDto dto);

@@ -9,7 +9,7 @@ namespace Api.Services.Implemented;
 
 public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> logger) : IAbilityService
 {
-    public async Task<Ability> CreateAsync(AbilityDto dto)
+    public async Task<Ability> CreateAsync(AbilityRequestDto dto)
     {
         logger.LogInformation("Creating ability, FullName: {AbilityFullName}", dto.FullName);
         
@@ -36,7 +36,7 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
     public async Task<ICollection<Ability>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Ability> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<Ability> UpdateAsync(int id, AbilityDto dto)
+    public async Task<Ability> UpdateAsync(int id, AbilityRequestDto dto)
     {
         var ability = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating ability, FullName: {AbilityFullName}, ID: {AbilityId}", ability.FullName, id);

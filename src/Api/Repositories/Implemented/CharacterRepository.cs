@@ -12,11 +12,11 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
         await context.Characters.FindAsync(id)
         ?? throw new Exception($"Character with id {id} could not be found");
 
-    public async Task<CharacterDescriptionDto> GetCharacterDescriptionAsync(int id) =>
+    public async Task<CharacterDescription> GetCharacterDescriptionAsync(int id) =>
         await context.Characters
             .AsNoTracking()
             .Where(x => x.Id == id)
-            .Select(r => new CharacterDescriptionDto
+            .Select(r => new CharacterDescription
             {
                 AlignmentId = r.CharacterDescription.AlignmentId,
                 PersonalityTraits = r.CharacterDescription.PersonalityTraits,

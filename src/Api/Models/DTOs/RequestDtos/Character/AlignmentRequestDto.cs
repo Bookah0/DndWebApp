@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Models.DTOs.RequestDtos.Character;
 
-public class AlignmentDto
+public class AlignmentRequestDto
 {
     [Required]
     [MinLength(1)]

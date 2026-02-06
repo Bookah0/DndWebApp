@@ -28,14 +28,14 @@ public class ClassController(IClassService service, IMapper mapper) : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult<ClassResponseDto>> CreateClass([FromBody] ClassDto dto)
+    public async Task<ActionResult<ClassResponseDto>> CreateClass([FromBody] CreateClassRequestDto dto)
     {
         var clss = await service.CreateAsync(dto);
         return Ok(mapper.Map<ClassResponseDto>(clss));
     }
 
     [HttpPatch("{classId}")]
-    public async Task<ActionResult<ClassResponseDto>> UpdateClass(int classId, [FromBody] ClassDto dto)
+    public async Task<ActionResult<ClassResponseDto>> UpdateClass(int classId, [FromBody] UpdateClassRequestDto dto)
     {
         var updatedClass = await service.UpdateAsync(classId, dto);
         return Ok(mapper.Map<ClassResponseDto>(updatedClass));

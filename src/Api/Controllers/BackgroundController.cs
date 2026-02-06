@@ -26,14 +26,14 @@ public class BackgroundController(IBackgroundService service, IMapper mapper) : 
     }
 
     [HttpPost]
-    public async Task<ActionResult<BackgroundResponseDto>> CreateBackground([FromBody] BackgroundDto dto)
+    public async Task<ActionResult<BackgroundResponseDto>> CreateBackground([FromBody] CreateBackgroundRequestDto dto)
     {
         var background = await service.CreateAsync(dto);
         return Ok(mapper.Map<BackgroundResponseDto>(background));
     }
 
     [HttpPatch("{backgroundId}")]
-    public async Task<ActionResult<BackgroundResponseDto>> UpdateBackground(int backgroundId, [FromBody] BackgroundDto dto)
+    public async Task<ActionResult<BackgroundResponseDto>> UpdateBackground(int backgroundId, [FromBody] UpdateBackgroundRequestDto dto)
     {
         var updatedBackground = await service.UpdateAsync(backgroundId, dto);
         return Ok(mapper.Map<BackgroundResponseDto>(updatedBackground));

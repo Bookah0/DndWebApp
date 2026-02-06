@@ -1,0 +1,13 @@
+namespace Api.Models.Characters;
+
+// Based on https://5e-bits.github.io/docs/api/
+public class Language
+{
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public required string Family { get; set; }
+    public string? Script { get; set; }
+    public List<string> TypicalSpeakers { get; set; } = [];
+    public bool IsExotic { get; set; } = false;
+    public bool IsHomebrew { get; set; } = false;
+}

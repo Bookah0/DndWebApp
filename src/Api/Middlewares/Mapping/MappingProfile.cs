@@ -40,7 +40,8 @@ public class MappingProfile : Profile
         CreateMap<Subclass, CreateSubclassRequestDto>();
         CreateMap<BaseClass, UpdateClassRequestDto>();
         CreateMap<Subclass, UpdateSubclassRequestDto>();
-        CreateMap<ClassLevel, ClassLevelDto>();
+        CreateMap<ClassLevel, CreateClassLevelRequestDto>();
+        CreateMap<ClassLevel, UpdateClassLevelRequestDto>();
         CreateMap<Race, RaceDto>();
         CreateMap<Subrace, SubraceDto>();
 
@@ -115,7 +116,8 @@ public class MappingProfile : Profile
         CreateMap<UpdateClassRequestDto, ClassResponseDto>();
         CreateMap<CreateSubclassRequestDto, SubclassResponseDto>();
         CreateMap<UpdateSubclassRequestDto, SubclassResponseDto>();
-        CreateMap<ClassLevelDto, ClassLevelResponseDto>();
+        CreateMap<CreateClassLevelRequestDto, ClassLevelResponseDto>();
+        CreateMap<UpdateClassLevelRequestDto, ClassLevelResponseDto>();
         CreateMap<RaceDto, RaceResponseDto>();
         CreateMap<SubraceDto, SubraceResponseDto>();
 

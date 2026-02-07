@@ -223,3 +223,4 @@ C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Tests\obj\Debug\net9.0\ref
 C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Tests\obj\Debug\net9.0\Tests.pdb
 C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Tests\obj\Debug\net9.0\Tests.genruntimeconfig.cache
 C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Tests\obj\Debug\net9.0\ref\Tests.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Tests\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll

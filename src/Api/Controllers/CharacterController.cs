@@ -29,7 +29,7 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     }
 
     [HttpGet("{characterId}")]
-    public async Task<ActionResult<CharacterResponseDto>> GetCharacter(int characterId, int userId)
+    public async Task<ActionResult<CharacterResponseDto>> GetCharacter(int characterId, Guid userId)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
         var character =  await service.GetByIdAsync(characterId);
@@ -37,14 +37,14 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     }
 
     [HttpGet]
-    public async Task<ActionResult<ICollection<CharacterResponseDto>>> GetCharacters(int userId)
+    public async Task<ActionResult<ICollection<CharacterResponseDto>>> GetCharacters(Guid userId)
     {
         var characters =  await service.GetAllByUserIdAsync(userId);
         return Ok(mapper.Map<ICollection<CharacterResponseDto>>(characters));
     }
 
     [HttpDelete("{characterId}")]
-    public async Task<ActionResult> DeleteCharacter(int characterId, int userId)
+    public async Task<ActionResult> DeleteCharacter(int characterId, Guid userId)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
         await service.DeleteAsync(characterId);
@@ -52,7 +52,7 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     }
 
     [HttpPatch("{characterId}/levelup")]
-    public async Task<ActionResult<CharacterResponseDto>> LevelUpCharacter(int characterId, int userId, [FromBody] LevelUpDto dto)
+    public async Task<ActionResult<CharacterResponseDto>> LevelUpCharacter(int characterId, Guid userId, [FromBody] LevelUpDto dto)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
         var chosenSpells = mapper.Map<ICollection<Spell>>(dto.ChosenSpells);
@@ -61,15 +61,15 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     }
 
     [HttpPost("{characterId}/subclass/{subclassId}")]
-    public async Task<ActionResult<CharacterResponseDto>> AddSubclassToCharacter(int characterId, int subclassId, int userId)
+    public async Task<ActionResult<CharacterResponseDto>> AddSubclassToCharacter(int characterId, int subclassId, Guid userId)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
-        var updatedCharacter = await service.ChangeClass(subclassId, characterId);
+        var updatedCharacter = await service.ChangeClassAsync(subclassId, characterId);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 
     [HttpPatch("{characterId}/description")]
-    public async Task<ActionResult<CharacterResponseDto>> EditCharacterDescription(int characterId, int userId, [FromBody] UpdateCharacterRequestDto edited)
+    public async Task<ActionResult<CharacterResponseDto>> EditCharacterDescription(int characterId, Guid userId, [FromBody] UpdateCharacterRequestDto edited)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
         var characterDescription = mapper.Map<CharacterDescription>(edited);
@@ -78,40 +78,40 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     }
 
     [HttpPatch("{characterId}/hitdice/{count}")]
-    public async Task<ActionResult<CharacterResponseDto>> SpendHitDice(int count, int characterId, int userId)
+    public async Task<ActionResult<CharacterResponseDto>> SpendHitDice(int count, int characterId, Guid userId)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
-        var updatedCharacter = await service.SpendHitDice(count, characterId);
+        var updatedCharacter = await service.SpendHitDiceAsync(count, characterId);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 
     [HttpPatch("{characterId}/longrest")]
-    public async Task<ActionResult<CharacterResponseDto>> LongRest(int characterId, int userId)
+    public async Task<ActionResult<CharacterResponseDto>> LongRest(int characterId, Guid userId)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
-        var updatedCharacter = await service.LongRest(characterId);
+        var updatedCharacter = await service.LongRestAsync(characterId);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 
     [HttpPatch("{characterId}/takedamage/{change}")]
     
-    public async Task<ActionResult<CharacterResponseDto>> TakeDamage(int characterId, int userId, int change)
+    public async Task<ActionResult<CharacterResponseDto>> TakeDamage(int characterId, Guid userId, int change)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
-        var updatedCharacter = await service.TakeDamage(characterId, change);
+        var updatedCharacter = await service.TakeDamageAsync(characterId, change);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 
     [HttpPatch("{characterId}/healdamage/{change}")]
-    public async Task<ActionResult<CharacterResponseDto>> HealDamage(int characterId, int userId, int change)
+    public async Task<ActionResult<CharacterResponseDto>> HealDamage(int characterId, Guid userId, int change)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
-        var updatedCharacter = await service.HealDamage(characterId, change);
+        var updatedCharacter = await service.HealDamageAsync(characterId, change);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 
     [HttpPatch("{characterId}/slots/class/{slotName}/change/{change}")]
-    public async Task<ActionResult<CharacterResponseDto>> EditCurrentClassSlot(int characterId, int userId, string slotName, int change)
+    public async Task<ActionResult<CharacterResponseDto>> EditCurrentClassSlot(int characterId, Guid userId, string slotName, int change)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
         var updatedCharacter = await service.EditCurrentClassSlotAsync(slotName, change, characterId);
@@ -119,17 +119,18 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     }
 
     [HttpPatch("{characterId}/slots/spell/{slotLevel}/change/{change}")]
-    public async Task<ActionResult<CharacterResponseDto>> EditCurrentSpellSlot(int characterId, int userId, int slotLevel, int change)
+    public async Task<ActionResult<CharacterResponseDto>> EditCurrentSpellSlot(int characterId, Guid userId, int slotLevel, int change)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
         var updatedCharacter = await service.EditCurrentSpellSlotAsync(slotLevel, change, characterId);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 
-    private async Task EnsureCharacterBelongsToUser(int userId, int characterId)
+    private async Task EnsureCharacterBelongsToUser(Guid userId, int characterId)
     {
-        // TODO after implementing user service
-        await Task.CompletedTask;
+        var character = await service.GetByIdAsync(characterId);
+        if (character.CreatedBy != userId)
+            throw new ValidationException($"Character with id {characterId} does not belong to user with id {userId}"); 
     }
 }
 

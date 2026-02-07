@@ -26,12 +26,12 @@ public static class TestObjectFactory
 
     internal static BackgroundFeature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte...", Background? bg = null, int bgId = 1)
     {
-        return new BackgroundFeature { Name = name, Description = description, Background = bg, BackgroundId = bgId };
+        return new BackgroundFeature { Name = name, Description = description, Background = bg, BackgroundId = bgId, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 
     internal static Item CreateTestItem(string name, string category, int quantity = 1, string description = "")
     {
-        return new Item { Name = name, Description = description, Categories = [category], Quantity = quantity };
+        return new Item { Name = name, Description = description, Categories = [category], Quantity = quantity, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 
     internal static Background CreateTestBackground(string name)
@@ -41,7 +41,9 @@ public static class TestObjectFactory
         {
             Name = name,
             Description = description,
-            StartingCurrency = new() { Gold = 15 }
+            StartingCurrency = new() { Gold = 15 },
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = Guid.NewGuid()
         };
 
         background.StartingItems.Add(CreateTestItem("Holy Symbol", ItemCategory.Utility));
@@ -56,16 +58,15 @@ public static class TestObjectFactory
     internal static Character CreateTestCharacter()
     {
         var str = CreateTestAbility("Strength", "Str");
-        var background = new Background { Name = "Outlander", Description = "You grew up in the wilds, far from civilization", StartingCurrency = new() };
+        var background = new Background { Name = "Outlander", Description = "You grew up in the wilds, far from civilization", StartingCurrency = new(), CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
         var cls = CreateTestClass();
 
         return new Character
         {
             Name = "Arannis",
             Level = 5,
-            TimeCreated = DateTime.UtcNow,
-            Race = new Race { Name = "Elf", Speed = 30 },
-            Subrace = new Subrace { Name = "HighElf", ParentRace = null!, ParentRaceId = -1, Speed = 30 },
+            Race = new Race { Name = "Elf", Speed = 30, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() },
+            Subrace = new Subrace { Name = "HighElf", ParentRace = null!, ParentRaceId = -1, Speed = 30, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() },
             Class = cls,
             ClassId = cls.Id,
             Background = background,
@@ -91,7 +92,9 @@ public static class TestObjectFactory
             SkillProficiencies = [new SkillProficiency() { SkillId = 12, FeatureId = background.Id, HasExpertise = false }],
             Languages = [new() { LanguageId = 1, FeatureId = background.Id }],
             ToolProficiencies = [new() { ToolType = ToolCategory.HerbalismKit, FeatureId = background.Id }],
-            WeaponCategoryProficiencies = [new() { WeaponCategory = WeaponCategory.MartialRanged, FeatureId = background.Id }]
+            WeaponCategoryProficiencies = [new() { WeaponCategory = WeaponCategory.MartialRanged, FeatureId = background.Id }],
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = Guid.NewGuid()
         };
     }
 
@@ -104,7 +107,9 @@ public static class TestObjectFactory
             Name = "Spellcasting",
             Description = "Gain spellcasting abilities.",
             LevelId = classLevelId,
-            ClassId = 1
+            ClassId = 1,
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = Guid.NewGuid()
         };
     }
 
@@ -119,7 +124,9 @@ public static class TestObjectFactory
             ProficiencyBonus = 3,
             ClassSpecificSlotsAtLevel = CreateClassSpecificSlots(),
             SpellSlots = CreateTestSpellSlotsAtLevel(),
-            NewFeatures = [CreateTestClassFeature(10)]
+            NewFeatures = [CreateTestClassFeature(10)],
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = Guid.NewGuid()
         };
         return classLvl;
     }
@@ -131,7 +138,9 @@ public static class TestObjectFactory
             Name = name,
             Description = "Description",
             HitDie = 8,
-            ClassLevels = []
+            ClassLevels = [],
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = Guid.NewGuid()
         };
         return cls;
     }
@@ -142,7 +151,9 @@ public static class TestObjectFactory
         {
             Name = "Sharpshooter",
             Description = "Improve ranged attacks.",
-            Prerequisite = "Dex 13"
+            Prerequisite = "Dex 13",
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = Guid.NewGuid()
         };
     }
 
@@ -153,7 +164,9 @@ public static class TestObjectFactory
         Categories = [ItemCategory.Armor],
         ArmorCategory = ArmorCategory.Light,
         BaseArmorClass = 11,
-        PlusDexMod = true
+        PlusDexMod = true,
+        CreatedAt = DateTime.UtcNow,
+        CreatedBy = Guid.NewGuid()
     };
 
     internal static Weapon CreateTestWeapon() => new()
@@ -167,7 +180,9 @@ public static class TestObjectFactory
         Properties = [WeaponProperty.TwoHanded],
         DamageTypes = [DamageType.Piercing],
         DamageDice = "1d6",
-        Range = 80
+        Range = 80,
+        CreatedAt = DateTime.UtcNow,
+        CreatedBy = Guid.NewGuid()
     };
 
     internal static Inventory CreateTestInventory()
@@ -185,7 +200,9 @@ public static class TestObjectFactory
     {
         Name = "Spoon",
         Description = "A simple metal spoon, useful for eating or mixing potions.",
-        Categories = [ItemCategory.AdventuringGear]
+        Categories = [ItemCategory.AdventuringGear],
+        CreatedAt = DateTime.UtcNow,
+        CreatedBy = Guid.NewGuid()
     };
 
     internal static Tool CreateTestTool() => new()
@@ -195,7 +212,9 @@ public static class TestObjectFactory
         Categories = [ItemCategory.Tools],
         ToolType = ToolCategory.ThievesTools,
         Activities = [],
-        Properties = []
+        Properties = [],
+        CreatedAt = DateTime.UtcNow,
+        CreatedBy = Guid.NewGuid()
     };
 
     internal static Spell CreateTestSpell(string name) => new()
@@ -207,22 +226,24 @@ public static class TestObjectFactory
         CastingTime = CastingTime.Action,
         SpellTargeting = new() { TargetType = SpellTargetType.Creature, Range = SpellRange.Feet, RangeValue = 20 },
         MagicSchool = MagicSchool.Evocation,
+        CreatedAt = DateTime.UtcNow,
+        CreatedBy = Guid.NewGuid()
     };
 
-    internal static Race CreateTestRace(string name) => new() { Name = name, Speed = 30 };
+    internal static Race CreateTestRace(string name) => new() { Name = name, Speed = 30, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
 
     internal static Subrace CreateTestSubrace(string name, Race parentRace, int parentRaceId)
     {
-        return new() { Name = name, Speed = 30, ParentRace = parentRace, ParentRaceId = parentRaceId };
+        return new() { Name = name, Speed = 30, ParentRace = parentRace, ParentRaceId = parentRaceId, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 
     internal static Trait CreateTestTrait(string name, string description, Species fromRace, int raceId)
     {
-        return new() { Name = name, Description = description, FromRace = fromRace, RaceId = raceId };
+        return new() { Name = name, Description = description, FromRace = fromRace, RaceId = raceId, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 
     internal static Skill CreateSkill(string name, int abilityId)
     {
-        return new() { Name = name, AbilityId = abilityId };
+        return new() { Name = name, AbilityId = abilityId, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 }

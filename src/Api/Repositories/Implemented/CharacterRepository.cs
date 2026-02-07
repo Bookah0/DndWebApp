@@ -8,7 +8,7 @@ namespace Api.Repositories.Implemented;
 
 public class CharacterRepository(AppDbContext context) : ICharacterRepository
 {
-    public async Task<Character> GetByIdAsync(int id) => 
+    public async Task<Character> GetByIdAsync(int id) =>
         await context.Characters.FindAsync(id)
         ?? throw new Exception($"Character with id {id} could not be found");
 
@@ -48,6 +48,32 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Character with id {id} could not be found");
 
+    public async Task<Character> GetWithClassesAsync(int id) =>
+        await context.Characters
+            .Include(c => c.Class)
+            .Include(c => c.SubClass)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Character with id {id} could not be found");
+
+    public async Task<Character> GetWithFeaturesAsync(int id) =>
+        await context.Characters
+            .Include(c => c.Class)
+                .ThenInclude(c => c.ClassLevels)
+                    .ThenInclude(l => l.NewFeatures)
+            .Include(c => c.SubClass)
+                .ThenInclude(s => s!.ClassLevels)
+                    .ThenInclude(l => l.NewFeatures)
+            .Include(c => c.Race)
+                    .ThenInclude(r => r.Traits)
+            .Include(c => c.Subrace)
+                .ThenInclude(s => s!.Traits)
+            .Include(c => c.Background)
+                .ThenInclude(b => b!.Features)
+            .Include(c => c.Feats)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Character with id {id} could not be found");
+
+
     public async Task<Character> GetWithAllDataAsync(int id) =>
         await context.Characters
             .Include(f => f.Class)
@@ -69,16 +95,15 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
             .Include(c => c.ArmorProficiencies)
             .Include(c => c.ToolProficiencies)
             .Include(c => c.Languages)
-            .Include(f => f.OtherRaces)
             .Include(f => f.ReadySpells)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Character with id {id} could not be found");
 
     public async Task<ICollection<Character>> GetAllAsync() => await context.Characters.ToListAsync();
-    
+
     public async Task<Character> CreateAsync(Character entity)
     {
-        await context.Characters.AddAsync(entity!);
+        await context.Characters.AddAsync(entity);
         await context.SaveChangesAsync();
         return entity;
     }
@@ -88,9 +113,10 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
         context.Characters.Remove(entity);
         await context.SaveChangesAsync();
     }
-    public async Task UpdateAsync(Character updatedEntity)
+    public async Task<Character> UpdateAsync(Character updatedEntity)
     {
         context.Characters.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

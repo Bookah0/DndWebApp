@@ -74,9 +74,10 @@ public class FeatRepository(AppDbContext context) : IFeatureRepository<Feat>
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Feat updatedEntity)
+    public async Task<Feat> UpdateAsync(Feat updatedEntity)
     {
         context.Feats.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

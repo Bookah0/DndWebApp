@@ -37,10 +37,11 @@ public class SpellRepository(AppDbContext context) : ISpellRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Spell updatedEntity)
+    public async Task<Spell> UpdateAsync(Spell updatedEntity)
     {
         context.Spells.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
     
     public async Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter)

@@ -31,9 +31,10 @@ public class AbilityValueRepository(AppDbContext context) : IAbilityValueReposit
         context.AbilityValues.Remove(entity);
         await context.SaveChangesAsync();
     }
-    public async Task UpdateAsync(AbilityValue updatedEntity)
+    public async Task<AbilityValue> UpdateAsync(AbilityValue updatedEntity)
     {
         context.AbilityValues.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

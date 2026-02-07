@@ -33,7 +33,7 @@ public class SubclassLevelController(ISubclassService service, IClassService cla
     }
 
     [HttpPost]
-    public async Task<ActionResult<ClassLevelResponseDto>> CreateClassLevel(int subclassId, int classId, [FromBody] ClassLevelDto dto)
+    public async Task<ActionResult<ClassLevelResponseDto>> CreateClassLevel(int subclassId, int classId, [FromBody] CreateClassLevelRequestDto dto)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
         var classLevel = await levelService.CreateAsync(dto);
@@ -41,7 +41,7 @@ public class SubclassLevelController(ISubclassService service, IClassService cla
     }
 
     [HttpPatch("{levelId}")]
-    public async Task<ActionResult<ClassLevelResponseDto>> UpdateClassLevel(int subclassId, int levelId, int classId, [FromBody] ClassLevelDto dto)
+    public async Task<ActionResult<ClassLevelResponseDto>> UpdateClassLevel(int subclassId, int levelId, int classId, [FromBody] UpdateClassLevelRequestDto dto)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
         await EnsureLevelBelongsToSubclass(subclassId, levelId);

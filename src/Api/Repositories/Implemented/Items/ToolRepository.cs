@@ -39,9 +39,10 @@ public class ToolRepository(AppDbContext context) : IToolRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Tool updatedEntity)
+    public async Task<Tool> UpdateAsync(Tool updatedEntity)
     {
         context.Tools.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

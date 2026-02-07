@@ -25,6 +25,15 @@ public partial class CharacterService(
     ICurrentUserService currentUserService,
     ILogger<CharacterService> logger) : ICharacterService
 {
+    public async Task<ICollection<Character>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Character> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+    public async Task<ICollection<Character>> GetAllByUserIdAsync(Guid userId)
+    {
+        var allCharacters = await repo.GetAllAsync();
+        return [.. allCharacters.Where(c => c.CreatedBy == userId)];
+    }
+    public async Task<ICollection<Character>> GetAllByCurrentUserAsync() => await GetAllByUserIdAsync(currentUserService.GetCurrentUserId());
+
     public async Task DeleteAsync(int id)
     {
         var character = await repo.GetByIdAsync(id);
@@ -32,12 +41,6 @@ public partial class CharacterService(
         await repo.DeleteAsync(character);
         logger.LogInformation("Successfully deleted character, Name: {CharacterName}, ID: {CharacterId}", character.Name, id);
     }
-
-    public async Task<ICollection<Character>> GetAllAsync() => await repo.GetAllAsync();
-    public async Task<Character> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
-    
-    // TODO implement when user repository is ready
-    public async Task<ICollection<Character>> GetAllByUserIdAsync(int userId) => await repo.GetAllAsync();
 
     public async Task<Character> LevelUpAsync(LevelUpDto dto, int characterId)
     {
@@ -58,26 +61,60 @@ public partial class CharacterService(
 
         foreach (var feature in latestLevel.NewFeatures)
         {
-            await ApplyFeature(feature, characterId);
+            await ApplyFeatureAsync(feature, character);
         }
 
         logger.LogInformation("Successfully leveled up character, Name: {CharacterName}, ID: {CharacterId}, NewLevel: {NewLevel}", character.Name, characterId, newLvl);
         return character;
     }
 
-    public async Task<Character> AddSubclassAsync(int subclassId, int characterId)
+    public async Task<Character> ChangeSubclassAsync(int newSubclassId, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId);
-        var subclass = await subclassRepo.GetByIdAsync(subclassId);
 
+        if (character.SubClassId is not null && character.SubClassId == newSubclassId)
+            throw new ValidationException($"Character already has a subclass with id {character.SubClassId}");
+
+        if(character.SubClassId is not null)
+        {
+            var subclass = await subclassRepo.GetWithClassLevelFeaturesAsync((int)character.SubClassId);
+
+            foreach (var feature in subclass.ClassLevels.SelectMany(cl => cl.NewFeatures))
+            {
+                await RemoveFeatureAsync(feature, character);
+            }
+        }
+        
+        var newSubclass = await subclassRepo.GetWithClassLevelFeaturesAsync(newSubclassId);
+
+        logger.LogInformation("Changing subclass, CharacterName: {CharacterName}, CharacterId: {CharacterId}, SubclassId: {SubclassId}", character.Name, characterId, newSubclassId);
+        character.SubClassId = newSubclassId;
+        character.SubClass = newSubclass;
+
+        foreach (var feature in newSubclass.ClassLevels.SelectMany(cl => cl.NewFeatures))
+        {
+            await ApplyFeatureAsync(feature, character);
+        }
+
+
+        await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully changed subclass, CharacterName: {CharacterName}, CharacterId: {CharacterId}, SubclassId: {SubclassId}", character.Name, characterId, newSubclassId);
+        return character;
+    }
+
+    public async Task<Character> ChangeClassAsync(int characterId, int newClassId)
+    {
+        var character = await repo.GetWithClassesAsync(characterId);
+        var newClass = await classRepo.GetByIdAsync(newClassId);
+        
         if (character.SubClassId is not null)
             throw new ValidationException($"Character already has a subclass with id {character.SubClassId}");
 
-        logger.LogInformation("Adding subclass, CharacterName: {CharacterName}, CharacterId: {CharacterId}, SubclassId: {SubclassId}", character.Name, characterId, subclassId);
-        character.SubClassId = subclassId;
-        character.SubClass = subclass;
-        await repo.UpdateAsync(character);
-        logger.LogInformation("Successfully added subclass, CharacterName: {CharacterName}, CharacterId: {CharacterId}, SubclassId: {SubclassId}", character.Name, characterId, subclassId);
+        logger.LogInformation("Changing class, CharacterName: {CharacterName}, CharacterId: {CharacterId}, NewClassId: {NewClassId}", character.Name, characterId, newClassId);
+        character.ClassId = newClassId;
+        character.Class = newClass;
+        character = await repo.UpdateAsync(character);
+        logger.LogInformation("Successfully changed class, CharacterName: {CharacterName}, CharacterId: {CharacterId}, NewClassId: {NewClassId}", character.Name, characterId, newClassId);
         return character;
     }
 
@@ -86,12 +123,12 @@ public partial class CharacterService(
         var character = await repo.GetByIdAsync(characterId);
         logger.LogInformation("Updating character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
         character.CharacterDescription = edited;
-        await repo.UpdateAsync(character);
+        character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully updated character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
         return character;
     }
 
-    public async Task<Character> SpendHitDice(int nDice, int characterId)
+    public async Task<Character> SpendHitDiceAsync(int nDice, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId);
 
@@ -102,14 +139,13 @@ public partial class CharacterService(
             throw new ValidationException($"Character has {character.CombatStats.CurrentHitDice} hit dice to spend, cant spend {nDice}");
         
         logger.LogInformation("Spending hit dice, Name: {CharacterName}, ID: {CharacterId}, Dice: {Dice}", character.Name, characterId, nDice);
-
         character.CombatStats.CurrentHitDice -= nDice;
-        await repo.UpdateAsync(character);
+        character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully spent hit dice, Name: {CharacterName}, ID: {CharacterId}, Dice: {Dice}", character.Name, characterId, nDice);
         return character;
     }
 
-    public async Task<Character> LongRest(int characterId)
+    public async Task<Character> LongRestAsync(int characterId)
     {
         var character = await repo.GetByIdAsync(characterId);
         var latestLevel = await levelRepo.GetWithFeaturesByClassIdAsync(character.ClassId, character.Level);
@@ -121,12 +157,12 @@ public partial class CharacterService(
         character.CurrentClassSlots = latestLevel.ClassSpecificSlotsAtLevel;
         character.CurrentSpellSlots = latestLevel.SpellSlots;
 
-        await repo.UpdateAsync(character);
+        character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully completed long rest, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
         return character;
     }
 
-    public async Task<Character> TakeDamage(int characterId, int change)
+    public async Task<Character> TakeDamageAsync(int characterId, int change)
     {
         if(change < 0)
             throw new ValidationException("Damage taken must be a positive value.");
@@ -140,12 +176,12 @@ public partial class CharacterService(
             character.CombatStats.CurrentHP -= character.CombatStats.TempHP;
             character.CombatStats.TempHP = 0;
         }
-        await repo.UpdateAsync(character);
+        character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully applied damage, Name: {CharacterName}, ID: {CharacterId}, Amount: {Amount}", character.Name, characterId, change);
         return character;
     }
 
-    public async Task<Character> HealDamage(int characterId, int change)
+    public async Task<Character> HealDamageAsync(int characterId, int change)
     {
         if(change < 0)
             throw new ValidationException("Healing amount must be a positive value.");
@@ -155,7 +191,7 @@ public partial class CharacterService(
         character.CombatStats.CurrentHP += change;
         character.CombatStats.CurrentHP = Math.Min(character.CombatStats.CurrentHP, character.CombatStats.MaxHP);
 
-        await repo.UpdateAsync(character);
+        character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully healed damage, Name: {CharacterName}, ID: {CharacterId}, Amount: {Amount}", character.Name, characterId, change);
         return character;
     }
@@ -172,7 +208,7 @@ public partial class CharacterService(
 
         logger.LogInformation("Updating class slot, Name: {CharacterName}, ID: {CharacterId}, Slot: {SlotName}, Change: {Change}", character.Name, characterId, slotName, change);
         slot.Quantity += change;
-        await repo.UpdateAsync(character);
+        character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully updated class slot, Name: {CharacterName}, ID: {CharacterId}, Slot: {SlotName}, Change: {Change}", character.Name, characterId, slotName, change);
         return character;
     }
@@ -186,7 +222,7 @@ public partial class CharacterService(
 
         logger.LogInformation("Updating spell slot, Name: {CharacterName}, ID: {CharacterId}, SlotLevel: {SlotLevel}, Change: {Change}", character.Name, characterId, slotLevel, change);
         character.CurrentSpellSlots[slotLevel - 1] += change;
-        await repo.UpdateAsync(character);
+        character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully updated spell slot, Name: {CharacterName}, ID: {CharacterId}, SlotLevel: {SlotLevel}, Change: {Change}", character.Name, characterId, slotLevel, change);
         return character;
     }

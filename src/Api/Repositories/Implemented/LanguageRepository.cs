@@ -29,10 +29,11 @@ public class LanguageRepository(AppDbContext context) : ILanguageRepository
         context.Languages.Remove(entity);
         await context.SaveChangesAsync();
     }
-    public async Task UpdateAsync(Language updatedEntity)
+    public async Task<Language> UpdateAsync(Language updatedEntity)
     {
         context.Languages.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 
 }

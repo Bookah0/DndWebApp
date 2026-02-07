@@ -42,9 +42,10 @@ public class BackgroundRepository(AppDbContext context) : IBackgroundRepository
         context.Backgrounds.Remove(entity);
         await context.SaveChangesAsync();
     }
-    public async Task UpdateAsync(Background updatedEntity)
+    public async Task<Background> UpdateAsync(Background updatedEntity)
     {
         context.Backgrounds.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

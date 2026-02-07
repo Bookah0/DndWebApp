@@ -60,10 +60,11 @@ public class ClassFeatureRepository(AppDbContext context) : IFeatureRepository<C
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(ClassFeature updatedEntity)
+    public async Task<ClassFeature> UpdateAsync(ClassFeature updatedEntity)
     {
         context.ClassFeatures.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 
 }

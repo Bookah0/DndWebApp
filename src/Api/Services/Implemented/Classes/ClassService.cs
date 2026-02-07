@@ -135,7 +135,7 @@ public partial class ClassService(
         return clss;
     }
 
-    public void AddStartingEquipmentChoice(int id, int choiceId) { return null!; }
+    public async Task<BaseClass> AddStartingEquipmentChoice(int id, int choiceId) { return null!; }
     public async Task<BaseClass> RemoveStartingEquipmentChoice(int id, int choiceId) { return null!; }
 
     public ICollection<BaseClass> SortBy(ICollection<BaseClass> classes, bool descending = false)

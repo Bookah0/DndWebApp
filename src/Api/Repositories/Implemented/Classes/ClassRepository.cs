@@ -71,9 +71,10 @@ public class ClassRepository(AppDbContext context) : IClassRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(BaseClass updatedEntity)
+    public async Task<BaseClass> UpdateAsync(BaseClass updatedEntity)
     {
         context.Classes.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

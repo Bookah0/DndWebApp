@@ -9,4 +9,6 @@ public interface ICharacterRepository : IRepository<Character>
     Task<Character> GetWithAllDataAsync(int id);
     Task<Character> GetWithCombatStatsAsync(int characterId);
     Task<Character> GetWithCharacterDescriptionAsync(int characterId);
+    Task<Character> GetWithClassesAsync(int id);
+    Task<Character> GetWithFeaturesAsync(int id);
 }

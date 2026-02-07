@@ -2,6 +2,8 @@ using Api.Middlewares.ExceptionHandling;
 
 namespace Api.Services.Util;
 
+// Collection methods for ICollection<T> that are not provided by default, such as AddRange, RemoveMany, etc.
+// Mostly to prevent creating unnessecary lists and casting
 public static class CollectionUtil
 {
     public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
@@ -20,6 +22,18 @@ public static class CollectionUtil
 
             if(!removed)
                 throw new ValidationException("Item to remove not found in collection.");
+        }
+    }
+
+    public static void RemoveFirst<T>(this ICollection<T> collection, Func<T, bool> predicate)
+    {
+        foreach (var item in collection)
+        {
+            if (predicate(item))
+            {
+                collection.Remove(item);
+                return;
+            }
         }
     }
 

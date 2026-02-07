@@ -37,10 +37,11 @@ public class ItemRepository(AppDbContext context) : IItemRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Item updatedEntity)
+    public async Task<Item> UpdateAsync(Item updatedEntity)
     {
         context.Items.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }
 

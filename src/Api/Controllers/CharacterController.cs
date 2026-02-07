@@ -64,7 +64,7 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     public async Task<ActionResult<CharacterResponseDto>> AddSubclassToCharacter(int characterId, int subclassId, int userId)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
-        var updatedCharacter = await service.AddSubclassAsync(subclassId, characterId);
+        var updatedCharacter = await service.ChangeClass(subclassId, characterId);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 

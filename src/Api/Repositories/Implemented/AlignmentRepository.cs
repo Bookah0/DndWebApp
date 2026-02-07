@@ -24,10 +24,11 @@ public class AlignmentRepository(AppDbContext context) : IAlignmentRepository
         return entity;
     }
 
-    public async Task UpdateAsync(Alignment updatedEntity)
+    public async Task<Alignment> UpdateAsync(Alignment updatedEntity)
     {
         context.Alignments.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 
     public async Task DeleteAsync(Alignment entity)

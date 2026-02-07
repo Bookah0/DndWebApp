@@ -40,9 +40,10 @@ public class SkillRepository(AppDbContext context) : ISkillRepository
         context.Skills.Remove(entity);
         await context.SaveChangesAsync();
     }
-    public async Task UpdateAsync(Skill updatedEntity)
+    public async Task<Skill> UpdateAsync(Skill updatedEntity)
     {
         context.Skills.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

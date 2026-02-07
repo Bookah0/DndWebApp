@@ -28,7 +28,7 @@ public class ClassLevelController(IClassService service, IClassLevelService leve
     }
 
     [HttpPost]
-    public async Task<ActionResult<ClassLevelResponseDto>> CreateClassLevel(int classId, [FromBody] ClassLevelDto dto)
+    public async Task<ActionResult<ClassLevelResponseDto>> CreateClassLevel(int classId, [FromBody] CreateClassLevelRequestDto dto)
     {
         if(dto.ClassId != classId)
             throw new ValidationException($"Class id in dto {dto.ClassId} does not match class id in route {classId}");
@@ -38,7 +38,7 @@ public class ClassLevelController(IClassService service, IClassLevelService leve
     }
 
     [HttpPatch("{levelId}")]
-    public async Task<ActionResult<ClassLevelResponseDto>> UpdateClassLevel(int classId, int levelId, [FromBody] ClassLevelDto dto)
+    public async Task<ActionResult<ClassLevelResponseDto>> UpdateClassLevel(int classId, int levelId, [FromBody] UpdateClassLevelRequestDto dto)
     {
         await EnsureLevelBelongsToClass(classId, levelId);
         var updatedLevel = await levelService.UpdateAsync(levelId, dto);
@@ -51,6 +51,38 @@ public class ClassLevelController(IClassService service, IClassLevelService leve
         await EnsureLevelBelongsToClass(classId, levelId);
         await levelService.DeleteAsync(levelId);
         return Ok();
+    }
+
+    [HttpPost("{levelId}/features/{featureId}")]
+    public async Task<ActionResult<ClassLevelResponseDto>> AddFeatureToClassLevel(int classId, int featureId, int levelId)
+    {
+        await EnsureLevelBelongsToClass(classId, levelId);
+        var updatedLevel = await levelService.AddFeatureAsync(levelId, featureId);
+        return Ok(mapper.Map<ClassLevelResponseDto>(updatedLevel));
+    }
+
+    [HttpDelete("{levelId}/features/{featureId}")]
+    public async Task<ActionResult<ClassLevelResponseDto>> RemoveFeatureFromClassLevel(int classId, int featureId, int levelId)
+    {
+        await EnsureLevelBelongsToClass(classId, levelId);
+        var updatedLevel = await levelService.RemoveFeatureAsync(levelId, featureId);
+        return Ok(mapper.Map<ClassLevelResponseDto>(updatedLevel));
+    }
+    
+    [HttpPost("{levelId}/class-slot")]
+    public async Task<ActionResult<ClassLevelResponseDto>> AddClassSlotToLevel(int classId, int levelId, [FromBody] ClassSlotRequestDto slot)
+    {
+        await EnsureLevelBelongsToClass(classId, levelId);
+        var updatedLevel = await levelService.AddClassSlotAsync(levelId, slot);
+        return Ok(mapper.Map<ClassLevelResponseDto>(updatedLevel));
+    }
+
+    [HttpDelete("{levelId}/class-slots/{slotName}")]
+    public async Task<ActionResult<ClassLevelResponseDto>> RemoveClassSlotFromLevel(int classId, string slotName, int levelId)
+    {
+        await EnsureLevelBelongsToClass(classId, levelId);
+        var updatedLevel = await levelService.RemoveClassSlotByNameAsync(levelId, slotName);
+        return Ok(mapper.Map<ClassLevelResponseDto>(updatedLevel));
     }
 
     private async Task EnsureLevelBelongsToClass(int classId, int levelId)

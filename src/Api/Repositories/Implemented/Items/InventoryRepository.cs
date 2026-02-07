@@ -51,9 +51,10 @@ public class InventoryRepository(AppDbContext context) : IInventoryRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Inventory updatedEntity)
+    public async Task<Inventory> UpdateAsync(Inventory updatedEntity)
     {
         context.Inventories.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

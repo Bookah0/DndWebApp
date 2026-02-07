@@ -44,9 +44,10 @@ public class SubraceRepository(AppDbContext context) : ISubraceRepository
         context.Subraces.Remove(entity);
         await context.SaveChangesAsync();
     }
-    public async Task UpdateAsync(Subrace updatedEntity)
+    public async Task<Subrace> UpdateAsync(Subrace updatedEntity)
     {
         context.Subraces.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

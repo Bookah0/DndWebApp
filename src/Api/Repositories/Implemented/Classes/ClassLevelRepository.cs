@@ -49,10 +49,11 @@ public class ClassLevelRepository(AppDbContext context) : IClassLevelRepository
         return entity;
     }
 
-    public async Task UpdateAsync(ClassLevel updatedEntity)
+    public async Task<ClassLevel> UpdateAsync(ClassLevel updatedEntity)
     {
         context.ClassLevels.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 
     public async Task DeleteAsync(ClassLevel entity)

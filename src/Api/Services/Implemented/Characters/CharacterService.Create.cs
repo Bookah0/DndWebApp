@@ -6,6 +6,7 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters.Constants;
 using Api.Models.Items.Constants;
 using Api.Models.DTOs.RequestDtos.Character;
+using Api.Services.Util;
 
 namespace Api.Services.Implemented;
 
@@ -85,11 +86,11 @@ public partial class CharacterService : ICharacterService
             ProficiencyBonus = 1 + (int)Math.Ceiling((double)dto.Level / 4),
         };
 
-        var allFeatures = await GetAllFeaturesAsync(dto, race, subrace, background, clss, subclass);
+        var allFeatures = await GetAllFeaturesAsync(character, race, subrace, background, clss, subclass);
 
         foreach (var feature in allFeatures)
         {
-            await ApplyFeature(feature, character);
+            await ApplyFeatureAsync(feature, character);
         }
 
         var createdCharacter = await repo.CreateAsync(character);
@@ -150,7 +151,7 @@ public partial class CharacterService : ICharacterService
         return abilityScores;
     }
 
-    public async Task<List<Feature>> GetAllFeaturesAsync(CreateCharacterRequestDto dto, Race race, Subrace? subrace, Background background, BaseClass clss, Subclass? subclass)
+    public async Task<List<Feature>> GetAllFeaturesAsync(Character character, Race race, Subrace? subrace, Background background, BaseClass clss, Subclass? subclass)
     {
         List<Feature> allFeatures = [.. race.Traits, .. background.Features];
 
@@ -159,12 +160,12 @@ public partial class CharacterService : ICharacterService
             allFeatures.AddRange(subrace.Traits);
         }
 
-        for (int l = 1; l <= dto.Level; l++)
+        for (int l = 1; l <= character.Level; l++)
         {
             var classLevel = await levelRepo.GetWithFeaturesByClassIdAsync(clss.Id, l);
             allFeatures.AddRange(classLevel.NewFeatures);
 
-            if (dto.SubClassId is not null && subclass is not null)
+            if (character.SubClassId is not null && subclass is not null)
             {
                 var subclassLevel = await levelRepo.GetWithFeaturesByClassIdAsync(subclass.Id, l);
                 allFeatures.AddRange(subclassLevel.NewFeatures);
@@ -174,17 +175,14 @@ public partial class CharacterService : ICharacterService
         return allFeatures;
     }
 
-    public async Task ApplyFeature(Feature feature, int characterId)
+    public async Task ApplyFeatureAsync(Feature feature, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId);
-        await ApplyFeature(feature, character);
+        await ApplyFeatureAsync(feature, character);
     }
 
-    public async Task ApplyFeature(Feature feature, Character character)
+    public async Task ApplyFeatureAsync(Feature feature, Character character)
     {
-        var abilityDict = await GetAllAbilitiesAsDictionaryAsync();
-        var languageDict = await GetAllLanguagesAsDictionaryAsync();
-
         foreach (var increase in feature.AbilityIncreases)
         {
             character.AbilityScores.First(i => i.AbilityId == increase.AbilityId).Value += increase.Value;
@@ -238,6 +236,61 @@ public partial class CharacterService : ICharacterService
         foreach (var language in feature.Languages)
         {
             character.Languages.Add(new LanguageProficiency { LanguageId = language.Id, FeatureId = feature.Id });
+        }
+    }
+
+    public async Task RemoveFeatureAsync(Feature feature, Character character)
+    {
+        character.ReadySpells.RemoveMany(feature.SpellsGained);
+        
+        foreach (var increase in feature.AbilityIncreases)
+        {
+            character.AbilityScores.First(i => i.AbilityId == increase.AbilityId).Value -= increase.Value;
+        }
+
+        foreach (var resistance in feature.DamageResistanceGained)
+        {
+            character.DamageAffinities.RemoveFirst(da => da.DamageType == resistance && da.AffinityType == AffinityType.Resistant && da.FeatureId == feature.Id);
+        }
+
+        foreach (var immunity in feature.DamageImmunityGained)
+        {
+            character.DamageAffinities.RemoveFirst(da => da.DamageType == immunity && da.AffinityType == AffinityType.Immune && da.FeatureId == feature.Id);
+        }
+
+        foreach (var weakness in feature.DamageWeaknessGained)
+        {
+            character.DamageAffinities.RemoveFirst(da => da.DamageType == weakness && da.AffinityType == AffinityType.Weakness && da.FeatureId == feature.Id);
+        }
+
+        foreach (var category in feature.WeaponCategoryProficiencies)
+        {
+            character.WeaponCategoryProficiencies.RemoveFirst(wcp => wcp.WeaponCategory == category && wcp.FeatureId == feature.Id);
+        }
+
+        foreach (var type in feature.WeaponTypeProficiencies)
+        {
+            character.WeaponTypeProficiencies.RemoveFirst(wtp => wtp.WeaponType == type && wtp.FeatureId == feature.Id);
+        }
+
+        foreach (var type in feature.ArmorProficiencies)
+        {
+            character.ArmorProficiencies.RemoveFirst(ap => ap.ArmorType == type && ap.FeatureId == feature.Id);
+        }
+
+        foreach (var type in feature.ToolProficiencies)
+        {
+            character.ToolProficiencies.RemoveFirst(tp => tp.ToolType == type && tp.FeatureId == feature.Id);
+        }
+
+        foreach (var ability in feature.SavingThrowProficiencies)
+        {
+            character.SavingThrows.RemoveFirst(st => st.AbilityId == ability.Id && st.FeatureId == feature.Id);
+        }
+
+        foreach (var language in feature.Languages)
+        {
+            character.Languages.RemoveFirst(lp => lp.LanguageId == language.Id && lp.FeatureId == feature.Id);
         }
     }
 

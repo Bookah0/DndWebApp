@@ -60,9 +60,10 @@ public class BackgroundFeatureRepository(AppDbContext context) : IFeatureReposit
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(BackgroundFeature updatedEntity)
+    public async Task<BackgroundFeature> UpdateAsync(BackgroundFeature updatedEntity)
     {
         context.BackgroundFeatures.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

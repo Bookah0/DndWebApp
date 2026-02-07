@@ -29,9 +29,10 @@ public class EfRepository<T>(AppDbContext context) : IRepository<T> where T : cl
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(T updatedEntity)
+    public async Task<T> UpdateAsync(T updatedEntity)
     {
         dbSet.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }   

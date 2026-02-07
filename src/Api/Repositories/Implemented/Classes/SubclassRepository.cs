@@ -41,9 +41,10 @@ public class SubclassRepository(AppDbContext context) : ISubclassRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Subclass updatedEntity)
+    public async Task<Subclass> UpdateAsync(Subclass updatedEntity)
     {
         context.Subclasses.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

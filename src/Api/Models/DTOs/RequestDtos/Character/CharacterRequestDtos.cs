@@ -11,7 +11,6 @@ public class CreateCharacterRequestDto
     public string? PlayerName { get; set; }
     public int RaceId { get; set; }
     public int? SubraceId { get; set; }
-    public ICollection<int> OtherRaceIds { get; set; } = [];
     public required int ClassId { get; set; }
     public int? SubClassId { get; set; }
     public required int BackgroundId { get; set; }
@@ -25,7 +24,6 @@ public class UpdateCharacterRequestDto
     public int? Experience { get; set; }
     public string? PlayerName { get; set; }
     public CharacterDescriptionRequestDto? CharacterDescription { get; set; }
-    public ICollection<int> ReadySpellIds { get; set; } = []; // TODO Changing ready spells should maybe be moved a new service method
     public bool IsPublic { get; set; }
     public bool CloningAllowed { get; set; }
 }

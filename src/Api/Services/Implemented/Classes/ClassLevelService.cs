@@ -1,9 +1,11 @@
+using System.Formats.Asn1;
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
+using Api.Services.Interfaces.Features;
 using static Api.Services.Util.SortUtil;
 namespace Api.Services.Implemented.Classes;
 
@@ -15,38 +17,30 @@ public partial class ClassLevelService(
     ICurrentUserService currentUserService,
     ILogger<ClassService> logger) : IClassLevelService
 {
-    public async Task<ClassLevel> CreateAsync(ClassLevelDto dto)
+    public async Task<ClassLevel> GetByIdAsync(int id) => await levelRepo.GetByIdAsync(id);
+
+    public async Task<ClassLevel> CreateAsync(CreateClassLevelRequestDto dto)
     {
-        Class clss = dto.IsSubclassLevel 
-            ?  await classRepo.GetByIdAsync(dto.ClassId)
+        Class clss = dto.IsSubclassLevel
+            ? await classRepo.GetByIdAsync(dto.ClassId)
             : await subclassRepo.GetByIdAsync(dto.ClassId);
-        
+
         logger.LogInformation("Creating class level, Level: {ClassLevel}, ClassId: {ClassId}", dto.Level, dto.ClassId);
 
         ClassLevel level = new()
         {
             Level = dto.Level,
-            ClassId = dto.ClassId,
-            ProficiencyBonus = dto.ProficiencyBonus,
             Class = clss,
-            SpellsKnown = dto.SpellsKnown,
-            CantripsKnown = dto.CantripsKnown,
-            SpellSlots = dto.SpellSlotsAtLevel,
+            ClassId = dto.ClassId,
+            ProficiencyBonus = dto.ProficiencyBonus ?? CalculateProficiencyBonus(dto.Level),
+            SpellsKnown = dto.SpellsKnown ?? 0,
+            CantripsKnown = dto.CantripsKnown ?? 0,
+            SpellSlots = dto.SpellSlots ?? [],
+            NewFeatures = [],
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
         };
-
-        foreach (var featureId in dto.NewFeatureIds)
-        {
-            var feature = await featureRepo.GetByIdAsync(featureId);
-            level.NewFeatures.Add(feature);
-        }
-
-        foreach (var slot in dto.ClassSpecificSlotsAtLevel)
-        {
-            level.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot { Name = slot.Name, Quantity = slot.Quantity });
-        }
 
         clss.ClassLevels.Add(level);
         level = await levelRepo.CreateAsync(level);
@@ -54,40 +48,26 @@ public partial class ClassLevelService(
         return level;
     }
 
-    public async Task<ClassLevel> UpdateAsync(int id, ClassLevelDto dto)
+    private static int CalculateProficiencyBonus(int level) => 1 + (level / 4);
+
+    public async Task<ClassLevel> UpdateAsync(int id, UpdateClassLevelRequestDto dto)
     {
-        var level = await levelRepo.GetByIdAsync(id) ;
+        var level = await levelRepo.GetByIdAsync(id);
 
         logger.LogInformation("Updating class level, Level: {ClassLevel}, ClassId: {ClassId}, ID: {ClassLevelId}", level.Level, level.ClassId, id);
 
-        level.Level = dto.Level;
-        level.ClassId = dto.ClassId;
-        level.ProficiencyBonus = dto.ProficiencyBonus;
+        level.Level = dto.Level ?? level.Level;
+        level.ProficiencyBonus = dto.ProficiencyBonus ?? level.ProficiencyBonus;
 
-        if (level.ClassId != dto.ClassId)
+        if (dto.NewClassId is not null && level.ClassId != dto.NewClassId)
         {
-            Class? newClass;
+            if (dto.NewClassIsSubclass == null)
+                throw new ValidationException("NewClassIsSubclass must be provided when changing class of a class level");
 
-            if (!dto.IsSubclassLevel)
-            {
-                newClass = await classRepo.GetByIdAsync(dto.ClassId);
-                level.Class = newClass;
-                newClass.ClassLevels.Add(level);
-                await classRepo.UpdateAsync((BaseClass)newClass);
-            }
-            else
-            {
-                newClass = await subclassRepo.GetByIdAsync(dto.ClassId);
-                level.Class = newClass;
-                newClass.ClassLevels.Add(level);
-                await subclassRepo.UpdateAsync((Subclass)newClass);
-            }
-        }
-
-        level.ClassSpecificSlotsAtLevel.Clear();
-        foreach (var slot in dto.ClassSpecificSlotsAtLevel)
-        {
-            level.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot { Name = slot.Name, Quantity = slot.Quantity });
+            level.Class = dto.NewClassIsSubclass == true
+                ? await subclassRepo.GetByIdAsync(dto.NewClassId.Value)
+                : await classRepo.GetByIdAsync(dto.NewClassId.Value);
+            level.Class.ClassLevels.Add(level);
         }
 
         await levelRepo.UpdateAsync(level);
@@ -104,10 +84,80 @@ public partial class ClassLevelService(
         logger.LogInformation("Successfully deleted class level, Level: {ClassLevel}, ID: {ClassLevelId}", level.Level, id);
     }
 
-    public async Task<ClassLevel> GetByIdAsync(int id) => await levelRepo.GetByIdAsync(id);
-
     public ICollection<ClassLevel> SortByLevel(ICollection<ClassLevel> levels, bool descending = false)
     {
         return OrderByMany(levels, [(l => l.Level)], descending);
+    }
+
+    public async Task<ClassLevel> AddFeatureAsync(int levelId, int featureId)
+    {
+        var level = await levelRepo.GetByIdAsync(levelId);
+        var feature = await featureRepo.GetByIdAsync(featureId);
+
+        logger.LogInformation("Adding feature to class level, FeatureId: {FeatureId}, ClassLevelId: {ClassLevelId}", featureId, levelId);
+        level.NewFeatures.Add(feature);
+        var updatedLevel = await levelRepo.UpdateAsync(level);
+        logger.LogInformation("Successfully added feature to class level, FeatureId: {FeatureId}, ClassLevelId: {ClassLevelId}", featureId, levelId);
+        return updatedLevel;
+    }
+
+    public async Task<ClassLevel> AddFeatureAsync(ClassLevel level, ClassFeature feature)
+    {
+        logger.LogInformation("Adding feature to class level, FeatureId: {FeatureId}, ClassLevelId: {ClassLevelId}", feature.Id, level.Id);
+        level.NewFeatures.Add(feature);
+        var updatedLevel = await levelRepo.UpdateAsync(level);
+        logger.LogInformation("Successfully added feature to class level, FeatureId: {FeatureId}, ClassLevelId: {ClassLevelId}", feature.Id, level.Id);
+        return updatedLevel;
+    }
+
+    public async Task<ClassLevel> RemoveFeatureAsync(int levelId, int featureId)
+    {
+        var level = await levelRepo.GetByIdAsync(levelId);
+        var feature = level.NewFeatures.FirstOrDefault(f => f.Id == featureId)
+            ?? throw new ValidationException($"Feature with id {featureId} is not a new feature of class level with id {levelId}");
+
+        logger.LogInformation("Removing feature from class level, FeatureId: {FeatureId}, ClassLevelId: {ClassLevelId}", featureId, levelId);
+        level.NewFeatures.Remove(feature);
+        var updatedLevel = await levelRepo.UpdateAsync(level);
+        logger.LogInformation("Successfully removed feature from class level, FeatureId: {FeatureId}, ClassLevelId: {ClassLevelId}", featureId, levelId);
+        return updatedLevel;
+    }
+
+    public async Task<ClassLevel> RemoveFeatureAsync(ClassLevel level, ClassFeature feature)
+    {
+        logger.LogInformation("Removing feature from class level, FeatureId: {FeatureId}, ClassLevelId: {ClassLevelId}", feature.Id, level.Id);
+        level.NewFeatures.Remove(feature);
+        var updatedLevel = await levelRepo.UpdateAsync(level);
+        logger.LogInformation("Successfully removed feature from class level, FeatureId: {FeatureId}, ClassLevelId: {ClassLevelId}", feature.Id, level.Id);
+        return updatedLevel;
+    }
+
+    public async Task<ClassLevel> AddClassSlotAsync(int levelId, ClassSlotRequestDto dto)
+    {
+        var level = await levelRepo.GetByIdAsync(levelId);
+
+        logger.LogInformation("Adding class slot to class level, SlotName: {SlotName}, ClassLevelId: {ClassLevelId}", dto.Name, levelId);
+        level.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+        {
+            Name = dto.Name,
+            Quantity = dto.Quantity,
+        });
+
+        var updatedLevel = await levelRepo.UpdateAsync(level);
+        logger.LogInformation("Successfully added class slot to class level, SlotName: {SlotName}, ClassLevelId: {ClassLevelId}", dto.Name, levelId);
+        return updatedLevel;
+    }
+
+    public async Task<ClassLevel> RemoveClassSlotByNameAsync(int levelId, string slotName)
+    {
+        var level = await levelRepo.GetByIdAsync(levelId);
+        var slot = level.ClassSpecificSlotsAtLevel.FirstOrDefault(s => s.Name == slotName)
+            ?? throw new ValidationException($"Slot with name {slotName} is not a class slot of class level with id {levelId}");
+
+        logger.LogInformation("Removing class slot from class level, SlotName: {SlotName}, ClassLevelId: {ClassLevelId}", slotName, levelId);
+        level.ClassSpecificSlotsAtLevel.Remove(slot);
+        var updatedLevel = await levelRepo.UpdateAsync(level);
+        logger.LogInformation("Successfully removed class slot from class level, SlotName: {SlotName}, ClassLevelId: {ClassLevelId}", slotName, levelId);
+        return updatedLevel;
     }
 }

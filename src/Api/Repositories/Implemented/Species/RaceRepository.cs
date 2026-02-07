@@ -45,9 +45,10 @@ public class RaceRepository(AppDbContext context) : IRaceRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Race updatedEntity)
+    public async Task<Race> UpdateAsync(Race updatedEntity)
     {
         context.Races.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

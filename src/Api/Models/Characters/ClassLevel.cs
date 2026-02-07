@@ -1,9 +1,7 @@
 using Api.Models.Features;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Models.Characters;
-
 
 public class ClassLevel : CreatableEntity
 {

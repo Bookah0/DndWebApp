@@ -1,3 +1,4 @@
+using Api.Models.Features;
 using Api.Models.Items;
 using Api.Models.Spells;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,6 @@ public class Character : CreatableEntity
     public int RaceId { get; set; }
     public Subrace? Subrace { get; set; }
     public int? SubraceId { get; set; }
-    public ICollection<Race> OtherRaces { get; set; } = [];
 
     // Classes & Subclasses
     public required BaseClass Class { get; set; }
@@ -36,6 +36,7 @@ public class Character : CreatableEntity
     // Abilities & Combat
     public required ICollection<AbilityValue> AbilityScores { get; set; }
     public required CombatStats CombatStats { get; set; }
+    public ICollection<Feat> Feats { get; set; } = [];
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public int[]? CurrentSpellSlots { get; set; }
     public ICollection<ClassSpecificSlot> CurrentClassSlots { get; set; } = [];

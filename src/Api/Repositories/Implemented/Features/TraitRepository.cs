@@ -60,9 +60,10 @@ public class TraitRepository(AppDbContext context) : IFeatureRepository<Trait>
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Trait updatedEntity)
+    public async Task<Trait> UpdateAsync(Trait updatedEntity)
     {
         context.Traits.Update(updatedEntity);
         await context.SaveChangesAsync();
+        return updatedEntity;
     }
 }

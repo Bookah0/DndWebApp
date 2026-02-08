@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Classes;
 
 [ApiController]
-[Route("api/classes/{classId}/levels")]
+[Route("api/[controller]/{classId}/levels")]
 public class ClassLevelController(IBaseClassService service, IClassLevelService levelService, IMapper mapper) : ControllerBase
     {
     [HttpGet]

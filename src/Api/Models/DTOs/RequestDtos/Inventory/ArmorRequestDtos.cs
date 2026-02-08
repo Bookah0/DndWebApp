@@ -10,7 +10,6 @@ public class CreateArmorRequestDto
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string Description { get; set; } = "";
 
@@ -40,7 +39,7 @@ public class CreateArmorRequestDto
     [Range(1, int.MaxValue)]
     public int? ModCap { get; set; }
 
-    [Range(1, 30)]
+    [Range(0, 30)]
     public int StrengthScoreRequired { get; set; } = 0;
     public bool StealthDisadvantage { get; set; } = false;
 }

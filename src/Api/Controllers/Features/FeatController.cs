@@ -12,8 +12,8 @@ using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
 namespace Api.Controllers;
 
 [ApiController]
-[Route("api/feats")]
-public class FeatController(IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto> service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class FeatsController(IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto> service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<FeatResponseDto>>> GetFeats()

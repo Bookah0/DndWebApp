@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [ApiController]
-[Route("api/alignments")]
-public class AlignmentController(IAlignmentService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class AlignmentsController(IAlignmentService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<AlignmentResponseDto>>> GetAlignments()

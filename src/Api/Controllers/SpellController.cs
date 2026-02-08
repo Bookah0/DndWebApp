@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]s")]
-public class SpellController(ISpellService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class SpellsController(ISpellService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<SpellResponseDto>>> GetSpells()

@@ -14,7 +14,6 @@ public class ItemResponseDto
     public int Weight { get; set; }
     public int Value { get; set; }
     public int Quantity { get; set; }
-    public bool IsHomebrew { get; set; }
 }
 
 public class WeaponResponseDto : ItemResponseDto
@@ -41,7 +40,7 @@ public class ArmorResponseDto : ItemResponseDto
 
 public class ToolResponseDto : ItemResponseDto
 {
-    public required string ToolType { get; set; }
+    public required string ToolCategory { get; set; }
     public required ICollection<ToolPropertyDto> Properties { get; set; }
     public ICollection<ToolActivityDto> Activities { get; set; } = [];
 }

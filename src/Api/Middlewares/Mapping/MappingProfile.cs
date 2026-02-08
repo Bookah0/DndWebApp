@@ -12,6 +12,7 @@ using Api.Models.Features;
 using Api.Models.Items;
 using Api.Models.Spells;
 using Api.Models.World;
+using Api.Models.Users;
 
 public class MappingProfile : Profile
 {
@@ -29,6 +30,7 @@ public class MappingProfile : Profile
         CreateMap<Skill, CreateSkillRequestDto>();
         CreateMap<Skill, UpdateSkillRequestDto>();
         CreateMap<Language, CreateLanguageRequestDto>();
+        CreateMap<Language, UpdateLanguageRequestDto>();
         CreateMap<Spell, CreateSpellRequestDto>();
         CreateMap<Spell, UpdateSpellRequestDto>();
         
@@ -92,6 +94,10 @@ public class MappingProfile : Profile
         CreateMap<Armor, ArmorResponseDto>();
         CreateMap<Tool, ToolResponseDto>();
 
+        CreateMap<User, GetUserResponseDto>();
+        CreateMap<User, RegisterUserResponseDto>();
+        CreateMap<User, UpdateUserResponseDto>();
+
         CreateMap<SkillProficiencyChoice, SkillProficiencyChoiceResponseDto>();
         CreateMap<LanguageChoice, LanguageChoiceResponseDto>();
         CreateMap<WeaponCategoryProficiencyChoice, WeaponProficiencyChoiceResponseDto>();
@@ -112,6 +118,7 @@ public class MappingProfile : Profile
         CreateMap<CreateSkillRequestDto, SkillResponseDto>();
         CreateMap<UpdateSkillRequestDto, SkillResponseDto>();
         CreateMap<CreateLanguageRequestDto, LanguageResponseDto>();
+        CreateMap<UpdateLanguageRequestDto, LanguageResponseDto>();
         CreateMap<CreateSpellRequestDto, SpellResponseDto>();
         CreateMap<UpdateSpellRequestDto, SpellResponseDto>();
         

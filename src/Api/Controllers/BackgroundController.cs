@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Backgrounds;
 
 [ApiController]
-[Route("api/backgrounds")]
-public class BackgroundController(IBackgroundService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class BackgroundsController(IBackgroundService service, IMapper mapper) : ControllerBase
     {
 
     [HttpGet]

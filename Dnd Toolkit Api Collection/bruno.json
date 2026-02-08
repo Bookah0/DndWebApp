@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "Dnd Toolkit Api Collection",
+  "name": "Dnd Toolkit",
   "type": "collection",
   "ignore": [
     "node_modules",

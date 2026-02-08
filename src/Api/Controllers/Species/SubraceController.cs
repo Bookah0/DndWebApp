@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Species;
 
 [ApiController]
-[Route("api/races/{raceId}/subraces")]
-public class SubraceController(ISubraceService service, IRaceService raceService, IMapper mapper) : ControllerBase
+[Route("api/races/{raceId}/[controller]")]
+public class SubracesController(ISubraceService service, IRaceService raceService, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<SubraceResponseDto>>> GetSubraces(int raceId)

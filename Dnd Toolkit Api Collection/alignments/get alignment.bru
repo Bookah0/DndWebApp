@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: http://localhost:5432/alignments
+  url: {{ENV}}/api/alignments/{{alignmentId}}
   body: none
   auth: inherit
 }

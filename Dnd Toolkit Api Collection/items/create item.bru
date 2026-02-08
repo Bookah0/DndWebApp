@@ -5,12 +5,87 @@ meta {
 }
 
 post {
-  url: http://localhost:5432/skills
-  body: none
+  url: {{ENV}}/api/items
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Healing Potion",
+    "Description": "A small vial containing a red liquid that restores health.",
+    "Value": 50,
+    "Categories": [
+      "Consumable",
+      "Potion"
+    ],
+    "Rarity": "Common",
+    "RequiresAttunement": false,
+    "Weight": 1,
+    "Quantity": 1
+  }
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: create
+  
+  request: {
+    url: {{ENV}}/api/items
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "Name": "Healing Potion",
+        "Description": "A small vial containing a red liquid that restores health.",
+        "Value": 50,
+        "Categories": [
+          "Consumable",
+          "Potion"
+        ],
+        "Rarity": "Common",
+        "RequiresAttunement": false,
+        "Weight": 1,
+        "Quantity": 1
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Sun, 08 Feb 2026 21:55:36 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "id": 42,
+          "name": "Healing Potion",
+          "description": "A small vial containing a red liquid that restores health.",
+          "categories": [
+            "Consumable",
+            "Potion"
+          ],
+          "rarity": "Common",
+          "requiresAttunement": false,
+          "weight": 1,
+          "value": 50,
+          "quantity": 1
+        }
+      '''
+    }
+  }
 }

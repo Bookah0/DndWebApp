@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: 
+  url: {{ENV}}/api/users/?email=deff@live.se
   body: none
   auth: inherit
+}
+
+params:query {
+  email: deff@live.se
 }
 
 settings {

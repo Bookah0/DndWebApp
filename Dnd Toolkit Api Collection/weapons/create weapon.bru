@@ -5,12 +5,114 @@ meta {
 }
 
 post {
-  url: http://localhost:5432/skills
-  body: none
+  url: {{ENV}}/api/weapons
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Iron Longsword",
+    "Description": "A standard-issue steel longsword used by trained fighters.",
+    "Value": 150,
+    "Rarity": "Common",
+    "RequiresAttunement": false,
+    "Weight": 3,
+    "WeaponCategory": "Martial Melee",
+    "WeaponType": "Longsword",
+    "Slot": "MainHand",
+    "DamageDice": "1d8",
+    "Range": 5,
+    "LongRange": null,
+    "DamageTypes": [
+      "Slashing"
+    ],
+    "Properties": [
+      "Versatile"
+    ],
+    "VersitileDamageDice": "1d10"
+  }
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: create
+  
+  request: {
+    url: {{ENV}}/api/weapons
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "Name": "Iron Longsword",
+        "Description": "A standard-issue steel longsword used by trained fighters.",
+        "Value": 150,
+        "Rarity": "Common",
+        "RequiresAttunement": false,
+        "Weight": 3,
+        "WeaponCategory": "Martial Melee",
+        "WeaponType": "Longsword",
+        "Slot": "MainHand",
+        "DamageDice": "1d8",
+        "Range": 5,
+        "LongRange": null,
+        "DamageTypes": [
+          "Slashing"
+        ],
+        "Properties": [
+          "Versatile"
+        ],
+        "VersitileDamageDice": "1d10"
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Sun, 08 Feb 2026 21:54:07 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "weaponCategory": "Martial Melee",
+          "weaponType": "Longsword",
+          "properties": [
+            "Versatile"
+          ],
+          "damageTypes": [
+            "Slashing"
+          ],
+          "damageDice": "1d8",
+          "range": 5,
+          "versitileDamageDice": null,
+          "longRange": null,
+          "id": 41,
+          "name": "Iron Longsword",
+          "description": "A standard-issue steel longsword used by trained fighters.",
+          "categories": [
+            "Weapon"
+          ],
+          "rarity": "Common",
+          "requiresAttunement": false,
+          "weight": 3,
+          "value": 150,
+          "quantity": 1
+        }
+      '''
+    }
+  }
 }

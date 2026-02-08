@@ -18,7 +18,6 @@ public class CreateSpellRequestDto
     [Range(0, 9)]
     public required int Level { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string EffectsAtHigherLevels { get; set; } = "";
 
@@ -42,12 +41,10 @@ public class CreateSpellRequestDto
     [MaxLength(500)]
     public required string ReactionCondition { get; set; }
 
-    [MinLength(1)]
     [MaxLength(100)]
     public string MagicSchool { get; set; } = "";
     public List<string> SpellTypes { get; set; } = [];
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string DamageRoll { get; set; } = "";
     public List<string> DamageTypes { get; set; } = [];
@@ -118,15 +115,12 @@ public class CreateSpellTargetingDto
     [Range(0, int.MaxValue)]
     public int RangeValue { get; set; } = 0;
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string ShapeType { get; set; } = "";
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string ShapeWidth { get; set; } = "";
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string ShapeLength { get; set; } = "";
 }

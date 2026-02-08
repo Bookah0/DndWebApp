@@ -5,9 +5,13 @@ meta {
 }
 
 delete {
-  url: http://localhost:5432/skills/{{skillId}}
+  url: {{ENV}}/api/skills/{{skillId}}
   body: none
   auth: inherit
+}
+
+vars:pre-request {
+  skillId: 19
 }
 
 settings {

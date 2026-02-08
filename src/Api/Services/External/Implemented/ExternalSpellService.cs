@@ -80,7 +80,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
                 DurationValue = durationValue,
                 CastingTime = castingTime,
                 CastingTimeValue = timeValue,
-                MagicSchool = ConstantsUtil.ResolveOptionOrThrow(eMagicSchool, MagicSchool.AllowedValues, "Magic School"),
+                MagicSchool = ConstantsUtil.ResolveOptionOrThrow(eMagicSchool, MagicSchool.AllowedValues),
                 SpellTargeting = spellTargeting,
                 SpellTypes = spellTypes,
                 CastingRequirements = castingRequirements,

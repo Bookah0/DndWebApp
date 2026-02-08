@@ -27,10 +27,10 @@ public class SpellService(
     {
         logger.LogInformation("Creating spell, Name: {SpellName}", dto.Name);
 
-        var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");
-        var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues, "Spell Range");
-        var dtoDuration = ResolveOptionOrThrow(dto.Duration, SpellDuration.AllowedValues, "Spell Duration");
-        var dtoCastTime = ResolveOptionOrThrow(dto.CastingTime, CastingTime.AllowedValues, "Casting Time");
+        var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues);
+        var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues);
+        var dtoDuration = ResolveOptionOrThrow(dto.Duration, SpellDuration.AllowedValues);
+        var dtoCastTime = ResolveOptionOrThrow(dto.CastingTime, CastingTime.AllowedValues);
 
         if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet && dtoSpellRange != SpellRange.Mile)
             throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet or SpellRange.Mile.");
@@ -50,7 +50,7 @@ public class SpellService(
             MagicSchool = ResolveOptionOrEmpty(dto.MagicSchool, MagicSchool.AllowedValues),
             SpellTypes = ResolveOptionOrEmpty(dto.SpellTypes, SpellType.AllowedValues),
             DamageRoll = dto.DamageRoll,
-            DamageTypes = ResolveOptionOrEmpty(dto.DamageTypes, DamageType.AllowedValues, "Damage Type"),
+            DamageTypes = ResolveOptionOrEmpty(dto.DamageTypes, DamageType.AllowedValues),
             SpellTargeting = new SpellTargeting()
             {
                 TargetType = dtoTargetType,
@@ -186,20 +186,19 @@ public class SpellService(
             }
         }
 
-        var dtoSchools = dto.MagicSchools != null ? ResolveOptionOrThrow(dto.MagicSchools, MagicSchool.AllowedValues, "Magic School") : null;
-        var dtoTargetTypes = dto.TargetTypes != null ? ResolveOptionOrThrow(dto.TargetTypes, SpellTargetType.AllowedValues, "Spell Target Type") : null;
-        var dtoSpellRanges = dto.Range != null ? ResolveOptionOrThrow(dto.Range, SpellRange.AllowedValues, "Spell Range") : null;
-        var dtoDurations = dto.Durations != null ? ResolveOptionOrThrow(dto.Durations, SpellDuration.AllowedValues, "Spell Duration") : null;
-        var dtoCastTimes = dto.CastingTimes != null ? ResolveOptionOrThrow(dto.CastingTimes, CastingTime.AllowedValues, "Casting Time") : null;
-        var dtoSpellTypes = dto.SpellTypes != null ? ResolveOptionOrThrow(dto.SpellTypes, SpellType.AllowedValues, "Spell Type") : null;
-        var dtoDamageTypes = dto.DamageTypes != null ? ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type") : null;
+        var dtoSchools = dto.MagicSchools != null ? ResolveOptionOrThrow(dto.MagicSchools, MagicSchool.AllowedValues) : null;
+        var dtoTargetTypes = dto.TargetTypes != null ? ResolveOptionOrThrow(dto.TargetTypes, SpellTargetType.AllowedValues) : null;
+        var dtoSpellRanges = dto.Range != null ? ResolveOptionOrThrow(dto.Range, SpellRange.AllowedValues) : null;
+        var dtoDurations = dto.Durations != null ? ResolveOptionOrThrow(dto.Durations, SpellDuration.AllowedValues) : null;
+        var dtoCastTimes = dto.CastingTimes != null ? ResolveOptionOrThrow(dto.CastingTimes, CastingTime.AllowedValues) : null;
+        var dtoSpellTypes = dto.SpellTypes != null ? ResolveOptionOrThrow(dto.SpellTypes, SpellType.AllowedValues) : null;
+        var dtoDamageTypes = dto.DamageTypes != null ? ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues) : null;
 
         var filter = new SpellFilter()
         {
             Name = dto.Name,
             MinLevel = dto.MinLevel,
             MaxLevel = dto.MaxLevel,
-            IsHomebrew = dto.IsHomebrew,
             ClassIds = dto.ClassIds,
             Durations = dtoDurations,
             CastingTimes = dtoCastTimes,

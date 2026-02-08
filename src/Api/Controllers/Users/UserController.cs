@@ -9,8 +9,8 @@ using Api.Models.Users;
 namespace Api.Controllers.Users;
 
 [ApiController]
-[Route("api/users")]
-public class UserController(IUserService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class UsersController(IUserService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<GetUserResponseDto>>> GetAllUsers([FromQuery] string? sort = null, [FromQuery] string? order = null)
@@ -26,7 +26,7 @@ public class UserController(IUserService service, IMapper mapper) : ControllerBa
         return Ok(mapper.Map<GetUserResponseDto>(user));
     }
 
-    [HttpGet]
+    [HttpGet("search")]
     public async Task<ActionResult<GetUserResponseDto>> GetUser([FromQuery] string email, [FromQuery] string username)
     {
         if(string.IsNullOrEmpty(email) && string.IsNullOrEmpty(username))
@@ -39,20 +39,20 @@ public class UserController(IUserService service, IMapper mapper) : ControllerBa
         return Ok(mapper.Map<GetUserResponseDto>(user));
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPatch("{userId}")]
     public async Task<ActionResult<UpdateUserResponseDto>> UpdateUser(Guid userId, [FromBody] UpdateUserRequestDto dto)
     {
-        await service.CheckPasswordAsync(userId, dto.ConfirmPassword);
+        await service.CheckPasswordAsync(userId, dto.Password.Trim());
         var updatedUser = await service.UpdateAsync(userId, dto);
         return Ok(mapper.Map<UpdateUserResponseDto>(updatedUser));
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpDelete("{userId}")]
-    public async Task<ActionResult> DeleteUser(Guid userId, [FromBody] ConfirmPasswordDto dto)
+    public async Task<ActionResult> DeleteUser(Guid userId, [FromBody] DeleteUserRequestDto dto)
     {
-        await service.CheckPasswordAsync(userId, dto.ConfirmPassword);
+        //await service.CheckPasswordAsync(userId, dto.Password.Trim());
         await service.DeleteAsync(userId);
         return Ok();
     }

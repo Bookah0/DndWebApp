@@ -14,11 +14,9 @@ public class CreateLanguageRequestDto
     [MaxLength(100)]
     public required string Family { get; set; }
 
-    [MinLength(1)]
     [MaxLength(100)]
     public string Script { get; set; } = "";
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string TypicalSpeakers { get; set; } = "";
 }
@@ -33,11 +31,9 @@ public class UpdateLanguageRequestDto
     [MaxLength(100)]
     public string? Family { get; set; }
 
-    [MinLength(1)]
     [MaxLength(100)]
     public string? Script { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string? TypicalSpeakers { get; set; }
     public bool? IsPublic { get; set; }

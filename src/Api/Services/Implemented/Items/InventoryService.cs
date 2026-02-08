@@ -117,7 +117,7 @@ public class InventoryService(
 
     public async Task UnEquip(Inventory inventory, string slot)
     {
-        var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues, "Equipment Slot");
+        var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues);
         logger.LogInformation("Unequipping item from slot: {EquipmentSlot} in inventory with ID: {InventoryId}", resolvedSlot, inventory.Id);
 
         foreach (var equipmentSlot in inventory.EquippedItems)
@@ -146,7 +146,7 @@ public class InventoryService(
         if(item is not IEquippable equippableItem)
             throw new InvalidOperationException($"Item with id {itemId} is not equippable");
         
-        var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues, "Equipment Slot");
+        var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues);
 
         if(equippableItem.MainSlot != resolvedSlot && equippableItem.SecondarySlot != resolvedSlot)
             throw new InvalidOperationException($"Item with id {itemId} cannot be equipped in slot {resolvedSlot}");

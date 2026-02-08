@@ -11,7 +11,7 @@ public class ECreateItemRequestDto
     public required List<string> Description { get; set; }
 
     [JsonPropertyName("equipment_category")]
-    public required EIndexDto EquipmentCategory { get; set; }
+    public EIndexDto? EquipmentCategory { get; set; }
 
     [JsonPropertyName("stack_quantity")]
     public int StackQuantity { get; set; } = 1;

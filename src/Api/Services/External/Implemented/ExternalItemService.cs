@@ -73,7 +73,11 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
     {
         var eArmor = jsonDoc.RootElement.Deserialize<ECreateArmorRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize armor: {item.Index}");
-        var itemCategory = ResolveOptionOrThrow(eArmor.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
+
+        if(eArmor.EquipmentCategory is null)
+            logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eArmor.Name);
+
+        var itemCategory = eArmor.EquipmentCategory is null ? ItemCategory.Miscellaneous : ResolveOptionOrEmpty(eArmor.EquipmentCategory.Name, ItemCategory.AllowedValues);
 
         return new Armor
         {
@@ -84,7 +88,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Weight = eArmor.Weight,
             Value = GetConvertedValue(eArmor.Cost.Quantity, eArmor.Cost.Unit),
             Quantity = eArmor.Cost.Quantity,
-            ArmorCategory = ResolveOptionOrThrow(eArmor.ArmorCategory, ArmorCategory.AllowedValues, "Armor Category"),
+            ArmorCategory = ResolveOptionOrThrow(eArmor.ArmorCategory, ArmorCategory.AllowedValues),
             BaseArmorClass = eArmor.ArmorClass.BaseArmorClass,
             PlusDexMod = eArmor.ArmorClass.DexBonus,
             ModCap = eArmor.ArmorClass.MaxBonus,
@@ -106,13 +110,17 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
         var eDamagetype = eWeapon.Damage?.DamageType.Name
             ?? throw new InvalidOperationException($"Weapon {item.Name} missing damage object.");
-        var damageType = ResolveOptionOrThrow(eDamagetype, DamageType.AllowedValues, "Damage Type");
+        var damageType = ResolveOptionOrThrow(eDamagetype, DamageType.AllowedValues);
 
         var propertyNames = eWeapon.Properties?.Select(p => p.Name).ToList() ?? [];
-        var properties = ResolveOptionOrThrow(propertyNames, WeaponProperty.AllowedValues, "Weapon Property");
+        var properties = ResolveOptionOrThrow(propertyNames, WeaponProperty.AllowedValues);
 
-        var category = ResolveOptionOrThrow(eWeapon.CategoryRange, WeaponCategory.AllowedValues, "Weapon Category");
-        var itemCategory = ResolveOptionOrThrow(eWeapon.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
+        var category = ResolveOptionOrThrow(eWeapon.CategoryRange, WeaponCategory.AllowedValues);
+
+        if(eWeapon.EquipmentCategory is null)
+            logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eWeapon.Name);
+
+        var itemCategory = eWeapon.EquipmentCategory is null ? ItemCategory.Miscellaneous : ResolveOptionOrEmpty(eWeapon.EquipmentCategory.Name, ItemCategory.AllowedValues);
         var weaponType = ParseWeaponType(eWeapon);
         return new Weapon
         {
@@ -145,8 +153,12 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         var eTool = jsonDoc.RootElement.Deserialize<ECreateToolRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize tool: {item.Index}");
 
-        var category = ResolveOptionOrThrow(eTool.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
-        var itemCategory = ResolveOptionOrThrow(eTool.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
+        var category = ResolveOptionOrThrow(eTool.ToolCategory, ToolCategory.AllowedValues);
+        if(eTool.EquipmentCategory is null)
+            logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eTool.Name);
+
+        var itemCategory = eTool.EquipmentCategory is null ? ItemCategory.Miscellaneous : ResolveOptionOrEmpty(eTool.EquipmentCategory.Name, ItemCategory.AllowedValues);
+
 
         return new Tool
         {
@@ -188,8 +200,8 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             SpeedUnit = eVehicle.Speed?.Unit,
             Capacity = capacityValue,
             CapacityUnit = capacityUnit,
-            Landborne = eVehicle.EquipmentCategory.Index == "mounts-and-vehicles",
-            Waterborne = eVehicle.EquipmentCategory.Index == "waterborne-vehicles",
+            Landborne = eVehicle.EquipmentCategory?.Index == "mounts-and-vehicles",
+            Waterborne = eVehicle.EquipmentCategory?.Index == "waterborne-vehicles",
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = null,
@@ -203,8 +215,10 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
     {
         var eItem = jsonDoc.RootElement.Deserialize<ECreateItemRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize item: {item.Index}");
+        if(eItem.EquipmentCategory is null)
+            logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eItem.Name);
 
-        var itemCategory = ResolveOptionOrThrow(eItem.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
+        var itemCategory = eItem.EquipmentCategory is null ? ItemCategory.Miscellaneous : ResolveOptionOrEmpty(eItem.EquipmentCategory.Name, ItemCategory.AllowedValues);
 
         return new Item
         {
@@ -251,7 +265,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         if (value <= 0)
             return 0;
 
-        var resolvedUnit = ResolveOptionOrThrow(unit, CurrencyUtil.AllowedUnits, "Currency Unit");
+        var resolvedUnit = ResolveOptionOrThrow(unit, CurrencyUtil.AllowedUnits);
 
         return resolvedUnit switch
         {

@@ -18,8 +18,8 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         if(dto.Categories == null || dto.Categories.Count < 1)
             throw new ValidationException("At least one category is required for an item.");
 
-        var dtoCategories = ResolveOptionOrThrow(dto.Categories, ItemCategory.AllowedValues, "Item Category");
-        var dtoRarity = ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity");
+        var dtoCategories = ResolveOptionOrThrow(dto.Categories, ItemCategory.AllowedValues);
+        var dtoRarity = ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues);
         
         logger.LogInformation("Creating item, Name: {ItemName}", dto.Name);
 
@@ -63,7 +63,7 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Item> UpdateAsync(UpdateItemRequestDto dto, int id)
     {
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
 
         var item = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);

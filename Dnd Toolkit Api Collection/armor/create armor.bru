@@ -5,12 +5,94 @@ meta {
 }
 
 post {
-  url: http://localhost:5432/skills
-  body: none
+  url: {{ENV}}/api/armor
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Leather Armor",
+    "Description": "Light armor made from hardened leather.",
+    "Weight": 10,
+    "Value": 45,
+    "Category": "Light",
+    "BaseArmorClass": 11,
+    "PlusDexMod": true,
+    "Rarity": "Common",
+    "RequiresAttunement": false,
+    "ModCap": null,
+    "StrengthScoreRequired": 0,
+    "StealthDisadvantage": false
+  }
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: create
+  
+  request: {
+    url: {{ENV}}/api/armor
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "Name": "Leather Armor",
+        "Description": "Light armor made from hardened leather.",
+        "Weight": 10,
+        "Value": 45,
+        "Category": "Light",
+        "BaseArmorClass": 11,
+        "PlusDexMod": true,
+        "Rarity": "Common",
+        "RequiresAttunement": false,
+        "ModCap": null,
+        "StrengthScoreRequired": 0,
+        "StealthDisadvantage": false
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Sun, 08 Feb 2026 21:57:22 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "armorCategory": "Light",
+          "baseArmorClass": 11,
+          "plusDexMod": true,
+          "modCap": 0,
+          "strengthScoreRequired": 0,
+          "stealthDisadvantage": false,
+          "id": 43,
+          "name": "Leather Armor",
+          "description": "Light armor made from hardened leather.",
+          "categories": [
+            "Armor"
+          ],
+          "rarity": "Common",
+          "requiresAttunement": false,
+          "weight": 10,
+          "value": 45,
+          "quantity": 1
+        }
+      '''
+    }
+  }
 }

@@ -8,7 +8,7 @@ namespace Api.Services.Util;
 
 public static class ConstantsUtil
 {
-    public static ICollection<string> ResolveOptionOrThrow(ICollection<string> inputs, IReadOnlySet<string> allowedSet, string constantsGroupName = "Constant")
+    public static ICollection<string> ResolveOptionOrThrow(ICollection<string> inputs, IReadOnlySet<string> allowedSet)
     {
         ICollection<string> resolved = [];
 
@@ -19,20 +19,30 @@ public static class ConstantsUtil
                 resolved.Add(resolvedOption!);
                 continue;
             }
-            throw new ValidationException($"{constantsGroupName} {input} not recognized.");
+            
+            string allowedValues = "";
+            
+            for (int i = 0; i < 15; i++)
+            {
+                allowedValues += allowedSet.ElementAtOrDefault(i) ?? "";
+                if (i < allowedSet.Count - 1)                    allowedValues += ", ";
+                else if (i == 14 && allowedSet.Count > 15)
+                    allowedValues += ", ...";
+            }
+            throw new ValidationException($"{nameof(allowedSet)} {input} not recognized. Allowed values are: {GetAllowedValues(allowedSet, 20)}");
         }
         return resolved;
     }
 
-    public static string ResolveOptionOrThrow(string input, IReadOnlySet<string> allowedSet, string constantsGroupName = "Constant")
+    public static string ResolveOptionOrThrow(string input, IReadOnlySet<string> allowedSet)
     {
         if (TryResolveOption(input, allowedSet, out var resolved))
             return resolved!;
         
-        throw new ValidationException($"{constantsGroupName} {input} not recognized.");
+        throw new ValidationException($"{nameof(allowedSet)} {input} not recognized. Allowed values are: {GetAllowedValues(allowedSet, 20)}");
     }
 
-    public static ICollection<string> ResolveOptionOrEmpty(ICollection<string> inputs, IReadOnlySet<string> allowedSet, string constantsGroupName = "Constant")
+    public static ICollection<string> ResolveOptionOrEmpty(ICollection<string> inputs, IReadOnlySet<string> allowedSet)
     {
         if (inputs.IsNullOrEmpty())
             return [];
@@ -40,7 +50,7 @@ public static class ConstantsUtil
         return ResolveOptionOrThrow(inputs, allowedSet);
     }
 
-    public static string ResolveOptionOrEmpty(string input, IReadOnlySet<string> allowedSet, string constantsGroupName = "Constant")
+    public static string ResolveOptionOrEmpty(string input, IReadOnlySet<string> allowedSet)
     {
         if (string.IsNullOrWhiteSpace(input))
             return "";
@@ -77,6 +87,12 @@ public static class ConstantsUtil
             .Replace("'", "")
             .Replace(" ", "")
             .ToLower();
+    }
+    
+    private static string GetAllowedValues(IReadOnlySet<string> allowedSet, int maxValues) {
+        return allowedSet
+            .Take(maxValues)
+            .Aggregate((current, next) => current + ", " + next) + (allowedSet.Count > maxValues ? ", ..." : "");
     }
 
     public static string GetDefaultWeaponMainSlot (string weaponType)

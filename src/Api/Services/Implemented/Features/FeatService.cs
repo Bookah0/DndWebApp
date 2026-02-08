@@ -66,7 +66,7 @@ public class FeatService(
             if(dto.NewFromType is null)
                 throw new ValidationException("NewFromType must be provided when NewFromId is provided.");
 
-            var resolvedSourceType = ConstantsUtil.ResolveOptionOrThrow(dto.NewFromType, FeatSourceConstants.AllowedValues, "Feat source type");
+            var resolvedSourceType = ConstantsUtil.ResolveOptionOrThrow(dto.NewFromType, FeatSourceConstants.AllowedValues);
             feat.FromRaceId = resolvedSourceType == FeatSourceConstants.Race || resolvedSourceType == FeatSourceConstants.Subrace ? dto.NewFromId : null;
             feat.FromBackgroundId = resolvedSourceType == FeatSourceConstants.Background ? dto.NewFromId : null;
             feat.FromClassId = resolvedSourceType == FeatSourceConstants.Class || resolvedSourceType == FeatSourceConstants.Subclass ? dto.NewFromId : null;

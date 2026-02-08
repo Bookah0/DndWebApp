@@ -5,7 +5,7 @@ meta {
 }
 
 delete {
-  url: http://localhost:5432/auth/logout
+  url: {{ENV}}/api/auth/logout
   body: none
   auth: inherit
 }

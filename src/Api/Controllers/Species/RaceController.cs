@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Species;
 
 [ApiController]
-[Route("api/races")]
-public class RaceController(IRaceService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class RacesController(IRaceService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<RaceResponseDto>>> GetRaces()

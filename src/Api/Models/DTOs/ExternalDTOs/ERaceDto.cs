@@ -11,7 +11,7 @@ public class ESpeciesDto
     public required List<EAbilityBonusDto> AbilityBonuses { get; set; }
 
     [JsonPropertyName("traits")]
-    public required List<EIndexDto> Traits { get; set; }
+    public List<EIndexDto> Traits { get; set; } = [];
 }
 
 public class ERaceDto : ESpeciesDto

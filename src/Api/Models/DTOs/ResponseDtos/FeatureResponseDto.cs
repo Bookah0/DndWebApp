@@ -5,7 +5,6 @@ public class FeatureResponseDto
     public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public bool IsHomebrew { get; set; }
     public ICollection<AbilityValueResponseDto> AbilityIncreases { get; set; } = [];
     public ICollection<SpellResponseDto> SpellsGained { get; set; } = [];
     public ProficienciesResponseDto? Proficiencies { get; set; }

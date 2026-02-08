@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]s")]
-public class LanguageController(ILanguageService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class LanguagesController(ILanguageService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<LanguageResponseDto>>> GetLanguages()

@@ -1,0 +1,16 @@
+meta {
+  name: update weapon
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:5432/weapons/{{weaponId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

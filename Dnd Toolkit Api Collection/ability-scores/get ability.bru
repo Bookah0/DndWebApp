@@ -1,0 +1,16 @@
+meta {
+  name: get ability
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5432/abilities/{{abilityId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

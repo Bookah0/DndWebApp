@@ -1,0 +1,20 @@
+meta {
+  name: get by username
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:5432/users/?username=Abcanon
+  body: none
+  auth: inherit
+}
+
+params:query {
+  username: Abcanon
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

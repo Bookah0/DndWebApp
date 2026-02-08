@@ -1,0 +1,16 @@
+meta {
+  name: get user by id
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5432/users/{{userId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,16 @@
+meta {
+  name: get all armor
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5432/armor
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

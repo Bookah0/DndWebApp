@@ -1,0 +1,16 @@
+meta {
+  name: create tool
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:5432/tools
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

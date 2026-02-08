@@ -1,0 +1,16 @@
+meta {
+  name: add tool activity
+  type: http
+  seq: 6
+}
+
+patch {
+  url: http://localhost:5432/tools/{{toolId}}/activities
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

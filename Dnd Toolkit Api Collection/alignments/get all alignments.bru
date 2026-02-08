@@ -1,0 +1,16 @@
+meta {
+  name: get all alignments
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5432/alignments/{{alignmentId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

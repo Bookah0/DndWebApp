@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\DndWebApp.Api.props" />
-</Project>

@@ -1,0 +1,16 @@
+meta {
+  name: logout
+  type: http
+  seq: 2
+}
+
+delete {
+  url: http://localhost:5432/auth/logout
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

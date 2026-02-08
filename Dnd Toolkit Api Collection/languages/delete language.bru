@@ -1,0 +1,16 @@
+meta {
+  name: delete language
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5432/languages/{{languageId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

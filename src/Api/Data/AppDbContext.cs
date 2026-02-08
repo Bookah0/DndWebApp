@@ -59,7 +59,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Character>().ConfigureProficiencies();
 
         modelBuilder.Entity<ClassLevel>()
-            .OwnsMany(c => c.ClassSpecificSlotsAtLevel, slot =>
+            .OwnsMany(c => c.ClassSlotsAtLevel, slot =>
             {
                 slot.HasKey(s => s.Id);
                 slot.WithOwner().HasForeignKey("ClassLevelId");

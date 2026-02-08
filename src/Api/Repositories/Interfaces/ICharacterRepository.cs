@@ -5,10 +5,10 @@ namespace Api.Repositories.Interfaces;
 
 public interface ICharacterRepository : IRepository<Character>
 {
-    Task<CharacterDescription> GetCharacterDescriptionAsync(int id);
+    Task<CharacterInfo> GetCharacterInfoAsync(int id);
     Task<Character> GetWithAllDataAsync(int id);
     Task<Character> GetWithCombatStatsAsync(int characterId);
-    Task<Character> GetWithCharacterDescriptionAsync(int characterId);
+    Task<Character> GetWithCharacterInfoAsync(int characterId);
     Task<Character> GetWithClassesAsync(int id);
     Task<Character> GetWithFeaturesAsync(int id);
 }

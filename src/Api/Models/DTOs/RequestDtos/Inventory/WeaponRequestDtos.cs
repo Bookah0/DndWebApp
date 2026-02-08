@@ -18,14 +18,12 @@ public class CreateWeaponRequestDto
     [Range(0, int.MaxValue)]
     public int? Value { get; set; }
 
-    public List<string> OtherCategories { get; set; } = [];
-
     [Required]
     [MinLength(1)]
     [MaxLength(50)]
     public required string Rarity { get; set; }
 
-    public bool? RequiresAttunement { get; set; }
+    public bool RequiresAttunement { get; set; } = false;
 
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
@@ -59,7 +57,7 @@ public class CreateWeaponRequestDto
 
     [MinLength(1)]
     [MaxLength(50)]
-    public string? VersitileDamageDice { get; set; }
+    public string VersitileDamageDice { get; set; } = "";
 
     [Range(1, int.MaxValue)]
     public int? LongRange { get; set; }

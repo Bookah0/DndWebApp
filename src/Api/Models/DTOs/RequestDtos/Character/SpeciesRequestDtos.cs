@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Api.Models.Characters.Constants;
 
 namespace Api.Models.DTOs.RequestDtos.Character;
 
@@ -10,15 +11,14 @@ public class CreateRaceRequestDto
     public required string Name { get; set; }
     
     [Range(1, 60)]        
-    public int? Speed { get; set; }
+    public int Speed { get; set; } = 30;
     
     [MaxLength(50)]
-    public string? Size { get; set; }
+    public string Size { get; set; } = CreatureSize.Medium;
 
-    [Required]
     [MinLength(1)]
     [MaxLength(2000)]
-    public required SpeciesDescriptionsDto? SpeciesDescriptions { get; set; }    
+    public required SpeciesInfoDto? Info { get; set; } = new();
 }
 
 public class UpdateRaceRequestDto
@@ -35,7 +35,7 @@ public class UpdateRaceRequestDto
 
     [MinLength(1)]
     [MaxLength(2000)]
-    public SpeciesDescriptionsDto? SpeciesDescriptions { get; set; }
+    public SpeciesInfoDto? Info { get; set; }
     public bool? IsPublic { get; set; }
     public bool? CloningAllowed { get; set; }
 }
@@ -52,15 +52,15 @@ public class CreateSubraceRequestDto
     public required int ParentRaceId { get; set; }
 
     [Range(1, 60)]        
-    public int? Speed { get; set; }
+    public int Speed { get; set; } = 30;
     
     [MinLength(1)]
     [MaxLength(50)]
-    public string Size { get; set; } = "Medium";
+    public string Size { get; set; } = CreatureSize.Medium;
 
     [MinLength(1)]
     [MaxLength(2000)]
-    public SpeciesDescriptionsDto? SpeciesDescriptions { get; set; }    
+    public SpeciesInfoDto? Info { get; set; }    
 
 }
 
@@ -79,7 +79,7 @@ public class UpdateSubraceRequestDto
 
     [MinLength(1)]
     [MaxLength(2000)]
-    public SpeciesDescriptionsDto? SpeciesDescriptions { get; set; }    
+    public SpeciesInfoDto? Info { get; set; }    
 
     [Range(1, int.MaxValue)]
     public int? NewParentRaceId { get; set; }
@@ -87,7 +87,7 @@ public class UpdateSubraceRequestDto
     public bool? CloningAllowed { get; set; }
 }
 
-public class SpeciesDescriptionsDto
+public class SpeciesInfoDto
 {
     [MaxLength(4000)]
     public string? GeneralDescription { get; set; }

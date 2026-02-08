@@ -19,7 +19,7 @@ public class CharacterResponseDto
 
     // Background
     public required int BackgroundId { get; set; }
-    public CharacterDescriptionResponseDto CharacterDescription { get; set; } = new();
+    public CharacterInfoResponseDto CharacterInfo { get; set; } = new();
 
     // Inventory
     public required int InventoryId { get; set; }
@@ -48,7 +48,7 @@ public class CombatStatsResponseDto
     public required int CurrentHitDice { get; set; }
 }
 
-public class CharacterDescriptionResponseDto
+public class CharacterInfoResponseDto
 {
     public int? AlignmentId { get; set; }
     public string PersonalityTraits { get; set; } = "";

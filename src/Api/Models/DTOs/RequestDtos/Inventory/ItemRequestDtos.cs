@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Api.Models.Items.Constants;
 
 namespace Api.Models.DTOs.RequestDtos.Inventory;
 
@@ -19,24 +20,19 @@ public class CreateItemRequestDto
     public int? Value { get; set; }
 
     [Required]
-    [MinLength(1)]
-    [MaxLength(100)]
-    public required string MainCategory { get; set; }
+    public required ICollection<string> Categories { get; set; } 
 
-    public List<string> OtherCategories { get; set; } = [];
-
-    [Required]
     [MinLength(1)]
     [MaxLength(50)]
-    public required string Rarity { get; set; }
+    public required string Rarity { get; set; } = ItemRarity.Common;
 
-    public bool? RequiresAttunement { get; set; }
+    public bool RequiresAttunement { get; set; } = false;
 
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
 
     [Range(1, int.MaxValue)]
-    public int? Quantity { get; set; }
+    public int Quantity { get; set; } = 1;
 }
 
 public class UpdateItemRequestDto

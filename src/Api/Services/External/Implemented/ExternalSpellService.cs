@@ -65,7 +65,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
             {
                 Verbal = eOpenSpell?.RequiresVerbalComponents == true,
                 Somatic = eOpenSpell?.RequiresSomaticComponents == true,
-                Materials = eOpenSpell?.Material ?? null,
+                Materials = eOpenSpell?.Material ?? "",
             };
 
             var eMagicSchool = eOpenSpell!.School;

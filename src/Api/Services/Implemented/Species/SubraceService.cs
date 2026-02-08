@@ -18,13 +18,13 @@ public class SubraceService(
     {
         logger.LogInformation("Creating subrace, Name: {SubraceName}", dto.Name);
 
-        var raceDescription = new SpeciesDescriptions
+        var raceDescription = new SpeciesInfo
         {
-            General = dto.SpeciesDescriptions?.GeneralDescription ?? "",
-            Aging = dto.SpeciesDescriptions?.AgingDescription ?? "",
-            CommonAlignment = dto.SpeciesDescriptions?.AlignmentDescription ?? "",
-            Size = dto.SpeciesDescriptions?.SizesDescription ?? "",
-            Languages = dto.SpeciesDescriptions?.LanguagesDescription ?? ""
+            General = dto.Info?.GeneralDescription ?? "",
+            Aging = dto.Info?.AgingDescription ?? "",
+            CommonAlignment = dto.Info?.AlignmentDescription ?? "",
+            Size = dto.Info?.SizesDescription ?? "",
+            Languages = dto.Info?.LanguagesDescription ?? ""
         };
 
         var parentRace = await parentRaceRepo.GetByIdAsync(dto.ParentRaceId);
@@ -32,10 +32,10 @@ public class SubraceService(
         var subrace = await repo.CreateAsync(new()
         {
             Name = dto.Name,
-            RaceDescription = raceDescription,
+            Info = raceDescription,
             ParentRaceId = dto.ParentRaceId,
             ParentRace = parentRace,
-            Speed = dto.Speed ?? 30,
+            Speed = dto.Speed,
             Size = dto.Size ?? CreatureSize.Medium,
 
             CreatedAt = DateTime.UtcNow,
@@ -72,11 +72,11 @@ public class SubraceService(
         subrace.Speed = dto.Speed ?? subrace.Speed;
         subrace.Size = dto.Size ?? subrace.Size;
 
-        subrace.RaceDescription.General = dto.SpeciesDescriptions?.GeneralDescription ?? subrace.RaceDescription.General;
-        subrace.RaceDescription.Aging = dto.SpeciesDescriptions?.AgingDescription ?? subrace.RaceDescription.Aging;
-        subrace.RaceDescription.CommonAlignment = dto.SpeciesDescriptions?.AlignmentDescription ?? subrace.RaceDescription.CommonAlignment;
-        subrace.RaceDescription.Size = dto.SpeciesDescriptions?.SizesDescription ?? subrace.RaceDescription.Size;
-        subrace.RaceDescription.Languages = dto.SpeciesDescriptions?.LanguagesDescription ?? subrace.RaceDescription.Languages;
+        subrace.Info.General = dto.Info?.GeneralDescription ?? subrace.Info.General;
+        subrace.Info.Aging = dto.Info?.AgingDescription ?? subrace.Info.Aging;
+        subrace.Info.CommonAlignment = dto.Info?.AlignmentDescription ?? subrace.Info.CommonAlignment;
+        subrace.Info.Size = dto.Info?.SizesDescription ?? subrace.Info.Size;
+        subrace.Info.Languages = dto.Info?.LanguagesDescription ?? subrace.Info.Languages;
 
         if(dto.NewParentRaceId is not null)
         {

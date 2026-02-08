@@ -13,9 +13,9 @@ public class Spell : CreatableEntity
     public string EffectsAtHigherLevels { get; set; } = "";
     public ICollection<BaseClass> Classes { get; set; } = [];
     public required string Duration { get; set; }
-    public int DurationValue { get; set; }
+    public int? DurationValue { get; set; }
     public required string CastingTime { get; set; }
-    public int CastingTimeValue { get; set; }
+    public int? CastingTimeValue { get; set; }
     public string ReactionCondition { get; set; } = "";
     public string MagicSchool { get; set; } = "";
     public string DamageRoll { get; set; } = "";
@@ -31,7 +31,7 @@ public class SpellTargeting
 {
     public required string TargetType { get; set; }
     public required string Range { get; set; }
-    public required int RangeValue { get; set; }
+    public int? RangeValue { get; set; }
     public string? ShapeType { get; set; }
     public string? ShapeWidth { get; set; }
     public string? ShapeLength { get; set; }

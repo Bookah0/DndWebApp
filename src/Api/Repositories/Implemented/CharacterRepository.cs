@@ -12,26 +12,26 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
         await context.Characters.FindAsync(id)
         ?? throw new Exception($"Character with id {id} could not be found");
 
-    public async Task<CharacterDescription> GetCharacterDescriptionAsync(int id) =>
+    public async Task<CharacterInfo> GetCharacterInfoAsync(int id) =>
         await context.Characters
             .AsNoTracking()
             .Where(x => x.Id == id)
-            .Select(r => new CharacterDescription
+            .Select(r => new CharacterInfo
             {
-                AlignmentId = r.CharacterDescription.AlignmentId,
-                PersonalityTraits = r.CharacterDescription.PersonalityTraits,
-                Ideals = r.CharacterDescription.Ideals,
-                Bonds = r.CharacterDescription.Bonds,
-                Flaws = r.CharacterDescription.Flaws,
-                Age = r.CharacterDescription.Age,
-                Height = r.CharacterDescription.Height,
-                Weight = r.CharacterDescription.Weight,
-                Eyes = r.CharacterDescription.Eyes,
-                Skin = r.CharacterDescription.Skin,
-                Hair = r.CharacterDescription.Hair,
-                AlliesAndOrganizations = r.CharacterDescription.AlliesAndOrganizations,
-                Backstory = r.CharacterDescription.Backstory,
-                CharacterPictureUrl = r.CharacterDescription.CharacterPictureUrl!
+                AlignmentId = r.Info.AlignmentId,
+                PersonalityTraits = r.Info.PersonalityTraits,
+                Ideals = r.Info.Ideals,
+                Bonds = r.Info.Bonds,
+                Flaws = r.Info.Flaws,
+                Age = r.Info.Age,
+                Height = r.Info.Height,
+                Weight = r.Info.Weight,
+                Eyes = r.Info.Eyes,
+                Skin = r.Info.Skin,
+                Hair = r.Info.Hair,
+                AlliesAndOrganizations = r.Info.AlliesAndOrganizations,
+                Backstory = r.Info.Backstory,
+                CharacterPictureUrl = r.Info.CharacterPictureUrl!
             })
             .FirstOrDefaultAsync()
             ?? throw new Exception($"Character with id {id} could not be found");
@@ -42,9 +42,9 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Character with id {id} could not be found");
 
-    public async Task<Character> GetWithCharacterDescriptionAsync(int id) =>
+    public async Task<Character> GetWithCharacterInfoAsync(int id) =>
         await context.Characters
-            .Include(c => c.CharacterDescription)
+            .Include(c => c.Info)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Character with id {id} could not be found");
 
@@ -83,7 +83,7 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
             .Include(f => f.Subrace)
             .Include(c => c.Inventory)
             .Include(c => c.CombatStats)
-            .Include(c => c.CharacterDescription)
+            .Include(c => c.Info)
             .AsSplitQuery()
             .Include(c => c.CurrentClassSlots)
             .Include(c => c.AbilityScores)

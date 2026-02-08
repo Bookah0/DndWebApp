@@ -17,9 +17,6 @@ public class CreateBackgroundRequestDto
     
     [Required]
     public required CurrencyDto StartingCurrency { get; set; }
-    public ICollection<int> FeatureIds { get; set; } = [];
-    public ICollection<int> StartingItemIds { get; set; } = [];
-    public ICollection<StartingItemOptionDto> StartingItemChoices { get; set; } = [];
 }
 
 public class UpdateBackgroundRequestDto
@@ -31,9 +28,6 @@ public class UpdateBackgroundRequestDto
     [MinLength(1)]
     [MaxLength(2000)]
     public string? Description { get; set; }
-    public ICollection<int> FeatureIds { get; set; } = [];
-    public ICollection<int> StartingItemIds { get; set; } = [];
-    public ICollection<StartingItemOptionDto> StartingItemChoices { get; set; } = [];
     public CurrencyDto? StartingCurrency { get; set; }
     public bool? IsPublic { get; set; }
     public bool? CloningAllowed { get; set; }

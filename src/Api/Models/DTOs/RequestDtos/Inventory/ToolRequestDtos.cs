@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Api.Models.Items.Constants;
 
 namespace Api.Models.DTOs.RequestDtos.Inventory;
 
@@ -23,14 +24,13 @@ public class CreateToolRequestDto
     [MaxLength(100)]
     public required string ToolCategory { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(50)]
-    public required string Rarity { get; set; }
+    public string Rarity { get; set; } = ItemRarity.Common;
 
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
-    public bool? RequiresAttunement { get; set; }
+    public bool RequiresAttunement { get; set; } = false;
 }
 
 public class UpdateToolRequestDto
@@ -56,7 +56,6 @@ public class UpdateToolRequestDto
 
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
-    public List<string>? OtherCategories { get; set; }
     public bool? RequiresAttunement { get; set; }
     public bool? IsPublic { get; set; }
     public bool? CloningAllowed { get; set; }

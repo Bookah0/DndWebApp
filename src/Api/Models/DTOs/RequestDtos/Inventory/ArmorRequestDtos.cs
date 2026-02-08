@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Api.Models.Items.Constants;
 
 namespace Api.Models.DTOs.RequestDtos.Inventory;
 
@@ -11,7 +12,7 @@ public class CreateArmorRequestDto
 
     [MinLength(1)]
     [MaxLength(1000)]
-    public string? Description { get; set; }
+    public string Description { get; set; } = "";
 
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
@@ -32,17 +33,16 @@ public class CreateArmorRequestDto
     public required bool PlusDexMod { get; set; }
 
     [MaxLength(50)]
-    public string? Rarity { get; set; }
+    public string Rarity { get; set; } = ItemRarity.Common;
 
-    public bool? RequiresAttunement { get; set; }
+    public bool RequiresAttunement { get; set; } = false;
 
     [Range(1, int.MaxValue)]
     public int? ModCap { get; set; }
 
     [Range(1, 30)]
-    public int? StrengthScoreRequired { get; set; }
-
-    public bool? StealthDisadvantage { get; set; }
+    public int StrengthScoreRequired { get; set; } = 0;
+    public bool StealthDisadvantage { get; set; } = false;
 }
 
 public class UpdateArmorRequestDto

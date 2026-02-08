@@ -15,8 +15,8 @@ public class Item : CreatableEntity
     public required ICollection<string> Categories { get; set; }
     public string Rarity { get; set; } = ItemRarity.Common;
     public bool RequiresAttunement { get; set; } = false;
-    public int Weight { get; set; }
-    public int Value { get; set; }
+    public int? Weight { get; set; }
+    public int? Value { get; set; }
     public int Quantity { get; set; } = 1;
 }
 

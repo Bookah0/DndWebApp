@@ -69,7 +69,7 @@ public class InventoryService(
 
         logger.LogInformation("Adding item with ID: {ItemId} to inventory with ID: {InventoryId}", itemId, inventory.Id);
         inventory.StoredItems.Add(item);
-        inventory.TotalWeight += item.Weight;
+        inventory.TotalWeight += item.Weight  ?? 0;
 
         await repo.UpdateAsync(inventory);
         logger.LogInformation("Added item with ID: {ItemId} to inventory with ID: {InventoryId}", itemId, inventory.Id);   
@@ -89,7 +89,7 @@ public class InventoryService(
         logger.LogInformation("Discarding item with ID: {ItemId} from inventory with ID: {InventoryId}", itemId, inventory.Id);
         await UnEquip(inventory, itemId);
         inventory.StoredItems.Remove(item);
-        inventory.TotalWeight -= item.Weight;
+        inventory.TotalWeight -= item.Weight ?? 0;
         await repo.UpdateAsync(inventory);
         logger.LogInformation("Discarded item with ID: {ItemId} from inventory with ID: {InventoryId}", itemId, inventory.Id);
     }

@@ -14,21 +14,21 @@ public class RaceService(IRaceRepository repo, ICurrentUserService currentUserSe
     public async Task<Race> CreateAsync(CreateRaceRequestDto dto)
     {
         logger.LogInformation("Creating race, Name: {RaceName}", dto.Name);
-        var raceDescription = new SpeciesDescriptions
+        var raceDescription = new SpeciesInfo
         {
-            General = dto.SpeciesDescriptions?.GeneralDescription ?? "",
-            Aging = dto.SpeciesDescriptions?.AgingDescription ?? "",
-            CommonAlignment = dto.SpeciesDescriptions?.AlignmentDescription ?? "",
-            Size = dto.SpeciesDescriptions?.SizesDescription ?? "",
-            Languages = dto.SpeciesDescriptions?.LanguagesDescription ?? ""
+            General = dto.Info?.GeneralDescription ?? "",
+            Aging = dto.Info?.AgingDescription ?? "",
+            CommonAlignment = dto.Info?.AlignmentDescription ?? "",
+            Size = dto.Info?.SizesDescription ?? "",
+            Languages = dto.Info?.LanguagesDescription ?? ""
         };
         
         var race = await repo.CreateAsync(new()
         {
             Name = dto.Name,
-            RaceDescription = raceDescription,
-            Speed = dto.Speed ?? 30,
-            Size = dto.Size ?? CreatureSize.Medium,
+            Info = raceDescription,
+            Speed = dto.Speed,
+            Size = dto.Size,
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
@@ -62,11 +62,11 @@ public class RaceService(IRaceRepository repo, ICurrentUserService currentUserSe
         race.Speed = dto.Speed ?? race.Speed;
         race.Size = dto.Size ?? race.Size;
 
-        race.RaceDescription.General = dto.SpeciesDescriptions?.GeneralDescription ?? race.RaceDescription.General;
-        race.RaceDescription.Aging = dto.SpeciesDescriptions?.AgingDescription ?? race.RaceDescription.Aging;
-        race.RaceDescription.CommonAlignment = dto.SpeciesDescriptions?.AlignmentDescription ?? race.RaceDescription.CommonAlignment;
-        race.RaceDescription.Size = dto.SpeciesDescriptions?.SizesDescription ?? race.RaceDescription.Size;
-        race.RaceDescription.Languages = dto.SpeciesDescriptions?.LanguagesDescription ?? race.RaceDescription.Languages;
+        race.Info.General = dto.Info?.GeneralDescription ?? race.Info.General;
+        race.Info.Aging = dto.Info?.AgingDescription ?? race.Info.Aging;
+        race.Info.CommonAlignment = dto.Info?.AlignmentDescription ?? race.Info.CommonAlignment;
+        race.Info.Size = dto.Info?.SizesDescription ?? race.Info.Size;
+        race.Info.Languages = dto.Info?.LanguagesDescription ?? race.Info.Languages;
 
         race.IsPublic = dto.IsPublic ?? race.IsPublic;
         race.CloningAllowed = dto.CloningAllowed ?? race.CloningAllowed;

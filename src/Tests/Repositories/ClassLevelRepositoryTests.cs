@@ -118,10 +118,10 @@ public class ClassLevelRepositoryTests
         Assert.Equal(1, savedLevel.SpellSlots[0]);
         Assert.Equal(0, savedLevel.SpellSlots[4]);
 
-        Assert.NotNull(savedLevel.ClassSpecificSlotsAtLevel);
-        Assert.NotEmpty(savedLevel.ClassSpecificSlotsAtLevel);
-        Assert.Equal("Bardic inspiration", savedLevel.ClassSpecificSlotsAtLevel.First().Name);
-        Assert.Equal(2, savedLevel.ClassSpecificSlotsAtLevel.First().Quantity);
+        Assert.NotNull(savedLevel.ClassSlotsAtLevel);
+        Assert.NotEmpty(savedLevel.ClassSlotsAtLevel);
+        Assert.Equal("Bardic inspiration", savedLevel.ClassSlotsAtLevel.First().Name);
+        Assert.Equal(2, savedLevel.ClassSlotsAtLevel.First().Quantity);
 
         Assert.NotNull(savedLevel.NewFeatures);
         Assert.NotEmpty(savedLevel.NewFeatures);
@@ -159,10 +159,10 @@ public class ClassLevelRepositoryTests
         Assert.Equal(1, savedLevel.SpellSlots[0]);
         Assert.Equal(0, savedLevel.SpellSlots[4]);
 
-        Assert.NotNull(savedLevel.ClassSpecificSlotsAtLevel);
-        Assert.NotEmpty(savedLevel.ClassSpecificSlotsAtLevel);
-        Assert.Equal("Bardic inspiration", savedLevel.ClassSpecificSlotsAtLevel.First().Name);
-        Assert.Equal(2, savedLevel.ClassSpecificSlotsAtLevel.First().Quantity);
+        Assert.NotNull(savedLevel.ClassSlotsAtLevel);
+        Assert.NotEmpty(savedLevel.ClassSlotsAtLevel);
+        Assert.Equal("Bardic inspiration", savedLevel.ClassSlotsAtLevel.First().Name);
+        Assert.Equal(2, savedLevel.ClassSlotsAtLevel.First().Quantity);
 
         Assert.NotNull(savedLevel.NewFeatures);
         Assert.NotEmpty(savedLevel.NewFeatures);

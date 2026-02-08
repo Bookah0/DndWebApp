@@ -34,7 +34,7 @@ public class CreateFeatRequestDto : CreateFeatureRequestDto
 {
     [MinLength(1)]
     [MaxLength(500)]
-    public string? Prerequisite { get; set; }
+    public string Prerequisite { get; set; } = "";
 
     [Range(1, int.MaxValue)]
     public int? FromClassId { get; set; }
@@ -97,7 +97,7 @@ public class CreateTraitRequestDto : CreateFeatureRequestDto
 {
     [Required]
     [Range(1, int.MaxValue)]
-    public int RaceId { get; set; }
+    public required int RaceId { get; set; }
 }
 
 public class UpdateTraitRequestDto : UpdateFeatureRequestDto

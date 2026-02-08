@@ -10,22 +10,18 @@ public class CreateClassLevelRequestDto
     public required int ClassId { get; set; }
 
     [Required]
-    public bool IsSubclassLevel { get; set; }
+    public required bool IsSubclassLevel { get; set; }
 
     [Required]
     [Range(1, 20)]
     public required int Level { get; set; }
 
-    [Range(1, 10)]
-    public int? ProficiencyBonus { get; set; }
+    [Range(0, int.MaxValue)]
+    public int CantripsKnown { get; set; } = 0;
 
     [Range(0, int.MaxValue)]
-    public int? CantripsKnown { get; set; }
-
-    [Range(0, int.MaxValue)]
-    public int? SpellsKnown { get; set; }
-    public int[]? SpellSlots { get; set; }
-    public ICollection<ClassSlotRequestDto>? ClassSpecificSlotsAtLevel { get; set; }
+    public int SpellsKnown { get; set; } = 0;
+    public int[] SpellSlots { get; set; } = [];
 }
 
 public class UpdateClassLevelRequestDto
@@ -46,7 +42,6 @@ public class UpdateClassLevelRequestDto
     [Range(0, int.MaxValue)]
     public int? SpellsKnown { get; set; }
     public int[]? SpellSlots { get; set; }
-    public ICollection<ClassSlotRequestDto>? ClassSpecificSlotsAtLevel { get; set; }
 }
 
 public class ClassSlotRequestDto

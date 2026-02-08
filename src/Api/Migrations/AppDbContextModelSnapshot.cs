@@ -1304,7 +1304,7 @@ namespace Api.Migrations
                                 .HasForeignKey("CharacterId");
                         });
 
-                    b.OwnsOne("Api.Models.Characters.CharacterDescription", "CharacterDescription", b1 =>
+                    b.OwnsOne("Api.Models.Characters.CharacterInfo", "CharacterInfo", b1 =>
                         {
                             b1.Property<int>("CharacterId")
                                 .HasColumnType("integer");
@@ -1595,7 +1595,7 @@ namespace Api.Migrations
 
                     b.Navigation("Background");
 
-                    b.Navigation("CharacterDescription")
+                    b.Navigation("CharacterInfo")
                         .IsRequired();
 
                     b.Navigation("Class");

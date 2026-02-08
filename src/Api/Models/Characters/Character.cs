@@ -27,7 +27,7 @@ public class Character : CreatableEntity
     // Background
     public Background? Background { get; set; }
     public required int BackgroundId { get; set; }
-    public CharacterDescription CharacterDescription { get; set; } = new();
+    public CharacterInfo Info { get; set; } = new();
 
     // Inventory
     public required Inventory Inventory { get; set; }
@@ -39,7 +39,7 @@ public class Character : CreatableEntity
     public ICollection<Feat> Feats { get; set; } = [];
     public ICollection<Spell> ReadySpells { get; set; } = [];
     public int[]? CurrentSpellSlots { get; set; }
-    public ICollection<ClassSpecificSlot> CurrentClassSlots { get; set; } = [];
+    public ICollection<ClassSlot> CurrentClassSlots { get; set; } = [];
 
     // Proficiencies
     public ICollection<SaveThrowProficiency> SavingThrows { get; set; } = [];
@@ -67,7 +67,7 @@ public class CombatStats
 }
 
 [Owned]
-public class CharacterDescription
+public class CharacterInfo
 {
     public int? AlignmentId { get; set; }
     public string PersonalityTraits { get; set; } = "";

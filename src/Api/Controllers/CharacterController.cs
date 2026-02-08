@@ -69,11 +69,11 @@ public class CharacterController(ICharacterService service, IMapper mapper) : Co
     }
 
     [HttpPatch("{characterId}/description")]
-    public async Task<ActionResult<CharacterResponseDto>> EditCharacterDescription(int characterId, Guid userId, [FromBody] UpdateCharacterRequestDto edited)
+    public async Task<ActionResult<CharacterResponseDto>> EditCharacterInfo(int characterId, Guid userId, [FromBody] CharacterInfoRequestDto edited)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
-        var characterDescription = mapper.Map<CharacterDescription>(edited);
-        var updatedCharacter = await service.EditCharacterDescriptionAsync(characterDescription, characterId);
+        var characterDescription = mapper.Map<CharacterInfo>(edited);
+        var updatedCharacter = await service.EditCharacterInfoAsync(characterDescription, characterId);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 

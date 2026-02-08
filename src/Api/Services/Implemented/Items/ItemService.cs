@@ -15,9 +15,11 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
 {
     public async Task<Item> CreateAsync(CreateItemRequestDto dto)
     {
-        var dtoMainCategory =  ResolveOptionOrThrow(dto.MainCategory, ItemCategory.AllowedValues, "Item Category");
-        var dtoOtherCategories = ResolveOptionOrThrow(dto.OtherCategories, ItemCategory.AllowedValues, "Item Category");
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        if(dto.Categories == null || dto.Categories.Count < 1)
+            throw new ValidationException("At least one category is required for an item.");
+
+        var dtoCategories = ResolveOptionOrThrow(dto.Categories, ItemCategory.AllowedValues, "Item Category");
+        var dtoRarity = ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity");
         
         logger.LogInformation("Creating item, Name: {ItemName}", dto.Name);
 
@@ -25,11 +27,11 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         {
             Name = dto.Name,
             Description = dto.Description,
-            Categories = [dtoMainCategory, .. dtoOtherCategories],
-            Value = dto.Value ?? 0,
-            Rarity = dtoRarity ?? ItemRarity.Common,
-            RequiresAttunement = dto.RequiresAttunement ?? false,
-            Weight = dto.Weight ?? 0,
+            Categories = dtoCategories,
+            Value = dto.Value,
+            Rarity = dtoRarity,
+            RequiresAttunement = dto.RequiresAttunement,
+            Weight = dto.Weight,
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId()
@@ -72,6 +74,7 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         item.Rarity = dtoRarity ?? item.Rarity;
         item.RequiresAttunement = dto.RequiresAttunement ?? item.RequiresAttunement;
         item.Weight = dto.Weight ?? item.Weight;
+        item.Quantity = dto.Quantity ?? item.Quantity;
 
         item.IsPublic = dto.IsPublic ?? item.IsPublic;
         item.CloningAllowed = dto.CloningAllowed ?? item.CloningAllowed;
@@ -92,8 +95,8 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         {
             SortItemOption.Name => OrderByMany(items, [(i => i.Name)], descending),
             SortItemOption.Category => OrderByMany(items, [(i => i.Categories.FirstOrDefault()!), (i => i.Name)], descending),
-            SortItemOption.Value => OrderByMany(items, [(i => i.Value), (i => i.Name)], descending),
-            SortItemOption.Weight => OrderByMany(items, [(i => i.Weight), (i => i.Name)], descending),
+            SortItemOption.Value => OrderByMany(items, [(i => i.Value!), (i => i.Name)], descending),
+            SortItemOption.Weight => OrderByMany(items, [(i => i.Weight!), (i => i.Name)], descending),
             SortItemOption.Rarity => OrderByMany(items, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
             _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };

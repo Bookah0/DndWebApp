@@ -44,6 +44,7 @@ public class SpellService(
             Level = dto.Level,
             EffectsAtHigherLevels = dto.EffectsAtHigherLevels,
             Duration = dtoDuration,
+            DurationValue = dto.DurationValue,
             CastingTime = dtoCastTime,
             ReactionCondition = dto.ReactionCondition,
             MagicSchool = ResolveOptionOrEmpty(dto.MagicSchool, MagicSchool.AllowedValues),
@@ -124,6 +125,8 @@ public class SpellService(
         spell.Level = dto.Level ?? spell.Level;
         spell.EffectsAtHigherLevels = dto.EffectsAtHigherLevels ?? spell.EffectsAtHigherLevels;
         spell.ReactionCondition = dto.ReactionCondition ?? spell.ReactionCondition;
+        spell.DurationValue = dto.DurationValue ?? spell.DurationValue;
+        spell.CastingTimeValue = dto.CastingTimeValue ?? spell.CastingTimeValue;
 
         spell.DamageRoll = dto.DamageRoll ?? spell.DamageRoll;
         spell.SpellTargeting.RangeValue = dto.TargetingDto?.RangeValue ?? spell.SpellTargeting.RangeValue;
@@ -152,10 +155,10 @@ public class SpellService(
         {
             SortSpellOption.Name => OrderByMany(spells, [(s => s.Name)], descending),
             SortSpellOption.Level => OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
-            SortSpellOption.CastingTime => OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue), (s => s.Name)], descending),
-            SortSpellOption.Duration => OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue), (s => s.Name)], descending),
+            SortSpellOption.CastingTime => OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue!), (s => s.Name)], descending),
+            SortSpellOption.Duration => OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue!), (s => s.Name)], descending),
             SortSpellOption.Target => OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
-            SortSpellOption.Range => OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue), (s => s.Name)], descending),
+            SortSpellOption.Range => OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue!), (s => s.Name)], descending),
             _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };
     }

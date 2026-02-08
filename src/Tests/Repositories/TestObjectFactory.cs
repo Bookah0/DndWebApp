@@ -85,7 +85,7 @@ public static class TestObjectFactory
                 MaxHitDice = 1
             },
             CurrentSpellSlots = [4, 2, 0, 0, 0, 0, 0, 0, 0],
-            CharacterDescription = new CharacterDescription
+            Info = new CharacterInfo
             {
                 Eyes = "Brown"
             },
@@ -99,7 +99,7 @@ public static class TestObjectFactory
     }
 
     public static int[] CreateTestSpellSlotsAtLevel() { return [1, 0, 0, 0, 0, 0, 0, 0, 0]; }
-    public static List<ClassSpecificSlot> CreateClassSpecificSlots() { return [new ClassSpecificSlot { Name = "Bardic inspiration", Quantity = 2 }]; }
+    public static List<ClassSlot> CreateClassSpecificSlots() { return [new ClassSlot { Name = "Bardic inspiration", Quantity = 2 }]; }
     public static ClassFeature CreateTestClassFeature(int classLevelId)
     {
         return new()
@@ -122,7 +122,7 @@ public static class TestObjectFactory
             Class = cls,
             ClassId = cls.Id,
             ProficiencyBonus = 3,
-            ClassSpecificSlotsAtLevel = CreateClassSpecificSlots(),
+            ClassSlotsAtLevel = CreateClassSpecificSlots(),
             SpellSlots = CreateTestSpellSlotsAtLevel(),
             NewFeatures = [CreateTestClassFeature(10)],
             CreatedAt = DateTime.UtcNow,

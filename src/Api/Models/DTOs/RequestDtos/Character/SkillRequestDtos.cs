@@ -11,7 +11,7 @@ public class CreateSkillRequestDto
 
     [MinLength(1)]
     [MaxLength(1000)]
-    public string? Description { get; set; }
+    public string Description { get; set; } = "";
 
     [Required]
     [Range(0, int.MaxValue)]

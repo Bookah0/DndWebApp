@@ -26,14 +26,14 @@ public class SpellController(ISpellService service, IMapper mapper) : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult<SpellResponseDto>> CreateSpell([FromBody] SpellDto dto)
+    public async Task<ActionResult<SpellResponseDto>> CreateSpell([FromBody] CreateSpellRequestDto dto)
     {
         var spell = await service.CreateAsync(dto);
         return Ok(mapper.Map<SpellResponseDto>(spell));
     }
 
     [HttpPatch("{spellId}")]
-    public async Task<ActionResult<SpellResponseDto>> UpdateSpell(int spellId, [FromBody] SpellDto dto)
+    public async Task<ActionResult<SpellResponseDto>> UpdateSpell(int spellId, [FromBody] UpdateSpellRequestDto dto)
     {
         var updatedSpell = await service.UpdateAsync(spellId, dto);
         return Ok(mapper.Map<SpellResponseDto>(updatedSpell));

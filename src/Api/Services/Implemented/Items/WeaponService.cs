@@ -41,7 +41,7 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
             VersatileDamageDice = dto.VersitileDamageDice,
             LongRange = dto.LongRange,
             Rarity = dtoRarity ?? ItemRarity.Common,
-            RequiresAttunement = dto.RequiresAttunement ?? false,
+            RequiresAttunement = dto.RequiresAttunement,
             Categories = [ItemCategory.Weapon],
 
             CreatedAt = DateTime.UtcNow,
@@ -112,8 +112,8 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
             SortWeaponOption.Name => OrderByMany(weapons, [(i => i.Name)], descending),
             SortWeaponOption.Category => OrderByMany(weapons, [(i => i.WeaponCategory), (i => i.Name)], descending),
             SortWeaponOption.Type => OrderByMany(weapons, [(i => i.WeaponType), (i => i.Name)], descending),
-            SortWeaponOption.Value => OrderByMany(weapons, [(i => i.Value), (i => i.Name)], descending),
-            SortWeaponOption.Weight => OrderByMany(weapons, [(i => i.Weight), (i => i.Name)], descending),
+            SortWeaponOption.Value => OrderByMany(weapons, [(i => i.Value!), (i => i.Name)], descending),
+            SortWeaponOption.Weight => OrderByMany(weapons, [(i => i.Weight!), (i => i.Name)], descending),
             SortWeaponOption.Rarity => OrderByMany(weapons, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
             _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };

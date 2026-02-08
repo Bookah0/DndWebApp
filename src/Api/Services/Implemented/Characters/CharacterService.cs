@@ -50,7 +50,7 @@ public partial class CharacterService(
 
         character.ProficiencyBonus = 1 + (int)Math.Ceiling((double)newLvl / 4);
         character.CurrentSpellSlots = latestLevel.SpellSlots;
-        character.CurrentClassSlots = latestLevel.ClassSpecificSlotsAtLevel;
+        character.CurrentClassSlots = latestLevel.ClassSlotsAtLevel;
 
         foreach (var spell in dto.ChosenSpells)
         {
@@ -116,11 +116,11 @@ public partial class CharacterService(
         return character;
     }
 
-    public async Task<Character> EditCharacterDescriptionAsync(CharacterDescription edited, int characterId)
+    public async Task<Character> EditCharacterInfoAsync(CharacterInfo edited, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId);
         logger.LogInformation("Updating character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
-        character.CharacterDescription = edited;
+        character.Info = edited;
         character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully updated character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
         return character;
@@ -152,7 +152,7 @@ public partial class CharacterService(
             
         character.CombatStats.CurrentHitDice = character.CombatStats.MaxHitDice;
         character.CombatStats.CurrentHP = character.CombatStats.MaxHP;
-        character.CurrentClassSlots = latestLevel.ClassSpecificSlotsAtLevel;
+        character.CurrentClassSlots = latestLevel.ClassSlotsAtLevel;
         character.CurrentSpellSlots = latestLevel.SpellSlots;
 
         character = await repo.UpdateAsync(character);

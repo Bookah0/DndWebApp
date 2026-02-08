@@ -16,11 +16,11 @@ public class CreateLanguageRequestDto
 
     [MinLength(1)]
     [MaxLength(100)]
-    public string? Script { get; set; }
+    public string Script { get; set; } = "";
 
     [MinLength(1)]
     [MaxLength(1000)]
-    public string? TypicalSpeakers { get; set; }
+    public string TypicalSpeakers { get; set; } = "";
 }
 
 public class UpdateLanguageRequestDto

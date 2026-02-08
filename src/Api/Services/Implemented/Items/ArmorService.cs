@@ -24,16 +24,16 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
         {
             Name = dto.Name,
             Description = dto.Description ?? "",
-            Weight = dto.Weight ?? 0,
-            Value = dto.Value ?? 0,
+            Weight = dto.Weight,
+            Value = dto.Value,
             ArmorCategory = dtoCategory,
             BaseArmorClass = dto.BaseArmorClass,
             PlusDexMod = dto.PlusDexMod,
-            StealthDisadvantage = dto.StealthDisadvantage ?? false,
+            StealthDisadvantage = dto.StealthDisadvantage,
             ModCap = dto.ModCap ?? 0,
-            StrengthScoreRequired = dto.StrengthScoreRequired ?? 0,
+            StrengthScoreRequired = dto.StrengthScoreRequired,
             Rarity = dtoRarity ?? ItemRarity.Common,
-            RequiresAttunement = dto.RequiresAttunement ?? false,
+            RequiresAttunement = dto.RequiresAttunement,
             Categories = [ItemCategory.Armor],
 
             CreatedAt = DateTime.UtcNow,
@@ -96,8 +96,8 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
             SortArmorOption.Name => OrderByMany(armors, [(i => i.Name)], descending),
             SortArmorOption.Category => OrderByMany(armors, [(i => i.ArmorCategory), (i => i.Name)], descending),
             SortArmorOption.AC => OrderByMany(armors, [(i => i.BaseArmorClass), (i => i.Name)], descending),
-            SortArmorOption.Value => OrderByMany(armors, [(i => i.Value), (i => i.Name)], descending),
-            SortArmorOption.Weight => OrderByMany(armors, [(i => i.Weight), (i => i.Name)], descending),
+            SortArmorOption.Value => OrderByMany(armors, [(i => i.Value!), (i => i.Name)], descending),
+            SortArmorOption.Weight => OrderByMany(armors, [(i => i.Weight!), (i => i.Name)], descending),
             SortArmorOption.Rarity => OrderByMany(armors, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
             _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
         };

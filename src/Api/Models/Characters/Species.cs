@@ -1,3 +1,4 @@
+using Api.Models.Characters.Constants;
 using Api.Models.Features;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,9 +8,9 @@ namespace Api.Models.Characters;
 public class Species : CreatableEntity
 {
     public required string Name { get; set; }
-    public SpeciesDescriptions RaceDescription { get; set; } = new();
+    public SpeciesInfo Info { get; set; } = new();
     public required int Speed { get; set; }
-    public string Size { get; set; } = "Medium";
+    public string Size { get; set; } = CreatureSize.Medium;
     public ICollection<Trait> Traits { get; set; } = [];
 }
 
@@ -25,7 +26,7 @@ public class Subrace : Species
 }
 
 [Owned]
-public class SpeciesDescriptions
+public class SpeciesInfo
 {
     public string General { get; set; } = "";
     public string Aging { get; set; } = "";

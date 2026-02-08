@@ -14,5 +14,5 @@ public class E5eApiResponseDto<T> where T : class
     public required string Previous { get; set; }
 
     [JsonPropertyName("results")]
-    public required ICollection<T> Results { get; set; }
+    public required List<T> Results { get; set; }
 }

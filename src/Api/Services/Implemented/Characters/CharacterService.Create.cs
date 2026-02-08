@@ -56,7 +56,7 @@ public partial class CharacterService : ICharacterService
         {
             Name = dto.Name,
             Level = dto.Level,
-            Experience = 0,
+            Experience = dto.Experience,
             PlayerName = dto.PlayerName ?? "",
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
@@ -73,7 +73,7 @@ public partial class CharacterService : ICharacterService
 
             Background = background,
             BackgroundId = dto.BackgroundId,
-            CharacterDescription = GetCharacterDescription(dto) ?? new(),
+            Info = GetCharacterInfo(dto) ?? new(),
 
             Inventory = inventory,
             InventoryId = inventory.Id,
@@ -97,27 +97,27 @@ public partial class CharacterService : ICharacterService
     }
 
 
-    public CharacterDescription? GetCharacterDescription(CreateCharacterRequestDto dto)
+    public CharacterInfo? GetCharacterInfo(CreateCharacterRequestDto dto)
     {
-        if (dto.CharacterDescription is null)
+        if (dto.CharacterInfo is null)
             return null;
 
-        return new CharacterDescription()
+        return new CharacterInfo()
         {
-            AlignmentId = dto.CharacterDescription.AlignmentId,
-            PersonalityTraits = dto.CharacterDescription.PersonalityTraits ?? "",
-            Ideals = dto.CharacterDescription.Ideals ?? "",
-            Bonds = dto.CharacterDescription.Bonds ?? "",
-            Flaws = dto.CharacterDescription.Flaws ?? "",
-            Age = dto.CharacterDescription.Age,
-            Height = dto.CharacterDescription.Height,
-            Weight = dto.CharacterDescription.Weight,
-            Eyes = dto.CharacterDescription.Eyes ?? "",
-            Skin = dto.CharacterDescription.Skin ?? "",
-            Hair = dto.CharacterDescription.Hair ?? "",
-            AlliesAndOrganizations = dto.CharacterDescription.AlliesAndOrganizations ?? "",
-            Backstory = dto.CharacterDescription.Backstory ?? "",
-            CharacterPictureUrl = dto.CharacterDescription.CharacterPictureUrl ?? "",
+            AlignmentId = dto.CharacterInfo.AlignmentId,
+            PersonalityTraits = dto.CharacterInfo.PersonalityTraits ?? "",
+            Ideals = dto.CharacterInfo.Ideals ?? "",
+            Bonds = dto.CharacterInfo.Bonds ?? "",
+            Flaws = dto.CharacterInfo.Flaws ?? "",
+            Age = dto.CharacterInfo.Age,
+            Height = dto.CharacterInfo.Height,
+            Weight = dto.CharacterInfo.Weight,
+            Eyes = dto.CharacterInfo.Eyes ?? "",
+            Skin = dto.CharacterInfo.Skin ?? "",
+            Hair = dto.CharacterInfo.Hair ?? "",
+            AlliesAndOrganizations = dto.CharacterInfo.AlliesAndOrganizations ?? "",
+            Backstory = dto.CharacterInfo.Backstory ?? "",
+            CharacterPictureUrl = dto.CharacterInfo.CharacterPictureUrl ?? "",
         };
     }
 
@@ -149,9 +149,9 @@ public partial class CharacterService : ICharacterService
         return abilityScores;
     }
 
-    public async Task<List<Feature>> GetAllFeaturesAsync(Character character, Race race, Subrace? subrace, Background background, BaseClass clss, Subclass? subclass)
+    public async Task<ICollection<Feature>> GetAllFeaturesAsync(Character character, Race race, Subrace? subrace, Background background, BaseClass clss, Subclass? subclass)
     {
-        List<Feature> allFeatures = [.. race.Traits, .. background.Features];
+        ICollection<Feature> allFeatures = [.. race.Traits, .. background.Features];
 
         if (subrace is not null)
         {

@@ -32,10 +32,10 @@ public partial class ClassLevelService(
             Level = dto.Level,
             Class = clss,
             ClassId = dto.ClassId,
-            ProficiencyBonus = dto.ProficiencyBonus ?? CalculateProficiencyBonus(dto.Level),
-            SpellsKnown = dto.SpellsKnown ?? 0,
-            CantripsKnown = dto.CantripsKnown ?? 0,
-            SpellSlots = dto.SpellSlots ?? [],
+            ProficiencyBonus = CalculateProficiencyBonus(dto.Level),
+            SpellsKnown = dto.SpellsKnown,
+            CantripsKnown = dto.CantripsKnown,
+            SpellSlots = dto.SpellSlots,
             NewFeatures = [],
 
             CreatedAt = DateTime.UtcNow,
@@ -58,6 +58,9 @@ public partial class ClassLevelService(
 
         level.Level = dto.Level ?? level.Level;
         level.ProficiencyBonus = dto.ProficiencyBonus ?? level.ProficiencyBonus;
+        level.CantripsKnown = dto.CantripsKnown ?? level.CantripsKnown;
+        level.SpellsKnown = dto.SpellsKnown ?? level.SpellsKnown;
+        level.SpellSlots = dto.SpellSlots ?? level.SpellSlots;
 
         if (dto.NewClassId is not null && level.ClassId != dto.NewClassId)
         {
@@ -137,7 +140,7 @@ public partial class ClassLevelService(
         var level = await levelRepo.GetByIdAsync(levelId);
 
         logger.LogInformation("Adding class slot to class level, SlotName: {SlotName}, ClassLevelId: {ClassLevelId}", dto.Name, levelId);
-        level.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+        level.ClassSlotsAtLevel.Add(new ClassSlot
         {
             Name = dto.Name,
             Quantity = dto.Quantity,
@@ -151,11 +154,11 @@ public partial class ClassLevelService(
     public async Task<ClassLevel> RemoveClassSlotByNameAsync(int levelId, string slotName)
     {
         var level = await levelRepo.GetByIdAsync(levelId);
-        var slot = level.ClassSpecificSlotsAtLevel.FirstOrDefault(s => s.Name == slotName)
+        var slot = level.ClassSlotsAtLevel.FirstOrDefault(s => s.Name == slotName)
             ?? throw new ValidationException($"Slot with name {slotName} is not a class slot of class level with id {levelId}");
 
         logger.LogInformation("Removing class slot from class level, SlotName: {SlotName}, ClassLevelId: {ClassLevelId}", slotName, levelId);
-        level.ClassSpecificSlotsAtLevel.Remove(slot);
+        level.ClassSlotsAtLevel.Remove(slot);
         var updatedLevel = await levelRepo.UpdateAsync(level);
         logger.LogInformation("Successfully removed class slot from class level, SlotName: {SlotName}, ClassLevelId: {ClassLevelId}", slotName, levelId);
         return updatedLevel;

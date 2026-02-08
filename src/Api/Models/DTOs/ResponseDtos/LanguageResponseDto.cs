@@ -6,7 +6,7 @@ public class LanguageResponseDto
     public required string Name { get; set; }
     public required string Family { get; set; }
     public required string Script { get; set; }
-    public List<string> TypicalSpeakers { get; set; } = [];
+    public ICollection<string> TypicalSpeakers { get; set; } = [];
     public bool IsExotic { get; set; }
     public bool IsHomebrew { get; set; }
 }

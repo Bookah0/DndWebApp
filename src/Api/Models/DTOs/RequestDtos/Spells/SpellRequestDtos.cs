@@ -21,9 +21,6 @@ public class CreateSpellRequestDto
     [MinLength(1)]
     [MaxLength(1000)]
     public string EffectsAtHigherLevels { get; set; } = "";
-    
-    [Required]
-    public required ICollection<int> ClassIds { get; set; }
 
     [Required]
     [MinLength(1)]
@@ -31,7 +28,7 @@ public class CreateSpellRequestDto
     public required string Duration { get; set; }
 
     [Range(0, int.MaxValue)]
-    public int DurationValue { get; set; }
+    public int? DurationValue { get; set; }
 
     [Required]
     [MinLength(1)]

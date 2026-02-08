@@ -117,7 +117,7 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
                 ];
             }
 
-            var ClassSpecificSlots = new List<ClassSpecificSlot>();
+            var ClassSlots = new List<ClassSlot>();
 
             var curClassLevel = new ClassLevel
             {
@@ -135,7 +135,7 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
                 CloningAllowed = true
             };
 
-            PopulateClassSpecificSlotList(level, curClassLevel);
+            PopulateClassSlotList(level, curClassLevel);
 
             currentAbilityScoreBonuses = level.AbilityScoreBonuses - currentAbilityScoreBonuses;
 
@@ -335,7 +335,7 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
         return abilityIncreaseChoices;
     }
 
-    private static void PopulateClassSpecificSlotList(EClassLevelDto eLevel, ClassLevel classLevel)
+    private static void PopulateClassSlotList(EClassLevelDto eLevel, ClassLevel classLevel)
     {
         var cs = eLevel.ClassSpecific;
 
@@ -376,7 +376,7 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
         {
             if (value.HasValue)
             {
-                classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+                classLevel.ClassSlotsAtLevel.Add(new ClassSlot
                 {
                     Name = name,
                     Quantity = value.Value
@@ -387,12 +387,12 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
         // Nested objects
         if (cs.SneakAttack is not null)
         {
-            classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+            classLevel.ClassSlotsAtLevel.Add(new ClassSlot
             {
                 Name = "Sneak Attack Dice Count",
                 Quantity = cs.SneakAttack.DiceCount
             });
-            classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+            classLevel.ClassSlotsAtLevel.Add(new ClassSlot
             {
                 Name = "Sneak Attack Dice Value",
                 Quantity = cs.SneakAttack.DiceValue
@@ -401,12 +401,12 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
 
         if (cs.MartialArts is not null)
         {
-            classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+            classLevel.ClassSlotsAtLevel.Add(new ClassSlot
             {
                 Name = "Martial Arts Dice Count",
                 Quantity = cs.MartialArts.DiceCount
             });
-            classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+            classLevel.ClassSlotsAtLevel.Add(new ClassSlot
             {
                 Name = "Martial Arts Dice Value",
                 Quantity = cs.MartialArts.DiceValue
@@ -418,7 +418,7 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
         {
             foreach (var spellSlot in cs.CreatingSpellSlots)
             {
-                classLevel.ClassSpecificSlotsAtLevel.Add(new ClassSpecificSlot
+                classLevel.ClassSlotsAtLevel.Add(new ClassSlot
                 {
                     Name = $"Creating Spell Slot Level {spellSlot.SpellSlotLevel}",
                     Quantity = spellSlot.SorceryPointCost

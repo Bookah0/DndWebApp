@@ -25,6 +25,7 @@ public class SkillService(
         var skill = await repo.CreateAsync(new()
         {
             Name = dto.Name,
+            Description = dto.Description,
             AbilityId = dto.AbilityId,
             Ability = ability,
             

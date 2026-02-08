@@ -28,7 +28,7 @@ public class ClassLevelRepository(AppDbContext context) : IClassLevelRepository
     public async Task<ClassLevel> GetWithAllDataAsync(int id) =>
         await context.ClassLevels
             .AsSplitQuery()
-            .Include(b => b.ClassSpecificSlotsAtLevel)
+            .Include(b => b.ClassSlotsAtLevel)
             .Include(b => b.NewFeatures)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"ClassLevel with id {id} could not be found");
@@ -38,7 +38,7 @@ public class ClassLevelRepository(AppDbContext context) : IClassLevelRepository
     public async Task<ICollection<ClassLevel>> GetAllWithAllDataAsync() => 
         await context.ClassLevels
             .AsSplitQuery()
-            .Include(b => b.ClassSpecificSlotsAtLevel)
+            .Include(b => b.ClassSlotsAtLevel)
             .Include(b => b.NewFeatures)
             .ToListAsync();
 

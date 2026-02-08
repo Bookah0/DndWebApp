@@ -12,7 +12,7 @@ public interface ICharacterService
     Task<Character> GetByIdAsync(int id);
     Task<Character> LevelUpAsync(LevelUpDto dto, int characterId);
     Task<Character> ChangeClassAsync(int subclassId, int characterId);
-    Task<Character> EditCharacterDescriptionAsync(CharacterDescription edited, int characterId);
+    Task<Character> EditCharacterInfoAsync(CharacterInfo edited, int characterId);
     Task<Character> SpendHitDiceAsync(int nDice, int characterId);
     Task<Character> LongRestAsync(int characterId);
     Task<Character> TakeDamageAsync(int characterId, int change);

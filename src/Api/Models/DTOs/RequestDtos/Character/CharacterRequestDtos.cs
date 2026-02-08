@@ -5,27 +5,60 @@ using Api.Models.DTOs.ResponseDtos;
 
 public class CreateCharacterRequestDto
 { 
+    [Required]
+    [MinLength(1)]
+    [MaxLength(100)]
     public required string Name { get; set; }
+
+    [Required]
+    [Range(1, 20)]  
     public required int Level { get; set; }
-    public int? Experience { get; set; }
-    public string? PlayerName { get; set; }
-    public int RaceId { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public int Experience { get; set; } = 0;
+
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string PlayerName { get; set; } = "";
+
+    [Required]
+    [Range(1, int.MaxValue)]
+    public required int RaceId { get; set; }
+
+    [Range(1, int.MaxValue)]
     public int? SubraceId { get; set; }
+
+    [Required]
+    [Range(1, int.MaxValue)]
     public required int ClassId { get; set; }
+
+    [Range(1, int.MaxValue)]
     public int? SubClassId { get; set; }
+
+    [Required]
+    [Range(1, int.MaxValue)]
     public required int BackgroundId { get; set; }
-    public CharacterDescriptionRequestDto? CharacterDescription { get; set; }
+    public CharacterInfoRequestDto CharacterInfo { get; set; } = new();
+
+    [Required]
     public required AbilityScoresDto AbilityScores { get; set; }
 }
 
 public class UpdateCharacterRequestDto
 { 
+    [MinLength(1)]
+    [MaxLength(100)]
     public string? Name { get; set; }
+
+    [Range(0, int.MaxValue)]
     public int? Experience { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(100)]
     public string? PlayerName { get; set; }
-    public CharacterDescriptionRequestDto? CharacterDescription { get; set; }
-    public bool IsPublic { get; set; }
-    public bool CloningAllowed { get; set; }
+    public CharacterInfoRequestDto? CharacterInfo { get; set; }
+    public bool? IsPublic { get; set; }
+    public bool? CloningAllowed { get; set; }
 }
 
 public class AbilityScoresDto
@@ -55,7 +88,7 @@ public class AbilityScoresDto
     public required int Cha { get; set; }
 }
 
-public class CharacterDescriptionRequestDto
+public class CharacterInfoRequestDto
 {
     public int? AlignmentId { get; set; }
     public string? PersonalityTraits { get; set; }

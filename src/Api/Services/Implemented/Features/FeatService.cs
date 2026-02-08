@@ -28,6 +28,10 @@ public class FeatService(
         {
             Name = dto.Name,
             Description = dto.Description,
+            Prerequisite = dto.Prerequisite,
+            FromClassId = dto.FromClassId,
+            FromRaceId = dto.FromRaceId,
+            FromBackgroundId = dto.FromBackgroundId,
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),

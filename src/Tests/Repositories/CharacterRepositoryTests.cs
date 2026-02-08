@@ -79,7 +79,7 @@ public class CharacterRepositoryTests
     }
 
     [Fact]
-    public async Task GetCharacterDescriptionAsync_ReturnsExpectedDetails()
+    public async Task GetCharacterWithInfoAsync_ReturnsExpectedDetails()
     {
         var options = GetInMemoryOptions("Character_DescriptionDB");
         await using var context = new AppDbContext(options);
@@ -87,15 +87,15 @@ public class CharacterRepositoryTests
 
         // Arrange
         var character = CreateTestCharacter();
-        character.CharacterDescription.Age = 40;
-        character.CharacterDescription.Hair = "Brown";
-        character.CharacterDescription.Skin = "Hazel";
+        character.Info.Age = 40;
+        character.Info.Hair = "Brown";
+        character.Info.Skin = "Hazel";
 
         await repo.CreateAsync(character);
         await context.SaveChangesAsync();
 
         // Act
-        var desc = await repo.GetCharacterDescriptionAsync(character.Id);
+        var desc = await repo.GetCharacterInfoAsync(character.Id);
 
         // Assert
         Assert.NotNull(desc);

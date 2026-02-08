@@ -88,7 +88,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Weight = eArmor.Weight,
             Value = GetConvertedValue(eArmor.Cost.Quantity, eArmor.Cost.Unit),
             Quantity = eArmor.Cost.Quantity,
-            ArmorCategory = ResolveOptionOrThrow(eArmor.ArmorCategory, ArmorCategory.AllowedValues, "Armor Category"),
+            ArmorCategory = ResolveOptionOrThrow(eArmor.ArmorCategory, ArmorCategory.AllowedValues),
             BaseArmorClass = eArmor.ArmorClass.BaseArmorClass,
             PlusDexMod = eArmor.ArmorClass.DexBonus,
             ModCap = eArmor.ArmorClass.MaxBonus,
@@ -110,12 +110,12 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
         var eDamagetype = eWeapon.Damage?.DamageType.Name
             ?? throw new InvalidOperationException($"Weapon {item.Name} missing damage object.");
-        var damageType = ResolveOptionOrThrow(eDamagetype, DamageType.AllowedValues, "Damage Type");
+        var damageType = ResolveOptionOrThrow(eDamagetype, DamageType.AllowedValues);
 
         var propertyNames = eWeapon.Properties?.Select(p => p.Name).ToList() ?? [];
-        var properties = ResolveOptionOrThrow(propertyNames, WeaponProperty.AllowedValues, "Weapon Property");
+        var properties = ResolveOptionOrThrow(propertyNames, WeaponProperty.AllowedValues);
 
-        var category = ResolveOptionOrThrow(eWeapon.CategoryRange, WeaponCategory.AllowedValues, "Weapon Category");
+        var category = ResolveOptionOrThrow(eWeapon.CategoryRange, WeaponCategory.AllowedValues);
 
         if(eWeapon.EquipmentCategory is null)
             logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eWeapon.Name);
@@ -153,7 +153,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         var eTool = jsonDoc.RootElement.Deserialize<ECreateToolRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize tool: {item.Index}");
 
-        var category = ResolveOptionOrThrow(eTool.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
+        var category = ResolveOptionOrThrow(eTool.ToolCategory, ToolCategory.AllowedValues);
         if(eTool.EquipmentCategory is null)
             logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eTool.Name);
 
@@ -265,7 +265,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         if (value <= 0)
             return 0;
 
-        var resolvedUnit = ResolveOptionOrThrow(unit, CurrencyUtil.AllowedUnits, "Currency Unit");
+        var resolvedUnit = ResolveOptionOrThrow(unit, CurrencyUtil.AllowedUnits);
 
         return resolvedUnit switch
         {

@@ -146,7 +146,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var resolvedCategory = ResolveOptionOrThrow(category, WeaponCategory.AllowedValues, "Weapon Category");
+            var resolvedCategory = ResolveOptionOrThrow(category, WeaponCategory.AllowedValues);
             choice.Options.Add(resolvedCategory);
         }
         await weaponCategoryChoiceRepo.UpdateAsync(choice);
@@ -159,7 +159,7 @@ public class ChoiceService<T>
 
         foreach (var type in newTypes)
         {
-            var resolvedType = ResolveOptionOrThrow(type, WeaponType.AllowedValues, "Weapon Type");
+            var resolvedType = ResolveOptionOrThrow(type, WeaponType.AllowedValues);
             choice.Options.Add(resolvedType);
         }
         await weaponTypeChoiceRepo.UpdateAsync(choice);
@@ -172,7 +172,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var resolvedCategory = ResolveOptionOrThrow(category, ToolCategory.AllowedValues, "Tool Category");
+            var resolvedCategory = ResolveOptionOrThrow(category, ToolCategory.AllowedValues);
             choice.Options.Add(resolvedCategory);
         }
         await toolChoiceRepo.UpdateAsync(choice);
@@ -185,7 +185,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var resolvedCategory = ResolveOptionOrThrow(category, ArmorCategory.AllowedValues, "Armor Category");
+            var resolvedCategory = ResolveOptionOrThrow(category, ArmorCategory.AllowedValues);
             choice.Options.Add(resolvedCategory);
         }
         await armorChoiceRepo.UpdateAsync(choice);

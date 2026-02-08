@@ -4,10 +4,21 @@ meta {
   seq: 6
 }
 
-patch {
-  url: 
-  body: none
+delete {
+  url: {{ENV}}/api/users/{{userId}}
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "Username": "booki",
+    "Password": "123456"
+  }
+}
+
+vars:pre-request {
+  userId: 019c3f10-d06c-7bee-831d-3748b8748b88
 }
 
 settings {

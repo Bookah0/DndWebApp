@@ -12,6 +12,7 @@ using Api.Models.Features;
 using Api.Models.Items;
 using Api.Models.Spells;
 using Api.Models.World;
+using Api.Models.Users;
 
 public class MappingProfile : Profile
 {
@@ -92,6 +93,10 @@ public class MappingProfile : Profile
         CreateMap<Weapon, WeaponResponseDto>();
         CreateMap<Armor, ArmorResponseDto>();
         CreateMap<Tool, ToolResponseDto>();
+
+        CreateMap<User, GetUserResponseDto>();
+        CreateMap<User, RegisterUserResponseDto>();
+        CreateMap<User, UpdateUserResponseDto>();
 
         CreateMap<SkillProficiencyChoice, SkillProficiencyChoiceResponseDto>();
         CreateMap<LanguageChoice, LanguageChoiceResponseDto>();

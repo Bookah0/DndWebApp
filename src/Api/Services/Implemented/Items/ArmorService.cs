@@ -15,8 +15,8 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
 {
     public async Task<Armor> CreateAsync(CreateArmorRequestDto dto)
     {
-        var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category");
-        var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues);
+        var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
 
         logger.LogInformation("Creating armor, Name: {ArmorName}", dto.Name);
 
@@ -57,8 +57,8 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
 
     public async Task<Armor> UpdateAsync(UpdateArmorRequestDto dto, int id)
     {
-        var dtoCategory = dto.Category is not null ? ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category") : null;
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoCategory = dto.Category is not null ? ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues) : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
 
         var armor = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);

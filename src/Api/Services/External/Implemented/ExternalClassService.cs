@@ -270,10 +270,10 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
                         case "martial-melee-weapons":
                         case "simple-ranged-weapons":
                         case "martial-ranged-weapons":
-                            option.AnyOfWeaponCategory = ResolveOptionOrThrow(categoryDto.Index, WeaponCategory.AllowedValues, "Weapon Category");
+                            option.AnyOfWeaponCategory = ResolveOptionOrThrow(categoryDto.Index, WeaponCategory.AllowedValues);
                             break;
                         default:
-                            option.AnyOfWeaponType = ResolveOptionOrThrow(categoryDto.Index, WeaponType.AllowedValues, "Weapon Type");
+                            option.AnyOfWeaponType = ResolveOptionOrThrow(categoryDto.Index, WeaponType.AllowedValues);
                             break;
                     }
 

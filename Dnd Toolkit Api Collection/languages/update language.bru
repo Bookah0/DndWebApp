@@ -6,11 +6,67 @@ meta {
 
 patch {
   url: {{ENV}}/api/languages/{{languageId}}
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Gibber",
+    "Script": "Squiggles",
+    "TypicalSpeakers": "Beings of distinguished intelligence"
+  }
+}
+
+vars:pre-request {
+  languageId: 17
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: update
+  
+  request: {
+    url: {{ENV}}/api/languages/{{languageId}}
+    method: PATCH
+    mode: json
+    body:json: {
+      {
+        "Name": "Gibber",
+        "Script": "Squiggles",
+        "TypicalSpeakers": "Beings of distinguished intelligence"
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Sun, 08 Feb 2026 21:44:56 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "id": 17,
+          "name": "Gibber",
+          "family": "Undercommon",
+          "script": "Squiggles",
+          "typicalSpeakers": "Beings of distinguished intelligence"
+        }
+      '''
+    }
+  }
 }

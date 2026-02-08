@@ -40,10 +40,6 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<UserManager<User>>();
-builder.Services.AddScoped<SignInManager<User>>();
-builder.Services.AddScoped<RoleManager<IdentityRole<Guid>>>();
-
 // Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
@@ -130,33 +126,36 @@ using (var scope = app.Services.CreateScope())
 
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
     await userService.InitRolesAsync();
+    var fetchExternalData = false;
 
     if (app.Environment.IsDevelopment())
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogInformation("Starting external data fetch");
-        
-        var itemService = scope.ServiceProvider.GetRequiredService<IExternalItemService>();
-        await itemService.FetchExternalBasicItemsAsync();
-        var alignmentService = scope.ServiceProvider.GetRequiredService<IExternalAlignmentService>();
-        await alignmentService.FetchExternalAlignmentsAsync();
-        var abilityService = scope.ServiceProvider.GetRequiredService<IExternalAbilityService>();
-        await abilityService.FetchExternalAbilitiesAsync();
-        var backgroundService = scope.ServiceProvider.GetRequiredService<IExternalBackgroundService>();
-        await backgroundService.FetchExternalBackgroundsAsync();
-        var featService = scope.ServiceProvider.GetRequiredService<IExternalFeatService>();
-        await featService.FetchExternalFeatsAsync();
-        var spellService = scope.ServiceProvider.GetRequiredService<IExternalSpellService>();
-        await spellService.FetchExternalSpellsAsync();
-        var speciesService = scope.ServiceProvider.GetRequiredService<IExternalSpeciesService>();
-        await speciesService.FetchExternalRacesAsync();
-        var classService = scope.ServiceProvider.GetRequiredService<IExternalClassService>();
-        await classService.FetchExternalClassesAsync();
-        var languageService = scope.ServiceProvider.GetRequiredService<IExternalLanguageService>();
-        await languageService.FetchExternalLanguagesAsync();
-        var skillService = scope.ServiceProvider.GetRequiredService<IExternalSkillService>();
-        await skillService.FetchExternalSkillsAsync();
-        
+        if(fetchExternalData)
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Starting external data fetch");
+            
+            var itemService = scope.ServiceProvider.GetRequiredService<IExternalItemService>();
+            await itemService.FetchExternalBasicItemsAsync();
+            var alignmentService = scope.ServiceProvider.GetRequiredService<IExternalAlignmentService>();
+            await alignmentService.FetchExternalAlignmentsAsync();
+            var abilityService = scope.ServiceProvider.GetRequiredService<IExternalAbilityService>();
+            await abilityService.FetchExternalAbilitiesAsync();
+            var backgroundService = scope.ServiceProvider.GetRequiredService<IExternalBackgroundService>();
+            await backgroundService.FetchExternalBackgroundsAsync();
+            var featService = scope.ServiceProvider.GetRequiredService<IExternalFeatService>();
+            await featService.FetchExternalFeatsAsync();
+            var spellService = scope.ServiceProvider.GetRequiredService<IExternalSpellService>();
+            await spellService.FetchExternalSpellsAsync();
+            var speciesService = scope.ServiceProvider.GetRequiredService<IExternalSpeciesService>();
+            await speciesService.FetchExternalRacesAsync();
+            var classService = scope.ServiceProvider.GetRequiredService<IExternalClassService>();
+            await classService.FetchExternalClassesAsync();
+            var languageService = scope.ServiceProvider.GetRequiredService<IExternalLanguageService>();
+            await languageService.FetchExternalLanguagesAsync();
+            var skillService = scope.ServiceProvider.GetRequiredService<IExternalSkillService>();
+            await skillService.FetchExternalSkillsAsync();
+        }
     }
 }
 

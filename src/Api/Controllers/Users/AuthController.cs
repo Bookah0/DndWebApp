@@ -22,7 +22,7 @@ public class AuthController(IUserService userService, ICurrentUserService curren
     [HttpPost("login")]
     public async Task<ActionResult> Login([FromBody] LoginUserRequestDto request)
     {
-        var user = await userService.ValidateLoginCredentials(request);
+        var user = await userService.CheckPasswordAsync(request);
         await currentUserService.SetCurrentUser(user);
         return Ok();
     }
@@ -34,7 +34,7 @@ public class AuthController(IUserService userService, ICurrentUserService curren
         return Ok(mapper.Map<GetUserResponseDto>(currentUser));
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPost("logout")]
     public async Task<ActionResult> Logout()
     {

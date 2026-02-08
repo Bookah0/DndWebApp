@@ -6,11 +6,66 @@ meta {
 
 post {
   url: {{ENV}}/api/skills
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Lockpicking",
+    "Description": "Represents a character's training and experience in opening mechanical locks.",
+    "AbilityId": 3
+  }
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: create
+  
+  request: {
+    url: {{ENV}}/api/skills
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "Name": "Lockpicking",
+        "Description": "Represents a character's training and experience in opening mechanical locks.",
+        "AbilityId": 3
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Sun, 08 Feb 2026 22:14:41 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "id": 20,
+          "name": "Lockpicking",
+          "description": "Represents a character's training and experience in opening mechanical locks.",
+          "ability": {
+            "shortName": "DEX",
+            "fullName": "Dexterity",
+            "description": "Dexterity measures agility, reflexes, and balance.\nA Dexterity check can model any attempt to move nimbly, quickly, or quietly, or to keep from falling on tricky footing. The Acrobatics, Sleight of Hand, and Stealth skills reflect aptitude in certain kinds of Dexterity checks."
+          }
+        }
+      '''
+    }
+  }
 }

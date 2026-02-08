@@ -21,10 +21,10 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
             var damageTypes = GetDefaultWeaponDamageTypes(dto.WeaponType);
         }
         logger.LogInformation("Creating weapon, Name: {WeaponName}", dto.Name);
-        var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
-        var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type");
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
-        var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues, "Weapon Property");
+        var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues);
+        var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues);
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
+        var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues);
 
         Weapon weapon = await repo.CreateAsync(new()
         {
@@ -49,7 +49,7 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
 
             DamageTypes = dto.DamageTypes.IsNullOrEmpty()
                 ? GetDefaultWeaponDamageTypes(dto.WeaponType)
-                : ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Main Damage Type"),
+                : ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues),
         });
 
         logger.LogInformation("Successfully created weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);
@@ -72,10 +72,10 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
         logger.LogInformation("Updating weapon, Name: {WeaponName}, ID: {WeaponId}", dto.Name, id);
         var weapon = await repo.GetByIdAsync(id);
 
-        var dtoCategory = dto.WeaponCategory is not null ? ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category") : null;
-        var dtoWeaponType = dto.WeaponType is not null ? ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type") : null;
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
-        var dtoSlot = dto.Slot is not null ? ResolveOptionOrThrow(dto.Slot, EquipSlot.AllowedValues, "Slot") : null;
+        var dtoCategory = dto.WeaponCategory is not null ? ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues) : null;
+        var dtoWeaponType = dto.WeaponType is not null ? ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues) : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
+        var dtoSlot = dto.Slot is not null ? ResolveOptionOrThrow(dto.Slot, EquipSlot.AllowedValues) : null;
 
         weapon.WeaponCategory = dtoCategory ?? weapon.WeaponCategory;
         weapon.WeaponType = dtoWeaponType ?? weapon.WeaponType;

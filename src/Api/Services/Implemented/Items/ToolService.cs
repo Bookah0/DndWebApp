@@ -15,8 +15,8 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 {
     public async Task<Tool> CreateAsync(CreateToolRequestDto dto)
     {
-        var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues);
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
 
         logger.LogInformation("Creating tool, Name: {ToolName}", dto.Name);
         
@@ -75,8 +75,8 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Tool> UpdateAsync(UpdateToolRequestDto dto, int id)
     {
-        var dtoToolCategory = dto.ToolCategory is not null ? ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category") : null;
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoToolCategory = dto.ToolCategory is not null ? ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues) : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
 
         var tool = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating tool, Name: {ToolName}, ID: {ToolId}", dto.Name, id);

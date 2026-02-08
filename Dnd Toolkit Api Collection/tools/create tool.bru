@@ -6,11 +6,84 @@ meta {
 
 post {
   url: {{ENV}}/api/tools
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Fleas Tools",
+    "Description": "A compact set of fleas.",
+    "Value": 1,
+    "ToolCategory": "Disguise Kit",
+    "Rarity": "Common",
+    "Weight": 1,
+    "RequiresAttunement": false
+  }
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: create
+  
+  request: {
+    url: {{ENV}}/api/tools
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "Name": "Fleas Tools",
+        "Description": "A compact set of fleas.",
+        "Value": 1,
+        "ToolCategory": "Disguise Kit",
+        "Rarity": "Common",
+        "Weight": 1,
+        "RequiresAttunement": false
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Sun, 08 Feb 2026 22:12:23 GMT
+      server: Kestrel
+      cache-control: no-cache,no-store
+      expires: Thu, 01 Jan 1970 00:00:00 GMT
+      pragma: no-cache
+      set-cookie: .AspNetCore.Identity.Application=CfDJ8Aa7oQkLI6JEpLxiq85UsJ5iFGB1WwYUUp3y9Xy8NRWWdnHL7ePO26bV3_4PhTGRZsBOcqjYgHY9ikunAnovtnJA1BZd0igToGxKE3jqxxr4rHdC_9hREWdi3z_C_FNuqb1SlcfHpF716gQfj7A4WnyUgjviVoK_pXALcsVNZAaOMI88tD0PtDetG7_Av29iGqVoyaSxWZw9eF7kYVabmy-zn4fu90ZgxVH_YZDxI-VxLCDgKE9JTTM0qQulhiq6wI2hIZQCYsfds9JJOF8FVANo1v1f3F0Gde9ppokI4E9hNb7ZNugwBz0DlH1R1IA-SyEw7M9WEQXhqh7XgiaU61QaXGcViaoVAs91dIyC4jy9N5D_QA3ZitaM5pMICCQpc8K8LvZ28G2cIw0orQCOTqPZChT3iFcT0SmTKvARPgPGc4DSqlEBfegYAW3K99Uf3ZpK90fEONk9Iuc8XwyD9D1b_9i9PbvCATiy6vUrtxTrk9QtQWE_ox_5cMgTWs7EGg81wp6nw_1CP5w9WUzwXg7tCgg1oa6tEJGU2dqK_DYqX6AZdjqDR5X7meexWjM_3wruHxuEBPZSISZdcHV0LFlpNDSQ8uTKskDSAgXnA6wzqR4RYom7M7NUVkkwB5SJ0fjKC4IzF5Vjw_wOwLkrxdZyVVES6b97V0KPYhoDx4fFV_peVgoF5Yv3ZKMQNxhG05kz15KSN78Yfx47KXEo03gj1Lv-IUFZ4S_nWWtFFilHJAHHlqiuGB_TQp8lw0VzQWXAlbQeB1zeB-sGPmTJifx3u7RF-Za91LbUvsOs_TUp; path=/; samesite=lax; httponly
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "toolType": null,
+          "properties": [],
+          "activities": [],
+          "id": 44,
+          "name": "Fleas Tools",
+          "description": "A compact set of fleas.",
+          "categories": [
+            "Tools"
+          ],
+          "rarity": "Common",
+          "requiresAttunement": false,
+          "weight": 1,
+          "value": 1,
+          "quantity": 1
+        }
+      '''
+    }
+  }
 }

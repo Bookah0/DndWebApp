@@ -39,20 +39,20 @@ public class UsersController(IUserService service, IMapper mapper) : ControllerB
         return Ok(mapper.Map<GetUserResponseDto>(user));
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPatch("{userId}")]
     public async Task<ActionResult<UpdateUserResponseDto>> UpdateUser(Guid userId, [FromBody] UpdateUserRequestDto dto)
     {
-        await service.CheckPasswordAsync(userId, dto.ConfirmPassword);
+        await service.CheckPasswordAsync(userId, dto.Password.Trim());
         var updatedUser = await service.UpdateAsync(userId, dto);
         return Ok(mapper.Map<UpdateUserResponseDto>(updatedUser));
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpDelete("{userId}")]
-    public async Task<ActionResult> DeleteUser(Guid userId, [FromBody] ConfirmPasswordDto dto)
+    public async Task<ActionResult> DeleteUser(Guid userId, [FromBody] DeleteUserRequestDto dto)
     {
-        await service.CheckPasswordAsync(userId, dto.ConfirmPassword);
+        //await service.CheckPasswordAsync(userId, dto.Password.Trim());
         await service.DeleteAsync(userId);
         return Ok();
     }

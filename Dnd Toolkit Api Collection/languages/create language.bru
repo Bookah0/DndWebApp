@@ -21,3 +21,46 @@ settings {
   encodeUrl: true
   timeout: 0
 }
+
+example {
+  name: create
+  
+  request: {
+    url: {{ENV}}/api/languages
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "Name": "Gibberish",
+        "Family": "Undercommon"
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Sun, 08 Feb 2026 21:43:07 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "id": 17,
+          "name": "Gibberish",
+          "family": "Undercommon",
+          "script": "",
+          "typicalSpeakers": ""
+        }
+      '''
+    }
+  }
+}

@@ -9,8 +9,6 @@ public class SpellFilterDto
     [MaxLength(100)]
     public string? Name { get; set; }
 
-    public bool? IsHomebrew { get; set; }
-
     [Range(0, 9)]
     public int? MinLevel { get; set; }
 

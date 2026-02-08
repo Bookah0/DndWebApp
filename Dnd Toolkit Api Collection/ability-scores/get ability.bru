@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: http://localhost:5432/abilities/{{abilityId}}
+  url: {{ENV}}/api/abilities/{{abilityId}}
   body: none
   auth: inherit
+}
+
+vars:pre-request {
+  abilityId: 6
 }
 
 settings {

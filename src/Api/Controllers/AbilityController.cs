@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [ApiController]
-[Route("api/abilities")]
-public class AbilityController(IAbilityService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class AbilitiesController(IAbilityService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<AbilityResponseDto>>> GetAbilities()

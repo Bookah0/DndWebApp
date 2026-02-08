@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Items;
 
 [ApiController]
-[Route("api/[controller]s")]
-public class ToolController(IToolService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class ToolsController(IToolService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<ToolResponseDto>>> GetAllTools([FromQuery] string? sort = null, [FromQuery] string? order = null)

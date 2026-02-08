@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: http://localhost:5432/tools/{{toolId}}
+  url: {{ENV}}/api/tools/{{toolId}}
   body: none
   auth: inherit
 }

@@ -5,7 +5,7 @@ meta {
 }
 
 patch {
-  url: http://localhost:5432/tools/{{toolId}}/activities
+  url: {{ENV}}/api/{{toolId}}/activities
   body: none
   auth: inherit
 }

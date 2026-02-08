@@ -10,7 +10,6 @@ public class CreateArmorRequestDto
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string Description { get; set; } = "";
 

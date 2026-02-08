@@ -7,7 +7,6 @@ public class SubclassResponseDto
     public required string Description { get; set; }
     public required int HitDie { get; set; }
     public required ICollection<ClassLevelResponseDto> ClassLevels { get; set; }
-    public bool IsHomebrew { get; set; } = false;
     public int? SpellcastingAbilityId { get; set; }
     public string? SpellcastingAbility { get; set; }
     public int ParentClassId { get; set; }

@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Items;
 
 [ApiController]
-[Route("api/[controller]s")]
-public class ItemController(IItemService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class ItemsController(IItemService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<ItemResponseDto>>> GetAllItems([FromQuery] string? sort = null, [FromQuery] string? order = null)

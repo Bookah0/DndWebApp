@@ -13,8 +13,8 @@ using Api.Models.Characters;
 namespace Api.Controllers.Characters;
 
 [ApiController]
-[Route("api/users/{userId}/characters")]
-public class CharacterController(ICharacterService service, IMapper mapper) : ControllerBase
+[Route("api/users/{userId}/[controller]")]
+public class CharactersController(ICharacterService service, IMapper mapper) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<CharacterResponseDto>> CreateCharacter(int userId, [FromBody] CreateCharacterRequestDto dto)

@@ -17,7 +17,6 @@ public class CreateCharacterRequestDto
     [Range(0, int.MaxValue)]
     public int Experience { get; set; } = 0;
 
-    [MinLength(1)]
     [MaxLength(100)]
     public string PlayerName { get; set; } = "";
 

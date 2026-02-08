@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Items;
 
 [ApiController]
-[Route("api/[controller]s")]
-public class WeaponController(IWeaponService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class WeaponsController(IWeaponService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<WeaponResponseDto>>> GetAllWeapons([FromQuery] string? sort = null, [FromQuery] string? order = null)

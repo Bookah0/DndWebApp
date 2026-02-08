@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Classes;
 
 [ApiController]
-[Route("api/classes")]
-public class ClassController(IBaseClassService service, IMapper mapper) : ControllerBase
+[Route("api/[controller]")]
+public class ClassesController(IBaseClassService service, IMapper mapper) : ControllerBase
 {
 
     [HttpGet]

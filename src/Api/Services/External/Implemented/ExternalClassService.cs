@@ -218,6 +218,7 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
 
         foreach (var eItem in eClass.StartingEquipment)
         {
+            
             var item = await itemRepository.GetByNameAsync(eItem.Equipment.Name);
             clss.StartingEquipment.Add(item);
         }

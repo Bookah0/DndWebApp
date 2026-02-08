@@ -5,7 +5,7 @@ meta {
 }
 
 patch {
-  url: http://localhost:5432/languages/{{languageId}}
+  url: {{ENV}}/api/languages/{{languageId}}
   body: none
   auth: inherit
 }

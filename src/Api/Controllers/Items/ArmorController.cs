@@ -7,7 +7,7 @@ using Api.Services.Interfaces.Items;
 namespace Api.Controllers.Items;
 
 [ApiController]
-[Route("api/[controller]s")]
+[Route("api/[controller]")]
 public class ArmorController(IArmorService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]

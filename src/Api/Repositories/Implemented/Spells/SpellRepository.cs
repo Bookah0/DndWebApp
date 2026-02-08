@@ -81,9 +81,6 @@ public class SpellRepository(AppDbContext context) : ISpellRepository
         if (filter.DamageTypes is not null)
             query = query.Where(s => s.DamageTypes.Any(t => filter.DamageTypes.Contains(t)));
 
-        if (filter.IsHomebrew.HasValue)
-            query = query.Where(s => s.IsHomebrew == filter.IsHomebrew.Value);
-
         return await query.ToListAsync();
     }
 

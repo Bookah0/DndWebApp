@@ -15,4 +15,5 @@ public interface IUserService
     Task<User> ValidateLoginCredentials(LoginUserRequestDto requestDto);
     Task<User> CheckPasswordAsync(Guid id, string password);
     Task<User> CheckPasswordAsync(string usernameOrEmail, string password);
+    Task InitRolesAsync();
 }

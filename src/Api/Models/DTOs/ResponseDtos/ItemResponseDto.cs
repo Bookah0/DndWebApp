@@ -14,7 +14,6 @@ public class ItemResponseDto
     public int Weight { get; set; }
     public int Value { get; set; }
     public int Quantity { get; set; }
-    public bool IsHomebrew { get; set; }
 }
 
 public class WeaponResponseDto : ItemResponseDto

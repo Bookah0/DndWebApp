@@ -5,9 +5,16 @@ meta {
 }
 
 post {
-  url: http://localhost:5432/languages
-  body: none
+  url: {{ENV}}/api/languages
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Gibberish",
+    "Family": "Undercommon"
+  }
 }
 
 settings {

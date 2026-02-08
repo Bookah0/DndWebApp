@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: http://localhost:5432/skills/{{skillId}}
+  url: {{ENV}}/api/skills/{{skillId}}
   body: none
   auth: inherit
+}
+
+vars:pre-request {
+  skillId: 1
 }
 
 settings {

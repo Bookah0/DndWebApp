@@ -199,7 +199,6 @@ public class SpellService(
             Name = dto.Name,
             MinLevel = dto.MinLevel,
             MaxLevel = dto.MaxLevel,
-            IsHomebrew = dto.IsHomebrew,
             ClassIds = dto.ClassIds,
             Durations = dtoDurations,
             CastingTimes = dtoCastTimes,

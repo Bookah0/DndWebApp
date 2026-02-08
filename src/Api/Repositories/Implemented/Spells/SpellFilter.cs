@@ -3,7 +3,6 @@ namespace Api.Repositories.Implemented.Spells;
 public class SpellFilter
 {
     public required string? Name { get; set; }
-    public required bool? IsHomebrew { get; set; }
     public required int? MinLevel { get; set; }
     public required int? MaxLevel { get; set; }
     public required ICollection<int>? ClassIds { get; set; }

@@ -55,7 +55,6 @@ public class CreateWeaponRequestDto
 
     public ICollection<string> Properties { get; set; } = [];
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string VersitileDamageDice { get; set; } = "";
 

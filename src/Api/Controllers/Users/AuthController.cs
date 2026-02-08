@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Api.Controllers.Users;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/[controller]")]
 public class AuthController(IUserService userService, ICurrentUserService currentUserService, IMapper mapper) : ControllerBase
 {
     [HttpPost("register")]

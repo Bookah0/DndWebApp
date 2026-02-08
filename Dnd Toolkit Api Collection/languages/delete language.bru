@@ -4,8 +4,8 @@ meta {
   seq: 2
 }
 
-get {
-  url: http://localhost:5432/languages/{{languageId}}
+delete {
+  url: {{ENV}}/api/languages/{{languageId}}
   body: none
   auth: inherit
 }

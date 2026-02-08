@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: http://localhost:5432/items/{{itemId}}
+  url: {{ENV}}/api/items/{{itemId}}
   body: none
   auth: inherit
 }

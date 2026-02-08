@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Repositories.Implemented.Classes;
 
-public class ClassRepository(AppDbContext context) : IClassRepository
+public class ClassRepository(AppDbContext context) : IBaseClassRepository
 {
     public async Task<BaseClass> GetByIdAsync(int id) => 
         await context.Classes.FirstOrDefaultAsync(c => c.Id == id) 

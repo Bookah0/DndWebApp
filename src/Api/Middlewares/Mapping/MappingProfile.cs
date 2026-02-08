@@ -29,7 +29,8 @@ public class MappingProfile : Profile
         CreateMap<Skill, CreateSkillRequestDto>();
         CreateMap<Skill, UpdateSkillRequestDto>();
         CreateMap<Language, CreateLanguageRequestDto>();
-        CreateMap<Spell, SpellDto>();
+        CreateMap<Spell, CreateSpellRequestDto>();
+        CreateMap<Spell, UpdateSpellRequestDto>();
         
         CreateMap<Trait, CreateTraitRequestDto>();
         CreateMap<Trait, UpdateTraitRequestDto>();
@@ -111,7 +112,8 @@ public class MappingProfile : Profile
         CreateMap<CreateSkillRequestDto, SkillResponseDto>();
         CreateMap<UpdateSkillRequestDto, SkillResponseDto>();
         CreateMap<CreateLanguageRequestDto, LanguageResponseDto>();
-        CreateMap<SpellDto, SpellResponseDto>();
+        CreateMap<CreateSpellRequestDto, SpellResponseDto>();
+        CreateMap<UpdateSpellRequestDto, SpellResponseDto>();
         
         CreateMap<CreateTraitRequestDto, TraitResponseDto>();
         CreateMap<UpdateTraitRequestDto, TraitResponseDto>();

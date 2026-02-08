@@ -18,43 +18,38 @@ namespace Api.Services.Implemented;
 
 public class SpellService(
     ISpellRepository repo, 
-    IClassRepository classRepo, 
+    IBaseClassRepository classRepo, 
     ICurrentUserService currentUserService,
     ILogger<SpellService> logger) 
     : ISpellService
 {
-    public async Task<Spell> CreateAsync(SpellDto dto)
+    public async Task<Spell> CreateAsync(CreateSpellRequestDto dto)
     {
         logger.LogInformation("Creating spell, Name: {SpellName}", dto.Name);
 
-        var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
         var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");
         var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues, "Spell Range");
         var dtoDuration = ResolveOptionOrThrow(dto.Duration, SpellDuration.AllowedValues, "Spell Duration");
         var dtoCastTime = ResolveOptionOrThrow(dto.CastingTime, CastingTime.AllowedValues, "Casting Time");
-        var dtoSpellTypes = ResolveOptionOrThrow(dto.Types, SpellType.AllowedValues, "Spell Type");
-        var dtoDamageTypes = ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type");
 
-        if (dto.Level <= 0)
-            throw new ValidationException($"Spell level is set to {dto.Level}. It must be greater than 0");
-        if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet)
-            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
+        if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet && dtoSpellRange != SpellRange.Mile)
+            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet or SpellRange.Mile.");
         if (dto.TargetingDto.RangeValue % 5 != 0 && dtoSpellRange == SpellRange.Feet)
             throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue}. It must be 5*n (feet).");
+
         var spell = new Spell()
         {
             Name = dto.Name,
             Description = dto.Description,
-            IsHomebrew = dto.IsHomebrew,
             Level = dto.Level,
             EffectsAtHigherLevels = dto.EffectsAtHigherLevels,
             Duration = dtoDuration,
             CastingTime = dtoCastTime,
             ReactionCondition = dto.ReactionCondition,
-            MagicSchool = dtoSchool,
-            SpellTypes = dtoSpellTypes!,
+            MagicSchool = ResolveOptionOrEmpty(dto.MagicSchool, MagicSchool.AllowedValues),
+            SpellTypes = ResolveOptionOrEmpty(dto.SpellTypes, SpellType.AllowedValues),
             DamageRoll = dto.DamageRoll,
-            DamageTypes = dtoDamageTypes!,
+            DamageTypes = ResolveOptionOrEmpty(dto.DamageTypes, DamageType.AllowedValues, "Damage Type"),
             SpellTargeting = new SpellTargeting()
             {
                 TargetType = dtoTargetType,
@@ -98,51 +93,49 @@ public class SpellService(
     public async Task<ICollection<Spell>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Spell> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<Spell> UpdateAsync(int id, SpellDto dto)
+    public async Task<Spell> UpdateAsync(int id, UpdateSpellRequestDto dto)
     {
         var spell = await repo.GetByIdAsync(id);
+
+        if (dto.TargetingDto?.RangeValue > 0 && spell.SpellTargeting.Range != SpellRange.Feet)
+            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
+        if (dto.TargetingDto?.RangeValue % 5 != 0 && spell.SpellTargeting.Range == SpellRange.Feet)
+            throw new ValidationException($"Range value is set to {dto.TargetingDto!.RangeValue}. It must be 5*n (feet).");
+        
         logger.LogInformation("Updating spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
 
-        var dtoSchool = ResolveOptionOrThrow(dto.MagicSchool, MagicSchool.AllowedValues, "Magic School");
-        var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues, "Spell Target Type");
-        var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues, "Spell Range");
-        var dtoDuration = ResolveOptionOrThrow(dto.Duration, SpellDuration.AllowedValues, "Spell Duration");
-        var dtoCastTime = ResolveOptionOrThrow(dto.CastingTime, CastingTime.AllowedValues, "Casting Time");
-        var dtoSpellTypes = ResolveOptionOrThrow(dto.Types, SpellType.AllowedValues, "Spell Type");
-        var dtoDamageTypes = ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Damage Type");
+        if(dto.MagicSchool is not null)
+            spell.MagicSchool = ResolveOptionOrEmpty(dto.MagicSchool, MagicSchool.AllowedValues);
 
-        if (dto.Level <= 0)
-            throw new ValidationException($"Spell level is set to {dto.Level}. It must be greater than 0");
-        if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet)
-            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet.");
-        if (dto.TargetingDto.RangeValue % 5 != 0 && dtoSpellRange == SpellRange.Feet)
-            throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue}. It must be 5*n (feet).");
-        spell.Name = dto.Name;
-        spell.Description = dto.Description;
-        spell.IsHomebrew = dto.IsHomebrew;
-        spell.Level = dto.Level;
-        spell.EffectsAtHigherLevels = dto.EffectsAtHigherLevels;
-        spell.Duration = dtoDuration;
-        spell.CastingTime = dtoCastTime;
-        spell.ReactionCondition = dto.ReactionCondition;
-        spell.MagicSchool = dtoSchool;
-        spell.SpellTypes = dtoSpellTypes!;
+        if(dto.TargetingDto?.TargetType is not null)
+            spell.SpellTargeting.TargetType = ResolveOptionOrEmpty(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues);
 
-        spell.DamageRoll = dto.DamageRoll;
-        spell.DamageTypes = dtoDamageTypes!;
+        if(dto.TargetingDto?.Range is not null)
+            spell.SpellTargeting.Range = ResolveOptionOrEmpty(dto.TargetingDto.Range, SpellRange.AllowedValues);
 
-        spell.SpellTargeting.TargetType = dtoTargetType;
-        spell.SpellTargeting.Range = dtoSpellRange;
-        spell.SpellTargeting.RangeValue = dto.TargetingDto.RangeValue;
-        spell.SpellTargeting.ShapeLength = dto.TargetingDto.ShapeLength;
-        spell.SpellTargeting.ShapeType = dto.TargetingDto.ShapeType;
-        spell.SpellTargeting.ShapeWidth = dto.TargetingDto.ShapeWidth;
+        if(dto.Duration is not null)
+            spell.Duration = ResolveOptionOrEmpty(dto.Duration, SpellDuration.AllowedValues);
 
-        spell.CastingRequirements.Verbal = dto.CastRequirementsDto.Verbal;
-        spell.CastingRequirements.Somatic = dto.CastRequirementsDto.Somatic;
-        spell.CastingRequirements.Materials = dto.CastRequirementsDto.Materials;
-        spell.CastingRequirements.MaterialCost = dto.CastRequirementsDto.MaterialCost;
-        spell.CastingRequirements.MaterialsConsumed = dto.CastRequirementsDto.MaterialsConsumed;
+        if(dto.CastingTime is not null)
+            spell.CastingTime = ResolveOptionOrEmpty(dto.CastingTime, CastingTime.AllowedValues);
+
+        spell.Name = dto.Name ?? spell.Name;
+        spell.Description = dto.Description ?? spell.Description;
+        spell.Level = dto.Level ?? spell.Level;
+        spell.EffectsAtHigherLevels = dto.EffectsAtHigherLevels ?? spell.EffectsAtHigherLevels;
+        spell.ReactionCondition = dto.ReactionCondition ?? spell.ReactionCondition;
+
+        spell.DamageRoll = dto.DamageRoll ?? spell.DamageRoll;
+        spell.SpellTargeting.RangeValue = dto.TargetingDto?.RangeValue ?? spell.SpellTargeting.RangeValue;
+        spell.SpellTargeting.ShapeLength = dto.TargetingDto?.ShapeLength ?? spell.SpellTargeting.ShapeLength;
+        spell.SpellTargeting.ShapeType = dto.TargetingDto?.ShapeType ?? spell.SpellTargeting.ShapeType;
+        spell.SpellTargeting.ShapeWidth = dto.TargetingDto?.ShapeWidth ?? spell.SpellTargeting.ShapeWidth;
+
+        spell.CastingRequirements.Verbal = dto.CastRequirementsDto?.Verbal ?? spell.CastingRequirements.Verbal;
+        spell.CastingRequirements.Somatic = dto.CastRequirementsDto?.Somatic ?? spell.CastingRequirements.Somatic;
+        spell.CastingRequirements.Materials = dto.CastRequirementsDto?.Materials ?? spell.CastingRequirements.Materials;
+        spell.CastingRequirements.MaterialCost = dto.CastRequirementsDto?.MaterialCost ?? spell.CastingRequirements.MaterialCost;
+        spell.CastingRequirements.MaterialsConsumed = dto.CastRequirementsDto?.MaterialsConsumed ?? spell.CastingRequirements.MaterialsConsumed;
 
         await repo.UpdateAsync(spell);
         logger.LogInformation("Successfully updated spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);

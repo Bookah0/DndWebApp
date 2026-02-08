@@ -10,21 +10,21 @@ using static Api.Services.Util.SortUtil;
 namespace Api.Services.Implemented.Classes;
 
 public partial class ClassLevelService(
-    IClassRepository classRepo,
+    IBaseClassRepository classRepo,
     ISubclassRepository subclassRepo,
     IClassLevelRepository levelRepo,
     IFeatureRepository<ClassFeature> featureRepo,
     ICurrentUserService currentUserService,
-    ILogger<ClassService> logger) : IClassLevelService
+    ILogger<BaseClassService> logger) : IClassLevelService
 {
     public async Task<ClassLevel> GetByIdAsync(int id) => await levelRepo.GetByIdAsync(id);
 
     public async Task<ClassLevel> CreateAsync(CreateClassLevelRequestDto dto)
     {
         Class clss = dto.IsSubclassLevel
-            ? await classRepo.GetByIdAsync(dto.ClassId)
-            : await subclassRepo.GetByIdAsync(dto.ClassId);
-
+            ? await subclassRepo.GetByIdAsync(dto.ClassId)
+            : await classRepo.GetByIdAsync(dto.ClassId);
+ 
         logger.LogInformation("Creating class level, Level: {ClassLevel}, ClassId: {ClassId}", dto.Level, dto.ClassId);
 
         ClassLevel level = new()

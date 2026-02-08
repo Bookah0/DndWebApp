@@ -10,7 +10,7 @@ namespace Api.Controllers.Classes;
 
 [ApiController]
 [Route("api/classes/{classId}/subclasses/{subclassId}/levels")]
-public class SubclassLevelController(ISubclassService service, IClassService classService, IClassLevelService levelService, IMapper mapper) : ControllerBase
+public class SubclassLevelController(ISubclassService service, IBaseClassService classService, IClassLevelService levelService, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<ClassLevelResponseDto>>> GetClasses(int subclassId, int classId)

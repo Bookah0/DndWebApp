@@ -32,6 +32,22 @@ public static class ConstantsUtil
         throw new ValidationException($"{constantsGroupName} {input} not recognized.");
     }
 
+    public static ICollection<string> ResolveOptionOrEmpty(ICollection<string> inputs, IReadOnlySet<string> allowedSet, string constantsGroupName = "Constant")
+    {
+        if (inputs.IsNullOrEmpty())
+            return [];
+
+        return ResolveOptionOrThrow(inputs, allowedSet);
+    }
+
+    public static string ResolveOptionOrEmpty(string input, IReadOnlySet<string> allowedSet, string constantsGroupName = "Constant")
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return "";
+
+        return ResolveOptionOrThrow(input, allowedSet);
+    }
+
     public static bool TryResolveOption(string input, IReadOnlySet<string> allowedSet, out string? resolved)
     {
         if (allowedSet.Contains(input))
@@ -61,11 +77,6 @@ public static class ConstantsUtil
             .Replace("'", "")
             .Replace(" ", "")
             .ToLower();
-    }
-
-    public static object ResolveOptionOrThrow(string? value, object weaponCategories, string v)
-    {
-        throw new NotImplementedException();
     }
 
     public static string GetDefaultWeaponMainSlot (string weaponType)

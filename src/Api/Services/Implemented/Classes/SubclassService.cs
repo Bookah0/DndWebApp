@@ -10,7 +10,7 @@ namespace Api.Services.Implemented.Classes;
 
 public partial class SubclassService(
     ISubclassRepository repo, 
-    IClassRepository classRepo, 
+    IBaseClassRepository classRepo, 
     ICurrentUserService currentUserService, 
     ILogger<SubclassService> logger) : ISubclassService
 {

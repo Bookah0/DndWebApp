@@ -10,7 +10,7 @@ namespace Api.Controllers.Classes;
 
 [ApiController]
 [Route("api/classes/{classId}/subclasses")]
-public class SubclassController(ISubclassService service, IClassService classService, IMapper mapper) : ControllerBase
+public class SubclassController(ISubclassService service, IBaseClassService classService, IMapper mapper) : ControllerBase
 {
 
     [HttpGet]

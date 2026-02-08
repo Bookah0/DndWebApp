@@ -15,7 +15,7 @@ public partial class CharacterService(
     ICharacterRepository repo,
     IRaceRepository raceRepo,
     ISubraceRepository subraceRepo,
-    IClassRepository classRepo,
+    IBaseClassRepository classRepo,
     ISubclassRepository subclassRepo,
     IClassLevelRepository levelRepo,
     IBackgroundRepository backgroundRepo,

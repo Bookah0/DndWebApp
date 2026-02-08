@@ -1,4 +1,5 @@
 using Api.Models.Characters;
+using Api.Models.Spells.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Models.Spells;
@@ -16,7 +17,7 @@ public class Spell : CreatableEntity
     public required string CastingTime { get; set; }
     public int CastingTimeValue { get; set; }
     public string ReactionCondition { get; set; } = "";
-    public required string MagicSchool { get; set; }
+    public string MagicSchool { get; set; } = "";
     public string DamageRoll { get; set; } = "";
     public ICollection<string> DamageTypes { get; set; } = [];
     public ICollection<string> SpellTypes { get; set; } = [];
@@ -30,7 +31,7 @@ public class SpellTargeting
 {
     public required string TargetType { get; set; }
     public required string Range { get; set; }
-    public int RangeValue { get; set; } = 0;
+    public required int RangeValue { get; set; }
     public string? ShapeType { get; set; }
     public string? ShapeWidth { get; set; }
     public string? ShapeLength { get; set; }
@@ -39,9 +40,9 @@ public class SpellTargeting
 [Owned]
 public class CastingRequirements
 {
-    public bool Verbal { get; set; }
-    public bool Somatic { get; set; }
-    public string? Materials { get; set; }
-    public int? MaterialCost { get; set; }
-    public bool MaterialsConsumed { get; set; }
+    public bool Verbal { get; set; } = false;
+    public bool Somatic { get; set; } = false;
+    public string Materials { get; set; } = "";
+    public int MaterialCost { get; set; } = 0;
+    public bool MaterialsConsumed { get; set; } = false;
 }

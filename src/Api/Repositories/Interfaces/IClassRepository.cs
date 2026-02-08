@@ -2,7 +2,7 @@ using Api.Models.Characters;
 
 namespace Api.Repositories.Interfaces;
 
-public interface IClassRepository : IRepository<BaseClass>
+public interface IBaseClassRepository : IRepository<BaseClass>
 {
     Task<BaseClass> GetWithClassLevelFeaturesAsync(int id);
     Task<BaseClass> GetWithAllDataAsync(int id);

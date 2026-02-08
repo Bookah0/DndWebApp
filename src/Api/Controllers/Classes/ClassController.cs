@@ -10,7 +10,7 @@ namespace Api.Controllers.Classes;
 
 [ApiController]
 [Route("api/classes")]
-public class ClassController(IClassService service, IMapper mapper) : ControllerBase
+public class ClassController(IBaseClassService service, IMapper mapper) : ControllerBase
 {
 
     [HttpGet]

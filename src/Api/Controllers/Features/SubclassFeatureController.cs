@@ -16,7 +16,7 @@ namespace Api.Controllers.Classes;
 public class SubclassFeatureController(
     IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto> service, 
     ISubclassService subclassService, 
-    IClassService classService, 
+    IBaseClassService classService, 
     IMapper mapper) : ControllerBase
 {
     [HttpGet]

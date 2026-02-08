@@ -10,12 +10,12 @@ using static Api.Services.Util.SortUtil;
 
 namespace Api.Services.Implemented.Classes;
 
-public partial class ClassService(
-    IClassRepository repo, 
+public partial class BaseClassService(
+    IBaseClassRepository repo, 
     IClassLevelRepository classLevelRepo, 
     IItemRepository itemRepo, 
     ICurrentUserService currentUserService, 
-    ILogger<ClassService> logger) : IClassService
+    ILogger<BaseClassService> logger) : IBaseClassService
 {
     public async Task<BaseClass> CreateAsync(CreateClassRequestDto dto)
     {

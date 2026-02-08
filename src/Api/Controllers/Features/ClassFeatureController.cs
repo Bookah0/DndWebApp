@@ -14,7 +14,7 @@ namespace Api.Controllers.Classes;
 
 [ApiController]
 [Route("api/classes/{classId}/features")]
-public class ClassFeatureController(IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto> service, IClassService classService, IMapper mapper) : ControllerBase
+public class ClassFeatureController(IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto> service, IBaseClassService classService, IMapper mapper) : ControllerBase
 {
     
     [HttpGet]

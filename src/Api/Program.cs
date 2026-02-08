@@ -55,7 +55,7 @@ builder.Services.AddScoped<IRaceRepository, RaceRepository>();
 builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();
 
 builder.Services.AddScoped<IClassLevelRepository, ClassLevelRepository>();
-builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<IBaseClassRepository, ClassRepository>();
 builder.Services.AddScoped<ISubclassRepository, SubclassRepository>();
 
 // Core services
@@ -64,7 +64,7 @@ builder.Services.AddScoped<IAlignmentService, AlignmentService>();
 builder.Services.AddScoped<IBackgroundService, Api.Services.Implemented.BackgroundService>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<IClassLevelService, ClassLevelService>();
-builder.Services.AddScoped<IClassService, ClassService>();
+builder.Services.AddScoped<IBaseClassService, BaseClassService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IRaceService, RaceService>();
 builder.Services.AddScoped<ISkillService, SkillService>();

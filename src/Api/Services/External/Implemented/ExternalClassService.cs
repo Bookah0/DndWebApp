@@ -10,7 +10,7 @@ using Api.Repositories.Interfaces;
 using Api.Services.External.Interfaces;
 using static Api.Services.Util.ConstantsUtil;
 
-public class ExternalClassService(IClassRepository classRepo, ISubclassRepository subclassRepo, IAbilityRepository abilityRepo, IItemRepository itemRepository, ILogger<ExternalClassService> logger) : IExternalClassService
+public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepository subclassRepo, IAbilityRepository abilityRepo, IItemRepository itemRepository, ILogger<ExternalClassService> logger) : IExternalClassService
 {
     private readonly HttpClient client = new();
 
@@ -211,7 +211,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
         throw new NotImplementedException();
     }
 
-    private async Task AddStartingEquipmentAsync(EClassDto eClass, BaseClass clss, IClassRepository classRepo)
+    private async Task AddStartingEquipmentAsync(EClassDto eClass, BaseClass clss, IBaseClassRepository classRepo)
     {
         if (eClass.StartingEquipment is null)
             return;
@@ -223,7 +223,7 @@ public class ExternalClassService(IClassRepository classRepo, ISubclassRepositor
         }
     }
 
-    private async Task AddEquipmentChoicesAsync(EClassDto eClass, BaseClass clss, IClassRepository classRepo)
+    private async Task AddEquipmentChoicesAsync(EClassDto eClass, BaseClass clss, IBaseClassRepository classRepo)
     {
         if (eClass.StartingEquipmentChoices is null)
             return;

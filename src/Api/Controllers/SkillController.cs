@@ -25,14 +25,14 @@ public class SkillController(ISkillService service, IMapper mapper) : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult<SkillResponseDto>> CreateSkill([FromBody] SkillDto dto)
+    public async Task<ActionResult<SkillResponseDto>> CreateSkill([FromBody] CreateSkillRequestDto dto)
     {
         var skill = await service.CreateAsync(dto);
         return Ok(mapper.Map<SkillResponseDto>(skill));
     }
 
     [HttpPatch("{skillId}")]
-    public async Task<ActionResult<SkillResponseDto>> UpdateSkill(int skillId, [FromBody] SkillDto dto)
+    public async Task<ActionResult<SkillResponseDto>> UpdateSkill(int skillId, [FromBody] UpdateSkillRequestDto dto)
     {
         var updated = await service.UpdateAsync(skillId, dto);
         return Ok(mapper.Map<SkillResponseDto>(updated));

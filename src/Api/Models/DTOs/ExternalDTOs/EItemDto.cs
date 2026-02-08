@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Api.Models.DTOs.ExternalDTOs;
 
-public class EItemDto
+public class ECreateItemRequestDto
 {
     [JsonPropertyName("name")]
     public required string Name { get; set; }
@@ -29,7 +29,7 @@ public class EItemDto
     public List<EIndexDto>? Contents { get; set; }
 }
 
-public class EArmorDto : EItemDto
+public class ECreateArmorRequestDto : ECreateItemRequestDto
 {
     [JsonPropertyName("armor_category")]
     public required string ArmorCategory { get; set; }
@@ -44,7 +44,7 @@ public class EArmorDto : EItemDto
     public required bool StealthDisadvantage { get; set; }
 }
 
-public class EMount : EItemDto
+public class EMount : ECreateItemRequestDto
 {
     [JsonPropertyName("speed")]
     public required EQuantityDto Speed { get; set; }
@@ -53,7 +53,7 @@ public class EMount : EItemDto
     public required string CarryingCapacity { get; set; }
 }
 
-public class EWeaponDto : EItemDto
+public class ECreateWeaponRequestDto : ECreateItemRequestDto
 {
     [JsonPropertyName("category_range")]   
     public required string CategoryRange { get; set; }
@@ -68,7 +68,7 @@ public class EWeaponDto : EItemDto
     public ERangeDto? ThrowRange { get; set; }
 }
 
-public class EVehicleDto : EItemDto
+public class EVehicleDto : ECreateItemRequestDto
 {
     [JsonPropertyName("speed")]
     public EQuantityDto? Speed { get; set; }
@@ -77,7 +77,7 @@ public class EVehicleDto : EItemDto
     public string? Capacity { get; set; }
 }
 
-public class EToolDto : EItemDto
+public class ECreateToolRequestDto : ECreateItemRequestDto
 {
     [JsonPropertyName("tool_category")]
     public required string ToolCategory { get; set; }

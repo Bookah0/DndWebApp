@@ -1,5 +1,5 @@
 using Api.Middlewares.ExceptionHandling;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Models.Items.Constants;
 using Api.Repositories.Interfaces;

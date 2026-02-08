@@ -1,8 +1,8 @@
 namespace Api.Models.DTOs.ExternalDTOs;
 
-public class EMagicItemDto
+public class EMagicCreateItemRequestDto
 {
-    public required EItemDto Item { get; set; }
+    public required ECreateItemRequestDto Item { get; set; }
     public required ERarityDto Rarity { get; set; }
 }
 

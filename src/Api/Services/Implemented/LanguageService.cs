@@ -14,14 +14,15 @@ namespace Api.Services.Implemented;
 
 public class LanguageService(IRepository<Language> repo, ICurrentUserService currentUserService, ILogger<LanguageService> logger) : ILanguageService
 {
-    public async Task<Language> CreateAsync(LanguageDto dto)
+    public async Task<Language> CreateAsync(CreateLanguageRequestDto dto)
     {
         logger.LogInformation("Creating language, Name: {LanguageName}", dto.Name);
         var language = await repo.CreateAsync(new()
         {
             Name = dto.Name,
-            Script = dto.Script,
+            Script = dto.Script ?? "",
             Family = dto.Family,
+            TypicalSpeakers = dto.TypicalSpeakers ?? "",
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
@@ -55,16 +56,20 @@ public class LanguageService(IRepository<Language> repo, ICurrentUserService cur
         return language;
     }
 
-    public async Task<Language> UpdateAsync(int id, LanguageDto dto)
+    public async Task<Language> UpdateAsync(int id, UpdateLanguageRequestDto dto)
     {
         var language = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating language, Name: {LanguageName}, ID: {LanguageId}", language.Name, id);
 
-        language.Name = dto.Name;
-        language.Script = dto.Script;
-        language.Family = dto.Family;
-        language.IsHomebrew = dto.IsHomebrew;
-
+        language.Name = dto.Name ?? language.Name;
+        language.Script = dto.Script ?? language.Script;
+        language.Family = dto.Family ?? language.Family;
+        language.TypicalSpeakers = dto.TypicalSpeakers ?? language.TypicalSpeakers;
+        
+        language.IsPublic = dto.IsPublic ?? language.IsPublic;
+        language.CloningAllowed = dto.CloningAllowed ?? language.CloningAllowed;
+        language.UpdatedAt = DateTime.UtcNow;
+        
         await repo.UpdateAsync(language);
         logger.LogInformation("Successfully updated language, Name: {LanguageName}, ID: {LanguageId}", language.Name, language.Id);
         return language;

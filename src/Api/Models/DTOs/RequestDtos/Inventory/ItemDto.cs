@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models.DTOs.Inventory;
+namespace Api.Models.DTOs.RequestDtos.Inventory;
 
-public class ItemDto
+public class CreateItemRequestDto
 {
     [Required]
     [MinLength(1)]
@@ -16,7 +16,7 @@ public class ItemDto
 
     [Required]
     [Range(0, int.MaxValue)]
-    public required int Value { get; set; }
+    public int? Value { get; set; }
 
     [Required]
     [MinLength(1)]
@@ -35,5 +35,34 @@ public class ItemDto
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
 
-    public bool? IsHomebrew { get; set; }
+    [Range(1, int.MaxValue)]
+    public int? Quantity { get; set; }
+}
+
+public class UpdateItemRequestDto
+{
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string? Name { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public int? Value { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(50)]
+    public string? Rarity { get; set; }
+
+    public bool? RequiresAttunement { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public int? Weight { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? Quantity { get; set; }
+    public bool? IsPublic { get; set; }
+    public bool? CloningAllowed { get; set; }
 }

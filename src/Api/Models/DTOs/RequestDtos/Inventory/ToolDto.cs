@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models.DTOs.Inventory;
+namespace Api.Models.DTOs.RequestDtos.Inventory;
 
-public class ToolDto
+public class CreateToolRequestDto
 {
     [Required]
     [MinLength(1)]
@@ -15,21 +15,51 @@ public class ToolDto
     public required string Description { get; set; }
 
     [Required]
-    [Range(1, int.MaxValue)]
-    public required int Value { get; set; }
+    [Range(0, int.MaxValue)]
+    public int? Value { get; set; }
 
     [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string ToolCategory { get; set; }
 
+    [Required]
+    [MinLength(1)]
     [MaxLength(50)]
-    public string? Rarity { get; set; }
-
-    public bool? RequiresAttunement { get; set; }
+    public required string Rarity { get; set; }
 
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
+    public bool? RequiresAttunement { get; set; }
+}
+
+public class UpdateToolRequestDto
+{
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string? Name { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public int? Value { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string? ToolCategory { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(50)]
+    public string? Rarity { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public int? Weight { get; set; }
+    public List<string>? OtherCategories { get; set; }
+    public bool? RequiresAttunement { get; set; }
+    public bool? IsPublic { get; set; }
+    public bool? CloningAllowed { get; set; }
 }
 
 public class ToolPropertyDto

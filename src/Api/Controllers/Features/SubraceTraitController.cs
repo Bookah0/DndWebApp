@@ -7,12 +7,13 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Services.Interfaces.Species;
 using Api.Models.Features;
 using Api.Models.DTOs.RequestDtos.Character;
+using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
 
 namespace Api.Controllers.Features;
 
 [ApiController]
 [Route("api/races/{raceId}/subraces/{subraceId}/traits")]
-public class SubraceTraitController(IFeatureService<Trait, TraitDto> service, ISubraceService subraceService, IRaceService raceService, IMapper mapper) : ControllerBase
+public class SubraceTraitController(IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto> service, ISubraceService subraceService, IRaceService raceService, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<TraitResponseDto>>> GetTraits(int raceId, int subraceId)
@@ -35,7 +36,7 @@ public class SubraceTraitController(IFeatureService<Trait, TraitDto> service, IS
     }
 
     [HttpPost]
-    public async Task<ActionResult<TraitResponseDto>> CreateTrait(int raceId, int subraceId, [FromBody] TraitDto dto)
+    public async Task<ActionResult<TraitResponseDto>> CreateTrait(int raceId, int subraceId, [FromBody] CreateTraitRequestDto dto)
     {
         await EnsureSubraceBelongsToParentRace(raceId, subraceId);
 
@@ -44,10 +45,10 @@ public class SubraceTraitController(IFeatureService<Trait, TraitDto> service, IS
     }
 
     [HttpPatch("{traitId}")]
-    public async Task<ActionResult<TraitResponseDto>> UpdateTrait(int raceId, int subraceId, int traitId, [FromBody] TraitDto dto)
+    public async Task<ActionResult<TraitResponseDto>> UpdateTrait(int raceId, int subraceId, int traitId, [FromBody] UpdateTraitRequestDto dto)
     {
         await EnsureSubraceBelongsToParentRace(raceId, subraceId);
-        await EnsureTraitBelongsToSubrace(raceId, traitId);
+        await EnsureTraitBelongsToSubrace(subraceId, traitId);
 
         var updatedTrait = await service.UpdateAsync(dto, traitId);
         return Ok(mapper.Map<TraitResponseDto>(updatedTrait));
@@ -84,7 +85,7 @@ public class SubraceTraitController(IFeatureService<Trait, TraitDto> service, IS
 
     // Proficiency management endpoints
     [HttpPost("{traitId}/proficiencies")]
-    public async Task<ActionResult<TraitResponseDto>> AddProficiency(int raceId, int subraceId, int traitId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<TraitResponseDto>> AddProficiency(int raceId, int subraceId, int traitId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureSubraceBelongsToParentRace(raceId, subraceId);
         await EnsureTraitBelongsToSubrace(subraceId, traitId);
@@ -93,7 +94,7 @@ public class SubraceTraitController(IFeatureService<Trait, TraitDto> service, IS
     }
 
     [HttpDelete("{traitId}/proficiencies")]
-    public async Task<ActionResult> RemoveProficiency(int raceId, int subraceId, int traitId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult> RemoveProficiency(int raceId, int subraceId, int traitId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureSubraceBelongsToParentRace(raceId, subraceId);
         await EnsureTraitBelongsToSubrace(subraceId, traitId);

@@ -18,7 +18,7 @@ public class ChoiceService<T>
     IAbilityValueRepository abilityValueRepo,
     ILanguageRepository languageRepo,
     ISkillRepository skillRepo,
-    IFeatureService<T, FeatureDto> featureService,
+    IFeatureService<T, CreateFeatureRequestDto, UpdateFeatureRequestDto> featureService,
 
     IChoiceRepository<AbilityIncreaseChoice> abilityChoiceRepo,
     IChoiceRepository<SkillProficiencyChoice> skillChoiceRepo,
@@ -56,7 +56,7 @@ public class ChoiceService<T>
         logger.LogInformation("Successfully cleared all proficiency choices from feature with Name: {FeatureName}, ID: {FeatureId}", feature.Name, feature.Id);
     }
 
-    public async Task<T> AddChoice<CDto>(CDto dto, int featureId) where CDto : AChoiceDto
+    public async Task<T> AddChoice<CDto>(CDto dto, int featureId) where CDto : ChoiceDto
     {
         var feature = await featureService.GetByIdAsync(featureId);
         

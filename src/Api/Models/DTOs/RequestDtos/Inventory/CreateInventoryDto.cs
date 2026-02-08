@@ -1,7 +1,7 @@
 using Api.Models.Characters;
 using Api.Models.Features;
 
-namespace Api.Models.DTOs.Inventory;
+namespace Api.Models.DTOs.RequestDtos.Inventory;
 
 public class CreateInventoryDto
 {    public int CopperCoins { get; set; } = 0;

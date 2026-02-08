@@ -1,4 +1,4 @@
-namespace Api.Models.DTOs.Inventory;
+namespace Api.Models.DTOs.RequestDtos.Inventory;
 
 public class CurrencyDto
 {

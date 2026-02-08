@@ -1,5 +1,5 @@
 using Api.Middlewares.ExceptionHandling;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
 using Api.Services.Constants;
@@ -13,7 +13,7 @@ namespace Api.Services.Implemented.Items;
 
 public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUserService, ILogger<ArmorService> logger) : IArmorService
 {
-    public async Task<Armor> CreateAsync(ArmorDto dto)
+    public async Task<Armor> CreateAsync(CreateArmorRequestDto dto)
     {
         var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category");
         var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
@@ -23,18 +23,17 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
         Armor armor = await repo.CreateAsync(new()
         {
             Name = dto.Name,
-            Description = dto.Description,
-            Weight = dto.Weight,
-            Value = dto.Value,
+            Description = dto.Description ?? "",
+            Weight = dto.Weight ?? 0,
+            Value = dto.Value ?? 0,
             ArmorCategory = dtoCategory,
             BaseArmorClass = dto.BaseArmorClass,
             PlusDexMod = dto.PlusDexMod,
             StealthDisadvantage = dto.StealthDisadvantage ?? false,
             ModCap = dto.ModCap ?? 0,
             StrengthScoreRequired = dto.StrengthScoreRequired ?? 0,
-            Rarity = dtoRarity,
+            Rarity = dtoRarity ?? ItemRarity.Common,
             RequiresAttunement = dto.RequiresAttunement ?? false,
-            IsHomebrew = dto.IsHomebrew ?? false,
             Categories = [ItemCategory.Armor],
 
             CreatedAt = DateTime.UtcNow,
@@ -56,27 +55,30 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
     public async Task<ICollection<Armor>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Armor> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<Armor> UpdateAsync(ArmorDto dto, int id)
+    public async Task<Armor> UpdateAsync(UpdateArmorRequestDto dto, int id)
     {
-        var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category");
-        var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoCategory = dto.Category is not null ? ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues, "Armor Category") : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
         var armor = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
 
-        armor.Name = dto.Name;
-        armor.Description = dto.Description;
-        armor.Weight = dto.Weight;
-        armor.Value = dto.Value;
-        armor.ArmorCategory = dtoCategory;
-        armor.BaseArmorClass = dto.BaseArmorClass;
-        armor.PlusDexMod = dto.PlusDexMod;
+        armor.Name = dto.Name ?? armor.Name;
+        armor.Description = dto.Description ?? armor.Description;
+        armor.Weight = dto.Weight ?? armor.Weight;
+        armor.Value = dto.Value ?? armor.Value;
+        armor.ArmorCategory = dtoCategory ?? armor.ArmorCategory;
+        armor.BaseArmorClass = dto.BaseArmorClass ?? armor.BaseArmorClass;
+        armor.PlusDexMod = dto.PlusDexMod ?? armor.PlusDexMod;
         armor.StealthDisadvantage = dto.StealthDisadvantage ?? armor.StealthDisadvantage;
         armor.ModCap = dto.ModCap ?? armor.ModCap;
         armor.StrengthScoreRequired = dto.StrengthScoreRequired ?? armor.StrengthScoreRequired;
         armor.Rarity = dtoRarity ?? armor.Rarity;
         armor.RequiresAttunement = dto.RequiresAttunement ?? armor.RequiresAttunement;
-        armor.IsHomebrew = dto.IsHomebrew ?? armor.IsHomebrew;
+        
+        armor.IsPublic = dto.IsPublic ?? armor.IsPublic;
+        armor.CloningAllowed = dto.CloningAllowed ?? armor.CloningAllowed;
+        armor.UpdatedAt = DateTime.UtcNow;
 
         await repo.UpdateAsync(armor);
         logger.LogInformation("Successfully updated armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);

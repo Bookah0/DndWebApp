@@ -7,12 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Api.Models.Features;
 using Api.Models.Items;
 using Api.Controllers.Features;
+using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("api/feats")]
-public class FeatController(IFeatureService<Feat, FeatDto> service, IMapper mapper) : ControllerBase
+public class FeatController(IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto> service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<FeatResponseDto>>> GetFeats()
@@ -29,14 +30,14 @@ public class FeatController(IFeatureService<Feat, FeatDto> service, IMapper mapp
     }
 
     [HttpPost]
-    public async Task<ActionResult<FeatResponseDto>> CreateFeat([FromBody] FeatDto dto)
+    public async Task<ActionResult<FeatResponseDto>> CreateFeat([FromBody] CreateFeatRequestDto dto)
     {
         var feat = await service.CreateAsync(dto);
         return Ok(mapper.Map<FeatResponseDto>(feat));
     }
 
     [HttpPatch("{featId}")]
-    public async Task<ActionResult<FeatResponseDto>> UpdateFeat(int featId, [FromBody] FeatDto dto)
+    public async Task<ActionResult<FeatResponseDto>> UpdateFeat(int featId, [FromBody] UpdateFeatRequestDto dto)
     {
         var updatedFeat = await service.UpdateAsync(dto, featId);
         return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
@@ -66,14 +67,14 @@ public class FeatController(IFeatureService<Feat, FeatDto> service, IMapper mapp
 
     // Proficiency management endpoints
     [HttpPost("{featId}/proficiencies")]
-    public async Task<ActionResult<FeatResponseDto>> AddProficiency(int featId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<FeatResponseDto>> AddProficiency(int featId, [FromBody] ProficiencyRequestDto proficiency)
     {
         var updatedFeat = await service.AddProficiency(proficiency, featId);
         return Ok(mapper.Map<FeatResponseDto>(updatedFeat));
     }
 
     [HttpDelete("{featId}/proficiencies")]
-    public async Task<ActionResult> RemoveProficiency(int featId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult> RemoveProficiency(int featId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await service.RemoveProficiency(proficiency, featId);
         return Ok();

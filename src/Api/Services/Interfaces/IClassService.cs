@@ -17,7 +17,7 @@ public interface IClassService
     Task<BaseClass> RemoveClassLevel(int id, int classLevelId);
     Task<BaseClass> AddStartingEquipment(int id, int equipmentId);
     Task<BaseClass> RemoveStartingEquipment(int id, int equipmentId);
-    Task<BaseClass> AddStartingEquipmentChoice(int id, int choiceId);
-    Task<BaseClass> RemoveStartingEquipmentChoice(int id, int choiceId);
+    // Task<BaseClass> AddStartingEquipmentChoice(int id, int choiceId);
+    // Task<BaseClass> RemoveStartingEquipmentChoice(int id, int choiceId);
     ICollection<BaseClass> SortBy(ICollection<BaseClass> classes, bool descending = false);
 }

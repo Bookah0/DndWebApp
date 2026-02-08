@@ -1,5 +1,5 @@
 
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 
 namespace Api.Services.Interfaces.Items;

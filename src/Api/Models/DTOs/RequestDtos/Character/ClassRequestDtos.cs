@@ -21,7 +21,6 @@ public class CreateClassRequestDto
     [Required]
     [Range(1, int.MaxValue)]
     public required int? SpellcastingAbilityId { get; set; }
-    public ICollection<int> StartingEquipmentIds { get; set; } = [];
 }
 
 public class UpdateClassRequestDto
@@ -85,7 +84,8 @@ public class UpdateSubclassRequestDto
     public int? SpellcastingAbilityId { get; set; }
 
     [Range(1, int.MaxValue)]
-    public int? ParentClassId { get; set; }
+    public int? NewParentClassId { get; set; }
     public bool? IsPublic { get; set; }
     public bool? CloningAllowed { get; set; }
 }
+

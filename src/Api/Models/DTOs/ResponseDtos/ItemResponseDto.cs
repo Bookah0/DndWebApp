@@ -1,4 +1,4 @@
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Moq;
 
 namespace Api.Models.DTOs.ResponseDtos;

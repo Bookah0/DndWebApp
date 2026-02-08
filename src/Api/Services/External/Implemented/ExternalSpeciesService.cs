@@ -43,7 +43,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
                 throw new InvalidOperationException($"Failed to deserialize race {item.Index}.");
             }
 
-            var description = new RaceDescription
+            var description = new SpeciesDescriptions
             {
                 General = "",
                 Aging = eRace.Age,
@@ -100,7 +100,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
                 throw new InvalidOperationException($"Subrace {eSubrace.Name} already exists. Skipping.");
             }
 
-            var description = new RaceDescription
+            var description = new SpeciesDescriptions
             {
                 General = eSubrace.Description
             };

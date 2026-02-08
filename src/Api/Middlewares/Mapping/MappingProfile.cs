@@ -4,7 +4,7 @@ using AutoMapper;
 using Api.Models.Characters;
 using Api.Models.DTOs;
 using Api.Models.DTOs.Features;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Models.DTOs.ResponseDtos;
 using Api.Models.DTOs.Spells;
@@ -21,20 +21,24 @@ public class MappingProfile : Profile
         CreateMap<Character, CreateCharacterRequestDto>();
         CreateMap<Character, UpdateCharacterRequestDto>();
         CreateMap<Inventory, CreateInventoryDto>();
-        CreateMap<Inventory, UpdateInventoryDto>();
         CreateMap<Background, CreateBackgroundRequestDto>();
         CreateMap<Background, UpdateBackgroundRequestDto>();
         CreateMap<Alignment, AlignmentRequestDto>();
         CreateMap<Ability, AbilityRequestDto>();
         CreateMap<AbilityValue, AbilityValueDto>();
-        CreateMap<Skill, SkillDto>();
-        CreateMap<Language, LanguageDto>();
+        CreateMap<Skill, CreateSkillRequestDto>();
+        CreateMap<Skill, UpdateSkillRequestDto>();
+        CreateMap<Language, CreateLanguageRequestDto>();
         CreateMap<Spell, SpellDto>();
         
-        CreateMap<Trait, TraitDto>();
-        CreateMap<BackgroundFeature, BackgroundFeatureDto>();
-        CreateMap<ClassFeature, ClassFeatureDto>();
-        CreateMap<Feat, FeatDto>();
+        CreateMap<Trait, CreateTraitRequestDto>();
+        CreateMap<Trait, UpdateTraitRequestDto>();
+        CreateMap<BackgroundFeature, CreateBackgroundFeatureRequestDto>();
+        CreateMap<BackgroundFeature, UpdateBackgroundFeatureRequestDto>();
+        CreateMap<ClassFeature, CreateClassFeatureRequestDto>();
+        CreateMap<ClassFeature, UpdateClassFeatureRequestDto>();
+        CreateMap<Feat, CreateFeatRequestDto>();
+        CreateMap<Feat, UpdateFeatRequestDto>();
 
         CreateMap<BaseClass, CreateClassRequestDto>();
         CreateMap<Subclass, CreateSubclassRequestDto>();
@@ -42,13 +46,15 @@ public class MappingProfile : Profile
         CreateMap<Subclass, UpdateSubclassRequestDto>();
         CreateMap<ClassLevel, CreateClassLevelRequestDto>();
         CreateMap<ClassLevel, UpdateClassLevelRequestDto>();
-        CreateMap<Race, RaceDto>();
-        CreateMap<Subrace, SubraceDto>();
+        CreateMap<Race, CreateRaceRequestDto>();
+        CreateMap<Race, UpdateRaceRequestDto>();
+        CreateMap<Subrace, CreateSubraceRequestDto>();
+        CreateMap<Subrace, UpdateSubraceRequestDto>();
 
-        CreateMap<Item, ItemDto>();
-        CreateMap<Weapon, WeaponDto>();
-        CreateMap<Armor, ArmorDto>();
-        CreateMap<Tool, ToolDto>();
+        CreateMap<Item, CreateItemRequestDto>();
+        CreateMap<Weapon, CreateWeaponRequestDto>();
+        CreateMap<Armor, CreateArmorRequestDto>();
+        CreateMap<Tool, CreateToolRequestDto>();
 
         CreateMap<SkillProficiencyChoice, SkillProficiencyChoiceDto>();
         CreateMap<LanguageChoice, LanguageProficiencyChoiceDto>();
@@ -93,24 +99,28 @@ public class MappingProfile : Profile
         CreateMap<AbilityIncreaseChoice, AbilityIncreaseChoiceResponseDto>();
         CreateMap<ArmorProficiencyChoice, ArmorProficiencyChoiceResponseDto>();
 
-        // Request DTO to Entity
+        // Request DTO to Response DTO
         CreateMap<CreateCharacterRequestDto, CharacterResponseDto>();
         CreateMap<UpdateCharacterRequestDto, CharacterResponseDto>();
         CreateMap<CreateInventoryDto, InventoryResponseDto>();
-        CreateMap<UpdateInventoryDto, InventoryResponseDto>();
         CreateMap<CreateBackgroundRequestDto, BackgroundResponseDto>();
         CreateMap<UpdateBackgroundRequestDto, BackgroundResponseDto>();
         CreateMap<AlignmentRequestDto, AlignmentResponseDto>();
         CreateMap<AbilityRequestDto, AbilityResponseDto>();
         CreateMap<AbilityValueDto, AbilityValueResponseDto>();
-        CreateMap<SkillDto, SkillResponseDto>();
-        CreateMap<LanguageDto, LanguageResponseDto>();
+        CreateMap<CreateSkillRequestDto, SkillResponseDto>();
+        CreateMap<UpdateSkillRequestDto, SkillResponseDto>();
+        CreateMap<CreateLanguageRequestDto, LanguageResponseDto>();
         CreateMap<SpellDto, SpellResponseDto>();
         
-        CreateMap<TraitDto, TraitResponseDto>();
-        CreateMap<BackgroundFeatureDto, BackgroundFeatureResponseDto>();
-        CreateMap<ClassFeatureDto, ClassFeatureResponseDto>();
-        CreateMap<FeatDto, FeatResponseDto>();
+        CreateMap<CreateTraitRequestDto, TraitResponseDto>();
+        CreateMap<UpdateTraitRequestDto, TraitResponseDto>();
+        CreateMap<CreateBackgroundFeatureRequestDto, BackgroundFeatureResponseDto>();
+        CreateMap<UpdateBackgroundFeatureRequestDto, BackgroundFeatureResponseDto>();
+        CreateMap<CreateClassFeatureRequestDto, ClassFeatureResponseDto>();
+        CreateMap<UpdateClassFeatureRequestDto, ClassFeatureResponseDto>();
+        CreateMap<CreateFeatRequestDto, FeatResponseDto>();
+        CreateMap<UpdateFeatRequestDto, FeatResponseDto>();
 
         CreateMap<CreateClassRequestDto, ClassResponseDto>();
         CreateMap<UpdateClassRequestDto, ClassResponseDto>();
@@ -118,13 +128,15 @@ public class MappingProfile : Profile
         CreateMap<UpdateSubclassRequestDto, SubclassResponseDto>();
         CreateMap<CreateClassLevelRequestDto, ClassLevelResponseDto>();
         CreateMap<UpdateClassLevelRequestDto, ClassLevelResponseDto>();
-        CreateMap<RaceDto, RaceResponseDto>();
-        CreateMap<SubraceDto, SubraceResponseDto>();
+        CreateMap<CreateRaceRequestDto, RaceResponseDto>();
+        CreateMap<CreateRaceRequestDto, RaceResponseDto>();
+        CreateMap<CreateSubraceRequestDto, SubraceResponseDto>();
+        CreateMap<UpdateSubraceRequestDto, SubraceResponseDto>();
 
-        CreateMap<ItemDto, ItemResponseDto>();
-        CreateMap<WeaponDto, WeaponResponseDto>();
-        CreateMap<ArmorDto, ArmorResponseDto>();
-        CreateMap<ToolDto, ToolResponseDto>();
+        CreateMap<CreateItemRequestDto, ItemResponseDto>();
+        CreateMap<CreateWeaponRequestDto, WeaponResponseDto>();
+        CreateMap<CreateArmorRequestDto, ArmorResponseDto>();
+        CreateMap<CreateToolRequestDto, ToolResponseDto>();
 
         CreateMap<SkillProficiencyChoiceDto, SkillProficiencyChoiceResponseDto>();
         CreateMap<LanguageProficiencyChoiceDto, LanguageChoiceResponseDto>();

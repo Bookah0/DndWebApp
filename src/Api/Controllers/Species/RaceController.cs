@@ -25,14 +25,14 @@ public class RaceController(IRaceService service, IMapper mapper) : ControllerBa
     }
 
     [HttpPost]
-    public async Task<ActionResult<RaceResponseDto>> CreateRace([FromBody] RaceDto dto)
+    public async Task<ActionResult<RaceResponseDto>> CreateRace([FromBody] CreateRaceRequestDto dto)
     {
         var race = await service.CreateAsync(dto);
         return Ok(mapper.Map<RaceResponseDto>(race));
     }
 
     [HttpPatch("{raceId}")]
-    public async Task<ActionResult<RaceResponseDto>> UpdateRace(int raceId, [FromBody] RaceDto dto)
+    public async Task<ActionResult<RaceResponseDto>> UpdateRace(int raceId, [FromBody] UpdateRaceRequestDto dto)
     {
         var updatedRace = await service.UpdateAsync(raceId, dto);
         return Ok(mapper.Map<RaceResponseDto>(updatedRace));

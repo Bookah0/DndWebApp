@@ -74,10 +74,10 @@ builder.Services.AddScoped<ISubraceService, SubraceService>();
 
 // Feature services
 //builder.Services.AddScoped(typeof(IBaseFeatureService<>), typeof(BaseFeatureService<>));
-builder.Services.AddScoped<IFeatureService<BackgroundFeature, BackgroundFeatureDto>, BackgroundFeatureService>();
-builder.Services.AddScoped<IFeatureService<ClassFeature, ClassFeatureDto>, ClassFeatureService>();
-builder.Services.AddScoped<IFeatureService<Feat, FeatDto>, FeatService>();
-builder.Services.AddScoped<IFeatureService<Trait, TraitDto>, TraitService>();
+builder.Services.AddScoped<IFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto>, BackgroundFeatureService>();
+builder.Services.AddScoped<IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto>, ClassFeatureService>();
+builder.Services.AddScoped<IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto>, FeatService>();
+builder.Services.AddScoped<IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto>, TraitService>();
 
 // Item services
 builder.Services.AddScoped<IArmorService, ArmorService>();

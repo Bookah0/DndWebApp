@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 
 namespace Api.Models.DTOs.RequestDtos.Character;
 

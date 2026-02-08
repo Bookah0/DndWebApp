@@ -82,6 +82,7 @@ public class BackgroundService(
             };
         }
 
+        background.UpdatedAt = DateTime.UtcNow;
         await repo.UpdateAsync(background);
         logger.LogInformation("Successfully updated background, Name: {BackgroundName}, ID: {BackgroundId}", background.Name, id);
         return background;

@@ -43,7 +43,7 @@ public class ExternalLanguageService(ILanguageRepository repo, ILogger<ExternalL
                 Name = eLanguage.Name,
                 Family = eLanguage.Type,
                 Script = eLanguage.Script,
-                TypicalSpeakers = eLanguage.TypicalSpeakers,
+                TypicalSpeakers = string.Join(". ", eLanguage.TypicalSpeakers),
 
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = null,

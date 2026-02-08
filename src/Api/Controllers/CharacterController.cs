@@ -1,7 +1,7 @@
 using AutoMapper;
 using Api.Models.DTOs.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Services.Interfaces.Items;
 using System.ComponentModel.DataAnnotations;
 using Api.Services.Interfaces;

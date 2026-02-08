@@ -62,10 +62,10 @@ public partial class SubclassService(
         subclass.CloningAllowed = dto.CloningAllowed ?? subclass.CloningAllowed;
         subclass.UpdatedAt = DateTime.UtcNow;
         
-        if(dto.ParentClassId is not null && dto.ParentClassId != subclass.ParentClassId)
+        if(dto.NewParentClassId is not null && dto.NewParentClassId != subclass.ParentClassId)
         {
-            var newParentClass = await classRepo.GetByIdAsync((int)dto.ParentClassId);
-            subclass.ParentClassId = (int)dto.ParentClassId;
+            var newParentClass = await classRepo.GetByIdAsync((int)dto.NewParentClassId);
+            subclass.ParentClassId = (int)dto.NewParentClassId;
             subclass.ParentClass = newParentClass;
         }
         

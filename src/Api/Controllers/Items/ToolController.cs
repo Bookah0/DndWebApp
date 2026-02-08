@@ -1,5 +1,5 @@
 using AutoMapper;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.DTOs.ResponseDtos;
 using Api.Models.Items;
 using Api.Services.Interfaces.Items;
@@ -26,14 +26,14 @@ public class ToolController(IToolService service, IMapper mapper) : ControllerBa
     }
 
     [HttpPost]
-    public async Task<ActionResult<ToolResponseDto>> CreateTool([FromBody] ToolDto dto)
+    public async Task<ActionResult<ToolResponseDto>> CreateTool([FromBody] CreateToolRequestDto dto)
     {
         var tool = await service.CreateAsync(dto);
         return Ok(mapper.Map<ToolResponseDto>(tool));
     }
 
     [HttpPatch("{toolId}")]
-    public async Task<ActionResult<ToolResponseDto>> UpdateTool(int toolId, [FromBody] ToolDto dto)
+    public async Task<ActionResult<ToolResponseDto>> UpdateTool(int toolId, [FromBody] UpdateToolRequestDto dto)
     {
         var updatedTool = await service.UpdateAsync(dto, toolId);
         return Ok(mapper.Map<ToolResponseDto>(updatedTool));

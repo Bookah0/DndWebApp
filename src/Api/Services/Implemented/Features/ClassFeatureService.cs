@@ -19,9 +19,9 @@ public class ClassFeatureService(
     ILanguageRepository languageRepo,
     ICurrentUserService currentUserService,
     ILogger<ClassFeatureService> logger)
-    : AFeatureService<ClassFeature, ClassFeatureDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
+    : AFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
-    public async override Task<ClassFeature> CreateAsync(ClassFeatureDto dto)
+    public async override Task<ClassFeature> CreateAsync(CreateClassFeatureRequestDto dto)
     {
         var level = await classLevelRepo.GetByIdAsync(dto.LevelId) ;
 
@@ -55,21 +55,27 @@ public class ClassFeatureService(
     public async override Task<ICollection<ClassFeature>> GetAllAsync() => await repo.GetAllAsync();
     public async override Task<ClassFeature> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async override Task<ClassFeature> UpdateAsync(ClassFeatureDto dto, int id)
+    public async override Task<ClassFeature> UpdateAsync(UpdateClassFeatureRequestDto dto, int id)
     {
         var feature = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
 
-        if (feature.LevelId != dto.LevelId)
+        if (dto.NewLevelId is not null && feature.LevelId != dto.NewLevelId)
         {
-            feature.Level = await classLevelRepo.GetByIdAsync(dto.LevelId);
-            feature.LevelId = dto.LevelId;
+            feature.Level = await classLevelRepo.GetByIdAsync((int)dto.NewLevelId);
+            feature.LevelId = (int)dto.NewLevelId;
+        }
+        if (dto.NewClassId is not null && feature.ClassId != dto.NewClassId)
+        {
+            feature.ClassId = (int)dto.NewClassId;
         }
 
-        feature.Name = dto.Name;
-        feature.Description = dto.Description;
-        feature.IsHomebrew = dto.IsHomebrew;
+        feature.Name = dto.Name ?? feature.Name;
+        feature.Description = dto.Description ?? feature.Description;
+        feature.IsPublic = dto.IsPublic ?? feature.IsPublic;
+        feature.CloningAllowed = dto.CloningAllowed ?? feature.CloningAllowed;
+        feature.UpdatedAt = DateTime.UtcNow;
         await repo.UpdateAsync(feature);
         logger.LogInformation("Successfully updated class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
         return feature;

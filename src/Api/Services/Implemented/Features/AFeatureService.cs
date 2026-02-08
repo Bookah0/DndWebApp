@@ -7,22 +7,23 @@ using Api.Models.Items.Constants;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces.Features;
 using Api.Services.Util;
+using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
 
 namespace Api.Services.Implemented.Features;
 
-public abstract class AFeatureService<T, TD>(
+public abstract class AFeatureService<T, CD, UD>(
     IFeatureRepository<T> repo,
     ISpellRepository spellRepo,
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
     ILogger logger) 
-    : IFeatureService<T, TD> where T : Feature where TD : FeatureDto
+    : IFeatureService<T, CD, UD> where T : Feature where CD : CreateFeatureRequestDto where UD : UpdateFeatureRequestDto
 {
     public abstract Task<T> GetByIdAsync(int id);
     public abstract Task<ICollection<T>> GetAllAsync();
-    public abstract Task<T> CreateAsync(TD dto);
-    public abstract Task<T> UpdateAsync(TD dto, int id);
+    public abstract Task<T> CreateAsync(CD dto);
+    public abstract Task<T> UpdateAsync(UD dto, int id);
     public abstract Task DeleteAsync(int id);
 
     public Task<T> GetWithChoicesAsync(int id) => repo.GetWithChoicesAsync(id);
@@ -52,7 +53,7 @@ public abstract class AFeatureService<T, TD>(
         logger.LogInformation("Successfully removed spell with Name: {SpellName}, ID: {SpellId} from feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
     }
 
-    public async Task<T> AddProficiency(ProficiencyDto dto, int featureId)
+    public async Task<T> AddProficiency(ProficiencyRequestDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId);
 
@@ -110,7 +111,7 @@ public abstract class AFeatureService<T, TD>(
         return feature;
     }
 
-    public async Task RemoveProficiency(ProficiencyDto dto, int featureId)
+    public async Task RemoveProficiency(ProficiencyRequestDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId);
                 
@@ -193,7 +194,7 @@ public abstract class AFeatureService<T, TD>(
     }
 
     // Helpers
-    private static async Task<P> GetProficiencyById<P>(ProficiencyDto dto, IRepository<P> repository) where P : class
+    private static async Task<P> GetProficiencyById<P>(ProficiencyRequestDto dto, IRepository<P> repository) where P : class
     {
         if (!int.TryParse(dto.Value, out var id))
             throw new ValidationException($"{dto.Type} id {dto.Value} is not a valid integer");
@@ -201,7 +202,7 @@ public abstract class AFeatureService<T, TD>(
         return await repository.GetByIdAsync(id);
     }
 
-    private static P GetProficiencyById<P>(ProficiencyDto dto, ICollection<P> collection) where P : class
+    private static P GetProficiencyById<P>(ProficiencyRequestDto dto, ICollection<P> collection) where P : class
     {
         if (!int.TryParse(dto.Value, out var id))
             throw new ValidationException($"{dto.Type} id {dto.Value} is not a valid integer");

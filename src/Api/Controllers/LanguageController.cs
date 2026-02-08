@@ -25,14 +25,14 @@ public class LanguageController(ILanguageService service, IMapper mapper) : Cont
     }
 
     [HttpPost]
-    public async Task<ActionResult<LanguageResponseDto>> CreateLanguage([FromBody] LanguageDto dto)
+    public async Task<ActionResult<LanguageResponseDto>> CreateLanguage([FromBody] CreateLanguageRequestDto dto)
     {
         var language = await service.CreateAsync(dto);
         return Ok(mapper.Map<LanguageResponseDto>(language));
     }
 
     [HttpPatch("{languageId}")]
-    public async Task<ActionResult<LanguageResponseDto>> UpdateLanguage(int languageId, [FromBody] LanguageDto dto)
+    public async Task<ActionResult<LanguageResponseDto>> UpdateLanguage(int languageId, [FromBody] UpdateLanguageRequestDto dto)
     {
         var updatedLanguage = await service.UpdateAsync(languageId, dto);
         return Ok(mapper.Map<LanguageResponseDto>(updatedLanguage));

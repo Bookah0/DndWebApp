@@ -20,8 +20,6 @@ public partial class CharacterService(
     IClassLevelRepository levelRepo,
     IBackgroundRepository backgroundRepo,
     IAbilityRepository abilityRepo,
-    ISkillRepository skillRepo,
-    ILanguageRepository languageRepo,
     ICurrentUserService currentUserService,
     ILogger<CharacterService> logger) : ICharacterService
 {
@@ -61,7 +59,7 @@ public partial class CharacterService(
 
         foreach (var feature in latestLevel.NewFeatures)
         {
-            await ApplyFeatureAsync(feature, character);
+            ApplyFeature(feature, character);
         }
 
         logger.LogInformation("Successfully leveled up character, Name: {CharacterName}, ID: {CharacterId}, NewLevel: {NewLevel}", character.Name, characterId, newLvl);
@@ -81,7 +79,7 @@ public partial class CharacterService(
 
             foreach (var feature in subclass.ClassLevels.SelectMany(cl => cl.NewFeatures))
             {
-                await RemoveFeatureAsync(feature, character);
+                RemoveFeature(feature, character);
             }
         }
         
@@ -93,7 +91,7 @@ public partial class CharacterService(
 
         foreach (var feature in newSubclass.ClassLevels.SelectMany(cl => cl.NewFeatures))
         {
-            await ApplyFeatureAsync(feature, character);
+            ApplyFeature(feature, character);
         }
 
 

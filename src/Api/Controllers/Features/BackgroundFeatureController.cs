@@ -7,12 +7,13 @@ using Api.Services.Interfaces;
 using Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
 using Api.Models.Features;
+using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
 
 namespace Api.Controllers.Features;
 
 [ApiController]
 [Route("api/backgrounds/{backgroundId}/features")]
-public class BackgroundFeatureController(IFeatureService<BackgroundFeature, BackgroundFeatureDto> service, IBackgroundService backgroundService, IMapper mapper) : ControllerBase
+public class BackgroundFeatureController(IFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto> service, IBackgroundService backgroundService, IMapper mapper) : ControllerBase
 {   
     [HttpGet]
     public async Task<ActionResult<ICollection<BackgroundFeatureResponseDto>>> GetBackgroundFeatures(int backgroundId)
@@ -34,7 +35,7 @@ public class BackgroundFeatureController(IFeatureService<BackgroundFeature, Back
     }
 
     [HttpPost]
-    public async Task<ActionResult<BackgroundFeatureResponseDto>> CreateBackgroundFeature([FromBody] BackgroundFeatureDto dto, int backgroundId)
+    public async Task<ActionResult<BackgroundFeatureResponseDto>> CreateBackgroundFeature([FromBody] CreateBackgroundFeatureRequestDto dto, int backgroundId)
     {
         if(dto.BackgroundId != backgroundId)
             throw new ValidationException($"Background id in dto {dto.BackgroundId} does not match background id in route {backgroundId}");
@@ -44,7 +45,7 @@ public class BackgroundFeatureController(IFeatureService<BackgroundFeature, Back
     }
 
     [HttpPatch("{featureId}")]
-    public async Task<ActionResult<BackgroundFeatureResponseDto>> UpdateBackgroundFeature(int featureId, int backgroundId, [FromBody] BackgroundFeatureDto dto)
+    public async Task<ActionResult<BackgroundFeatureResponseDto>> UpdateBackgroundFeature(int featureId, int backgroundId, [FromBody] UpdateBackgroundFeatureRequestDto dto)
     {
         await EnsureFeatureBelongsToBackground(backgroundId, featureId);
         var updatedFeature = await service.UpdateAsync(dto, featureId);
@@ -78,7 +79,7 @@ public class BackgroundFeatureController(IFeatureService<BackgroundFeature, Back
 
     // Proficiency management endpoints
     [HttpPost("{featureId}/proficiencies")]
-    public async Task<ActionResult<BackgroundFeatureResponseDto>> AddProficiency(int featureId, int backgroundId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<BackgroundFeatureResponseDto>> AddProficiency(int featureId, int backgroundId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureFeatureBelongsToBackground(backgroundId, featureId);
         var updatedFeature = await service.AddProficiency(proficiency, featureId);
@@ -86,7 +87,7 @@ public class BackgroundFeatureController(IFeatureService<BackgroundFeature, Back
     }
 
     [HttpDelete("{featureId}/proficiencies")]
-    public async Task<ActionResult> RemoveProficiency(int featureId, int backgroundId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult> RemoveProficiency(int featureId, int backgroundId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureFeatureBelongsToBackground(backgroundId, featureId);
         await service.RemoveProficiency(proficiency, featureId);

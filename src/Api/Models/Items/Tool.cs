@@ -3,8 +3,8 @@ namespace Api.Models.Items;
 
 public class Tool : Item
 {
-    public required string ToolType { get; set; }
-    public required ICollection<ToolProperty> Properties { get; set; }
+    public required string ToolCategory { get; set; }
+    public ICollection<ToolProperty> Properties { get; set; } = [];
     public ICollection<ToolActivity> Activities { get; set; } = [];
 }
 

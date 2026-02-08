@@ -8,12 +8,13 @@ using Api.Services.Implemented.Classes;
 using Api.Services.Interfaces;
 using Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
+using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
 
 namespace Api.Controllers.Classes;
 
 [ApiController]
 [Route("api/classes/{classId}/features")]
-public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDto> service, IClassService classService, IMapper mapper) : ControllerBase
+public class ClassFeatureController(IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto> service, IClassService classService, IMapper mapper) : ControllerBase
 {
     
     [HttpGet]
@@ -36,7 +37,7 @@ public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDt
     }
 
     [HttpPost]
-    public async Task<ActionResult<ClassFeatureResponseDto>> CreateClassFeature(int classId, [FromBody] ClassFeatureDto dto)
+    public async Task<ActionResult<ClassFeatureResponseDto>> CreateClassFeature(int classId, [FromBody] CreateClassFeatureRequestDto dto)
     {
         if(dto.ClassId != classId)
             throw new ValidationException($"Class id in dto {dto.ClassId} does not match class id in route {classId}");
@@ -46,7 +47,7 @@ public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDt
     }
 
     [HttpPatch("{featureId}")]
-    public async Task<ActionResult<ClassFeatureResponseDto>> UpdateClassFeature(int classId, int featureId, [FromBody] ClassFeatureDto dto)
+    public async Task<ActionResult<ClassFeatureResponseDto>> UpdateClassFeature(int classId, int featureId, [FromBody] UpdateClassFeatureRequestDto dto)
     {
         await EnsureFeatureBelongsToClass(classId, featureId);
         var updatedFeature = await service.UpdateAsync(dto, featureId);
@@ -80,7 +81,7 @@ public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDt
 
     // Proficiency management endpoints
     [HttpPost("{featureId}/proficiencies")]
-    public async Task<ActionResult<ClassFeatureResponseDto>> AddProficiency(int classId, int featureId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<ClassFeatureResponseDto>> AddProficiency(int classId, int featureId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureFeatureBelongsToClass(classId, featureId);
         var updatedFeature = await service.AddProficiency(proficiency, featureId);
@@ -88,7 +89,7 @@ public class ClassFeatureController(IFeatureService<ClassFeature, ClassFeatureDt
     }
 
     [HttpDelete("{featureId}/proficiencies")]
-    public async Task<ActionResult> RemoveProficiency(int classId, int featureId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult> RemoveProficiency(int classId, int featureId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureFeatureBelongsToClass(classId, featureId);
         await service.RemoveProficiency(proficiency, featureId);

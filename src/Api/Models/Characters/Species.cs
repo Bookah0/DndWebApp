@@ -7,7 +7,7 @@ namespace Api.Models.Characters;
 public class Species : CreatableEntity
 {
     public required string Name { get; set; }
-    public RaceDescription RaceDescription { get; set; } = new();
+    public SpeciesDescriptions RaceDescription { get; set; } = new();
     public required int Speed { get; set; }
     public string Size { get; set; } = "Medium";
     public ICollection<Trait> Traits { get; set; } = [];
@@ -25,7 +25,7 @@ public class Subrace : Species
 }
 
 [Owned]
-public class RaceDescription
+public class SpeciesDescriptions
 {
     public string General { get; set; } = "";
     public string Aging { get; set; } = "";

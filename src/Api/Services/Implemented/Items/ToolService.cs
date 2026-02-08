@@ -1,10 +1,9 @@
 using Api.Middlewares.ExceptionHandling;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
 using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ValidationUtil;
 using static Api.Services.Util.ConstantsUtil;
 using Api.Models.Items.Constants;
 using Api.Services.Interfaces.Items;
@@ -14,7 +13,7 @@ namespace Api.Services.Implemented.Items;
 
 public class ToolService(IToolRepository repo, ICurrentUserService currentUserService, ILogger<ToolService> logger) : IToolService
 {
-    public async Task<Tool> CreateAsync(ToolDto dto)
+    public async Task<Tool> CreateAsync(CreateToolRequestDto dto)
     {
         var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
@@ -26,12 +25,11 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
             Name = dto.Name,
             Description = dto.Description,
             Categories = [ItemCategory.Tools],
-            ToolType = dtoToolCategory,
-            Value = dto.Value,
-            Rarity = dtoRarity,
+            ToolCategory = dtoToolCategory,
+            Value = dto.Value ?? 0,
+            Rarity = dtoRarity ?? ItemRarity.Common,
             RequiresAttunement = dto.RequiresAttunement ?? false,
             Weight = dto.Weight ?? 0,
-            Properties = [],
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
@@ -75,23 +73,26 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
     public async Task<ICollection<Tool>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Tool> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<Tool> UpdateAsync(ToolDto dto, int id)
+    public async Task<Tool> UpdateAsync(UpdateToolRequestDto dto, int id)
     {
-        var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
+        var dtoToolCategory = dto.ToolCategory is not null ? ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues, "Tool Category") : null;
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
         var tool = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating tool, Name: {ToolName}, ID: {ToolId}", dto.Name, id);
 
-        tool.Name = dto.Name;
-        tool.Description = dto.Description;
-        tool.ToolType = dtoToolCategory;
-        tool.Value = dto.Value;
-        tool.Rarity = dtoRarity;
+        tool.Name = dto.Name ?? tool.Name;
+        tool.Description = dto.Description ?? tool.Description;
+        tool.ToolCategory = dtoToolCategory ?? tool.ToolCategory;
+        tool.Value = dto.Value ?? tool.Value;
+        tool.Rarity = dtoRarity ?? tool.Rarity;
         tool.RequiresAttunement = dto.RequiresAttunement ?? tool.RequiresAttunement;
         tool.Weight = dto.Weight ?? tool.Weight;
         
+        tool.IsPublic = dto.IsPublic ?? tool.IsPublic;
+        tool.CloningAllowed = dto.CloningAllowed ?? tool.CloningAllowed;
         tool.UpdatedAt = DateTime.UtcNow;
+
         await repo.UpdateAsync(tool);
         logger.LogInformation("Successfully updated tool, Name: {ToolName}, ID: {ToolId}", tool.Name, tool.Id);
         return tool;
@@ -106,7 +107,7 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
         return resolved switch
         {
             SortToolOption.Name => OrderByMany(tools, [(i => i.Name)], descending),
-            SortToolOption.Category => OrderByMany(tools, [(i => i.ToolType), (i => i.Name)], descending),
+            SortToolOption.Category => OrderByMany(tools, [(i => i.ToolCategory), (i => i.Name)], descending),
             SortToolOption.Value => OrderByMany(tools, [(i => i.Value), (i => i.Name)], descending),
             SortToolOption.Rarity => OrderByMany(tools, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
             _ => throw new ValidationException($"Invalid sort option: {sortFilter}")

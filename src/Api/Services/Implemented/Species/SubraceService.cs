@@ -1,6 +1,5 @@
-
-using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
+using Api.Models.Characters.Constants;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
@@ -15,17 +14,17 @@ public class SubraceService(
     ILogger<SubraceService> logger) 
     : ISubraceService
 {
-    public async Task<Subrace> CreateAsync(SubraceDto dto)
+    public async Task<Subrace> CreateAsync(CreateSubraceRequestDto dto)
     {
         logger.LogInformation("Creating subrace, Name: {SubraceName}", dto.Name);
 
-        var raceDescription = new RaceDescription
+        var raceDescription = new SpeciesDescriptions
         {
-            General = dto.GeneralDescription,
-            Aging = dto.AgingDescription ?? "",
-            CommonAlignment = dto.CommonAlignmentDescription ?? "",
-            Size = dto.SizeDescription ?? "",
-            Languages = dto.LanguageDescription ?? ""
+            General = dto.SpeciesDescriptions?.GeneralDescription ?? "",
+            Aging = dto.SpeciesDescriptions?.AgingDescription ?? "",
+            CommonAlignment = dto.SpeciesDescriptions?.AlignmentDescription ?? "",
+            Size = dto.SpeciesDescriptions?.SizesDescription ?? "",
+            Languages = dto.SpeciesDescriptions?.LanguagesDescription ?? ""
         };
 
         var parentRace = await parentRaceRepo.GetByIdAsync(dto.ParentRaceId);
@@ -36,8 +35,8 @@ public class SubraceService(
             RaceDescription = raceDescription,
             ParentRaceId = dto.ParentRaceId,
             ParentRace = parentRace,
-            Speed = dto.Speed,
-            Size = dto.Size,
+            Speed = dto.Speed ?? 30,
+            Size = dto.Size ?? CreatureSize.Medium,
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
@@ -63,21 +62,21 @@ public class SubraceService(
     public async Task<Subrace> GetWithAllDataAsync(int id) => await repo.GetWithAllDataAsync(id);
     public async Task<Subrace> GetWithTraitsAsync(int id) => await repo.GetWithTraitsAsync(id);
 
-    public async Task<Subrace> UpdateAsync(int id, SubraceDto dto)
+    public async Task<Subrace> UpdateAsync(int id, UpdateSubraceRequestDto dto)
     {
         var subrace = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
 
-        subrace.Name = dto.Name;
-        subrace.Speed = dto.Speed;
-        subrace.Size = dto.Size;
-        subrace.IsHomebrew = dto.IsHomebrew;
-        subrace.RaceDescription.General = dto.GeneralDescription;
-        subrace.RaceDescription.Aging = dto.AgingDescription ?? "";
-        subrace.RaceDescription.CommonAlignment = dto.CommonAlignmentDescription ?? "";
-        subrace.RaceDescription.Size = dto.SizeDescription ?? "";
-        subrace.RaceDescription.Languages = dto.LanguageDescription ?? "";
+        subrace.Name = dto.Name ?? subrace.Name;
+        subrace.Speed = dto.Speed ?? subrace.Speed;
+        subrace.Size = dto.Size ?? subrace.Size;
+
+        subrace.RaceDescription.General = dto.SpeciesDescriptions?.GeneralDescription ?? subrace.RaceDescription.General;
+        subrace.RaceDescription.Aging = dto.SpeciesDescriptions?.AgingDescription ?? subrace.RaceDescription.Aging;
+        subrace.RaceDescription.CommonAlignment = dto.SpeciesDescriptions?.AlignmentDescription ?? subrace.RaceDescription.CommonAlignment;
+        subrace.RaceDescription.Size = dto.SpeciesDescriptions?.SizesDescription ?? subrace.RaceDescription.Size;
+        subrace.RaceDescription.Languages = dto.SpeciesDescriptions?.LanguagesDescription ?? subrace.RaceDescription.Languages;
 
         if(dto.NewParentRaceId is not null)
         {
@@ -87,6 +86,9 @@ public class SubraceService(
             subrace.ParentRace = newParentRace;
         }
 
+        subrace.IsPublic = dto.IsPublic ?? subrace.IsPublic;
+        subrace.CloningAllowed = dto.CloningAllowed ?? subrace.CloningAllowed;
+        subrace.UpdatedAt = DateTime.UtcNow;
         await repo.UpdateAsync(subrace);
         logger.LogInformation("Successfully updated subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
         return subrace;

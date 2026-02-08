@@ -1,18 +1,20 @@
+namespace Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
+
 using System.ComponentModel.DataAnnotations;
 
-public class ProficienciesDto
+public class ProficienciesRequestDto
 {
-    public ICollection<ProficiencyDto> SavingThrowProficiencies { get; set; } = [];
-    public ICollection<ProficiencyDto> SkillProficiencies { get; set; } = [];
-    public ICollection<ProficiencyDto> WeaponCategoryProficiencies { get; set; } = [];
-    public ICollection<ProficiencyDto> WeaponTypeProficiencies { get; set; } = [];
-    public ICollection<ProficiencyDto> ArmorProficiencies { get; set; } = [];
-    public ICollection<ProficiencyDto> ToolProficiencies { get; set; } = [];
-    public ICollection<ProficiencyDto> Languages { get; set; } = [];
-    public ICollection<ProficiencyDto> DamageAffinities { get; set; } = [];
+    public ICollection<ProficiencyRequestDto> SavingThrowProficiencies { get; set; } = [];
+    public ICollection<ProficiencyRequestDto> SkillProficiencies { get; set; } = [];
+    public ICollection<ProficiencyRequestDto> WeaponCategoryProficiencies { get; set; } = [];
+    public ICollection<ProficiencyRequestDto> WeaponTypeProficiencies { get; set; } = [];
+    public ICollection<ProficiencyRequestDto> ArmorProficiencies { get; set; } = [];
+    public ICollection<ProficiencyRequestDto> ToolProficiencies { get; set; } = [];
+    public ICollection<ProficiencyRequestDto> Languages { get; set; } = [];
+    public ICollection<ProficiencyRequestDto> DamageAffinities { get; set; } = [];
 }
 
-public class ProficiencyDto
+public class ProficiencyRequestDto
 {
     [Required]
     [MinLength(1)]

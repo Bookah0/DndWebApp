@@ -1,5 +1,5 @@
 using Api.Middlewares.ExceptionHandling;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
 using Api.Services.Constants;
@@ -8,18 +8,21 @@ using static Api.Services.Util.ConstantsUtil;
 using Api.Models.Items.Constants;
 using Api.Services.Interfaces.Items;
 using Api.Services.Interfaces;
+using Api.Services.Util;
 
 namespace Api.Services.Implemented.Items;
 
 public class WeaponService(IRepository<Weapon> repo, ICurrentUserService currentUserService, ILogger<WeaponService> logger) : IWeaponService
 {
-    public async Task<Weapon> CreateAsync(WeaponDto dto)
+    public async Task<Weapon> CreateAsync(CreateWeaponRequestDto dto)
     {
+        if (!dto.DamageTypes.IsNullOrEmpty())
+        {
+            var damageTypes = GetDefaultWeaponDamageTypes(dto.WeaponType);
+        }
         logger.LogInformation("Creating weapon, Name: {WeaponName}", dto.Name);
         var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
         var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type");
-        var dtoMainDamageType = ResolveOptionOrThrow(dto.MainDamageType, DamageType.AllowedValues, "Main Damage Type");
-        var dtoOtherDamageTypes = ResolveOptionOrThrow(dto.OtherDamageTypes, DamageType.AllowedValues, "Other Damage Types");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
         var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues, "Weapon Property");
 
@@ -27,24 +30,26 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
         {
             Name = dto.Name,
             Description = dto.Description,
-            Weight = dto.Weight,
-            Value = dto.Value,
+            Weight = dto.Weight ?? 0,
+            Value = dto.Value ?? 0,
             WeaponCategory = dtoCategory,
             WeaponType = dtoWeaponType,
-            Slot = ConvertWeaponTypeToMainSlot(dtoWeaponType),
+            Slot = GetDefaultWeaponMainSlot(dtoWeaponType),
             DamageDice = dto.DamageDice,
             Range = dto.Range,
-            DamageTypes = [dtoMainDamageType, .. dtoOtherDamageTypes],
             Properties = dtoProperties,
-            VersatileDamageDice = dto.VersitileDamageDice ?? "",
+            VersatileDamageDice = dto.VersitileDamageDice,
             LongRange = dto.LongRange,
-            Rarity = dtoRarity,
+            Rarity = dtoRarity ?? ItemRarity.Common,
             RequiresAttunement = dto.RequiresAttunement ?? false,
-            IsHomebrew = dto.IsHomebrew ?? false,
             Categories = [ItemCategory.Weapon],
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
+
+            DamageTypes = dto.DamageTypes.IsNullOrEmpty()
+                ? GetDefaultWeaponDamageTypes(dto.WeaponType)
+                : ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues, "Main Damage Type"),
         });
 
         logger.LogInformation("Successfully created weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);
@@ -62,34 +67,34 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
     public async Task<ICollection<Weapon>> GetAllAsync() =>await repo.GetAllAsync();
     public async Task<Weapon> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<Weapon> UpdateAsync(WeaponDto dto, int id)
+    public async Task<Weapon> UpdateAsync(UpdateWeaponRequestDto dto, int id)
     {
         logger.LogInformation("Updating weapon, Name: {WeaponName}, ID: {WeaponId}", dto.Name, id);
-
-        var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category");
-        var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type");
-        var dtoMainDamageType = ResolveOptionOrThrow(dto.MainDamageType, DamageType.AllowedValues, "Main Damage Type");
-        var dtoOtherDamageTypes = ResolveOptionOrThrow(dto.OtherDamageTypes, DamageType.AllowedValues, "Other Damage Types");
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
-        var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues, "Weapon Property");
-
         var weapon = await repo.GetByIdAsync(id);
 
-        weapon.Name = dto.Name;
-        weapon.Description = dto.Description;
-        weapon.Weight = dto.Weight;
-        weapon.Value = dto.Value;
-        weapon.WeaponCategory = dtoCategory;
-        weapon.WeaponType = dtoWeaponType;
-        weapon.DamageDice = dto.DamageDice;
-        weapon.Range = dto.Range;
-        weapon.DamageTypes = [dtoMainDamageType, .. dtoOtherDamageTypes];
-        weapon.Properties = dtoProperties;
+        var dtoCategory = dto.WeaponCategory is not null ? ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues, "Weapon Category") : null;
+        var dtoWeaponType = dto.WeaponType is not null ? ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues, "Weapon Type") : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
+        var dtoSlot = dto.Slot is not null ? ResolveOptionOrThrow(dto.Slot, EquipSlot.AllowedValues, "Slot") : null;
+
+        weapon.WeaponCategory = dtoCategory ?? weapon.WeaponCategory;
+        weapon.WeaponType = dtoWeaponType ?? weapon.WeaponType;
+        weapon.Rarity = dtoRarity ?? weapon.Rarity;
+        weapon.Slot = dtoSlot ?? weapon.Slot;
+        
+        weapon.Name = dto.Name ?? weapon.Name;
+        weapon.Description = dto.Description ?? weapon.Description;
+        weapon.Weight = dto.Weight ?? weapon.Weight;
+        weapon.Value = dto.Value ?? weapon.Value;
+        weapon.DamageDice = dto.DamageDice ?? weapon.DamageDice;
+        weapon.Range = dto.Range ?? weapon.Range;
         weapon.VersatileDamageDice = dto.VersitileDamageDice ?? weapon.VersatileDamageDice;
         weapon.LongRange = dto.LongRange ?? weapon.LongRange;
-        weapon.Rarity = dtoRarity ?? weapon.Rarity;
         weapon.RequiresAttunement = dto.RequiresAttunement ?? weapon.RequiresAttunement;
-        weapon.IsHomebrew = dto.IsHomebrew ?? weapon.IsHomebrew;
+
+        weapon.IsPublic = dto.IsPublic ?? weapon.IsPublic;
+        weapon.CloningAllowed = dto.CloningAllowed ?? weapon.CloningAllowed;
+        weapon.UpdatedAt = DateTime.UtcNow;
 
         await repo.UpdateAsync(weapon);
         logger.LogInformation("Successfully updated weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);

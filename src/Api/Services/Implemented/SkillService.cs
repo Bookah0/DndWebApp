@@ -16,7 +16,7 @@ public class SkillService(
     ILogger<SkillService> logger) 
     : ISkillService
 {
-    public async Task<Skill> CreateAsync(SkillDto dto)
+    public async Task<Skill> CreateAsync(CreateSkillRequestDto dto)
     {
         var ability = await abilityRepo.GetByIdAsync(dto.AbilityId);
 
@@ -51,20 +51,23 @@ public class SkillService(
     public async Task<ICollection<Skill>> GetAllWithAbilityAsync() => await repo.GetAllWithAbilityAsync();
     public async Task<Skill> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async Task<Skill> UpdateAsync(int id, SkillDto dto)
+    public async Task<Skill> UpdateAsync(int id, UpdateSkillRequestDto dto)
     {
         var skill = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating skill, Name: {SkillName}, ID: {SkillId}", skill.Name, id);
 
-        if (skill.AbilityId != dto.AbilityId)
+        if (dto.NewAbilityId is not null && dto.NewAbilityId != skill.AbilityId)
         {
-            skill.Ability = await abilityRepo.GetByIdAsync(dto.AbilityId);
-            skill.AbilityId = dto.AbilityId;
+            skill.Ability = await abilityRepo.GetByIdAsync(dto.NewAbilityId.Value);
+            skill.AbilityId = dto.NewAbilityId.Value;
         }
 
-        skill.Name = dto.Name;
-        skill.IsHomebrew = dto.IsHomebrew;
-    
+        skill.Name = dto.Name ?? skill.Name;
+        skill.Description = dto.Description ?? skill.Description;
+        skill.IsPublic = dto.IsPublic ?? skill.IsPublic;
+        skill.CloningAllowed = dto.CloningAllowed ?? skill.CloningAllowed;
+        skill.UpdatedAt = DateTime.UtcNow;
+
         await repo.UpdateAsync(skill);
         logger.LogInformation("Successfully updated skill, Name: {SkillName}, ID: {SkillId}", skill.Name, skill.Id);
         return skill;

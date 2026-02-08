@@ -7,13 +7,14 @@ using Api.Models.Features;
 using Api.Services.Interfaces;
 using Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
+using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
 
 namespace Api.Controllers.Classes;
 
 [ApiController]
 [Route("api/classes/{classId}/subclasses/{subclassId}/features")]
 public class SubclassFeatureController(
-    IFeatureService<ClassFeature, ClassFeatureDto> service, 
+    IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto> service, 
     ISubclassService subclassService, 
     IClassService classService, 
     IMapper mapper) : ControllerBase
@@ -40,7 +41,7 @@ public class SubclassFeatureController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<ClassFeatureResponseDto>> CreateClassFeature(int subclassId, int classId, [FromBody] ClassFeatureDto dto)
+    public async Task<ActionResult<ClassFeatureResponseDto>> CreateClassFeature(int subclassId, int classId, [FromBody] CreateClassFeatureRequestDto dto)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
         var subclass =  await subclassService.GetWithLevelsAsync(subclassId);
@@ -56,7 +57,7 @@ public class SubclassFeatureController(
     }
 
     [HttpPatch("{featureId}")]
-    public async Task<ActionResult<ClassFeatureResponseDto>> UpdateClassFeature(int subclassId, int featureId, int classId, [FromBody] ClassFeatureDto dto)
+    public async Task<ActionResult<ClassFeatureResponseDto>> UpdateClassFeature(int subclassId, int featureId, int classId, [FromBody] UpdateClassFeatureRequestDto dto)
     {
         await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
         var updatedFeature = await service.UpdateAsync(dto, featureId);
@@ -90,7 +91,7 @@ public class SubclassFeatureController(
 
     // Proficiency management endpoints
     [HttpPost("{featureId}/proficiencies")]
-    public async Task<ActionResult<ClassFeatureResponseDto>> AddProficiency(int subclassId, int featureId, int classId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<ClassFeatureResponseDto>> AddProficiency(int subclassId, int featureId, int classId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
         var updatedFeature = await service.AddProficiency(proficiency, featureId);
@@ -98,7 +99,7 @@ public class SubclassFeatureController(
     }
 
     [HttpDelete("{featureId}/proficiencies")]
-    public async Task<ActionResult> RemoveProficiency(int subclassId, int featureId, int classId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult> RemoveProficiency(int subclassId, int featureId, int classId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureFeatureBelongsToSubclass(classId, subclassId, featureId);
         await service.RemoveProficiency(proficiency, featureId);

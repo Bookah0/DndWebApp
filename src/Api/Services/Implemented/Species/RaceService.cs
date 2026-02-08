@@ -1,6 +1,7 @@
 
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
+using Api.Models.Characters.Constants;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
@@ -10,24 +11,24 @@ namespace Api.Services.Implemented;
 
 public class RaceService(IRaceRepository repo, ICurrentUserService currentUserService, ILogger<RaceService> logger) : IRaceService
 {
-    public async Task<Race> CreateAsync(RaceDto dto)
+    public async Task<Race> CreateAsync(CreateRaceRequestDto dto)
     {
         logger.LogInformation("Creating race, Name: {RaceName}", dto.Name);
-        var raceDescription = new RaceDescription
+        var raceDescription = new SpeciesDescriptions
         {
-            General = dto.GeneralDescription,
-            Aging = dto.AgingDescription ?? "",
-            CommonAlignment = dto.CommonAlignmentDescription ?? "",
-            Size = dto.SizeDescription ?? "",
-            Languages = dto.LanguageDescription ?? ""
+            General = dto.SpeciesDescriptions?.GeneralDescription ?? "",
+            Aging = dto.SpeciesDescriptions?.AgingDescription ?? "",
+            CommonAlignment = dto.SpeciesDescriptions?.AlignmentDescription ?? "",
+            Size = dto.SpeciesDescriptions?.SizesDescription ?? "",
+            Languages = dto.SpeciesDescriptions?.LanguagesDescription ?? ""
         };
         
         var race = await repo.CreateAsync(new()
         {
             Name = dto.Name,
             RaceDescription = raceDescription,
-            Speed = dto.Speed,
-            Size = dto.Size,
+            Speed = dto.Speed ?? 30,
+            Size = dto.Size ?? CreatureSize.Medium,
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
@@ -51,22 +52,24 @@ public class RaceService(IRaceRepository repo, ICurrentUserService currentUserSe
     public async Task<Race> GetWithTraitsAsync(int id) => await repo.GetWithTraitsAsync(id);
     public async Task<Race> GetWithSubracesAsync(int id) => await repo.GetWithSubracesAsync(id);
 
-    public async Task<Race> UpdateAsync(int id, RaceDto dto)
+    public async Task<Race> UpdateAsync(int id, UpdateRaceRequestDto dto)
     {
         var race = await repo.GetByIdAsync(id);
 
         logger.LogInformation("Updating race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
 
-        race.Name = dto.Name;
-        race.Speed = dto.Speed;
-        race.Size = dto.Size;
-        race.IsHomebrew = dto.IsHomebrew;
-        race.RaceDescription.General = dto.GeneralDescription;
-        race.RaceDescription.Aging = dto.AgingDescription ?? "";
-        race.RaceDescription.CommonAlignment = dto.CommonAlignmentDescription ?? "";
-        race.RaceDescription.Size = dto.SizeDescription ?? "";
-        race.RaceDescription.Languages = dto.LanguageDescription ?? "";
+        race.Name = dto.Name ?? race.Name;
+        race.Speed = dto.Speed ?? race.Speed;
+        race.Size = dto.Size ?? race.Size;
 
+        race.RaceDescription.General = dto.SpeciesDescriptions?.GeneralDescription ?? race.RaceDescription.General;
+        race.RaceDescription.Aging = dto.SpeciesDescriptions?.AgingDescription ?? race.RaceDescription.Aging;
+        race.RaceDescription.CommonAlignment = dto.SpeciesDescriptions?.AlignmentDescription ?? race.RaceDescription.CommonAlignment;
+        race.RaceDescription.Size = dto.SpeciesDescriptions?.SizesDescription ?? race.RaceDescription.Size;
+        race.RaceDescription.Languages = dto.SpeciesDescriptions?.LanguagesDescription ?? race.RaceDescription.Languages;
+
+        race.IsPublic = dto.IsPublic ?? race.IsPublic;
+        race.CloningAllowed = dto.CloningAllowed ?? race.CloningAllowed;
         await repo.UpdateAsync(race);
         logger.LogInformation("Successfully updated race, Name: {RaceName}, ID: {RaceId}", race.Name, id);
         return race;

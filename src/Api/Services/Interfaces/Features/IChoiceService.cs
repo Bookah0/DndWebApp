@@ -8,7 +8,7 @@ namespace Api.Services.Interfaces.Features;
 public interface IChoiceService<T> where T : Feature
 {
     Task ClearChoices<C>(int featureId) where C : IFeatureChoice;
-    Task<T> AddChoice<CDto>(CDto dto, int featureId) where CDto : AChoiceDto;
+    Task<T> AddChoice<CDto>(CDto dto, int featureId) where CDto : ChoiceDto;
     Task RemoveChoice<C>(int choiceId, int featureId) where C : IFeatureChoice;
     Task<SkillProficiencyChoice> AddSkillOptions(int choiceId, ICollection<int> newSkillIds);
     Task<LanguageChoice> AddLanguageOptions(int choiceId, ICollection<int> newLanguageIds);

@@ -1,5 +1,5 @@
 using AutoMapper;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.DTOs.ResponseDtos;
 using Api.Services.Interfaces.Items;
 using Microsoft.AspNetCore.Mvc;
@@ -25,14 +25,14 @@ public class WeaponController(IWeaponService service, IMapper mapper) : Controll
     }
 
     [HttpPost]
-    public async Task<ActionResult<WeaponResponseDto>> CreateWeapon([FromBody] WeaponDto dto)
+    public async Task<ActionResult<WeaponResponseDto>> CreateWeapon([FromBody] CreateWeaponRequestDto dto)
     {
         var weapon = await service.CreateAsync(dto);
         return Ok(mapper.Map<WeaponResponseDto>(weapon));
     }
 
     [HttpPatch("{weaponId}")]
-    public async Task<ActionResult<WeaponResponseDto>> UpdateWeapon(int weaponId, [FromBody] WeaponDto dto)
+    public async Task<ActionResult<WeaponResponseDto>> UpdateWeapon(int weaponId, [FromBody] UpdateWeaponRequestDto dto)
     {
         var updatedWeapon = await service.UpdateAsync(dto, weaponId);
         return Ok(mapper.Map<WeaponResponseDto>(updatedWeapon));

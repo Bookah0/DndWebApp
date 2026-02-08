@@ -9,12 +9,13 @@ using Api.Services.Constants;
 using Api.Services.Interfaces.Features;
 using Api.Services.Util;
 using Microsoft.AspNetCore.Mvc;
+using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
 
 namespace Api.Controllers.Features;
 
 [ApiController]
 [Route("api/races/{raceId}/traits")]
-public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapper mapper) : ControllerBase
+public class RaceTraitController(IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto> service, IMapper mapper) : ControllerBase
 {
     
     [HttpGet]
@@ -31,7 +32,7 @@ public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapp
     }
 
     [HttpPost]
-    public async Task<ActionResult<TraitResponseDto>> CreateTrait(int raceId, [FromBody] TraitDto dto)
+    public async Task<ActionResult<TraitResponseDto>> CreateTrait(int raceId, [FromBody] CreateTraitRequestDto dto)
     {
         var trait = await service.CreateAsync(dto);
 
@@ -42,11 +43,9 @@ public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapp
     }
 
     [HttpPatch("{traitId}")]
-    public async Task<ActionResult<TraitResponseDto>> UpdateTrait(int raceId, int traitId, [FromBody] TraitDto dto)
+    public async Task<ActionResult<TraitResponseDto>> UpdateTrait(int raceId, int traitId, [FromBody] UpdateTraitRequestDto dto)
     {
-        if(dto.RaceId != raceId)
-            throw new ValidationException($"Trait race id {dto.RaceId} does not match route race id {raceId}");
-
+       await EnsureTraitBelongsToRace(raceId, traitId);
         var updatedTrait = await service.UpdateAsync(dto, traitId);
         return Ok(mapper.Map<TraitResponseDto>(updatedTrait));
     }
@@ -78,7 +77,7 @@ public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapp
 
     // Proficiency management endpoints
     [HttpPost("{traitId}/proficiencies")]
-    public async Task<ActionResult<TraitResponseDto>> AddProficiency(int raceId, int traitId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult<TraitResponseDto>> AddProficiency(int raceId, int traitId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureTraitBelongsToRace(raceId, traitId);
         var updatedTrait = await service.AddProficiency(proficiency, traitId);
@@ -86,7 +85,7 @@ public class RaceTraitController(IFeatureService<Trait, TraitDto> service, IMapp
     }
 
     [HttpDelete("{traitId}/proficiencies")]
-    public async Task<ActionResult> RemoveProficiency(int raceId, int traitId, [FromBody] ProficiencyDto proficiency)
+    public async Task<ActionResult> RemoveProficiency(int raceId, int traitId, [FromBody] ProficiencyRequestDto proficiency)
     {
         await EnsureTraitBelongsToRace(raceId, traitId);
         await service.RemoveProficiency(proficiency, traitId);

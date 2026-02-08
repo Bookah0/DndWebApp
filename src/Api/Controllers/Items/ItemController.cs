@@ -1,5 +1,5 @@
 using AutoMapper;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.DTOs.ResponseDtos;
 using Api.Services.Interfaces.Items;
 using Microsoft.AspNetCore.Mvc;
@@ -25,14 +25,14 @@ public class ItemController(IItemService service, IMapper mapper) : ControllerBa
     }
 
     [HttpPost]
-    public async Task<ActionResult<ItemResponseDto>> CreateItem([FromBody] ItemDto dto)
+    public async Task<ActionResult<ItemResponseDto>> CreateItem([FromBody] CreateItemRequestDto dto)
     {
         var item = await service.CreateAsync(dto);
         return Ok(mapper.Map<ItemResponseDto>(item));
     }
 
     [HttpPatch("{itemId}")]
-    public async Task<ActionResult<ItemResponseDto>> UpdateItem(int itemId, [FromBody] ItemDto dto)
+    public async Task<ActionResult<ItemResponseDto>> UpdateItem(int itemId, [FromBody] UpdateItemRequestDto dto)
     {
         var updatedItem = await service.UpdateAsync(dto, itemId);
         return Ok(mapper.Map<ItemResponseDto>(updatedItem));

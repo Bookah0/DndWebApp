@@ -29,8 +29,6 @@ public partial class CharacterService : ICharacterService
         logger.LogInformation("Creating character, Name: {CharacterName}, ClassId: {ClassId}, RaceId: {RaceId}", dto.Name, dto.ClassId, dto.RaceId);
 
         var abilityDict = await GetAllAbilitiesAsDictionaryAsync();
-        var languageDict = await GetAllLanguagesAsDictionaryAsync();
-        var skillDict = await GetAllSkillsAsDictionaryAsync();
 
         var abilityScores = InitAbilityScoreList(dto, abilityDict);
         var dexScore = abilityScores.First(a => a.AbilityId == abilityDict[AbilityType.Dexterity].Id).Value;
@@ -90,7 +88,7 @@ public partial class CharacterService : ICharacterService
 
         foreach (var feature in allFeatures)
         {
-            await ApplyFeatureAsync(feature, character);
+            ApplyFeature(feature, character);
         }
 
         var createdCharacter = await repo.CreateAsync(character);
@@ -178,10 +176,10 @@ public partial class CharacterService : ICharacterService
     public async Task ApplyFeatureAsync(Feature feature, int characterId)
     {
         var character = await repo.GetByIdAsync(characterId);
-        await ApplyFeatureAsync(feature, character);
+        ApplyFeature(feature, character);
     }
 
-    public async Task ApplyFeatureAsync(Feature feature, Character character)
+    public void ApplyFeature(Feature feature, Character character)
     {
         foreach (var increase in feature.AbilityIncreases)
         {
@@ -239,7 +237,7 @@ public partial class CharacterService : ICharacterService
         }
     }
 
-    public async Task RemoveFeatureAsync(Feature feature, Character character)
+    public void RemoveFeature(Feature feature, Character character)
     {
         character.ReadySpells.RemoveMany(feature.SpellsGained);
         
@@ -301,23 +299,5 @@ public partial class CharacterService : ICharacterService
             throw new InvalidOperationException("Ability list can't be empty");
 
         return abilities.ToDictionary(a => a.FullName, a => a);
-    }
-    
-    private async Task<Dictionary<string, Language>> GetAllLanguagesAsDictionaryAsync()
-    {
-        var languages = await languageRepo.GetAllAsync();
-        if (languages.Count == 0)
-            throw new InvalidOperationException("Language list can't be empty");
-
-        return languages.ToDictionary(l => l.Name, l => l);
-    }
-
-    private async Task<Dictionary<string, Skill>> GetAllSkillsAsDictionaryAsync()
-    {
-        var skills = await skillRepo.GetAllAsync();
-        if (skills.Count == 0)
-            throw new InvalidOperationException("Skill list can't be empty");
-
-        return skills.ToDictionary(s => s.Name, s => s);
     }
 }

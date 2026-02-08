@@ -11,7 +11,7 @@ namespace Tests.Repositories;
 
 public static class TestObjectFactory
 {
-    internal static DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
+    public static DbContextOptions<AppDbContext> GetInMemoryOptions(string dbName)
     {
         return new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: dbName)
@@ -19,22 +19,22 @@ public static class TestObjectFactory
             .Options;
     }
 
-    internal static Ability CreateTestAbility(string fullName, string shortName, string description = "", List<Skill>? skills = null)
+    public static Ability CreateTestAbility(string fullName, string shortName, string description = "", List<Skill>? skills = null)
     {
         return new() { FullName = fullName, ShortName = shortName, Description = description, Skills = skills ?? [] };
     }
 
-    internal static BackgroundFeature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte...", Background? bg = null, int bgId = 1)
+    public static BackgroundFeature CreateTestFeature(string name = "Shelter of the Faithful", string description = "As an acolyte...", Background? bg = null, int bgId = 1)
     {
         return new BackgroundFeature { Name = name, Description = description, Background = bg, BackgroundId = bgId, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 
-    internal static Item CreateTestItem(string name, string category, int quantity = 1, string description = "")
+    public static Item CreateTestItem(string name, string category, int quantity = 1, string description = "")
     {
         return new Item { Name = name, Description = description, Categories = [category], Quantity = quantity, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 
-    internal static Background CreateTestBackground(string name)
+    public static Background CreateTestBackground(string name)
     {
         var description = $"{name} description";
         var background = new Background
@@ -55,7 +55,7 @@ public static class TestObjectFactory
         return background;
     }
 
-    internal static Character CreateTestCharacter()
+    public static Character CreateTestCharacter()
     {
         var str = CreateTestAbility("Strength", "Str");
         var background = new Background { Name = "Outlander", Description = "You grew up in the wilds, far from civilization", StartingCurrency = new(), CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
@@ -98,9 +98,9 @@ public static class TestObjectFactory
         };
     }
 
-    internal static int[] CreateTestSpellSlotsAtLevel() { return [1, 0, 0, 0, 0, 0, 0, 0, 0]; }
-    internal static List<ClassSpecificSlot> CreateClassSpecificSlots() { return [new ClassSpecificSlot { Name = "Bardic inspiration", Quantity = 2 }]; }
-    internal static ClassFeature CreateTestClassFeature(int classLevelId)
+    public static int[] CreateTestSpellSlotsAtLevel() { return [1, 0, 0, 0, 0, 0, 0, 0, 0]; }
+    public static List<ClassSpecificSlot> CreateClassSpecificSlots() { return [new ClassSpecificSlot { Name = "Bardic inspiration", Quantity = 2 }]; }
+    public static ClassFeature CreateTestClassFeature(int classLevelId)
     {
         return new()
         {
@@ -113,7 +113,7 @@ public static class TestObjectFactory
         };
     }
 
-    internal static ClassLevel CreateTestLevel(BaseClass cls)
+    public static ClassLevel CreateTestLevel(BaseClass cls)
     {
         var classLvl = new ClassLevel()
         {
@@ -131,7 +131,7 @@ public static class TestObjectFactory
         return classLvl;
     }
 
-    internal static BaseClass CreateTestClass(string name = "Ranger")
+    public static BaseClass CreateTestClass(string name = "Ranger")
     {
         var cls = new BaseClass
         {
@@ -145,7 +145,7 @@ public static class TestObjectFactory
         return cls;
     }
 
-    internal static Feat CreateTestFeat()
+    public static Feat CreateTestFeat()
     {
         return new()
         {
@@ -157,7 +157,7 @@ public static class TestObjectFactory
         };
     }
 
-    internal static Armor CreateTestArmor() => new()
+    public static Armor CreateTestArmor() => new()
     {
         Name = "Leather Armor",
         Description = "Light armor made from tanned leather, provides basic protection.",
@@ -169,7 +169,7 @@ public static class TestObjectFactory
         CreatedBy = Guid.NewGuid()
     };
 
-    internal static Weapon CreateTestWeapon() => new()
+    public static Weapon CreateTestWeapon() => new()
     {
         Name = "Shortbow",
         Description = "A small bow ideal for ranged attacks.",
@@ -185,7 +185,7 @@ public static class TestObjectFactory
         CreatedBy = Guid.NewGuid()
     };
 
-    internal static Inventory CreateTestInventory()
+    public static Inventory CreateTestInventory()
     {
         var inv = new Inventory
         {
@@ -196,7 +196,7 @@ public static class TestObjectFactory
         return inv;
     }
 
-    internal static Item CreateTestItem() => new()
+    public static Item CreateTestItem() => new()
     {
         Name = "Spoon",
         Description = "A simple metal spoon, useful for eating or mixing potions.",
@@ -205,19 +205,19 @@ public static class TestObjectFactory
         CreatedBy = Guid.NewGuid()
     };
 
-    internal static Tool CreateTestTool() => new()
+    public static Tool CreateTestTool() => new()
     {
         Name = "Thieves' Kit",
         Description = "A set of lockpicks and other tools for stealthy operations.",
         Categories = [ItemCategory.Tools],
-        ToolType = ToolCategory.ThievesTools,
+        ToolCategory = ToolCategory.ThievesTools,
         Activities = [],
         Properties = [],
         CreatedAt = DateTime.UtcNow,
         CreatedBy = Guid.NewGuid()
     };
 
-    internal static Spell CreateTestSpell(string name) => new()
+    public static Spell CreateTestSpell(string name) => new()
     {
         Name = name,
         Description = $"Description of {name}",
@@ -230,19 +230,19 @@ public static class TestObjectFactory
         CreatedBy = Guid.NewGuid()
     };
 
-    internal static Race CreateTestRace(string name) => new() { Name = name, Speed = 30, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
+    public static Race CreateTestRace(string name) => new() { Name = name, Speed = 30, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
 
-    internal static Subrace CreateTestSubrace(string name, Race parentRace, int parentRaceId)
+    public static Subrace CreateTestSubrace(string name, Race parentRace, int parentRaceId)
     {
         return new() { Name = name, Speed = 30, ParentRace = parentRace, ParentRaceId = parentRaceId, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 
-    internal static Trait CreateTestTrait(string name, string description, Species fromRace, int raceId)
+    public static Trait CreateTestTrait(string name, string description, Species fromRace, int raceId)
     {
         return new() { Name = name, Description = description, FromRace = fromRace, RaceId = raceId, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }
 
-    internal static Skill CreateSkill(string name, int abilityId)
+    public static Skill CreateSkill(string name, int abilityId)
     {
         return new() { Name = name, AbilityId = abilityId, CreatedAt = DateTime.UtcNow, CreatedBy = Guid.NewGuid() };
     }

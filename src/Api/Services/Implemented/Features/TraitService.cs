@@ -7,6 +7,7 @@ using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
 using static Api.Services.Util.ConstantsUtil;
 using Api.Services.Interfaces;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Api.Services.Implemented.Features;
 
@@ -19,9 +20,9 @@ public class TraitService(
     ILanguageRepository languageRepo,
     ICurrentUserService currentUserService,
     ILogger<TraitService> logger)
-    : AFeatureService<Trait, TraitDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
+    : AFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
-    public async override Task<Trait> CreateAsync(TraitDto dto)
+    public async override Task<Trait> CreateAsync(CreateTraitRequestDto dto)
     {
         var race = await raceRepo.GetByIdAsync(dto.RaceId);
         logger.LogInformation("Creating trait, Name: {TraitName}, RaceId: {RaceId}", dto.Name, dto.RaceId);    
@@ -52,21 +53,23 @@ public class TraitService(
     public async override Task<ICollection<Trait>> GetAllAsync() => await repo.GetAllAsync();
     public async override Task<Trait> GetByIdAsync(int traitId) => await repo.GetByIdAsync(traitId);
 
-    public async override Task<Trait> UpdateAsync(TraitDto dto, int traitId)
+    public async override Task<Trait> UpdateAsync(UpdateTraitRequestDto dto, int traitId)
     {
         var trait = await repo.GetByIdAsync(traitId);
         logger.LogInformation("Updating trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
 
-        if (trait.RaceId != dto.RaceId)
+        if (dto.NewRaceId is not null && trait.RaceId != dto.NewRaceId)
         {
-            trait.FromRace = await raceRepo.GetByIdAsync(dto.RaceId);
-            trait.RaceId = dto.RaceId;
+            trait.FromRace = await raceRepo.GetByIdAsync((int)dto.NewRaceId);
+            trait.RaceId = (int)dto.NewRaceId;
         }
 
-        trait.Name = dto.Name;
-        trait.Description = dto.Description;
-        trait.IsHomebrew = dto.IsHomebrew;
-
+        trait.Name = dto.Name ?? trait.Name;
+        trait.Description = dto.Description ?? trait.Description;
+        
+        trait.IsPublic = dto.IsPublic ?? trait.IsPublic;
+        trait.CloningAllowed = dto.CloningAllowed ?? trait.CloningAllowed;
+        trait.UpdatedAt = DateTime.UtcNow;
         await repo.UpdateAsync(trait);
         logger.LogInformation("Successfully updated trait, Name: {TraitName}, ID: {TraitId}", trait.Name, trait.Id);
         return trait;

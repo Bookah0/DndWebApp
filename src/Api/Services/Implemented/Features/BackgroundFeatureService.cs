@@ -20,9 +20,9 @@ public class BackgroundFeatureService(
     ILanguageRepository languageRepo,
     ICurrentUserService currentUserService,
     ILogger<BackgroundFeatureService> logger)
-    : AFeatureService<BackgroundFeature, BackgroundFeatureDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
+    : AFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
 {
-    public async override Task<BackgroundFeature> CreateAsync(BackgroundFeatureDto dto)
+    public async override Task<BackgroundFeature> CreateAsync(CreateBackgroundFeatureRequestDto dto)
     {
         var background = await backgroundRepo.GetByIdAsync(dto.BackgroundId);
 
@@ -34,7 +34,6 @@ public class BackgroundFeatureService(
             Description = dto.Description,
             BackgroundId = dto.BackgroundId,
             Background = background,
-            IsHomebrew = dto.IsHomebrew,
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
@@ -56,21 +55,23 @@ public class BackgroundFeatureService(
 
     public async override Task<BackgroundFeature> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async override Task<BackgroundFeature> UpdateAsync(BackgroundFeatureDto dto, int featureId)
+    public async override Task<BackgroundFeature> UpdateAsync(UpdateBackgroundFeatureRequestDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId);
 
         logger.LogInformation("Updating background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, featureId);
 
-        if (feature.BackgroundId != dto.BackgroundId)
+        if (dto.NewBackgroundId is not null && feature.BackgroundId != dto.NewBackgroundId)
         {
-            feature.Background = await backgroundRepo.GetByIdAsync(dto.BackgroundId);
-            feature.BackgroundId = dto.BackgroundId;
+            feature.Background = await backgroundRepo.GetByIdAsync((int)dto.NewBackgroundId);
+            feature.BackgroundId = (int)dto.NewBackgroundId;
         }
 
-        feature.Name = dto.Name;
-        feature.Description = dto.Description;
-        feature.IsHomebrew = dto.IsHomebrew;
+        feature.Name = dto.Name ?? feature.Name;
+        feature.Description = dto.Description ?? feature.Description;
+        feature.IsPublic = dto.IsPublic ?? feature.IsPublic;
+        feature.CloningAllowed = dto.CloningAllowed ?? feature.CloningAllowed;
+        feature.UpdatedAt = DateTime.UtcNow;
 
         await repo.UpdateAsync(feature);
         logger.LogInformation("Successfully updated background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, featureId);

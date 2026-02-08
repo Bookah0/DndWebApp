@@ -1,5 +1,5 @@
 using Api.Middlewares.ExceptionHandling;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
 using Api.Services.Constants;
@@ -13,7 +13,7 @@ namespace Api.Services.Implemented.Items;
 
 public class ItemService(IItemRepository repo, ICurrentUserService currentUserService, ILogger<ItemService> logger) : IItemService
 {
-    public async Task<Item> CreateAsync(ItemDto dto)
+    public async Task<Item> CreateAsync(CreateItemRequestDto dto)
     {
         var dtoMainCategory =  ResolveOptionOrThrow(dto.MainCategory, ItemCategory.AllowedValues, "Item Category");
         var dtoOtherCategories = ResolveOptionOrThrow(dto.OtherCategories, ItemCategory.AllowedValues, "Item Category");
@@ -26,10 +26,9 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
             Name = dto.Name,
             Description = dto.Description,
             Categories = [dtoMainCategory, .. dtoOtherCategories],
-            Value = dto.Value,
-            Rarity = dtoRarity,
+            Value = dto.Value ?? 0,
+            Rarity = dtoRarity ?? ItemRarity.Common,
             RequiresAttunement = dto.RequiresAttunement ?? false,
-            IsHomebrew = dto.IsHomebrew ?? false,
             Weight = dto.Weight ?? 0,
 
             CreatedAt = DateTime.UtcNow,
@@ -60,24 +59,24 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         return item;
     }
 
-    public async Task<Item> UpdateAsync(ItemDto dto, int id)
+    public async Task<Item> UpdateAsync(UpdateItemRequestDto dto, int id)
     {
-        var dtoMainCategory =  ResolveOptionOrThrow(dto.MainCategory, ItemCategory.AllowedValues, "Item Category");
-        var dtoOtherCategories = ResolveOptionOrThrow(dto.OtherCategories, ItemCategory.AllowedValues, "Item Category");
         var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues, "Item Rarity") : null;
 
         var item = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
 
-        item.Name = dto.Name;
-        item.Description = dto.Description;
-        item.Categories = [dtoMainCategory, .. dtoOtherCategories];
-        item.Value = dto.Value;
+        item.Name = dto.Name ?? item.Name;
+        item.Description = dto.Description ?? item.Description;
+        item.Value = dto.Value ?? item.Value;
         item.Rarity = dtoRarity ?? item.Rarity;
         item.RequiresAttunement = dto.RequiresAttunement ?? item.RequiresAttunement;
-        item.IsHomebrew = dto.IsHomebrew ?? item.IsHomebrew;
         item.Weight = dto.Weight ?? item.Weight;
 
+        item.IsPublic = dto.IsPublic ?? item.IsPublic;
+        item.CloningAllowed = dto.CloningAllowed ?? item.CloningAllowed;
+        item.UpdatedAt = DateTime.UtcNow;
+        
         await repo.UpdateAsync(item);
         logger.LogInformation("Successfully updated item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
         return item;

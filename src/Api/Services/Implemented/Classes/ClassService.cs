@@ -1,5 +1,6 @@
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
+using Api.Models.DTOs.Features;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Models.Items;
 using Api.Repositories.Implemented;
@@ -20,18 +21,6 @@ public partial class ClassService(
     {
         logger.LogInformation("Creating class, Name: {ClassName}", dto.Name);
 
-        ICollection<Item> startingEquipments = [];
-        ICollection<Subclass> subclasses = [];
-
-        if(dto.StartingEquipmentIds.Count > 0)
-        {
-            foreach(var equipmentId in dto.StartingEquipmentIds)
-            {
-                var item = await itemRepo.GetByIdAsync(equipmentId);
-                startingEquipments.Add(item);
-            }
-        }
-
         var clss = await repo.CreateAsync(new()
         {
             Name = dto.Name,
@@ -40,7 +29,8 @@ public partial class ClassService(
             SpellcastingAbilityId = dto.SpellcastingAbilityId,
             ClassLevels = [],
             Subclasses = [],
-            StartingEquipment = startingEquipments,
+            StartingEquipment = [],
+            StartingEquipmentChoices = [],
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
         });
@@ -134,9 +124,6 @@ public partial class ClassService(
         logger.LogInformation("Successfully removed starting equipment from class, ClassName: {ClassName}, ClassId: {ClassId}, EquipmentName: {EquipmentName}, EquipmentId: {EquipmentId}", clss.Name, id, equipment.Name, equipmentId);
         return clss;
     }
-
-    public async Task<BaseClass> AddStartingEquipmentChoice(int id, int choiceId) { return null!; }
-    public async Task<BaseClass> RemoveStartingEquipmentChoice(int id, int choiceId) { return null!; }
 
     public ICollection<BaseClass> SortBy(ICollection<BaseClass> classes, bool descending = false)
     {

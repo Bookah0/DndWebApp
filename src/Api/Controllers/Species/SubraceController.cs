@@ -27,7 +27,7 @@ public class SubraceController(ISubraceService service, IRaceService raceService
     }
 
     [HttpPost]
-    public async Task<ActionResult<SubraceResponseDto>> CreateSubrace(int raceId, [FromBody] SubraceDto dto)
+    public async Task<ActionResult<SubraceResponseDto>> CreateSubrace(int raceId, [FromBody] CreateSubraceRequestDto dto)
     {
         if(dto.ParentRaceId != raceId)
             throw new ValidationException($"Subrace parent id {dto.ParentRaceId} does not match route id {raceId}");
@@ -37,7 +37,7 @@ public class SubraceController(ISubraceService service, IRaceService raceService
     }
 
     [HttpPatch("{subraceId}")]
-    public async Task<ActionResult<SubraceResponseDto>> UpdateSubrace(int raceId, int subraceId, [FromBody] SubraceDto dto)
+    public async Task<ActionResult<SubraceResponseDto>> UpdateSubrace(int raceId, int subraceId, [FromBody] UpdateSubraceRequestDto dto)
     {
         await EnsureSubraceBelongsToParentRace(raceId, subraceId);
         var updatedSubrace = await service.UpdateAsync(subraceId, dto);

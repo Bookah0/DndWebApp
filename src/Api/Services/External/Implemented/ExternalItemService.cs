@@ -71,7 +71,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
     private Armor ToArmor(JsonDocument jsonDoc, EIndexDto item)
     {
-        var eArmor = jsonDoc.RootElement.Deserialize<EArmorDto>()
+        var eArmor = jsonDoc.RootElement.Deserialize<ECreateArmorRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize armor: {item.Index}");
         var itemCategory = ResolveOptionOrThrow(eArmor.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
 
@@ -101,7 +101,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
     private Weapon ToWeapon(JsonDocument jsonDoc, EIndexDto item)
     {
-        var eWeapon = jsonDoc.RootElement.Deserialize<EWeaponDto>()
+        var eWeapon = jsonDoc.RootElement.Deserialize<ECreateWeaponRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize weapon: {item.Name}");
 
         var eDamagetype = eWeapon.Damage?.DamageType.Name
@@ -125,7 +125,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Quantity = eWeapon.Cost.Quantity,
             WeaponCategory = category,
             WeaponType = weaponType,
-            Slot = ConvertWeaponTypeToMainSlot(weaponType),
+            Slot = GetDefaultWeaponMainSlot(weaponType),
             Properties = properties,
             DamageTypes = [damageType],
             DamageDice = eWeapon.Damage?.DamageDice ?? "",
@@ -142,7 +142,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
     private Tool ToTool(JsonDocument jsonDoc, EIndexDto item)
     {
-        var eTool = jsonDoc.RootElement.Deserialize<EToolDto>()
+        var eTool = jsonDoc.RootElement.Deserialize<ECreateToolRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize tool: {item.Index}");
 
         var category = ResolveOptionOrThrow(eTool.ToolCategory, ToolCategory.AllowedValues, "Tool Category");
@@ -157,7 +157,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Weight = eTool.Weight,
             Value = GetConvertedValue(eTool.Cost.Quantity, eTool.Cost.Unit),
             Quantity = eTool.Cost.Quantity,
-            ToolType = category,
+            ToolCategory = category,
             Properties = [],
 
             CreatedAt = DateTime.UtcNow,
@@ -201,7 +201,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
     private Item ToItem(JsonDocument jsonDoc, EIndexDto item)
     {
-        var eItem = jsonDoc.RootElement.Deserialize<EItemDto>()
+        var eItem = jsonDoc.RootElement.Deserialize<ECreateItemRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize item: {item.Index}");
 
         var itemCategory = ResolveOptionOrThrow(eItem.EquipmentCategory.Name, ItemCategory.AllowedValues, "Item Category");
@@ -230,7 +230,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         throw new NotImplementedException();
     }
 
-    private string ParseWeaponType(EWeaponDto eWeapon)
+    private string ParseWeaponType(ECreateWeaponRequestDto eWeapon)
     {
         if (TryResolveOption(eWeapon.Name, WeaponType.AllowedValues, out var weaponType))
             return weaponType!;

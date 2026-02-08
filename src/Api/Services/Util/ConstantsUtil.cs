@@ -1,6 +1,7 @@
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Items.Constants;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.VisualBasic;
 
 namespace Api.Services.Util;
@@ -62,12 +63,12 @@ public static class ConstantsUtil
             .ToLower();
     }
 
-    internal static object ResolveOptionOrThrow(string? value, object weaponCategories, string v)
+    public static object ResolveOptionOrThrow(string? value, object weaponCategories, string v)
     {
         throw new NotImplementedException();
     }
 
-    internal static string ConvertWeaponTypeToMainSlot (string weaponType)
+    public static string GetDefaultWeaponMainSlot (string weaponType)
     {
         return weaponType switch 
         {
@@ -115,6 +116,59 @@ public static class ConstantsUtil
             WeaponType.HeavyCrossbow => EquipSlot.Ranged,
             WeaponType.Longbow => EquipSlot.Ranged,
             WeaponType.Net => EquipSlot.Ranged,
+            
+            _ => throw new ValidationException($"Unknown weapon type: {weaponType}")
+        };
+    }
+
+    public static ICollection<string> GetDefaultWeaponDamageTypes(string weaponType)
+    {
+        return weaponType switch
+        {
+            // Simple Melee Weapons
+            WeaponType.Club => [DamageType.Bludgeoning],
+            WeaponType.Dagger => [DamageType.Piercing],
+            WeaponType.Greatclub => [DamageType.Bludgeoning],
+            WeaponType.Handaxe => [DamageType.Slashing],
+            WeaponType.Javelin => [DamageType.Piercing],
+            WeaponType.LightHammer => [DamageType.Bludgeoning],
+            WeaponType.Mace => [DamageType.Bludgeoning],
+            WeaponType.Quarterstaff => [DamageType.Bludgeoning],
+            WeaponType.Sickle => [DamageType.Slashing],
+            WeaponType.Spear => [DamageType.Piercing],
+            
+            // Simple Ranged Weapons
+            WeaponType.LightCrossbow => [DamageType.Piercing],
+            WeaponType.Dart => [DamageType.Piercing],
+            WeaponType.Shortbow => [DamageType.Piercing],
+            WeaponType.Sling => [DamageType.Bludgeoning],
+            
+            // Martial Melee Weapons
+            WeaponType.Battleaxe => [DamageType.Slashing],
+            WeaponType.Flail => [DamageType.Bludgeoning],
+            WeaponType.Glaive => [DamageType.Slashing],
+            WeaponType.Greataxe => [DamageType.Slashing],
+            WeaponType.Greatsword => [DamageType.Slashing, DamageType.Piercing],
+            WeaponType.Halberd => [DamageType.Slashing],
+            WeaponType.Lance => [DamageType.Piercing],
+            WeaponType.Longsword => [DamageType.Slashing, DamageType.Piercing],
+            WeaponType.Maul => [DamageType.Bludgeoning],
+            WeaponType.Morningstar => [DamageType.Bludgeoning],
+            WeaponType.Pike => [DamageType.Piercing],
+            WeaponType.Rapier => [DamageType.Piercing],
+            WeaponType.Scimitar => [DamageType.Slashing],
+            WeaponType.Shortsword => [DamageType.Slashing, DamageType.Piercing],
+            WeaponType.Trident => [DamageType.Piercing],
+            WeaponType.WarPick => [DamageType.Piercing],
+            WeaponType.Warhammer => [DamageType.Bludgeoning],
+            WeaponType.Whip => [DamageType.Slashing],
+            
+            // Martial Ranged Weapons
+            WeaponType.Blowgun => [DamageType.Piercing],
+            WeaponType.HandCrossbow => [DamageType.Piercing],
+            WeaponType.HeavyCrossbow => [DamageType.Piercing],
+            WeaponType.Longbow => [DamageType.Piercing],
+            WeaponType.Net => [DamageType.Piercing],
             
             _ => throw new ValidationException($"Unknown weapon type: {weaponType}")
         };

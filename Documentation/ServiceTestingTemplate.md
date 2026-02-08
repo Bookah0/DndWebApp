@@ -27,12 +27,12 @@ Replace *testObj2* with a name that suits test object 2
 
 public class *Class*ServiceTests
 {
-    internal static *Class*Dto CreateTest*Class*Dto(int id)
+    public static *Class*Dto CreateTest*Class*Dto(int id)
     {
         return new() { Id = id };
     }
 
-    internal static *Class* CreateTest*Class*(int id)
+    public static *Class* CreateTest*Class*(int id)
     {
         return new() { Id = id };
     }

@@ -1,7 +1,7 @@
 using AutoMapper;
 using Api.Models.DTOs.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
-using Api.Models.DTOs.Inventory;
+using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Services.Interfaces.Items;
 
 namespace Api.Controllers.Items;
@@ -25,14 +25,14 @@ public class ArmorController(IArmorService service, IMapper mapper) : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult<ArmorResponseDto>> CreateArmor([FromBody] ArmorDto dto)
+    public async Task<ActionResult<ArmorResponseDto>> CreateArmor([FromBody] CreateArmorRequestDto dto)
     {
         var armor = await service.CreateAsync(dto);
         return Ok(mapper.Map<ArmorResponseDto>(armor));
     }
 
     [HttpPatch("{armorId}")]
-    public async Task<ActionResult<ArmorResponseDto>> UpdateArmor(int armorId, [FromBody] ArmorDto dto)
+    public async Task<ActionResult<ArmorResponseDto>> UpdateArmor(int armorId, [FromBody] UpdateArmorRequestDto dto)
     {
         var updatedArmor = await service.UpdateAsync(dto, armorId);
         return Ok(mapper.Map<ArmorResponseDto>(updatedArmor));

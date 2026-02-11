@@ -4,6 +4,7 @@ using Api.Data;
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
+using Api.Models.Spells;
 using Api.Models.Users;
 using Api.Repositories.Implemented;
 using Api.Repositories.Implemented.Classes;
@@ -126,7 +127,7 @@ using (var scope = app.Services.CreateScope())
 
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
     await userService.InitRolesAsync();
-    var fetchExternalData = false;
+    var fetchExternalData = true;
 
     if (app.Environment.IsDevelopment())
     {

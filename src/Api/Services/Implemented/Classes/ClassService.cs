@@ -1,9 +1,6 @@
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
-using Api.Models.DTOs.Features;
 using Api.Models.DTOs.RequestDtos.Character;
-using Api.Models.Items;
-using Api.Repositories.Implemented;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
 using static Api.Services.Util.SortUtil;

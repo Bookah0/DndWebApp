@@ -1,5 +1,5 @@
-using Api.Models.Items.Constants;
 using Api.Services.Util.Interfaces;
+using Api.Validation.AllowedValues.Items;
 
 namespace Api.Models.Items;
 

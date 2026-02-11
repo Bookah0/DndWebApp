@@ -1,5 +1,3 @@
-using Api.Controllers.Features;
-using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Repositories.Interfaces;

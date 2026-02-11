@@ -1,13 +1,12 @@
-using System.Threading.Tasks;
 using Api.Middlewares.ExceptionHandling;
-using Api.Models.Characters;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
-using Api.Models.Items.Constants;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces.Features;
-using Api.Services.Util;
+using Api.Validation.AllowedValues;
+using Api.Validation.AllowedValues.Items;
 using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
+using static Api.Validation.AllowedValues.ValuesValidator;
 
 namespace Api.Services.Implemented.Features;
 
@@ -62,19 +61,19 @@ public abstract class AFeatureService<T, CD, UD>(
         switch (dto.Type)
         {
             case "WeaponCategory":
-                var weaponCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, WeaponCategory.AllowedValues);
+                var weaponCategory = ResolveValueOrThrow<WeaponCategory>(dto.Value);
                 feature.WeaponCategoryProficiencies.Add(weaponCategory);
                 break;
             case "WeaponType":
-                var weaponType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, WeaponType.AllowedValues);
+                var weaponType = ResolveValueOrThrow<WeaponType>(dto.Value);
                 feature.WeaponTypeProficiencies.Add(weaponType);
                 break;
             case "ArmorCategory":
-                var armorCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, ArmorCategory.AllowedValues);
+                var armorCategory = ResolveValueOrThrow<ArmorCategory>(dto.Value);
                 feature.ArmorProficiencies.Add(armorCategory);
                 break;
             case "ToolCategory":
-                var toolCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, ToolCategory.AllowedValues);
+                var toolCategory = ResolveValueOrThrow<ToolCategory>(dto.Value);
                 feature.ToolProficiencies.Add(toolCategory);
                 break;
             case "Skill":
@@ -91,15 +90,15 @@ public abstract class AFeatureService<T, CD, UD>(
                 feature.SavingThrowProficiencies.Add(ability);
                 break;
             case "Resistance":
-                var damageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues);
+                var damageType = ResolveValueOrThrow<DamageType>(dto.Value);
                 feature.DamageResistanceGained.Add(damageType);
                 break;
             case "Immunity":
-                var immuneDamageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues);
+                var immuneDamageType = ResolveValueOrThrow<DamageType>(dto.Value);
                 feature.DamageImmunityGained.Add(immuneDamageType);
                 break;
             case "Weakness":
-                var weaknessDamageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues);
+                var weaknessDamageType = ResolveValueOrThrow<DamageType>(dto.Value);
                 feature.DamageWeaknessGained.Add(weaknessDamageType);
                 break;
             default:
@@ -120,31 +119,31 @@ public abstract class AFeatureService<T, CD, UD>(
         switch (dto.Type)
         {
             case "WeaponCategory":
-                var weaponCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, WeaponCategory.AllowedValues);
+                var weaponCategory = ResolveValueOrThrow<WeaponCategory>(dto.Value);
                 feature.WeaponCategoryProficiencies.Remove(weaponCategory);
                 break;
             case "WeaponType":
-                var weaponType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, WeaponType.AllowedValues);
+                var weaponType = ResolveValueOrThrow<WeaponType>(dto.Value);
                 feature.WeaponTypeProficiencies.Remove(weaponType);
                 break;
             case "ArmorCategory":
-                var armorCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, ArmorCategory.AllowedValues);
+                var armorCategory = ResolveValueOrThrow<ArmorCategory>(dto.Value);
                 feature.ArmorProficiencies.Remove(armorCategory);
                 break;
             case "ToolCategory":
-                var toolCategory = ConstantsUtil.ResolveOptionOrThrow(dto.Value, ToolCategory.AllowedValues);
+                var toolCategory = ResolveValueOrThrow<ToolCategory>(dto.Value);
                 feature.ToolProficiencies.Remove(toolCategory);
                 break;
             case "Resistance":
-                var damageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues);
+                var damageType = ResolveValueOrThrow<DamageType>(dto.Value);
                 feature.DamageResistanceGained.Remove(damageType);
                 break;
             case "Immunity":
-                var immuneDamageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues);
+                var immuneDamageType = ResolveValueOrThrow<DamageType>(dto.Value);
                 feature.DamageImmunityGained.Remove(immuneDamageType);
                 break;
             case "Weakness":
-                var weaknessDamageType = ConstantsUtil.ResolveOptionOrThrow(dto.Value, DamageType.AllowedValues);
+                var weaknessDamageType = ResolveValueOrThrow<DamageType>(dto.Value);
                 feature.DamageWeaknessGained.Remove(weaknessDamageType);
                 break;
             case "Skill":

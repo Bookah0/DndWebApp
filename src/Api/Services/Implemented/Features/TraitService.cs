@@ -2,12 +2,10 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
-using Api.Services.Interfaces.Features;
-using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented.Features;
 
@@ -78,7 +76,7 @@ public class TraitService(
     // TODO replace with database level sorting
     public ICollection<Trait> SortBy(ICollection<Trait> traits, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortTraitOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortTraitOption>(sortFilter, out string? resolved))
             return traits;
 
         return resolved switch

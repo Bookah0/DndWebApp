@@ -2,11 +2,10 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
-using Api.Services.Constants;
 using Api.Services.Interfaces;
-using Api.Services.Interfaces.Features;
-using Api.Services.Util;
+using Api.Validation.AllowedValues;
 using static Api.Services.Util.SortUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
 
 namespace Api.Services.Implemented.Features;
 
@@ -66,10 +65,10 @@ public class FeatService(
             if(dto.NewFromType is null)
                 throw new ValidationException("NewFromType must be provided when NewFromId is provided.");
 
-            var resolvedSourceType = ConstantsUtil.ResolveOptionOrThrow(dto.NewFromType, FeatSourceConstants.AllowedValues);
-            feat.FromRaceId = resolvedSourceType == FeatSourceConstants.Race || resolvedSourceType == FeatSourceConstants.Subrace ? dto.NewFromId : null;
-            feat.FromBackgroundId = resolvedSourceType == FeatSourceConstants.Background ? dto.NewFromId : null;
-            feat.FromClassId = resolvedSourceType == FeatSourceConstants.Class || resolvedSourceType == FeatSourceConstants.Subclass ? dto.NewFromId : null;
+            var resolvedSourceType = ResolveValueOrThrow<FeatSource>(dto.NewFromType);
+            feat.FromRaceId = resolvedSourceType == FeatSource.Race || resolvedSourceType == FeatSource.Subrace ? dto.NewFromId : null;
+            feat.FromBackgroundId = resolvedSourceType == FeatSource.Background ? dto.NewFromId : null;
+            feat.FromClassId = resolvedSourceType == FeatSource.Class || resolvedSourceType == FeatSource.Subclass ? dto.NewFromId : null;
 
             if(feat.FromRaceId is null && feat.FromBackgroundId is null && feat.FromClassId is null)
                 throw new ValidationException("Invalid NewFromType provided.");

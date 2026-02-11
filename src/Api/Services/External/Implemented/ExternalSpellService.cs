@@ -4,10 +4,12 @@ using System.Text.Json;
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.ExternalDTOs;
 using Api.Models.Spells;
-using Api.Models.Spells.Constants;
 using Api.Repositories.Interfaces;
 using Api.Services.External.Interfaces;
 using Api.Services.Util;
+using Api.Validation.AllowedValues.Spells;
+
+using static Api.Validation.AllowedValues.ValuesValidator;
 
 public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellService> logger) : IExternalSpellService
 {
@@ -80,7 +82,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
                 DurationValue = durationValue,
                 CastingTime = castingTime,
                 CastingTimeValue = timeValue,
-                MagicSchool = ConstantsUtil.ResolveOptionOrThrow(eMagicSchool, MagicSchool.AllowedValues),
+                MagicSchool = ResolveValueOrThrow<MagicSchool>(eMagicSchool),
                 SpellTargeting = spellTargeting,
                 SpellTypes = spellTypes,
                 CastingRequirements = castingRequirements,

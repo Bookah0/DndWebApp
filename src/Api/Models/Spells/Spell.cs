@@ -1,5 +1,4 @@
 using Api.Models.Characters;
-using Api.Models.Spells.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Models.Spells;

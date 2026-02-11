@@ -2,12 +2,12 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
-using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
-using Api.Models.Items.Constants;
+using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces.Items;
 using Api.Services.Interfaces;
+using Api.Validation.AllowedValues.Items;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented.Items;
 
@@ -18,8 +18,8 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         if(dto.Categories == null || dto.Categories.Count < 1)
             throw new ValidationException("At least one category is required for an item.");
 
-        var dtoCategories = ResolveOptionOrThrow(dto.Categories, ItemCategory.AllowedValues);
-        var dtoRarity = ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues);
+        var dtoCategories = ResolveValueOrThrow<ItemCategory>(dto.Categories);
+        var dtoRarity = ResolveValueOrThrow<ItemRarity>(dto.Rarity);
         
         logger.LogInformation("Creating item, Name: {ItemName}", dto.Name);
 
@@ -63,7 +63,7 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Item> UpdateAsync(UpdateItemRequestDto dto, int id)
     {
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         var item = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
@@ -88,7 +88,7 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
     // TODO replace with database level sorting
     public ICollection<Item> SortBy(ICollection<Item> items, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortItemOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortItemOption>(sortFilter, out string? resolved))
             return items;
 
         return resolved switch

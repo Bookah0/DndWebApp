@@ -1,0 +1,20 @@
+meta {
+  name: get spell
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ENV}}/api/spells/{{spellId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  spellId: 6
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

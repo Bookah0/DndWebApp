@@ -2,12 +2,13 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
-using Api.Services.Constants;
-using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
-using Api.Models.Items.Constants;
 using Api.Services.Interfaces.Items;
 using Api.Services.Interfaces;
+
+using static Api.Services.Util.SortUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
+using Api.Validation.AllowedValues.Items;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented.Items;
 
@@ -15,8 +16,8 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
 {
     public async Task<Armor> CreateAsync(CreateArmorRequestDto dto)
     {
-        var dtoCategory = ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues);
-        var dtoRarity = dto.Rarity != null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
+        var dtoCategory = ResolveValueOrThrow<ArmorCategory>(dto.Category);
+        var dtoRarity = dto.Rarity != null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         logger.LogInformation("Creating armor, Name: {ArmorName}", dto.Name);
 
@@ -57,8 +58,8 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
 
     public async Task<Armor> UpdateAsync(UpdateArmorRequestDto dto, int id)
     {
-        var dtoCategory = dto.Category is not null ? ResolveOptionOrThrow(dto.Category, ArmorCategory.AllowedValues) : null;
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
+        var dtoCategory = dto.Category is not null ? ResolveValueOrThrow<ArmorCategory>(dto.Category) : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         var armor = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
@@ -88,7 +89,7 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
     // TODO replace with database level sorting
     public ICollection<Armor> SortBy(ICollection<Armor> armors, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortArmorOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortArmorOption>(sortFilter, out string? resolved))
             return armors;
 
         return resolved switch

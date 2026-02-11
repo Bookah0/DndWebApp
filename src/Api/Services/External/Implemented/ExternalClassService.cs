@@ -1,14 +1,13 @@
 namespace Api.Services.External.Implemented;
 
 using System.Text.Json;
-using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
 using Api.Models.DTOs.ExternalDTOs;
 using Api.Models.Features;
-using Api.Models.Items.Constants;
 using Api.Repositories.Interfaces;
 using Api.Services.External.Interfaces;
-using static Api.Services.Util.ConstantsUtil;
+using Api.Validation.AllowedValues.Items;
+using static Api.Validation.AllowedValues.ValuesValidator;
 
 public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepository subclassRepo, IAbilityRepository abilityRepo, IItemRepository itemRepository, ILogger<ExternalClassService> logger) : IExternalClassService
 {
@@ -270,10 +269,10 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
                         case "martial-melee-weapons":
                         case "simple-ranged-weapons":
                         case "martial-ranged-weapons":
-                            option.AnyOfWeaponCategory = ResolveOptionOrThrow(categoryDto.Index, WeaponCategory.AllowedValues);
+                            option.AnyOfWeaponCategory = ResolveValueOrThrow<WeaponCategory>(categoryDto.Index);
                             break;
                         default:
-                            option.AnyOfWeaponType = ResolveOptionOrThrow(categoryDto.Index, WeaponType.AllowedValues);
+                            option.AnyOfWeaponType = ResolveValueOrThrow<WeaponType>(categoryDto.Index);
                             break;
                     }
 

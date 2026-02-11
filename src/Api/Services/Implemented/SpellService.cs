@@ -1,18 +1,16 @@
 
 using Api.Models.Spells;
 using Api.Services.Util;
-using Api.Models.Characters;
 using Api.Repositories.Interfaces;
 using Api.Repositories.Implemented.Spells;
 using Api.Services.Interfaces;
-using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
-using static Api.Services.Util.ValidationUtil;
 using Api.Models.DTOs.Spells;
-using Api.Services.Constants;
-using Api.Models.Spells.Constants;
-using Api.Models.Items.Constants;
 using Api.Middlewares.ExceptionHandling;
+
+using static Api.Services.Util.SortUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
+using Api.Validation.AllowedValues.Spells;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented;
 
@@ -27,10 +25,10 @@ public class SpellService(
     {
         logger.LogInformation("Creating spell, Name: {SpellName}", dto.Name);
 
-        var dtoTargetType = ResolveOptionOrThrow(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues);
-        var dtoSpellRange = ResolveOptionOrThrow(dto.TargetingDto.Range, SpellRange.AllowedValues);
-        var dtoDuration = ResolveOptionOrThrow(dto.Duration, SpellDuration.AllowedValues);
-        var dtoCastTime = ResolveOptionOrThrow(dto.CastingTime, CastingTime.AllowedValues);
+        var dtoTargetType = ResolveValueOrThrow<TargetType>(dto.TargetingDto.TargetType);
+        var dtoSpellRange = ResolveValueOrThrow<SpellRange>(dto.TargetingDto.Range);
+        var dtoDuration = ResolveValueOrThrow<SpellDuration>(dto.Duration);
+        var dtoCastTime = ResolveValueOrThrow<CastingTime>(dto.CastingTime);
 
         if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet && dtoSpellRange != SpellRange.Mile)
             throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet or SpellRange.Mile.");
@@ -47,10 +45,10 @@ public class SpellService(
             DurationValue = dto.DurationValue,
             CastingTime = dtoCastTime,
             ReactionCondition = dto.ReactionCondition,
-            MagicSchool = ResolveOptionOrEmpty(dto.MagicSchool, MagicSchool.AllowedValues),
-            SpellTypes = ResolveOptionOrEmpty(dto.SpellTypes, SpellType.AllowedValues),
+            MagicSchool = ResolveValueOrEmpty<MagicSchool>(dto.MagicSchool),
+            SpellTypes = ResolveValueOrEmpty<SpellType>(dto.SpellTypes),
             DamageRoll = dto.DamageRoll,
-            DamageTypes = ResolveOptionOrEmpty(dto.DamageTypes, DamageType.AllowedValues),
+            DamageTypes = ResolveValueOrEmpty<DamageType>(dto.DamageTypes),
             SpellTargeting = new SpellTargeting()
             {
                 TargetType = dtoTargetType,
@@ -106,19 +104,19 @@ public class SpellService(
         logger.LogInformation("Updating spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
 
         if(dto.MagicSchool is not null)
-            spell.MagicSchool = ResolveOptionOrEmpty(dto.MagicSchool, MagicSchool.AllowedValues);
+            spell.MagicSchool = ResolveValueOrEmpty<MagicSchool>(dto.MagicSchool);
 
         if(dto.TargetingDto?.TargetType is not null)
-            spell.SpellTargeting.TargetType = ResolveOptionOrEmpty(dto.TargetingDto.TargetType, SpellTargetType.AllowedValues);
+            spell.SpellTargeting.TargetType = ResolveValueOrEmpty<TargetType>(dto.TargetingDto.TargetType);
 
         if(dto.TargetingDto?.Range is not null)
-            spell.SpellTargeting.Range = ResolveOptionOrEmpty(dto.TargetingDto.Range, SpellRange.AllowedValues);
+            spell.SpellTargeting.Range = ResolveValueOrEmpty<SpellRange>(dto.TargetingDto.Range);
 
         if(dto.Duration is not null)
-            spell.Duration = ResolveOptionOrEmpty(dto.Duration, SpellDuration.AllowedValues);
+            spell.Duration = ResolveValueOrEmpty<SpellDuration>(dto.Duration);
 
         if(dto.CastingTime is not null)
-            spell.CastingTime = ResolveOptionOrEmpty(dto.CastingTime, CastingTime.AllowedValues);
+            spell.CastingTime = ResolveValueOrEmpty<CastingTime>(dto.CastingTime);
 
         spell.Name = dto.Name ?? spell.Name;
         spell.Description = dto.Description ?? spell.Description;
@@ -148,7 +146,7 @@ public class SpellService(
     // TODO move sorting logic to repository when implementing database level sorting
     public ICollection<Spell> SortBy(ICollection<Spell> spells, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortSpellOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortSpellOption>(sortFilter, out string? resolved))
             return spells;
 
         return resolved switch
@@ -186,13 +184,13 @@ public class SpellService(
             }
         }
 
-        var dtoSchools = dto.MagicSchools != null ? ResolveOptionOrThrow(dto.MagicSchools, MagicSchool.AllowedValues) : null;
-        var dtoTargetTypes = dto.TargetTypes != null ? ResolveOptionOrThrow(dto.TargetTypes, SpellTargetType.AllowedValues) : null;
-        var dtoSpellRanges = dto.Range != null ? ResolveOptionOrThrow(dto.Range, SpellRange.AllowedValues) : null;
-        var dtoDurations = dto.Durations != null ? ResolveOptionOrThrow(dto.Durations, SpellDuration.AllowedValues) : null;
-        var dtoCastTimes = dto.CastingTimes != null ? ResolveOptionOrThrow(dto.CastingTimes, CastingTime.AllowedValues) : null;
-        var dtoSpellTypes = dto.SpellTypes != null ? ResolveOptionOrThrow(dto.SpellTypes, SpellType.AllowedValues) : null;
-        var dtoDamageTypes = dto.DamageTypes != null ? ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues) : null;
+        var dtoSchools = dto.MagicSchools != null ? ResolveValueOrThrow<MagicSchool>(dto.MagicSchools) : null;
+        var dtoTargetTypes = dto.TargetTypes != null ? ResolveValueOrThrow<TargetType>(dto.TargetTypes) : null;
+        var dtoSpellRanges = dto.Range != null ? ResolveValueOrThrow<SpellRange>(dto.Range) : null;
+        var dtoDurations = dto.Durations != null ? ResolveValueOrThrow<SpellDuration>(dto.Durations) : null;
+        var dtoCastTimes = dto.CastingTimes != null ? ResolveValueOrThrow<CastingTime>(dto.CastingTimes) : null;
+        var dtoSpellTypes = dto.SpellTypes != null ? ResolveValueOrThrow<SpellType>(dto.SpellTypes) : null;
+        var dtoDamageTypes = dto.DamageTypes != null ? ResolveValueOrThrow<DamageType>(dto.DamageTypes) : null;
 
         var filter = new SpellFilter()
         {

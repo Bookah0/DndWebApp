@@ -1,9 +1,9 @@
 using Api.Models.Characters;
-using Api.Models.Characters.Constants;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
 using Api.Services.Interfaces.Species;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented;
 

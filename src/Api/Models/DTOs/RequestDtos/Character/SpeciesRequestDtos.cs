@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Api.Models.Characters.Constants;
+using Api.Validation.AllowedValues;
 
 namespace Api.Models.DTOs.RequestDtos.Character;
 

@@ -1,4 +1,4 @@
-using Api.Models.Items.Constants;
+using Api.Validation.AllowedValues.Items;
 
 namespace Api.Models.Items;
 

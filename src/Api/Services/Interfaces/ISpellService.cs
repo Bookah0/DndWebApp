@@ -1,7 +1,6 @@
 
 using Api.Models.DTOs.Spells;
 using Api.Models.Spells;
-using Api.Services.Constants;
 
 namespace Api.Services.Interfaces;
 

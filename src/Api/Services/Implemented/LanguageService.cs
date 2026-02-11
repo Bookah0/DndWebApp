@@ -2,13 +2,11 @@
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
 using Api.Models.DTOs.RequestDtos.Character;
-using Api.Models.World;
 using Api.Repositories.Interfaces;
-using Api.Services.Constants;
 using Api.Services.Interfaces;
-using Api.Services.Util;
+using Api.Validation.AllowedValues;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
 
 namespace Api.Services.Implemented;
 
@@ -77,7 +75,7 @@ public class LanguageService(IRepository<Language> repo, ICurrentUserService cur
 
     public ICollection<Language> SortBy(ICollection<Language> languages, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortLanguageOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortLanguageOption>(sortFilter, out string? resolved))
             return languages;
     
         return resolved switch

@@ -1,11 +1,10 @@
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
 using Api.Repositories.Interfaces;
-using Api.Services.Constants;
 using Api.Services.Interfaces;
-using Api.Services.Util;
 using static Api.Services.Util.SortUtil;
 using Api.Models.DTOs.RequestDtos.Character;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented;
 
@@ -77,7 +76,7 @@ public class SkillService(
     // TODO move sorting logic to repository when implementing database level sorting
     public ICollection<Skill> SortBy(ICollection<Skill> skills, string sortFilter, bool descending = false)
     {
-        if(!ConstantsUtil.TryResolveOption(sortFilter, SortSkillOption.AllowedValues, out string? resolved))
+        if(!ValuesValidator.TryResolveValue<SortSkillOption>(sortFilter, out string? resolved))
             return skills;
 
         var abilityOrder = CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);

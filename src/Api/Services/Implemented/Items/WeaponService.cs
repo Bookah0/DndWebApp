@@ -2,13 +2,13 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
-using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
-using Api.Models.Items.Constants;
+using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces.Items;
 using Api.Services.Interfaces;
 using Api.Services.Util;
+using Api.Validation.AllowedValues.Items;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented.Items;
 
@@ -21,10 +21,10 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
             var damageTypes = GetDefaultWeaponDamageTypes(dto.WeaponType);
         }
         logger.LogInformation("Creating weapon, Name: {WeaponName}", dto.Name);
-        var dtoCategory = ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues);
-        var dtoWeaponType = ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues);
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
-        var dtoProperties = ResolveOptionOrThrow(dto.Properties, WeaponProperty.AllowedValues);
+        var dtoCategory = ResolveValueOrThrow<WeaponCategory>(dto.WeaponCategory);
+        var dtoWeaponType = ResolveValueOrThrow<WeaponType>(dto.WeaponType);
+        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoProperties = ResolveValueOrThrow<WeaponProperty>(dto.Properties);
 
         Weapon weapon = await repo.CreateAsync(new()
         {
@@ -49,7 +49,7 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
 
             DamageTypes = dto.DamageTypes.IsNullOrEmpty()
                 ? GetDefaultWeaponDamageTypes(dto.WeaponType)
-                : ResolveOptionOrThrow(dto.DamageTypes, DamageType.AllowedValues),
+                : ResolveValueOrThrow<DamageType>(dto.DamageTypes),
         });
 
         logger.LogInformation("Successfully created weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);
@@ -72,10 +72,10 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
         logger.LogInformation("Updating weapon, Name: {WeaponName}, ID: {WeaponId}", dto.Name, id);
         var weapon = await repo.GetByIdAsync(id);
 
-        var dtoCategory = dto.WeaponCategory is not null ? ResolveOptionOrThrow(dto.WeaponCategory, WeaponCategory.AllowedValues) : null;
-        var dtoWeaponType = dto.WeaponType is not null ? ResolveOptionOrThrow(dto.WeaponType, WeaponType.AllowedValues) : null;
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
-        var dtoSlot = dto.Slot is not null ? ResolveOptionOrThrow(dto.Slot, EquipSlot.AllowedValues) : null;
+        var dtoCategory = dto.WeaponCategory is not null ? ResolveValueOrThrow<WeaponCategory>(dto.WeaponCategory) : null;
+        var dtoWeaponType = dto.WeaponType is not null ? ResolveValueOrThrow<WeaponType>(dto.WeaponType) : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoSlot = dto.Slot is not null ? ResolveValueOrThrow<EquipSlot>(dto.Slot) : null;
 
         weapon.WeaponCategory = dtoCategory ?? weapon.WeaponCategory;
         weapon.WeaponType = dtoWeaponType ?? weapon.WeaponType;
@@ -104,7 +104,7 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
     // TODO replace with database level sorting
     public ICollection<Weapon> SortBy(ICollection<Weapon> weapons, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortWeaponOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortWeaponOption>(sortFilter, out string? resolved))
             return weapons;
 
         return resolved switch

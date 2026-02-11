@@ -2,11 +2,9 @@ using Api.Models.Characters;
 using Api.Models.Features;
 using Api.Models.Items;
 using Api.Services.Interfaces;
-using Api.Middlewares.ExceptionHandling;
-using Api.Models.Characters.Constants;
-using Api.Models.Items.Constants;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Services.Util;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented;
 

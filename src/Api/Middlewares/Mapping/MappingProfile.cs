@@ -106,6 +106,10 @@ public class MappingProfile : Profile
         CreateMap<AbilityIncreaseChoice, AbilityIncreaseChoiceResponseDto>();
         CreateMap<ArmorProficiencyChoice, ArmorProficiencyChoiceResponseDto>();
 
+        // Owned types to DTO
+        CreateMap<SpellTargeting, SpellTargetingDto>();
+        CreateMap<CastingRequirements, CastingRequirementsDto>();
+
         // Request DTO to Response DTO
         CreateMap<CreateCharacterRequestDto, CharacterResponseDto>();
         CreateMap<UpdateCharacterRequestDto, CharacterResponseDto>();

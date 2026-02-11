@@ -3,11 +3,10 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
-using Api.Services.Interfaces.Features;
-using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented.Features;
 
@@ -80,7 +79,7 @@ public class BackgroundFeatureService(
 
     public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortBackgroundFeatureOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortBackgroundFeatureOption>(sortFilter, out string? resolved))
             return features;
 
         return resolved switch

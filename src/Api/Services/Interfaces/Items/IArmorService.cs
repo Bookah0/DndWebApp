@@ -1,7 +1,6 @@
 
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
-using Api.Services.Constants;
 
 namespace Api.Services.Interfaces.Items;
 

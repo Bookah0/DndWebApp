@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Api.Models.Items.Constants;
+using Api.Validation.AllowedValues.Items;
 
 namespace Api.Models.DTOs.RequestDtos.Inventory;
 

@@ -1,13 +1,11 @@
 using Api.Models.Characters;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ValidationUtil;
-using static Api.Services.Util.ConstantsUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
-using Api.Models.Spells;
 using Api.Middlewares.ExceptionHandling;
-using Api.Services.Constants;
 using Api.Controllers.Characters;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented;
 
@@ -227,7 +225,7 @@ public partial class CharacterService(
 
     public ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortCharacterOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortCharacterOption>(sortFilter, out string? resolved))
             return characters;
 
         return resolved switch

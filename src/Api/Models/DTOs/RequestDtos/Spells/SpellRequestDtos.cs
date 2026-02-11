@@ -37,7 +37,6 @@ public class CreateSpellRequestDto
     [Range(0, int.MaxValue)]
     public int CastingTimeValue { get; set; }
 
-    [MinLength(1)]
     [MaxLength(500)]
     public required string ReactionCondition { get; set; }
 
@@ -56,34 +55,27 @@ public class CreateSpellRequestDto
 
 public class UpdateSpellRequestDto
 {
-    [MinLength(1)]
     [MaxLength(100)]
     public string? Name { get; set; }
 
-    [MinLength(1)]
     [MaxLength(2000)]
     public string? Description { get; set; }
 
     [Range(0, 9)]
     public int? Level { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string? EffectsAtHigherLevels { get; set; }
 
-    [MinLength(1)]
     [MaxLength(200)]
     public string? Duration { get; set; }
 
-    [MinLength(1)]
     [MaxLength(200)]
     public string? CastingTime { get; set; }
 
-    [MinLength(1)]
     [MaxLength(500)]
     public string? ReactionCondition { get; set; }
     
-    [MinLength(1)]
     [MaxLength(100)]
     public string? MagicSchool { get; set; }
 
@@ -93,7 +85,6 @@ public class UpdateSpellRequestDto
     [Range(0, int.MaxValue)]
     public int? CastingTimeValue { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? DamageRoll { get; set; }
     public UpdateSpellTargetingDto? TargetingDto { get; set; }
@@ -127,26 +118,21 @@ public class CreateSpellTargetingDto
 
 public class UpdateSpellTargetingDto
 {
-    [MinLength(1)]
     [MaxLength(100)]
     public string? TargetType { get; set; }
 
-    [MinLength(1)]
     [MaxLength(100)]
     public string? Range { get; set; }
 
     [Range(0, int.MaxValue)]
     public int? RangeValue { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? ShapeType { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? ShapeWidth { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? ShapeLength { get; set; }
 }
@@ -155,7 +141,11 @@ public class CreateCastingRequirementsDto
 {
     public bool Verbal { get; set; } = false;
     public bool Somatic { get; set; } = false;
+
+    [MaxLength(200)]
     public string Materials { get; set; } = "";
+
+    [Range(0, int.MaxValue)]
     public int MaterialCost { get; set; } = 0;
     public bool MaterialsConsumed { get; set; } = false;
 }
@@ -164,7 +154,11 @@ public class UpdateCastingRequirementsDto
 {
     public bool? Verbal { get; set; }
     public bool? Somatic { get; set; }
+
+    [MaxLength(200)]
     public string? Materials { get; set; }
+
+    [Range(0, int.MaxValue)]
     public int? MaterialCost { get; set; }
     public bool? MaterialsConsumed { get; set; }
 }

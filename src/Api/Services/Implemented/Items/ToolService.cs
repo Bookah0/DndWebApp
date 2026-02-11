@@ -2,12 +2,12 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
-using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
-using Api.Models.Items.Constants;
+using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces.Items;
 using Api.Services.Interfaces;
+using Api.Validation.AllowedValues.Items;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented.Items;
 
@@ -15,8 +15,8 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 {
     public async Task<Tool> CreateAsync(CreateToolRequestDto dto)
     {
-        var dtoToolCategory = ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues);
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
+        var dtoToolCategory = ResolveValueOrThrow<ToolCategory>(dto.ToolCategory);
+        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         logger.LogInformation("Creating tool, Name: {ToolName}", dto.Name);
         
@@ -75,8 +75,8 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Tool> UpdateAsync(UpdateToolRequestDto dto, int id)
     {
-        var dtoToolCategory = dto.ToolCategory is not null ? ResolveOptionOrThrow(dto.ToolCategory, ToolCategory.AllowedValues) : null;
-        var dtoRarity = dto.Rarity is not null ? ResolveOptionOrThrow(dto.Rarity, ItemRarity.AllowedValues) : null;
+        var dtoToolCategory = dto.ToolCategory is not null ? ResolveValueOrThrow<ToolCategory>(dto.ToolCategory) : null;
+        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         var tool = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating tool, Name: {ToolName}, ID: {ToolId}", dto.Name, id);
@@ -101,7 +101,7 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
     // TODO replace with database level sorting
     public ICollection<Tool> SortBy(ICollection<Tool> tools, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortToolOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortToolOption>(sortFilter, out string? resolved))
             return tools;
 
         return resolved switch

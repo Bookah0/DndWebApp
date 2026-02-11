@@ -1,15 +1,13 @@
 namespace Api.Services.External.Implemented;
 
 using System.Text.Json;
-using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
-using Api.Models.Characters.Constants;
 using Api.Models.DTOs.ExternalDTOs;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
 using Api.Services.External.Interfaces;
-using Api.Services.Util;
-using static Api.Services.Util.ConstantsUtil;
+using Api.Validation.AllowedValues;
+using static Api.Validation.AllowedValues.ValuesValidator;
 
 public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository subraceRepo, IAbilityRepository abilityRepo, ILogger<ExternalSpeciesService> logger) : IExternalSpeciesService
 {
@@ -57,7 +55,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
                 Name = eRace.Name,
                 Speed = eRace.Speed,
                 Info = description,
-                Size = ResolveOptionOrThrow(eRace.Size, CreatureSize.AllowedValues),
+                Size = ResolveValueOrThrow<CreatureSize>(eRace.Size),
                 Traits = [],
                 SubRaces = [],
 

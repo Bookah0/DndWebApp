@@ -1,0 +1,33 @@
+meta {
+  name: create spell
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ENV}}/api/armor
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Leather Armor",
+    "Description": "Light armor made from hardened leather.",
+    "Weight": 10,
+    "Value": 45,
+    "Category": "Light",
+    "BaseArmorClass": 11,
+    "PlusDexMod": true,
+    "Rarity": "Common",
+    "RequiresAttunement": false,
+    "ModCap": null,
+    "StrengthScoreRequired": 0,
+    "StealthDisadvantage": false
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -2,11 +2,10 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
-using Api.Services.Interfaces.Features;
-using Api.Services.Constants;
 using static Api.Services.Util.SortUtil;
-using static Api.Services.Util.ConstantsUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces;
+using Api.Validation.AllowedValues;
 
 namespace Api.Services.Implemented.Features;
 
@@ -83,7 +82,7 @@ public class ClassFeatureService(
 
     public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, string sortFilter, bool descending = false)
     {
-        if(!TryResolveOption(sortFilter, SortClassFeatureOption.AllowedValues, out string? resolved))
+        if(!TryResolveValue<SortClassFeatureOption>(sortFilter, out string? resolved))
             return features;
 
         return resolved switch

@@ -1,11 +1,12 @@
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
-using Api.Models.Items.Constants;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces.Items;
 using Api.Services.Util;
 using Api.Services.Util.Interfaces;
+using Api.Validation.AllowedValues.Items;
+using static Api.Validation.AllowedValues.ValuesValidator;
 
 namespace Api.Services.Implemented.Items;
 public class InventoryService(
@@ -117,7 +118,7 @@ public class InventoryService(
 
     public async Task UnEquip(Inventory inventory, string slot)
     {
-        var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues);
+        var resolvedSlot = ResolveValueOrThrow<EquipSlot>(slot);
         logger.LogInformation("Unequipping item from slot: {EquipmentSlot} in inventory with ID: {InventoryId}", resolvedSlot, inventory.Id);
 
         foreach (var equipmentSlot in inventory.EquippedItems)
@@ -146,7 +147,7 @@ public class InventoryService(
         if(item is not IEquippable equippableItem)
             throw new InvalidOperationException($"Item with id {itemId} is not equippable");
         
-        var resolvedSlot = ConstantsUtil.ResolveOptionOrThrow(slot, EquipSlot.AllowedValues);
+        var resolvedSlot = ResolveValueOrThrow<EquipSlot>(slot);
 
         if(equippableItem.MainSlot != resolvedSlot && equippableItem.SecondarySlot != resolvedSlot)
             throw new InvalidOperationException($"Item with id {itemId} cannot be equipped in slot {resolvedSlot}");

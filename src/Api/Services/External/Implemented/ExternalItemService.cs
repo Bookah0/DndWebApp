@@ -8,11 +8,11 @@ using Api.Models.Items;
 using Api.Repositories.Interfaces;
 using Api.Services.External.Interfaces;
 using Api.Services.Util;
-using static Api.Services.Util.NormalizationUtil;
-using static Api.Services.Util.ConstantsUtil;
-using Api.Models.Items.Constants;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Api.Middlewares.ExceptionHandling;
+
+using static Api.Validation.AllowedValues.ValuesValidator;
+using Api.Validation.AllowedValues.Items;
+using Api.Validation.AllowedValues;
 
 public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemService> logger) : IExternalItemService
 {
@@ -77,7 +77,9 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         if(eArmor.EquipmentCategory is null)
             logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eArmor.Name);
 
-        var itemCategory = eArmor.EquipmentCategory is null ? ItemCategory.Miscellaneous : ResolveOptionOrEmpty(eArmor.EquipmentCategory.Name, ItemCategory.AllowedValues);
+        var itemCategory = eArmor.EquipmentCategory is null 
+            ? ItemCategory.Miscellaneous 
+            : ResolveValueOrEmpty<ItemCategory>(eArmor.EquipmentCategory.Name);
 
         return new Armor
         {
@@ -88,7 +90,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Weight = eArmor.Weight,
             Value = GetConvertedValue(eArmor.Cost.Quantity, eArmor.Cost.Unit),
             Quantity = eArmor.Cost.Quantity,
-            ArmorCategory = ResolveOptionOrThrow(eArmor.ArmorCategory, ArmorCategory.AllowedValues),
+            ArmorCategory = ResolveValueOrThrow<ArmorCategory>(eArmor.ArmorCategory),
             BaseArmorClass = eArmor.ArmorClass.BaseArmorClass,
             PlusDexMod = eArmor.ArmorClass.DexBonus,
             ModCap = eArmor.ArmorClass.MaxBonus,
@@ -110,17 +112,20 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
         var eDamagetype = eWeapon.Damage?.DamageType.Name
             ?? throw new InvalidOperationException($"Weapon {item.Name} missing damage object.");
-        var damageType = ResolveOptionOrThrow(eDamagetype, DamageType.AllowedValues);
+        var damageType = ResolveValueOrThrow<DamageType>(eDamagetype);
 
         var propertyNames = eWeapon.Properties?.Select(p => p.Name).ToList() ?? [];
-        var properties = ResolveOptionOrThrow(propertyNames, WeaponProperty.AllowedValues);
+        var properties = ResolveValueOrThrow<WeaponProperty>(propertyNames);
 
-        var category = ResolveOptionOrThrow(eWeapon.CategoryRange, WeaponCategory.AllowedValues);
+        var category = ResolveValueOrThrow<WeaponCategory>(eWeapon.CategoryRange);
 
         if(eWeapon.EquipmentCategory is null)
             logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eWeapon.Name);
 
-        var itemCategory = eWeapon.EquipmentCategory is null ? ItemCategory.Miscellaneous : ResolveOptionOrEmpty(eWeapon.EquipmentCategory.Name, ItemCategory.AllowedValues);
+        var itemCategory = eWeapon.EquipmentCategory is null 
+            ? ItemCategory.Miscellaneous 
+            : ResolveValueOrEmpty<ItemCategory>(eWeapon.EquipmentCategory.Name);
+       
         var weaponType = ParseWeaponType(eWeapon);
         return new Weapon
         {
@@ -153,11 +158,13 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         var eTool = jsonDoc.RootElement.Deserialize<ECreateToolRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize tool: {item.Index}");
 
-        var category = ResolveOptionOrThrow(eTool.ToolCategory, ToolCategory.AllowedValues);
+        var category = ResolveValueOrThrow<ToolCategory>(eTool.ToolCategory);
         if(eTool.EquipmentCategory is null)
             logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eTool.Name);
 
-        var itemCategory = eTool.EquipmentCategory is null ? ItemCategory.Miscellaneous : ResolveOptionOrEmpty(eTool.EquipmentCategory.Name, ItemCategory.AllowedValues);
+        var itemCategory = eTool.EquipmentCategory is null 
+            ? ItemCategory.Miscellaneous 
+            : ResolveValueOrEmpty<ItemCategory>(eTool.EquipmentCategory.Name);
 
 
         return new Tool
@@ -218,7 +225,9 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         if(eItem.EquipmentCategory is null)
             logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eItem.Name);
 
-        var itemCategory = eItem.EquipmentCategory is null ? ItemCategory.Miscellaneous : ResolveOptionOrEmpty(eItem.EquipmentCategory.Name, ItemCategory.AllowedValues);
+        var itemCategory = eItem.EquipmentCategory is null 
+            ? ItemCategory.Miscellaneous 
+            : ResolveValueOrEmpty<ItemCategory>(eItem.EquipmentCategory.Name);
 
         return new Item
         {
@@ -244,9 +253,9 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         throw new NotImplementedException();
     }
 
-    private string ParseWeaponType(ECreateWeaponRequestDto eWeapon)
+    private static string ParseWeaponType(ECreateWeaponRequestDto eWeapon)
     {
-        if (TryResolveOption(eWeapon.Name, WeaponType.AllowedValues, out var weaponType))
+        if (TryResolveValue<WeaponType>(eWeapon.Name, out var weaponType))
             return weaponType!;
 
         foreach (var allowed in WeaponType.AllowedValues)
@@ -265,15 +274,15 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         if (value <= 0)
             return 0;
 
-        var resolvedUnit = ResolveOptionOrThrow(unit, CurrencyUtil.AllowedUnits);
+        var resolvedUnit = ResolveValueOrThrow<CurrencyUnit>(unit);
 
         return resolvedUnit switch
         {
-            CurrencyUtil.Copper => value,
-            CurrencyUtil.Silver => value * 10,
-            CurrencyUtil.Electrum => value * 50,
-            CurrencyUtil.Gold => value * 100,
-            CurrencyUtil.Platinum => value * 1000,
+            CurrencyUnit.Copper => value,
+            CurrencyUnit.Silver => value * 10,
+            CurrencyUnit.Electrum => value * 50,
+            CurrencyUnit.Gold => value * 100,
+            CurrencyUnit.Platinum => value * 1000,
             _ => throw new ValidationException($"Unknown currency unit: {unit}"),
         };
     }

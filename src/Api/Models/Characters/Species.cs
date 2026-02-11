@@ -1,5 +1,5 @@
-using Api.Models.Characters.Constants;
 using Api.Models.Features;
+using Api.Validation.AllowedValues;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Models.Characters;

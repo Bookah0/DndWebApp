@@ -4,11 +4,11 @@ using Api.Models.Characters;
 using Api.Models.DTOs.Features;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Models.Features;
-using Api.Models.Items.Constants;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces.Features;
 using Api.Services.Util;
-using static Api.Services.Util.ConstantsUtil;
+using static Api.Validation.AllowedValues.ValuesValidator;
+using Api.Validation.AllowedValues.Items;
 
 namespace Api.Services.Implemented.Features;
 
@@ -146,7 +146,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var resolvedCategory = ResolveOptionOrThrow(category, WeaponCategory.AllowedValues);
+            var resolvedCategory = ResolveValueOrThrow<WeaponCategory>(category);
             choice.Options.Add(resolvedCategory);
         }
         await weaponCategoryChoiceRepo.UpdateAsync(choice);
@@ -159,7 +159,7 @@ public class ChoiceService<T>
 
         foreach (var type in newTypes)
         {
-            var resolvedType = ResolveOptionOrThrow(type, WeaponType.AllowedValues);
+            var resolvedType = ResolveValueOrThrow<WeaponType>(type);
             choice.Options.Add(resolvedType);
         }
         await weaponTypeChoiceRepo.UpdateAsync(choice);
@@ -172,7 +172,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var resolvedCategory = ResolveOptionOrThrow(category, ToolCategory.AllowedValues);
+            var resolvedCategory = ResolveValueOrThrow<ToolCategory>(category);
             choice.Options.Add(resolvedCategory);
         }
         await toolChoiceRepo.UpdateAsync(choice);
@@ -185,7 +185,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var resolvedCategory = ResolveOptionOrThrow(category, ArmorCategory.AllowedValues);
+            var resolvedCategory = ResolveValueOrThrow<ArmorCategory>(category);
             choice.Options.Add(resolvedCategory);
         }
         await armorChoiceRepo.UpdateAsync(choice);

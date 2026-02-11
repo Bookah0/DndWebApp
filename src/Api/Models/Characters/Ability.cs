@@ -1,6 +1,3 @@
-using Api.Models.Characters.Constants;
-using Microsoft.EntityFrameworkCore;
-
 namespace Api.Models.Characters;
 
 // From https://www.dnd5eapi.co/api/2014/ability-scores/

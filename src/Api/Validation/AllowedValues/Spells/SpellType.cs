@@ -17,6 +17,7 @@ public class SpellType : IAllowedValuesProvider
     public const string Summoning = "Summoning";
     public const string Control = "Control";
     public const string Utility = "Utility";
+    public const string AoE = "AoE";
 
     public static readonly IReadOnlySet<string> AllowedValues = new HashSet<string>
     {
@@ -33,7 +34,8 @@ public class SpellType : IAllowedValuesProvider
         Damage,
         Summoning,
         Control,
-        Utility
+        Utility,
+        AoE
     };
 
     static IReadOnlySet<string> IAllowedValuesProvider.AllowedValues => AllowedValues;

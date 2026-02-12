@@ -5,29 +5,153 @@ meta {
 }
 
 post {
-  url: {{ENV}}/api/armor
+  url: {{ENV}}/api/spells
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "Name": "Leather Armor",
-    "Description": "Light armor made from hardened leather.",
-    "Weight": 10,
-    "Value": 45,
-    "Category": "Light",
-    "BaseArmorClass": 11,
-    "PlusDexMod": true,
-    "Rarity": "Common",
-    "RequiresAttunement": false,
-    "ModCap": null,
-    "StrengthScoreRequired": 0,
-    "StealthDisadvantage": false
+    "name": "Fireball",
+    "description": "A bright streak flashes from your pointing finger to a point of your choice within range and then blossoms with a low roar into an explosion of flame.",
+    "level": 3,
+    "effectsAtHigherLevels": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.",
+    "duration": "Instantaneous",
+    "durationValue": null,
+    "castingTime": "action",
+    "castingTimeValue": 1,
+    "reactionCondition": "",
+    "magicSchool": "Evocation",
+    "spellTypes": ["AOE", "Damage"],
+    "damageRoll": "8d6",
+    "damageTypes": ["Fire"],
+    "targetingDto": {
+      "targetType": "Point",
+      "range": "feet",
+      "rangeValue": 150,
+      "shapeType": "Sphere",
+      "shapeWidth": "20",
+      "shapeLength": ""
+    },
+    "castRequirementsDto": {
+      "verbal": true,
+      "somatic": true,
+      "materials": "A tiny ball of bat guano and sulfur",
+      "materialCost": 0,
+      "materialsConsumed": false
+    }
   }
+  
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: create
+  
+  request: {
+    url: {{ENV}}/api/spells
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "name": "Fireball",
+        "description": "A bright streak flashes from your pointing finger to a point of your choice within range and then blossoms with a low roar into an explosion of flame.",
+        "level": 3,
+        "effectsAtHigherLevels": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.",
+        "duration": "Instantaneous",
+        "durationValue": null,
+        "castingTime": "action",
+        "castingTimeValue": 1,
+        "reactionCondition": "",
+        "magicSchool": "Evocation",
+        "spellTypes": ["AOE", "Damage"],
+        "damageRoll": "8d6",
+        "damageTypes": ["Fire"],
+        "targetingDto": {
+          "targetType": "Point",
+          "range": "feet",
+          "rangeValue": 150,
+          "shapeType": "Sphere",
+          "shapeWidth": "20",
+          "shapeLength": ""
+        },
+        "castRequirementsDto": {
+          "verbal": true,
+          "somatic": true,
+          "materials": "A tiny ball of bat guano and sulfur",
+          "materialCost": 0,
+          "materialsConsumed": false
+        }
+      }
+      
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Wed, 11 Feb 2026 22:57:13 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "name": "Fireball",
+          "description": "A bright streak flashes from your pointing finger to a point of your choice within range and then blossoms with a low roar into an explosion of flame.",
+          "level": 3,
+          "effectsAtHigherLevels": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.",
+          "classIds": null,
+          "duration": "Instantaneous",
+          "durationValue": null,
+          "castingTime": "Action",
+          "castingTimeValue": null,
+          "reactionCondition": "",
+          "magicSchool": "Evocation",
+          "damageRoll": "8d6",
+          "damageTypes": [
+            "Fire"
+          ],
+          "spellTypes": [
+            "AoE",
+            "Damage"
+          ],
+          "spellTargeting": {
+            "targetType": "Point",
+            "range": "Feet",
+            "rangeValue": 150,
+            "shapeType": "Sphere",
+            "shapeWidth": "20",
+            "shapeLength": ""
+          },
+          "castingRequirements": {
+            "verbal": true,
+            "somatic": true,
+            "materials": "A tiny ball of bat guano and sulfur",
+            "materialCost": 0,
+            "materialsConsumed": false
+          },
+          "id": 51,
+          "createdAt": "2026-02-11T22:57:13.9770616Z",
+          "updatedAt": null,
+          "createdBy": "019c3f34-6309-7c1b-bd23-25c1de1354f6",
+          "isHomebrew": true,
+          "isPublic": false,
+          "cloningAllowed": false,
+          "cloningHistory": []
+        }
+      '''
+    }
+  }
 }

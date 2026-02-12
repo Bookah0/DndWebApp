@@ -5,12 +5,123 @@ meta {
 }
 
 patch {
-  url: {{ENV}}/api/armor/{{armorId}}
-  body: none
+  url: {{ENV}}/api/spells/{{spellId}}
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "name": "Fireball (Enhanced)",
+    "description": "A bright streak flashes from your pointing finger to a point of your choice within range and then blossoms with a powerful roar into an explosion of flame.",
+    "level": 4,
+    "magicSchool": "Evocation",
+    "damageRoll": "9d6",
+    "targetingDto": {
+      "rangeValue": 200,
+      "shapeWidth": "25"
+    },
+    "castRequirementsDto": {
+      "materialCost": 50
+    }
+  }
+}
+
+vars:pre-request {
+  spellId: 51
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: example
+  
+  request: {
+    url: {{ENV}}/api/spells/{{spellId}}
+    method: PATCH
+    mode: json
+    body:json: {
+      {
+        "name": "Fireball (Enhanced)",
+        "description": "A bright streak flashes from your pointing finger to a point of your choice within range and then blossoms with a powerful roar into an explosion of flame.",
+        "level": 4,
+        "magicSchool": "Evocation",
+        "damageRoll": "9d6",
+        "targetingDto": {
+          "rangeValue": 200,
+          "shapeWidth": "25"
+        },
+        "castRequirementsDto": {
+          "materialCost": 50
+        }
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Wed, 11 Feb 2026 22:58:34 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "name": "Fireball (Enhanced)",
+          "description": "A bright streak flashes from your pointing finger to a point of your choice within range and then blossoms with a powerful roar into an explosion of flame.",
+          "level": 4,
+          "effectsAtHigherLevels": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd.",
+          "classIds": null,
+          "duration": "Instantaneous",
+          "durationValue": null,
+          "castingTime": "Action",
+          "castingTimeValue": null,
+          "reactionCondition": "",
+          "magicSchool": "Evocation",
+          "damageRoll": "9d6",
+          "damageTypes": [
+            "Fire"
+          ],
+          "spellTypes": [
+            "AoE",
+            "Damage"
+          ],
+          "spellTargeting": {
+            "targetType": "Point",
+            "range": "Feet",
+            "rangeValue": 200,
+            "shapeType": "Sphere",
+            "shapeWidth": "25",
+            "shapeLength": ""
+          },
+          "castingRequirements": {
+            "verbal": true,
+            "somatic": true,
+            "materials": "A tiny ball of bat guano and sulfur",
+            "materialCost": 50,
+            "materialsConsumed": false
+          },
+          "id": 51,
+          "createdAt": "2026-02-11T22:57:13.977061Z",
+          "updatedAt": null,
+          "createdBy": "019c3f34-6309-7c1b-bd23-25c1de1354f6",
+          "isHomebrew": true,
+          "isPublic": false,
+          "cloningAllowed": false,
+          "cloningHistory": []
+        }
+      '''
+    }
+  }
 }

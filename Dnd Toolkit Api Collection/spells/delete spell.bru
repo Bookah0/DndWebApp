@@ -5,9 +5,13 @@ meta {
 }
 
 delete {
-  url: {{ENV}}/api/armor/{{armorId}}
+  url: {{ENV}}/api/spells/{{spellId}}
   body: none
   auth: inherit
+}
+
+vars:pre-request {
+  spellId: 51
 }
 
 settings {

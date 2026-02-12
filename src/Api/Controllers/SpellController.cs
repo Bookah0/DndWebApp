@@ -4,6 +4,9 @@ using Api.Models.DTOs.ResponseDtos;
 using Api.Models.DTOs.Spells;
 using Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Api.Repositories.Implemented.Spells;
+using Api.Services.Util;
+using Api.Models.Spells;
 
 namespace Api.Controllers;
 
@@ -12,10 +15,19 @@ namespace Api.Controllers;
 public class SpellsController(ISpellService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<SpellResponseDto>>> GetSpells()
+    public async Task<ActionResult<ICollection<SpellResponseDto>>> GetSpells([FromQuery] SpellFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
     {
-        var spells = await service.GetAllAsync();
-        return Ok(mapper.Map<ICollection<SpellResponseDto>>(spells));
+        var (totalSpells, filteredSpells) = await service.GetFilteredAsync(filterDto, paginationDto);
+        
+        return Ok(new PaginationResponseDto<Spell>
+        {
+            Items = filteredSpells,
+            ItemCount = totalSpells,
+            Page = paginationDto.Page,
+            PageSize = paginationDto.PageSize,
+            Next = PaginationUtil.GetNext(paginationDto, totalSpells, "api/spells"),
+            Prev = PaginationUtil.GetPrev(paginationDto, "api/spells")
+        });
     }
 
     [HttpGet("{spellId}")]

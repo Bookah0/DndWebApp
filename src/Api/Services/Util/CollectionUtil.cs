@@ -37,9 +37,9 @@ public static class CollectionUtil
         }
     }
 
-    public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
+    public static bool HasContent<T>(this ICollection<T>? collection)
     {
-        return collection == null || collection.Count == 0;
+        return collection is not null && collection.Count != 0;
     }
 
     public static void RemoveAt<T>(this ICollection<T> collection, int index)

@@ -27,7 +27,7 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         {
             Name = dto.Name,
             Description = dto.Description,
-            Categories = dtoCategories,
+            Categories = dtoCategories ?? [],
             Value = dto.Value,
             Rarity = dtoRarity,
             RequiresAttunement = dto.RequiresAttunement,

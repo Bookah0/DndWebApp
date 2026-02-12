@@ -16,10 +16,6 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
 {
     public async Task<Weapon> CreateAsync(CreateWeaponRequestDto dto)
     {
-        if (!dto.DamageTypes.IsNullOrEmpty())
-        {
-            var damageTypes = GetDefaultWeaponDamageTypes(dto.WeaponType);
-        }
         logger.LogInformation("Creating weapon, Name: {WeaponName}", dto.Name);
         var dtoCategory = ResolveValueOrThrow<WeaponCategory>(dto.WeaponCategory);
         var dtoWeaponType = ResolveValueOrThrow<WeaponType>(dto.WeaponType);
@@ -37,7 +33,7 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
             Slot = GetDefaultWeaponMainSlot(dtoWeaponType),
             DamageDice = dto.DamageDice,
             Range = dto.Range,
-            Properties = dtoProperties,
+            Properties = dtoProperties ?? [],
             VersatileDamageDice = dto.VersitileDamageDice,
             LongRange = dto.LongRange,
             Rarity = dtoRarity ?? ItemRarity.Common,
@@ -47,9 +43,9 @@ public class WeaponService(IRepository<Weapon> repo, ICurrentUserService current
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
 
-            DamageTypes = dto.DamageTypes.IsNullOrEmpty()
-                ? GetDefaultWeaponDamageTypes(dto.WeaponType)
-                : ResolveValueOrThrow<DamageType>(dto.DamageTypes),
+            DamageTypes = dto.DamageTypes.HasContent()
+                ? ResolveValueOrThrow<DamageType>(dto.DamageTypes)!
+                : GetDefaultWeaponDamageTypes(dto.WeaponType)
         });
 
         logger.LogInformation("Successfully created weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, weapon.Id);

@@ -5,12 +5,556 @@ meta {
 }
 
 get {
-  url: {{ENV}}/api/armor
-  body: none
+  url: {{ENV}}/api/spells?name=Amb
+  body: json
   auth: inherit
+}
+
+params:query {
+  name: Amb
 }
 
 settings {
   encodeUrl: true
   timeout: 0
+}
+
+example {
+  name: example
+  
+  request: {
+    url: {{ENV}}/api/spells?pageSize=49&page=1&magicSchool=Illusion&duration=Instantaneous
+    method: GET
+    mode: none
+    params:query: {
+      pageSize: 49
+      page: 1
+      magicSchool: Illusion
+      duration: Instantaneous
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Thu, 12 Feb 2026 14:45:02 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "items": [
+            {
+              "name": "Abhorrent Apparition",
+              "description": "You imbue a terrifying visage onto a gourd and toss it ahead of you to a spot of your choosing within range. Each creature within 15 feet of that spot takes 6d8 psychic damage and becomes frightened of you for 1 minute; a successful Wisdom saving throw halves the damage and negates the fright. A creature frightened in this way repeats the saving throw at the end of each of its turns, ending the effect on itself on a success.\n",
+              "level": 4,
+              "effectsAtHigherLevels": "If you cast this spell using a spell slot of 5th level or higher, the damage increases by 1d8 for each slot level above 4th.",
+              "classes": [],
+              "duration": "Instantaneous",
+              "durationValue": 1,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Illusion",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Feet",
+                "rangeValue": 60,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": false,
+                "somatic": false,
+                "materials": "a gourd with a face carved on it",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 1,
+              "createdAt": "2026-02-08T14:27:33.73497Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            }
+          ],
+          "itemCount": 1,
+          "page": 1,
+          "pageSize": 49,
+          "next": null,
+          "prev": null
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: example 2
+  
+  request: {
+    url: {{ENV}}/api/spells?pageSize=10&page=2&magicSchool=Illusion&magicSchool=Transmutation
+    method: GET
+    mode: none
+    params:query: {
+      pageSize: 10
+      page: 2
+      magicSchool: Illusion
+      magicSchool: Transmutation
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Thu, 12 Feb 2026 14:46:24 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "items": [
+            {
+              "name": "Ambush",
+              "description": "The forest floor swirls and shifts around you to welcome you into its embrace. While in a forest, you have advantage on Dexterity (Stealth) checks to Hide. While hidden in a forest, you have advantage on your next Initiative check. The spell ends if you attack or cast a spell.",
+              "level": 1,
+              "effectsAtHigherLevels": "When you cast this spell using a spell slot of 2nd level or higher, you can affect one additional creature for each slot level above 1st. The spell ends if you or any target of this spell attacks or casts a spell.",
+              "classes": [],
+              "duration": "Hour",
+              "durationValue": 1,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Illusion",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Self",
+                "rangeValue": 0,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": false,
+                "somatic": true,
+                "materials": "",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 29,
+              "createdAt": "2026-02-08T14:27:33.799311Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            },
+            {
+              "name": "Amplify Gravity",
+              "description": "This spell intensifies gravity in a 50-foot-radius area within range. Inside the area, damage from falling is quadrupled (2d6 per 5 feet fallen) and maximum damage from falling is 40d6. Any creature on the ground in the area when the spell is cast must make a successful Strength saving throw or be knocked prone; the same applies to a creature that enters the area or ends its turn in the area. A prone creature in the area must make a successful Strength saving throw to stand up. A creature on the ground in the area moves at half speed and has disadvantage on Dexterity checks and ranged attack rolls.",
+              "level": 7,
+              "effectsAtHigherLevels": "",
+              "classes": [],
+              "duration": "Minute",
+              "durationValue": 1,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Transmutation",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Feet",
+                "rangeValue": 100,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": true,
+                "somatic": true,
+                "materials": "a piece of lead",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 31,
+              "createdAt": "2026-02-08T14:27:33.80115Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            },
+            {
+              "name": "Ancestor’s Strength",
+              "description": "Choose a willing creature you can see and touch. Its muscles bulge and become invigorated. For the duration, the target is considered one size category larger for determining its carrying capacity, the maximum weight it can lift, push, or pull, and its ability to break objects. It also has advantage on Strength checks.",
+              "level": 1,
+              "effectsAtHigherLevels": "",
+              "classes": [],
+              "duration": "Hour",
+              "durationValue": 8,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Transmutation",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Touch",
+                "rangeValue": 1,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": true,
+                "somatic": true,
+                "materials": "",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 34,
+              "createdAt": "2026-02-08T14:27:33.803887Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            },
+            {
+              "name": "Animal Shapes",
+              "description": "Your magic turns others into beasts. Choose any number of willing creatures that you can see within range. You transform each target into the form of a Large or smaller beast with a challenge rating of 4 or lower. On subsequent turns, you can use your action to transform affected creatures into new forms. \n\nThe transformation lasts for the duration for each target, or until the target drops to 0 hit points or dies. You can choose a different form for each target. A target's game statistics are replaced by the statistics of the chosen beast, though the target retains its alignment and Intelligence, Wisdom, and Charisma scores. The target assumes the hit points of its new form, and when it reverts to its normal form, it returns to the number of hit points it had before it transformed. If it reverts as a result of dropping to 0 hit points, any excess damage carries over to its normal form. As long as the excess damage doesn't reduce the creature's normal form to 0 hit points, it isn't knocked unconscious. The creature is limited in the actions it can perform by the nature of its new form, and it can't speak or cast spells. \n\nThe target's gear melds into the new form. The target can't activate, wield, or otherwise benefit from any of its equipment.",
+              "level": 8,
+              "effectsAtHigherLevels": "",
+              "classes": [],
+              "duration": "Hour",
+              "durationValue": 24,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Transmutation",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Feet",
+                "rangeValue": 30,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": true,
+                "somatic": true,
+                "materials": "",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 43,
+              "createdAt": "2026-02-08T14:27:33.812867Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            },
+            {
+              "name": "Animal Shapes",
+              "description": "You transform the bodies of creatures into beasts without altering their minds. Each target transforms into a Large or smaller beast with a Challenge Rating of 4 or lower. Each target may have the same or a different form than other targets.\n\nOn subsequent turns, you can use your action to transform targets into new forms, gaining new hit points when they do so.\n\nUntil the spell ends or it is dropped to 0 hit points, the target's game statistics (including its hit points) are replaced by the statistics of the chosen beast excepting its Intelligence, Wisdom, and Charisma scores. The target is limited to actions that it is physically capable of doing, and it can't speak or cast spells. The target's gear melds into the new form. Equipment that merges with a target's form has no effect until it leaves the form.\n\nWhen the target reverts to its normal form, it returns to the number of hit points it had before it transformed. If the spell's effect on the target end early from dropping to 0 hit points, any excess damage carries over to its normal form and knocks it unconscious if the damage reduces it to 0 hit points.",
+              "level": 8,
+              "effectsAtHigherLevels": "",
+              "classes": [],
+              "duration": "Hour",
+              "durationValue": 24,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Transmutation",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Feet",
+                "rangeValue": 30,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": true,
+                "somatic": true,
+                "materials": "",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 44,
+              "createdAt": "2026-02-08T14:27:33.813851Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            },
+            {
+              "name": "Animate Construct",
+              "description": "Deep Magic: clockwork This spell animates a carefully prepared construct of Tiny size. The object acts immediately, on your turn, and can attack your opponents to the best of its ability. You can direct it not to attack, to attack particular enemies, or to perform other actions. You choose the object to animate, and you can change that choice each time you cast the spell. The cost of the body to be animated is 10 gp x its hit points. The body can be reused any number of times, provided it isn't severely damaged or destroyed. If no prepared construct body is available, you can animate a mass of loose metal or stone instead. Before casting, the loose objects must be arranged in a suitable shape (taking up to a minute), and the construct's hit points are halved. An animated construct has a Constitution of 10, Intelligence and Wisdom 3, and Charisma 1. Other characteristics are determined by the construct's size as follows. Size HP AC Attack STR DEX Spell Slot Tiny 15 12 +3, 1d4+4 4 16 1st Small 25 13 +4, 1d8+2 6 14 2nd Medium 40 14 +5, 2d6+1 10 12 3rd Large 50 15 +6, 2d10+2 14 10 4th Huge 80 16 +8, 2d12+4 18 8 5th Gargantuan 100 17 +10, 4d8+6 20 6 6th",
+              "level": 1,
+              "effectsAtHigherLevels": "Casting this spell using higher level spell slots allows you to increase the size of the construct animated, as shown on the table.",
+              "classes": [],
+              "duration": "Minute",
+              "durationValue": 10,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Transmutation",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Feet",
+                "rangeValue": 30,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": true,
+                "somatic": true,
+                "materials": "",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 45,
+              "createdAt": "2026-02-08T14:27:33.814963Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            },
+            {
+              "name": "Animate Objects",
+              "description": "Objects come to life at your command. Choose up to ten nonmagical objects within range that are not being worn or carried. Medium targets count as two objects, Large targets count as four objects, Huge targets count as eight objects. You can't animate any object larger than Huge. Each target animates and becomes a creature under your control until the spell ends or until reduced to 0 hit points. \nAs a bonus action, you can mentally command any creature you made with this spell if the creature is within 500 feet of you (if you control multiple creatures, you can command any or all of them at the same time, issuing the same command to each one). You decide what action the creature will take and where it will move during its next turn, or you can issue a general command, such as to guard a particular chamber or corridor. If you issue no commands, the creature only defends itself against hostile creatures. Once given an order, the creature continues to follow it until its task is complete.\n### Animated Object Statistics \n| Size | HP | AC | Attack | Str | Dex |\n|--------|----|----|----------------------------|-----|-----|\n| Tiny | 20 | 18 | +8 to hit, 1d4 + 4 damage | 4 | 18 |\n| Small | 25 | 16 | +6 to hit, 1d8 + 2 damage | 6 | 14 |\n| Medium | 40 | 13 | +5 to hit, 2d6 + 1 damage | 10 | 12 |\n| Large | 50 | 10 | +6 to hit, 2d10 + 2 damage | 14 | 10 |\n| Huge | 80 | 10 | +8 to hit, 2d12 + 4 damage | 18 | 6 | \n\nAn animated object is a construct with AC, hit points, attacks, Strength, and Dexterity determined by its size. Its Constitution is 10 and its Intelligence and Wisdom are 3, and its Charisma is 1. Its speed is 30 feet; if the object lacks legs or other appendages it can use for locomotion, it instead has a flying speed of 30 feet and can hover. If the object is securely attached to a surface or a larger object, such as a chain bolted to a wall, its speed is 0. It has blindsight with a radius of 30 feet and is blind beyond that distance. When the animated object drops to 0 hit points, it reverts to its original object form, and any remaining damage carries over to its original object form. If you command an object to attack, it can make a single melee attack against a creature within 5 feet of it. It makes a slam attack with an attack bonus and bludgeoning damage determined by its size. The DM might rule that a specific object inflicts slashing or piercing damage based on its form.",
+              "level": 5,
+              "effectsAtHigherLevels": "If you cast this spell using a spell slot of 6th level or higher, you can animate two additional objects for each slot level above 5th.",
+              "classes": [],
+              "duration": "Minute",
+              "durationValue": 1,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Transmutation",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Feet",
+                "rangeValue": 120,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": true,
+                "somatic": true,
+                "materials": "",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 50,
+              "createdAt": "2026-02-08T14:27:33.820551Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            }
+          ],
+          "itemCount": 17,
+          "page": 2,
+          "pageSize": 10,
+          "next": null,
+          "prev": "api/spells?page=1&pageSize=10"
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: example 3
+  
+  request: {
+    url: {{ENV}}/api/spells?name=Amb
+    method: GET
+    mode: json
+    params:query: {
+      name: Amb
+    }
+  }
+  
+  response: {
+    headers: {
+      content-type: application/json; charset=utf-8
+      date: Thu, 12 Feb 2026 14:48:17 GMT
+      server: Kestrel
+      transfer-encoding: chunked
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "items": [
+            {
+              "name": "Ambush",
+              "description": "The forest floor swirls and shifts around you to welcome you into its embrace. While in a forest, you have advantage on Dexterity (Stealth) checks to Hide. While hidden in a forest, you have advantage on your next Initiative check. The spell ends if you attack or cast a spell.",
+              "level": 1,
+              "effectsAtHigherLevels": "When you cast this spell using a spell slot of 2nd level or higher, you can affect one additional creature for each slot level above 1st. The spell ends if you or any target of this spell attacks or casts a spell.",
+              "classes": [],
+              "duration": "Hour",
+              "durationValue": 1,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Illusion",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Self",
+                "rangeValue": 0,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": false,
+                "somatic": true,
+                "materials": "",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 29,
+              "createdAt": "2026-02-08T14:27:33.799311Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            },
+            {
+              "name": "Ambush Chute",
+              "description": "You touch a wooden, plaster, or stone surface and create a passage with two trapdoors. The first trapdoor appears where you touch the surface, and the other appears at a point you can see up to 30 feet away. The two trapdoors can be wooden with a metal ring handle, or they can match the surrounding surfaces, each with a small notch for opening the door. The two trapdoors are connected by an extradimensional passage that is up to 5 feet wide, up to 5 feet tall, and up to 30 feet long. The trapdoors don't need to be on the same surface, allowing the passage to connect two separated locations, such as the two sides of a chasm or river. The passage is always straight and level for creatures inside it, and the creatures exit the tunnel in such a way that allows them to maintain the same orientation as when they entered the passage. No more than five creatures can transit the passage at the same time.\n  When the spell ends and the trapdoors disappear, any creatures or objects still in the passage created by the spell are safely ejected to an unoccupied space nearest the end of the passage closest to them.",
+              "level": 3,
+              "effectsAtHigherLevels": "When you cast this spell using a spell slot of 4th level or higher, the length of the passage and the distance you can place the second trapdoor increases by 10 feet for each slot level above 3rd.",
+              "classes": [],
+              "duration": "Minute",
+              "durationValue": 10,
+              "castingTime": "Action",
+              "castingTimeValue": 1,
+              "reactionCondition": "",
+              "magicSchool": "Conjuration",
+              "damageRoll": "",
+              "damageTypes": [],
+              "spellTypes": [
+                "Concentration"
+              ],
+              "spellTargeting": {
+                "targetType": "",
+                "range": "Touch",
+                "rangeValue": 1,
+                "shapeType": "",
+                "shapeWidth": null,
+                "shapeLength": null
+              },
+              "castingRequirements": {
+                "verbal": true,
+                "somatic": true,
+                "materials": "",
+                "materialCost": 0,
+                "materialsConsumed": false
+              },
+              "id": 30,
+              "createdAt": "2026-02-08T14:27:33.800261Z",
+              "updatedAt": null,
+              "createdBy": null,
+              "isHomebrew": false,
+              "isPublic": true,
+              "cloningAllowed": true,
+              "cloningHistory": []
+            }
+          ],
+          "itemCount": 2,
+          "page": 1,
+          "pageSize": 40,
+          "next": null,
+          "prev": null
+        }
+      '''
+    }
+  }
 }

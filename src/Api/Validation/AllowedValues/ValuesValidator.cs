@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Api.Middlewares.ExceptionHandling;
 using Api.Services.Util;
 using Api.Validation.AllowedValues;
@@ -7,8 +8,11 @@ namespace Api.Validation.AllowedValues;
 
 public static class ValuesValidator
 {
-    public static ICollection<string> ResolveValueOrThrow<T>(ICollection<string> values) where T : IAllowedValuesProvider
+    public static ICollection<string>? ResolveValueOrThrow<T>(ICollection<string>? values) where T : IAllowedValuesProvider
     {
+        if(values is null)
+            return null;
+
         ICollection<string> resolved = [];
 
         foreach (var val in values)
@@ -33,10 +37,10 @@ public static class ValuesValidator
 
     public static ICollection<string> ResolveValueOrEmpty<T>(ICollection<string> values) where T : IAllowedValuesProvider
     {
-        if (values.IsNullOrEmpty())
+        if (!values.HasContent())
             return [];
 
-        return ResolveValueOrThrow<T>(values);
+        return ResolveValueOrThrow<T>(values)!;
     }
 
     public static string ResolveValueOrEmpty<T>(string val) where T : IAllowedValuesProvider

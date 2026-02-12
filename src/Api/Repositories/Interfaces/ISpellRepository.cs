@@ -1,5 +1,6 @@
 using Api.Models.Characters;
 using Api.Models.DTOs;
+using Api.Models.DTOs.ResponseDtos;
 using Api.Models.Spells;
 using Api.Repositories.Implemented.Spells;
 
@@ -9,5 +10,5 @@ public interface ISpellRepository : IRepository<Spell>
 {
     Task<Spell> GetWithClassesAsync(int id);
     Task<ICollection<Spell>> GetAllWithClassesAsync();
-    Task<ICollection<Spell>> FilterAllAsync(SpellFilter filter);
+    Task<(int, ICollection<Spell>)> GetFilteredAsync(SpellFilterDto filter, PaginationRequestDto pagination);
 }

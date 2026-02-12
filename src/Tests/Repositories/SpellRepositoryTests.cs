@@ -95,24 +95,24 @@ public class SpellRepositoryTests
         await context.Spells.AddRangeAsync(spells);
         await context.SaveChangesAsync();
 
-        var filter = new SpellFilter
+        var filter = new SpellFilterDto
         {
             Name = "Fire",
             MinLevel = 1,
             MaxLevel = 3,
-            MagicSchools = [MagicSchool.Evocation],
+            MagicSchool = [MagicSchool.Evocation],
             IsHomebrew = false,
-            ClassIds = null,
-            Durations = null,
-            CastingTimes = null,
-            SpellTypes = null,
+            ClassId = null,
+            Duration = null,
+            CastingTime = null,
+            SpellType = null,
             TargetType = null,
             Range = null,
-            DamageTypes = null,
+            DamageType = null,
         };
 
         // Act
-        var filteredSpells = await repo.FilterAllAsync(filter);
+        var filteredSpells = await repo.FilterSpellsAsync(filter);
 
         // Assert
         Assert.Single(filteredSpells);

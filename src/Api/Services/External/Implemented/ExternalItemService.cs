@@ -139,7 +139,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             WeaponCategory = category,
             WeaponType = weaponType,
             Slot = GetDefaultWeaponMainSlot(weaponType),
-            Properties = properties,
+            Properties = properties ?? [],
             DamageTypes = [damageType],
             DamageDice = eWeapon.Damage?.DamageDice ?? "",
             Range = eWeapon.Range?.Normal ?? 0,

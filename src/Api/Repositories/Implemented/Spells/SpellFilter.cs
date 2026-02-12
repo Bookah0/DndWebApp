@@ -1,16 +1,22 @@
 namespace Api.Repositories.Implemented.Spells;
 
-public class SpellFilter
+// TODO add more fields if needed
+public class SpellFilterDto
 {
-    public required string? Name { get; set; }
-    public required int? MinLevel { get; set; }
-    public required int? MaxLevel { get; set; }
-    public required ICollection<int>? ClassIds { get; set; }
-    public required ICollection<string>? Durations { get; set; }
-    public required ICollection<string>? CastingTimes { get; set; }
-    public required ICollection<string>? MagicSchools { get; set; }
-    public required ICollection<string>? SpellTypes { get; set; }
-    public required ICollection<string>? TargetType { get; set; }
-    public required ICollection<string>? Range { get; set; }
-    public required ICollection<string>? DamageTypes { get; set; }
+    public string? Name { get; set; }
+    public int? MinLevel { get; set; }
+    public int? MaxLevel { get; set; }
+    public ICollection<int>? ClassId { get; set; }
+    public ICollection<string>? Duration { get; set; }
+    public ICollection<string>? CastingTime { get; set; }
+    public ICollection<string>? MagicSchool { get; set; }
+    public ICollection<string>? SpellType { get; set; }
+    public ICollection<string>? TargetType { get; set; }
+    public ICollection<string>? Range { get; set; }
+    public int? MinRangeValue { get; set; }
+    public int? MaxRangeValue { get; set; }
+    public ICollection<string>? DamageType { get; set; }
+
+    public string? SortBy { get; set; }
+    public bool SortDescending { get; set; } = true;
 }

@@ -11,6 +11,7 @@ using static Api.Services.Util.SortUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Validation.AllowedValues.Spells;
 using Api.Validation.AllowedValues;
+using Api.Models.DTOs.ResponseDtos;
 
 namespace Api.Services.Implemented;
 
@@ -89,6 +90,17 @@ public class SpellService(
         logger.LogInformation("Successfully deleted spell, Name: {SpellName} ID: {SpellId}", spellName, id);
     }
 
+    public async Task<(int, ICollection<Spell>)> GetFilteredAsync(SpellFilterDto filter, PaginationRequestDto pagination) 
+    {
+        await ValidatieFilterAsync(filter);
+        var (count, filtered) = await repo.GetFilteredAsync(filter, pagination);
+
+        if(!filtered.HasContent() && count > 0)
+            throw new ValidationException("Page does not contain any elements");
+
+        return (count, filtered);
+    }
+
     public async Task<ICollection<Spell>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Spell> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
@@ -143,26 +155,7 @@ public class SpellService(
         return spell;
     }
 
-    // TODO move sorting logic to repository when implementing database level sorting
-    public ICollection<Spell> SortBy(ICollection<Spell> spells, string sortFilter, bool descending = false)
-    {
-        if(!TryResolveValue<SortSpellOption>(sortFilter, out string? resolved))
-            return spells;
-
-        return resolved switch
-        {
-            SortSpellOption.Name => OrderByMany(spells, [(s => s.Name)], descending),
-            SortSpellOption.Level => OrderByMany(spells, [(s => s.Level), (s => s.Name)], descending),
-            SortSpellOption.CastingTime => OrderByMany(spells, [(s => s.CastingTime), (s => s.CastingTimeValue!), (s => s.Name)], descending),
-            SortSpellOption.Duration => OrderByMany(spells, [(s => s.Duration), (s => s.DurationValue!), (s => s.Name)], descending),
-            SortSpellOption.Target => OrderByMany(spells, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
-            SortSpellOption.Range => OrderByMany(spells, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue!), (s => s.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
-
-    // TODO move filtering logic to repository when implementing database level filtering
-    public async Task<ICollection<Spell>> FilterAllAsync(SpellFilterDto dto)
+    public async Task ValidatieFilterAsync(SpellFilterDto dto)
     {
         if (dto.Name is not null)
             dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
@@ -172,46 +165,24 @@ public class SpellService(
             throw new ValidationException("Minimum level must be greater than or equal to zero");
         if (dto.MaxLevel is not null && dto.MaxLevel < 0)
             throw new ValidationException("Maximum level must be greater than or equal to zero");
-        if (dto.ClassIds != null)
+        if (dto.ClassId != null)
         {
-            if (dto.ClassIds.HasDuplicates())
+            if (dto.ClassId.HasDuplicates())
                 throw new ValidationException($"Duplicate class ids found in ClassIds.");
     
-            foreach (var id in dto.ClassIds)
+            foreach (var id in dto.ClassId)
             {
                 if(!await classRepo.ExistsAsync(id))
                     throw new NotFoundException($"Class with id {id} does not exist.");
             }
         }
 
-        var dtoSchools = dto.MagicSchools != null ? ResolveValueOrThrow<MagicSchool>(dto.MagicSchools) : null;
-        var dtoTargetTypes = dto.TargetTypes != null ? ResolveValueOrThrow<TargetType>(dto.TargetTypes) : null;
-        var dtoSpellRanges = dto.Range != null ? ResolveValueOrThrow<SpellRange>(dto.Range) : null;
-        var dtoDurations = dto.Durations != null ? ResolveValueOrThrow<SpellDuration>(dto.Durations) : null;
-        var dtoCastTimes = dto.CastingTimes != null ? ResolveValueOrThrow<CastingTime>(dto.CastingTimes) : null;
-        var dtoSpellTypes = dto.SpellTypes != null ? ResolveValueOrThrow<SpellType>(dto.SpellTypes) : null;
-        var dtoDamageTypes = dto.DamageTypes != null ? ResolveValueOrThrow<DamageType>(dto.DamageTypes) : null;
-
-        var filter = new SpellFilter()
-        {
-            Name = dto.Name,
-            MinLevel = dto.MinLevel,
-            MaxLevel = dto.MaxLevel,
-            ClassIds = dto.ClassIds,
-            Durations = dtoDurations,
-            CastingTimes = dtoCastTimes,
-            MagicSchools = dtoSchools,
-            SpellTypes = dtoSpellTypes,
-            TargetType = dtoTargetTypes,
-            Range = dtoSpellRanges,
-            DamageTypes = dtoDamageTypes,
-        };
-
-        if (filter.MinLevel > filter.MaxLevel)
-            throw new ValidationException($"Maximum level {filter.MaxLevel} must be greater than or equal to minimum level");
-        if (filter.Name is not null)
-            filter.Name = NormalizationUtil.NormalizeWhiteSpace(filter.Name);
-
-        return await repo.FilterAllAsync(filter);
+        dto.MagicSchool = ResolveValueOrThrow<MagicSchool>(dto.MagicSchool);
+        dto.TargetType = ResolveValueOrThrow<TargetType>(dto.TargetType);
+        dto.Range = ResolveValueOrThrow<SpellRange>(dto.Range);
+        dto.Duration = ResolveValueOrThrow<SpellDuration>(dto.Duration);
+        dto.CastingTime = ResolveValueOrThrow<CastingTime>(dto.CastingTime);
+        dto.SpellType = ResolveValueOrThrow<SpellType>(dto.SpellType);
+        dto.DamageType = ResolveValueOrThrow<DamageType>(dto.DamageType);
     }
 }

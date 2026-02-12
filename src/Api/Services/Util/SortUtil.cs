@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Api.Services.Util;
 
 public static class SortUtil
@@ -19,5 +21,21 @@ public static class SortUtil
             query = descending ? query.ThenByDescending(selectorList[i]) : query.ThenBy(selectorList[i]);
         }
         return [.. query];
+    }
+
+    public static IQueryable<T> OrderByMany<T>(IQueryable<T> query, IEnumerable<Func<T, object>> selectors, bool descending) where T : class
+    {
+        var selectorList = selectors.ToList();
+        var orderQuery = descending 
+            ? query.OrderByDescending(selectors.ElementAt(0)) 
+            : query.OrderBy(selectors.ElementAt(0));
+
+        for (int i = 1; i < selectors.Count(); i++)
+        {
+            orderQuery = descending 
+                ? orderQuery.ThenByDescending(selectors.ElementAt(i)) 
+                : orderQuery.ThenBy(selectors.ElementAt(i));
+        }
+        return query;
     }
 }

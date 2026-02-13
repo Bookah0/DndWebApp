@@ -7,7 +7,7 @@ using Api.Services.Interfaces;
 using Api.Models.DTOs.Spells;
 using Api.Middlewares.ExceptionHandling;
 
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Validation.AllowedValues.Spells;
 using Api.Validation.AllowedValues;
@@ -26,10 +26,10 @@ public class SpellService(
     {
         logger.LogInformation("Creating spell, Name: {SpellName}", dto.Name);
 
-        var dtoTargetType = ResolveValueOrThrow<TargetType>(dto.TargetingDto.TargetType);
-        var dtoSpellRange = ResolveValueOrThrow<SpellRange>(dto.TargetingDto.Range);
-        var dtoDuration = ResolveValueOrThrow<SpellDuration>(dto.Duration);
-        var dtoCastTime = ResolveValueOrThrow<CastingTime>(dto.CastingTime);
+        var dtoTargetType = NormalizeValueOrThrow<TargetType>(dto.TargetingDto.TargetType);
+        var dtoSpellRange = NormalizeValueOrThrow<SpellRange>(dto.TargetingDto.Range);
+        var dtoDuration = NormalizeValueOrThrow<SpellDuration>(dto.Duration);
+        var dtoCastTime = NormalizeValueOrThrow<CastingTime>(dto.CastingTime);
 
         if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet && dtoSpellRange != SpellRange.Mile)
             throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet or SpellRange.Mile.");
@@ -46,10 +46,10 @@ public class SpellService(
             DurationValue = dto.DurationValue,
             CastingTime = dtoCastTime,
             ReactionCondition = dto.ReactionCondition,
-            MagicSchool = ResolveValueOrEmpty<MagicSchool>(dto.MagicSchool),
-            SpellTypes = ResolveValueOrEmpty<SpellType>(dto.SpellTypes),
+            MagicSchool = NormalizeValueOrEmpty<MagicSchool>(dto.MagicSchool),
+            SpellTypes = NormalizeValueOrEmpty<SpellType>(dto.SpellTypes),
             DamageRoll = dto.DamageRoll,
-            DamageTypes = ResolveValueOrEmpty<DamageType>(dto.DamageTypes),
+            DamageTypes = NormalizeValueOrEmpty<DamageType>(dto.DamageTypes),
             SpellTargeting = new SpellTargeting()
             {
                 TargetType = dtoTargetType,
@@ -116,19 +116,19 @@ public class SpellService(
         logger.LogInformation("Updating spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
 
         if(dto.MagicSchool is not null)
-            spell.MagicSchool = ResolveValueOrEmpty<MagicSchool>(dto.MagicSchool);
+            spell.MagicSchool = NormalizeValueOrEmpty<MagicSchool>(dto.MagicSchool);
 
         if(dto.TargetingDto?.TargetType is not null)
-            spell.SpellTargeting.TargetType = ResolveValueOrEmpty<TargetType>(dto.TargetingDto.TargetType);
+            spell.SpellTargeting.TargetType = NormalizeValueOrEmpty<TargetType>(dto.TargetingDto.TargetType);
 
         if(dto.TargetingDto?.Range is not null)
-            spell.SpellTargeting.Range = ResolveValueOrEmpty<SpellRange>(dto.TargetingDto.Range);
+            spell.SpellTargeting.Range = NormalizeValueOrEmpty<SpellRange>(dto.TargetingDto.Range);
 
         if(dto.Duration is not null)
-            spell.Duration = ResolveValueOrEmpty<SpellDuration>(dto.Duration);
+            spell.Duration = NormalizeValueOrEmpty<SpellDuration>(dto.Duration);
 
         if(dto.CastingTime is not null)
-            spell.CastingTime = ResolveValueOrEmpty<CastingTime>(dto.CastingTime);
+            spell.CastingTime = NormalizeValueOrEmpty<CastingTime>(dto.CastingTime);
 
         spell.Name = dto.Name ?? spell.Name;
         spell.Description = dto.Description ?? spell.Description;
@@ -177,12 +177,12 @@ public class SpellService(
             }
         }
 
-        dto.MagicSchool = ResolveValueOrThrow<MagicSchool>(dto.MagicSchool);
-        dto.TargetType = ResolveValueOrThrow<TargetType>(dto.TargetType);
-        dto.Range = ResolveValueOrThrow<SpellRange>(dto.Range);
-        dto.Duration = ResolveValueOrThrow<SpellDuration>(dto.Duration);
-        dto.CastingTime = ResolveValueOrThrow<CastingTime>(dto.CastingTime);
-        dto.SpellType = ResolveValueOrThrow<SpellType>(dto.SpellType);
-        dto.DamageType = ResolveValueOrThrow<DamageType>(dto.DamageType);
+        dto.MagicSchool = NormalizeValueOrThrow<MagicSchool>(dto.MagicSchool);
+        dto.TargetType = NormalizeValueOrThrow<TargetType>(dto.TargetType);
+        dto.Range = NormalizeValueOrThrow<SpellRange>(dto.Range);
+        dto.Duration = NormalizeValueOrThrow<SpellDuration>(dto.Duration);
+        dto.CastingTime = NormalizeValueOrThrow<CastingTime>(dto.CastingTime);
+        dto.SpellType = NormalizeValueOrThrow<SpellType>(dto.SpellType);
+        dto.DamageType = NormalizeValueOrThrow<DamageType>(dto.DamageType);
     }
 }

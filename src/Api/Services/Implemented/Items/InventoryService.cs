@@ -118,22 +118,22 @@ public class InventoryService(
 
     public async Task UnEquip(Inventory inventory, string slot)
     {
-        var resolvedSlot = ResolveValueOrThrow<EquipSlot>(slot);
-        logger.LogInformation("Unequipping item from slot: {EquipmentSlot} in inventory with ID: {InventoryId}", resolvedSlot, inventory.Id);
+        var normalizedSlot = NormalizeValueOrThrow<EquipSlot>(slot);
+        logger.LogInformation("Unequipping item from slot: {EquipmentSlot} in inventory with ID: {InventoryId}", normalizedSlot, inventory.Id);
 
         foreach (var equipmentSlot in inventory.EquippedItems)
         {
-            if (equipmentSlot.Slot == resolvedSlot)
+            if (equipmentSlot.Slot == normalizedSlot)
             {
                 if(equipmentSlot.EquipmentId is null)
-                    throw new NotFoundException($"No item is equipped in slot {resolvedSlot} in inventory with id {inventory.Id}");
+                    throw new NotFoundException($"No item is equipped in slot {normalizedSlot} in inventory with id {inventory.Id}");
 
                 var item = await itemRepo.GetByIdAsync((int)equipmentSlot.EquipmentId);
 
                 equipmentSlot.EquipmentId = null;
                 inventory.AttunedItems += item.RequiresAttunement ? 1 : 0;
                 await repo.UpdateAsync(inventory);
-                logger.LogInformation("Unequipped item from slot: {EquipmentSlot} in inventory with ID: {InventoryId}", resolvedSlot, inventory.Id);
+                logger.LogInformation("Unequipped item from slot: {EquipmentSlot} in inventory with ID: {InventoryId}", normalizedSlot, inventory.Id);
                 return;
             }
         }
@@ -147,17 +147,17 @@ public class InventoryService(
         if(item is not IEquippable equippableItem)
             throw new InvalidOperationException($"Item with id {itemId} is not equippable");
         
-        var resolvedSlot = ResolveValueOrThrow<EquipSlot>(slot);
+        var normalizedSlot = NormalizeValueOrThrow<EquipSlot>(slot);
 
-        if(equippableItem.MainSlot != resolvedSlot && equippableItem.SecondarySlot != resolvedSlot)
-            throw new InvalidOperationException($"Item with id {itemId} cannot be equipped in slot {resolvedSlot}");
+        if(equippableItem.MainSlot != normalizedSlot && equippableItem.SecondarySlot != normalizedSlot)
+            throw new InvalidOperationException($"Item with id {itemId} cannot be equipped in slot {normalizedSlot}");
 
-        logger.LogInformation("Equipping item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, resolvedSlot, inventory.Id);
+        logger.LogInformation("Equipping item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, normalizedSlot, inventory.Id);
         EquipmentSlot? firstSlotFound = null;
 
         foreach (var equipmentSlot in inventory.EquippedItems)
         {
-            if (equipmentSlot.Slot == resolvedSlot)
+            if (equipmentSlot.Slot == normalizedSlot)
             {
                 firstSlotFound = equipmentSlot;
                 if (equipmentSlot.EquipmentId == null)
@@ -165,7 +165,7 @@ public class InventoryService(
                     equipmentSlot.EquipmentId = itemId;
                     inventory.AttunedItems -= item.RequiresAttunement ? 1 : 0;
                     await repo.UpdateAsync(inventory);
-                    logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, resolvedSlot, inventory.Id);
+                    logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, normalizedSlot, inventory.Id);
                     return inventory;
                 }
             }
@@ -174,7 +174,7 @@ public class InventoryService(
         {
             firstSlotFound.EquipmentId = itemId;
             await repo.UpdateAsync(inventory);
-            logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, resolvedSlot, inventory.Id);
+            logger.LogInformation("Equipped item with ID: {ItemId} to slot: {EquipmentSlot} in inventory with ID: {InventoryId}", itemId, normalizedSlot, inventory.Id);
             return inventory;
         }
 

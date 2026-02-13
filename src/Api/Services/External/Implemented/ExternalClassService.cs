@@ -269,10 +269,10 @@ public class ExternalClassService(IBaseClassRepository classRepo, ISubclassRepos
                         case "martial-melee-weapons":
                         case "simple-ranged-weapons":
                         case "martial-ranged-weapons":
-                            option.AnyOfWeaponCategory = ResolveValueOrThrow<WeaponCategory>(categoryDto.Index);
+                            option.AnyOfWeaponCategory = NormalizeValueOrThrow<WeaponCategory>(categoryDto.Index);
                             break;
                         default:
-                            option.AnyOfWeaponType = ResolveValueOrThrow<WeaponType>(categoryDto.Index);
+                            option.AnyOfWeaponType = NormalizeValueOrThrow<WeaponType>(categoryDto.Index);
                             break;
                     }
 

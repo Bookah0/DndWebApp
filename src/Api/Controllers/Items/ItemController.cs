@@ -3,6 +3,8 @@ using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.DTOs.ResponseDtos;
 using Api.Services.Interfaces.Items;
 using Microsoft.AspNetCore.Mvc;
+using Api.Models.DTOs.Items;
+using Api.Services.Util;
 
 namespace Api.Controllers.Items;
 
@@ -11,10 +13,19 @@ namespace Api.Controllers.Items;
 public class ItemsController(IItemService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<ItemResponseDto>>> GetAllItems([FromQuery] string? sort = null, [FromQuery] string? order = null)
+    public async Task<ActionResult<ICollection<ItemResponseDto>>> GetAllItems([FromQuery] ItemFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
     {
-        var items = await service.GetAllAsync();
-        return Ok(mapper.Map<ICollection<ItemResponseDto>>(items));
+        var (totalItems, filteredItems) = await service.GetFilteredAsync(filterDto, paginationDto);
+        
+        return Ok(new PaginationResponseDto<ItemResponseDto>
+        {
+            Items = mapper.Map<ICollection<ItemResponseDto>>(filteredItems),
+            ItemCount = totalItems,
+            Page = paginationDto.Page,
+            PageSize = paginationDto.PageSize,
+            Next = PaginationUtil.GetNext(paginationDto, totalItems, "api/items"),
+            Prev = PaginationUtil.GetPrev(paginationDto, "api/items")
+        });
     }
 
     [HttpGet("{itemId}")]

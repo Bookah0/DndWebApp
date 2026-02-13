@@ -4,7 +4,6 @@ using Api.Data;
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
-using Api.Models.Spells;
 using Api.Models.Users;
 using Api.Repositories.Implemented;
 using Api.Repositories.Implemented.Classes;
@@ -59,6 +58,8 @@ builder.Services.AddScoped<IFeatureRepository<Trait>, TraitRepository>();
 builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IToolRepository, ToolRepository>();
+builder.Services.AddScoped<IArmorRepository, ArmorRepository>();
+builder.Services.AddScoped<IWeaponRepository, WeaponRepository>();
 
 builder.Services.AddScoped<IRaceRepository, RaceRepository>();
 builder.Services.AddScoped<ISubraceRepository, SubraceRepository>();

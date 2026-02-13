@@ -1,8 +1,9 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Services.Util;
 
-public static class SortUtil
+public static class QueryUtil
 {
     public static Dictionary<T, int> CreateOrderLookup<T>(T[] fixedSortOrder) where T : notnull
     {
@@ -10,6 +11,21 @@ public static class SortUtil
             .Select((name, index) => new { name, index })
             .ToDictionary(x => x.name, x => x.index);
     }
+
+    public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, bool? boolean, Expression<Func<T, bool>> predicate) 
+        => boolean is not null ? query.Where(predicate) : query;
+
+    public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, int? i, Expression<Func<T, bool>> predicate) 
+        => i is not null ? query.Where(predicate) : query;    
+
+    public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, string? str, Expression<Func<T, bool>> predicate) 
+        => !string.IsNullOrWhiteSpace(str) ? query.Where(predicate) : query;
+
+    public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, ICollection<string>? col, Expression<Func<T, bool>> predicate) 
+        => col?.HasContent() == true ? query.Where(predicate) : query;
+
+    public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, ICollection<int>? col, Expression<Func<T, bool>> predicate) 
+        => col?.HasContent() == true ? query.Where(predicate) : query;
 
     public static ICollection<T> OrderByMany<T>(ICollection<T> toOrder, IEnumerable<Func<T, object>> selectors, bool descending)
     {

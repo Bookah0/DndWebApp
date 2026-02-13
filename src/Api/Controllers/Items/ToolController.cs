@@ -4,6 +4,8 @@ using Api.Models.DTOs.ResponseDtos;
 using Api.Models.Items;
 using Api.Services.Interfaces.Items;
 using Microsoft.AspNetCore.Mvc;
+using Api.Services.Util;
+using Api.Models.DTOs.Items;
 
 namespace Api.Controllers.Items;
 
@@ -12,10 +14,19 @@ namespace Api.Controllers.Items;
 public class ToolsController(IToolService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<ToolResponseDto>>> GetAllTools([FromQuery] string? sort = null, [FromQuery] string? order = null)
+    public async Task<ActionResult<ICollection<ToolResponseDto>>> GetAllTools([FromQuery] ToolFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
     {
-        var tools = await service.GetAllAsync();
-        return Ok(mapper.Map<ICollection<ToolResponseDto>>(tools));
+        var (totalTools, filteredTools) = await service.GetFilteredAsync(filterDto, paginationDto);
+        
+        return Ok(new PaginationResponseDto<ToolResponseDto>
+        {
+            Items = mapper.Map<ICollection<ToolResponseDto>>(filteredTools),
+            ItemCount = totalTools,
+            Page = paginationDto.Page,
+            PageSize = paginationDto.PageSize,
+            Next = PaginationUtil.GetNext(paginationDto, totalTools, "api/tools"),
+            Prev = PaginationUtil.GetPrev(paginationDto, "api/tools")
+        });
     }
 
     [HttpGet("{toolId}")]

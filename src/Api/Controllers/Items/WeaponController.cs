@@ -3,6 +3,8 @@ using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.DTOs.ResponseDtos;
 using Api.Services.Interfaces.Items;
 using Microsoft.AspNetCore.Mvc;
+using Api.Models.DTOs.Items;
+using Api.Services.Util;
 
 namespace Api.Controllers.Items;
 
@@ -11,10 +13,19 @@ namespace Api.Controllers.Items;
 public class WeaponsController(IWeaponService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<WeaponResponseDto>>> GetAllWeapons([FromQuery] string? sort = null, [FromQuery] string? order = null)
+    public async Task<ActionResult<ICollection<WeaponResponseDto>>> GetAllWeapons([FromQuery] WeaponFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
     {
-        var weapons = await service.GetAllAsync();
-        return Ok(mapper.Map<ICollection<WeaponResponseDto>>(weapons));
+        var (totalWeapons, filteredWeapons) = await service.GetFilteredAsync(filterDto, paginationDto);
+        
+        return Ok(new PaginationResponseDto<WeaponResponseDto>
+        {
+            Items = mapper.Map<ICollection<WeaponResponseDto>>(filteredWeapons),
+            ItemCount = totalWeapons,
+            Page = paginationDto.Page,
+            PageSize = paginationDto.PageSize,
+            Next = PaginationUtil.GetNext(paginationDto, totalWeapons, "api/weapons"),
+            Prev = PaginationUtil.GetPrev(paginationDto, "api/weapons")
+        });
     }
 
     [HttpGet("{weaponId}")]

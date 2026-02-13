@@ -55,7 +55,7 @@ public class ExternalSpeciesService(IRaceRepository raceRepo, ISubraceRepository
                 Name = eRace.Name,
                 Speed = eRace.Speed,
                 Info = description,
-                Size = ResolveValueOrThrow<CreatureSize>(eRace.Size),
+                Size = NormalizeValueOrThrow<CreatureSize>(eRace.Size),
                 Traits = [],
                 SubRaces = [],
 

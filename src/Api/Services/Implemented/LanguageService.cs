@@ -5,7 +5,7 @@ using Api.Models.DTOs.RequestDtos.Character;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
 using Api.Validation.AllowedValues;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 
 namespace Api.Services.Implemented;
@@ -75,10 +75,10 @@ public class LanguageService(IRepository<Language> repo, ICurrentUserService cur
 
     public ICollection<Language> SortBy(ICollection<Language> languages, string sortFilter, bool descending = false)
     {
-        if(!TryResolveValue<SortLanguageOption>(sortFilter, out string? resolved))
+        if(!TryNormalizeValue<SortLanguageOption>(sortFilter, out string? normalized))
             return languages;
     
-        return resolved switch
+        return normalized switch
         {
             SortLanguageOption.Name => OrderByMany(languages, [(l => l.Name)], descending),
             SortLanguageOption.Family => OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),

@@ -8,54 +8,54 @@ namespace Api.Validation.AllowedValues;
 
 public static class ValuesValidator
 {
-    public static ICollection<string>? ResolveValueOrThrow<T>(ICollection<string>? values) where T : IAllowedValuesProvider
+    public static ICollection<string>? NormalizeValueOrThrow<T>(ICollection<string>? values) where T : IAllowedValuesProvider
     {
         if(values is null)
             return null;
 
-        ICollection<string> resolved = [];
+        ICollection<string> normalized = [];
 
         foreach (var val in values)
         {
-            if (TryResolveValue<T>(val, out var resolvedOption))
+            if (TryNormalizeValue<T>(val, out var normalizedOption))
             {
-                resolved.Add(resolvedOption!);
+                normalized.Add(normalizedOption!);
                 continue;
             }
             throw new ValidationException($"{typeof(T).Name} {val} not recognized. Allowed values are: {GetAllowedAsString(T.AllowedValues, 20)}");
         }
-        return resolved;
+        return normalized;
     }
 
-    public static string ResolveValueOrThrow<T>(string val) where T : IAllowedValuesProvider
+    public static string NormalizeValueOrThrow<T>(string val) where T : IAllowedValuesProvider
     {
-        if (TryResolveValue<T>(val, out var resolved))
-            return resolved!;
+        if (TryNormalizeValue<T>(val, out var normalized))
+            return normalized!;
         
         throw new ValidationException($"{typeof(T).Name} {val} not recognized. Allowed values are: {GetAllowedAsString(T.AllowedValues, 20)}");
     }
 
-    public static ICollection<string> ResolveValueOrEmpty<T>(ICollection<string> values) where T : IAllowedValuesProvider
+    public static ICollection<string> NormalizeValueOrEmpty<T>(ICollection<string> values) where T : IAllowedValuesProvider
     {
         if (!values.HasContent())
             return [];
 
-        return ResolveValueOrThrow<T>(values)!;
+        return NormalizeValueOrThrow<T>(values)!;
     }
 
-    public static string ResolveValueOrEmpty<T>(string val) where T : IAllowedValuesProvider
+    public static string NormalizeValueOrEmpty<T>(string val) where T : IAllowedValuesProvider
     {
         if (string.IsNullOrWhiteSpace(val))
             return "";
 
-        return ResolveValueOrThrow<T>(val);
+        return NormalizeValueOrThrow<T>(val);
     }
 
-    public static bool TryResolveValue<T>(string val, out string? resolved) where T : IAllowedValuesProvider
+    public static bool TryNormalizeValue<T>(string val, out string? normalized) where T : IAllowedValuesProvider
     {
         if (T.AllowedValues.Contains(val))
         {
-            resolved = val;
+            normalized = val;
             return true;
         }
 
@@ -65,11 +65,11 @@ public static class ValuesValidator
         {
             if (Normalize(allowed).Equals(normalizedInput))
             {
-                resolved = allowed;
+                normalized = allowed;
                 return true;
             }
         }
-        resolved = null;
+        normalized = null;
         return false;
     }
 

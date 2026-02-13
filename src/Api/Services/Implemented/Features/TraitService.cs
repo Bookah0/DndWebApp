@@ -2,7 +2,7 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces;
 using Api.Validation.AllowedValues;
@@ -76,10 +76,10 @@ public class TraitService(
     // TODO replace with database level sorting
     public ICollection<Trait> SortBy(ICollection<Trait> traits, string sortFilter, bool descending = false)
     {
-        if(!TryResolveValue<SortTraitOption>(sortFilter, out string? resolved))
+        if(!TryNormalizeValue<SortTraitOption>(sortFilter, out string? normalized))
             return traits;
 
-        return resolved switch
+        return normalized switch
         {
             SortTraitOption.Name => OrderByMany(traits, [(t => t.Name)], descending),
             SortTraitOption.Race => OrderByMany(traits, [(t => t!.Name), (t => t.Name)], descending),

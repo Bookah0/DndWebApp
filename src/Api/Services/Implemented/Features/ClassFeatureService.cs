@@ -2,7 +2,7 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces;
 using Api.Validation.AllowedValues;
@@ -82,10 +82,10 @@ public class ClassFeatureService(
 
     public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, string sortFilter, bool descending = false)
     {
-        if(!TryResolveValue<SortClassFeatureOption>(sortFilter, out string? resolved))
+        if(!TryNormalizeValue<SortClassFeatureOption>(sortFilter, out string? normalized))
             return features;
 
-        return resolved switch
+        return normalized switch
         {
             SortClassFeatureOption.Name => OrderByMany(features, [(l => l.Name)], descending),
             SortClassFeatureOption.Class => OrderByMany(features, [(l => l.Level!.Class.Name), (l => l.Name)], descending),

@@ -82,7 +82,7 @@ public class ExternalSpellService(ISpellRepository repo, ILogger<ExternalSpellSe
                 DurationValue = durationValue,
                 CastingTime = castingTime,
                 CastingTimeValue = timeValue,
-                MagicSchool = ResolveValueOrThrow<MagicSchool>(eMagicSchool),
+                MagicSchool = NormalizeValueOrThrow<MagicSchool>(eMagicSchool),
                 SpellTargeting = spellTargeting,
                 SpellTypes = spellTypes,
                 CastingRequirements = castingRequirements,

@@ -2,12 +2,15 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces.Items;
 using Api.Services.Interfaces;
 using Api.Validation.AllowedValues.Items;
 using Api.Validation.AllowedValues;
+using Api.Models.DTOs.Items;
+using Api.Services.Util;
+using Api.Models.DTOs.ResponseDtos;
 
 namespace Api.Services.Implemented.Items;
 
@@ -18,8 +21,8 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         if(dto.Categories == null || dto.Categories.Count < 1)
             throw new ValidationException("At least one category is required for an item.");
 
-        var dtoCategories = ResolveValueOrThrow<ItemCategory>(dto.Categories);
-        var dtoRarity = ResolveValueOrThrow<ItemRarity>(dto.Rarity);
+        var dtoCategories = NormalizeValueOrThrow<ItemCategory>(dto.Categories);
+        var dtoRarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
         
         logger.LogInformation("Creating item, Name: {ItemName}", dto.Name);
 
@@ -63,7 +66,7 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Item> UpdateAsync(UpdateItemRequestDto dto, int id)
     {
-        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         var item = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
@@ -85,20 +88,38 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         return item;
     }
 
-    // TODO replace with database level sorting
-    public ICollection<Item> SortBy(ICollection<Item> items, string sortFilter, bool descending = false)
+    public async Task<(int, ICollection<Item>)> GetFilteredAsync(ItemFilterDto filter, PaginationRequestDto pagination) 
     {
-        if(!TryResolveValue<SortItemOption>(sortFilter, out string? resolved))
-            return items;
+        ValidateFilterAsync(filter);
+        var (count, filtered) = await repo.GetFilteredAsync(filter, pagination);
 
-        return resolved switch
-        {
-            SortItemOption.Name => OrderByMany(items, [(i => i.Name)], descending),
-            SortItemOption.Category => OrderByMany(items, [(i => i.Categories.FirstOrDefault()!), (i => i.Name)], descending),
-            SortItemOption.Value => OrderByMany(items, [(i => i.Value!), (i => i.Name)], descending),
-            SortItemOption.Weight => OrderByMany(items, [(i => i.Weight!), (i => i.Name)], descending),
-            SortItemOption.Rarity => OrderByMany(items, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
+        if(!filtered.HasContent() && count > 0)
+            throw new ValidationException("Page does not contain any elements");
+
+        return (count, filtered);
+    }
+
+    public void ValidateFilterAsync(ItemFilterDto dto)
+    {
+        if (dto.MinValue is not null && dto.MaxValue is not null && dto.MinValue > dto.MaxValue)
+            throw new ValidationException("Maximum value must be greater than or equal to minimum value");
+        if (dto.MinValue is not null && dto.MinValue < 0)
+            throw new ValidationException("Minimum value must be greater than or equal to zero");
+        if (dto.MaxValue is not null && dto.MaxValue < 0)
+            throw new ValidationException("Maximum value must be greater than or equal to zero");
+        
+        if (dto.MinWeight is not null && dto.MaxWeight is not null && dto.MinWeight > dto.MaxWeight)
+            throw new ValidationException("Maximum weight must be greater than or equal to minimum weight");
+        if (dto.MinWeight is not null && dto.MinWeight < 0)
+            throw new ValidationException("Minimum weight must be greater than or equal to zero");
+        if (dto.MaxWeight is not null && dto.MaxWeight < 0)
+            throw new ValidationException("Maximum weight must be greater than or equal to zero");
+        
+        if (dto.Name is not null)
+            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
+        if(dto.Rarity != null)
+            dto.Rarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
+
+        dto.Category = NormalizeValueOrThrow<ItemCategory>(dto.Category);
     }
 }

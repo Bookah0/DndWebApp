@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 using static Api.Services.Util.CollectionUtil;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 
 namespace Api.Repositories.Implemented.Spells;
@@ -55,46 +55,26 @@ public class SpellRepository(AppDbContext context) : ISpellRepository
     
     public async Task<(int, ICollection<Spell>)> GetFilteredAsync(SpellFilterDto filter, PaginationRequestDto pagination)
     {      
-        var query = context.Spells.AsQueryable();
+        var query = context.Spells
+            .AsQueryable()
+            .WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
+            .WhereIf(filter.MagicSchool, s => filter.MagicSchool!.Contains(s.MagicSchool))
+            // .WhereIf(filter.ClassId, s => s.Classes.Any(c => filter.ClassId!.Contains(c.Id)))
+            .WhereIf(filter.Duration, s => filter.Duration!.Contains(s.Duration))
+            .WhereIf(filter.CastingTime, s => filter.CastingTime!.Contains(s.CastingTime))
+            .WhereIf(filter.SpellType, s => s.SpellTypes.Any(t => filter.SpellType!.Contains(t)))
+            .WhereIf(filter.TargetType, s => filter.TargetType!.Contains(s.SpellTargeting.TargetType))
+            .WhereIf(filter.DamageType, s => s.DamageTypes.Any(t => filter.DamageType!.Contains(t)))
 
-        if (!string.IsNullOrWhiteSpace(filter.Name))
-            query = query.Where(s => s.Name.Contains(filter.Name));
+            .WhereIf(filter.MinLevel, s => s.Level >= filter.MinLevel)
+            .WhereIf(filter.MaxLevel, s => s.Level <= filter.MaxLevel)
 
-        if (filter.MinLevel is not null)
-            query = query.Where(s => s.Level >= filter.MinLevel.Value);
+            .WhereIf(filter.Range, s => filter.Range!.Contains(s.SpellTargeting.Range))
+            .WhereIf(filter.MinRangeValue, s => s.SpellTargeting.RangeValue >= filter.MinRangeValue)
+            .WhereIf(filter.MaxRangeValue, s => s.SpellTargeting.RangeValue <= filter.MaxRangeValue)
 
-        if (filter.MaxLevel is not null)
-            query = query.Where(s => s.Level <= filter.MaxLevel.Value);
-
-        if (filter.MagicSchool.HasContent())
-            query = query.Where(s => filter.MagicSchool!.Contains(s.MagicSchool));
-
-        if (filter.ClassId.HasContent())
-            query = query.Where(s => s.Classes.Any(c => filter.ClassId!.Contains(c.Id)));
-
-        if (filter.Duration.HasContent())
-            query = query.Where(s => filter.Duration!.Contains(s.Duration));
-
-        if (filter.CastingTime.HasContent())
-            query = query.Where(s => filter.CastingTime!.Contains(s.CastingTime));
-
-        if (filter.SpellType.HasContent())
-            query = query.Where(s => s.SpellTypes.Any(t => filter.SpellType!.Contains(t)));
-
-        if (filter.TargetType.HasContent())
-            query = query.Where(s => filter.TargetType!.Contains(s.SpellTargeting.TargetType));
-
-        if (filter.Range.HasContent())
-            query = query.Where(s => filter.Range!.Contains(s.SpellTargeting.Range));
-
-        if (filter.MinRangeValue is not null)
-            query = query.Where(s => s.SpellTargeting.RangeValue >= filter.MinRangeValue.Value);
-
-        if (filter.MaxRangeValue is not null)
-            query = query.Where(s => s.SpellTargeting.RangeValue <= filter.MaxRangeValue.Value);
-
-        if (filter.DamageType.HasContent())
-            query = query.Where(s => s.DamageTypes.Any(t => filter.DamageType!.Contains(t)));
+            .WhereIf(filter.IsHomebrew, s => s.IsHomebrew == filter.IsHomebrew)
+            .WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed);
 
         if (filter.SortBy is not null)
             query = SortBy(query, filter.SortBy, filter.SortDescending);
@@ -110,10 +90,10 @@ public class SpellRepository(AppDbContext context) : ISpellRepository
 
     public IQueryable<Spell> SortBy(IQueryable<Spell> query, string sortFilter, bool descending = false)
     {
-        if(!TryResolveValue<SortSpellOption>(sortFilter, out string? resolved))
+        if(!TryNormalizeValue<SortSpellOption>(sortFilter, out string? normalized))
             return context.Spells;
 
-        return resolved switch
+        return normalized switch
         {
             SortSpellOption.Name => OrderByMany(query, [(s => s.Name)], descending),
             SortSpellOption.Level => OrderByMany(query, [(s => s.Level), (s => s.Name)], descending),

@@ -4,7 +4,7 @@ using Api.Models.Features;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
 using Api.Validation.AllowedValues;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 
 namespace Api.Services.Implemented.Features;
@@ -65,10 +65,10 @@ public class FeatService(
             if(dto.NewFromType is null)
                 throw new ValidationException("NewFromType must be provided when NewFromId is provided.");
 
-            var resolvedSourceType = ResolveValueOrThrow<FeatSource>(dto.NewFromType);
-            feat.FromRaceId = resolvedSourceType == FeatSource.Race || resolvedSourceType == FeatSource.Subrace ? dto.NewFromId : null;
-            feat.FromBackgroundId = resolvedSourceType == FeatSource.Background ? dto.NewFromId : null;
-            feat.FromClassId = resolvedSourceType == FeatSource.Class || resolvedSourceType == FeatSource.Subclass ? dto.NewFromId : null;
+            var normalizedSourceType = NormalizeValueOrThrow<FeatSource>(dto.NewFromType);
+            feat.FromRaceId = normalizedSourceType == FeatSource.Race || normalizedSourceType == FeatSource.Subrace ? dto.NewFromId : null;
+            feat.FromBackgroundId = normalizedSourceType == FeatSource.Background ? dto.NewFromId : null;
+            feat.FromClassId = normalizedSourceType == FeatSource.Class || normalizedSourceType == FeatSource.Subclass ? dto.NewFromId : null;
 
             if(feat.FromRaceId is null && feat.FromBackgroundId is null && feat.FromClassId is null)
                 throw new ValidationException("Invalid NewFromType provided.");

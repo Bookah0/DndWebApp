@@ -3,7 +3,7 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.Features;
 using Api.Models.Features;
 using Api.Repositories.Interfaces;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces;
 using Api.Validation.AllowedValues;
@@ -79,10 +79,10 @@ public class BackgroundFeatureService(
 
     public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, string sortFilter, bool descending = false)
     {
-        if(!TryResolveValue<SortBackgroundFeatureOption>(sortFilter, out string? resolved))
+        if(!TryNormalizeValue<SortBackgroundFeatureOption>(sortFilter, out string? normalized))
             return features;
 
-        return resolved switch
+        return normalized switch
         {
             SortBackgroundFeatureOption.Name => OrderByMany(features, [(l => l.Name)], descending),
             SortBackgroundFeatureOption.Background => OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),

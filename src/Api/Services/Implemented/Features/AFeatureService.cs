@@ -61,19 +61,19 @@ public abstract class AFeatureService<T, CD, UD>(
         switch (dto.Type)
         {
             case "WeaponCategory":
-                var weaponCategory = ResolveValueOrThrow<WeaponCategory>(dto.Value);
+                var weaponCategory = NormalizeValueOrThrow<WeaponCategory>(dto.Value);
                 feature.WeaponCategoryProficiencies.Add(weaponCategory);
                 break;
             case "WeaponType":
-                var weaponType = ResolveValueOrThrow<WeaponType>(dto.Value);
+                var weaponType = NormalizeValueOrThrow<WeaponType>(dto.Value);
                 feature.WeaponTypeProficiencies.Add(weaponType);
                 break;
             case "ArmorCategory":
-                var armorCategory = ResolveValueOrThrow<ArmorCategory>(dto.Value);
+                var armorCategory = NormalizeValueOrThrow<ArmorCategory>(dto.Value);
                 feature.ArmorProficiencies.Add(armorCategory);
                 break;
             case "ToolCategory":
-                var toolCategory = ResolveValueOrThrow<ToolCategory>(dto.Value);
+                var toolCategory = NormalizeValueOrThrow<ToolCategory>(dto.Value);
                 feature.ToolProficiencies.Add(toolCategory);
                 break;
             case "Skill":
@@ -90,15 +90,15 @@ public abstract class AFeatureService<T, CD, UD>(
                 feature.SavingThrowProficiencies.Add(ability);
                 break;
             case "Resistance":
-                var damageType = ResolveValueOrThrow<DamageType>(dto.Value);
+                var damageType = NormalizeValueOrThrow<DamageType>(dto.Value);
                 feature.DamageResistanceGained.Add(damageType);
                 break;
             case "Immunity":
-                var immuneDamageType = ResolveValueOrThrow<DamageType>(dto.Value);
+                var immuneDamageType = NormalizeValueOrThrow<DamageType>(dto.Value);
                 feature.DamageImmunityGained.Add(immuneDamageType);
                 break;
             case "Weakness":
-                var weaknessDamageType = ResolveValueOrThrow<DamageType>(dto.Value);
+                var weaknessDamageType = NormalizeValueOrThrow<DamageType>(dto.Value);
                 feature.DamageWeaknessGained.Add(weaknessDamageType);
                 break;
             default:
@@ -119,31 +119,31 @@ public abstract class AFeatureService<T, CD, UD>(
         switch (dto.Type)
         {
             case "WeaponCategory":
-                var weaponCategory = ResolveValueOrThrow<WeaponCategory>(dto.Value);
+                var weaponCategory = NormalizeValueOrThrow<WeaponCategory>(dto.Value);
                 feature.WeaponCategoryProficiencies.Remove(weaponCategory);
                 break;
             case "WeaponType":
-                var weaponType = ResolveValueOrThrow<WeaponType>(dto.Value);
+                var weaponType = NormalizeValueOrThrow<WeaponType>(dto.Value);
                 feature.WeaponTypeProficiencies.Remove(weaponType);
                 break;
             case "ArmorCategory":
-                var armorCategory = ResolveValueOrThrow<ArmorCategory>(dto.Value);
+                var armorCategory = NormalizeValueOrThrow<ArmorCategory>(dto.Value);
                 feature.ArmorProficiencies.Remove(armorCategory);
                 break;
             case "ToolCategory":
-                var toolCategory = ResolveValueOrThrow<ToolCategory>(dto.Value);
+                var toolCategory = NormalizeValueOrThrow<ToolCategory>(dto.Value);
                 feature.ToolProficiencies.Remove(toolCategory);
                 break;
             case "Resistance":
-                var damageType = ResolveValueOrThrow<DamageType>(dto.Value);
+                var damageType = NormalizeValueOrThrow<DamageType>(dto.Value);
                 feature.DamageResistanceGained.Remove(damageType);
                 break;
             case "Immunity":
-                var immuneDamageType = ResolveValueOrThrow<DamageType>(dto.Value);
+                var immuneDamageType = NormalizeValueOrThrow<DamageType>(dto.Value);
                 feature.DamageImmunityGained.Remove(immuneDamageType);
                 break;
             case "Weakness":
-                var weaknessDamageType = ResolveValueOrThrow<DamageType>(dto.Value);
+                var weaknessDamageType = NormalizeValueOrThrow<DamageType>(dto.Value);
                 feature.DamageWeaknessGained.Remove(weaknessDamageType);
                 break;
             case "Skill":

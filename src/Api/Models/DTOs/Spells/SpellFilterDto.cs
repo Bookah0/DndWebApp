@@ -17,6 +17,9 @@ public class SpellFilterDto
     public int? MaxRangeValue { get; set; }
     public ICollection<string>? DamageType { get; set; }
 
+    public bool? IsHomebrew { get; set; }
+    public bool? CloningAllowed { get; set; }
+    
     public string? SortBy { get; set; }
     public bool SortDescending { get; set; } = true;
 }

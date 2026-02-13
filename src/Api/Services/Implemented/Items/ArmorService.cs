@@ -5,19 +5,22 @@ using Api.Repositories.Interfaces;
 using Api.Services.Interfaces.Items;
 using Api.Services.Interfaces;
 
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Validation.AllowedValues.Items;
 using Api.Validation.AllowedValues;
+using Api.Models.DTOs.Items;
+using Api.Models.DTOs.ResponseDtos;
+using Api.Services.Util;
 
 namespace Api.Services.Implemented.Items;
 
-public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUserService, ILogger<ArmorService> logger) : IArmorService
+public class ArmorService(IArmorRepository repo, ICurrentUserService currentUserService, ILogger<ArmorService> logger) : IArmorService
 {
     public async Task<Armor> CreateAsync(CreateArmorRequestDto dto)
     {
-        var dtoCategory = ResolveValueOrThrow<ArmorCategory>(dto.Category);
-        var dtoRarity = dto.Rarity != null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoCategory = NormalizeValueOrThrow<ArmorCategory>(dto.Category);
+        var dtoRarity = dto.Rarity != null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         logger.LogInformation("Creating armor, Name: {ArmorName}", dto.Name);
 
@@ -58,8 +61,8 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
 
     public async Task<Armor> UpdateAsync(UpdateArmorRequestDto dto, int id)
     {
-        var dtoCategory = dto.Category is not null ? ResolveValueOrThrow<ArmorCategory>(dto.Category) : null;
-        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoCategory = dto.Category is not null ? NormalizeValueOrThrow<ArmorCategory>(dto.Category) : null;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         var armor = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
@@ -86,21 +89,47 @@ public class ArmorService(IRepository<Armor> repo, ICurrentUserService currentUs
         return armor;
     }
 
-    // TODO replace with database level sorting
-    public ICollection<Armor> SortBy(ICollection<Armor> armors, string sortFilter, bool descending = false)
+    public async Task<(int, ICollection<Armor>)> GetFilteredAsync(ArmorFilterDto filter, PaginationRequestDto pagination) 
     {
-        if(!TryResolveValue<SortArmorOption>(sortFilter, out string? resolved))
-            return armors;
+        ValidateFilterAsync(filter);
+        var (count, filtered) = await repo.GetFilteredAsync(filter, pagination);
 
-        return resolved switch
-        {
-            SortArmorOption.Name => OrderByMany(armors, [(i => i.Name)], descending),
-            SortArmorOption.Category => OrderByMany(armors, [(i => i.ArmorCategory), (i => i.Name)], descending),
-            SortArmorOption.AC => OrderByMany(armors, [(i => i.BaseArmorClass), (i => i.Name)], descending),
-            SortArmorOption.Value => OrderByMany(armors, [(i => i.Value!), (i => i.Name)], descending),
-            SortArmorOption.Weight => OrderByMany(armors, [(i => i.Weight!), (i => i.Name)], descending),
-            SortArmorOption.Rarity => OrderByMany(armors, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
+        if(!filtered.HasContent() && count > 0)
+            throw new ValidationException("Page does not contain any elements");
+
+        return (count, filtered);
+    }
+
+    public void ValidateFilterAsync(ArmorFilterDto dto)
+    {
+        if (dto.MinValue is not null && dto.MaxValue is not null && dto.MinValue > dto.MaxValue)
+            throw new ValidationException("Maximum value must be greater than or equal to minimum value");
+        if (dto.MinValue is not null && dto.MinValue < 0)
+            throw new ValidationException("Minimum value must be greater than or equal to zero");
+        if (dto.MaxValue is not null && dto.MaxValue < 0)
+            throw new ValidationException("Maximum value must be greater than or equal to zero");
+        
+        if (dto.MinWeight is not null && dto.MaxWeight is not null && dto.MinWeight > dto.MaxWeight)
+            throw new ValidationException("Maximum weight must be greater than or equal to minimum weight");
+        if (dto.MinWeight is not null && dto.MinWeight < 0)
+            throw new ValidationException("Minimum weight must be greater than or equal to zero");
+        if (dto.MaxWeight is not null && dto.MaxWeight < 0)
+            throw new ValidationException("Maximum weight must be greater than or equal to zero");
+
+        if (dto.MinAC is not null && dto.MaxAC is not null && dto.MinAC > dto.MaxAC)
+            throw new ValidationException("Maximum AC must be greater than or equal to minimum AC");
+        if (dto.MinAC is not null && dto.MinAC < 0)
+            throw new ValidationException("Minimum AC must be greater than or equal to zero");
+        if (dto.MaxAC is not null && dto.MaxAC < 0)
+            throw new ValidationException("Maximum AC must be greater than or equal to zero");
+        
+        if (dto.Name is not null)
+            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
+        if(dto.Rarity != null)
+            dto.Rarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
+        if(dto.ArmorCategory != null)
+            dto.ArmorCategory = NormalizeValueOrThrow<ArmorCategory>(dto.ArmorCategory);
+            
+        dto.Category = NormalizeValueOrThrow<ItemCategory>(dto.Category);
     }
 }

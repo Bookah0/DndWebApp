@@ -3,6 +3,8 @@ using Api.Models.DTOs.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Services.Interfaces.Items;
+using Api.Services.Util;
+using Api.Models.DTOs.Items;
 
 namespace Api.Controllers.Items;
 
@@ -11,10 +13,19 @@ namespace Api.Controllers.Items;
 public class ArmorController(IArmorService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<ArmorResponseDto>>> GetAllArmor([FromQuery] string? sort = null, [FromQuery] string? order = null)
+    public async Task<ActionResult<ICollection<ArmorResponseDto>>> GetAllArmor([FromQuery] ArmorFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
     {
-        var armor = await service.GetAllAsync();
-        return Ok(mapper.Map<ICollection<ArmorResponseDto>>(armor));
+        var (totalArmor, filteredArmor) = await service.GetFilteredAsync(filterDto, paginationDto);
+        
+        return Ok(new PaginationResponseDto<ArmorResponseDto>
+        {
+            Items = mapper.Map<ICollection<ArmorResponseDto>>(filteredArmor),
+            ItemCount = totalArmor,
+            Page = paginationDto.Page,
+            PageSize = paginationDto.PageSize,
+            Next = PaginationUtil.GetNext(paginationDto, totalArmor, "api/armor"),
+            Prev = PaginationUtil.GetPrev(paginationDto, "api/armor")
+        });
     }
 
     [HttpGet("{armorId}")]

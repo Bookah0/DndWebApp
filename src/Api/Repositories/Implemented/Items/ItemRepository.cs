@@ -1,7 +1,14 @@
 using Api.Data;
+using Api.Middlewares.ExceptionHandling;
+using Api.Models.DTOs.Items;
+using Api.Models.DTOs.ResponseDtos;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
+using Api.Services.Util;
+using Api.Validation.AllowedValues;
 using Microsoft.EntityFrameworkCore;
+using static Api.Validation.AllowedValues.ValuesValidator;
+using static Api.Services.Util.QueryUtil;
 
 namespace Api.Repositories.Implemented.Items;
 
@@ -42,6 +49,51 @@ public class ItemRepository(AppDbContext context) : IItemRepository
         context.Items.Update(updatedEntity);
         await context.SaveChangesAsync();
         return updatedEntity;
+    }
+
+    public async Task<(int, ICollection<Item>)> GetFilteredAsync(ItemFilterDto filter, PaginationRequestDto pagination)
+    {      
+        var query = context.Items
+            .AsQueryable()
+            .WhereIf(filter.Name, i => i.Name.Contains(filter.Name!))
+            .WhereIf(filter.Category, i => i.Categories.Any(c => filter.Category!.Contains(c)))
+            .WhereIf(filter.Rarity, i => i.Rarity.Contains(filter.Rarity!)) 
+            .WhereIf(filter.RequiresAttunement, i => i.RequiresAttunement == filter.RequiresAttunement)
+            
+            .WhereIf(filter.MinWeight, i => i.Weight >= filter.MinWeight)
+            .WhereIf(filter.MaxWeight, i => i.Weight <= filter.MaxWeight)
+            .WhereIf(filter.MinValue, i => i.Value >= filter.MinValue)
+            .WhereIf(filter.MaxValue, i => i.Value <= filter.MaxValue)
+
+            .WhereIf(filter.IsHomebrew, i => i.IsHomebrew == filter.IsHomebrew)
+            .WhereIf(filter.CloningAllowed, i => i.CloningAllowed == filter.CloningAllowed);
+
+        if (filter.SortBy is not null)
+            query = SortBy(query, filter.SortBy, filter.SortDescending);
+        
+        var itemCount = await query.CountAsync();
+        var filteredItems = await query
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToListAsync();
+
+        return (itemCount, filteredItems);
+    }
+
+    public IQueryable<Item> SortBy(IQueryable<Item> query, string sortFilter, bool descending = false)
+    {
+        if(!TryNormalizeValue<SortItemOption>(sortFilter, out string? normalized))
+            return context.Items;
+
+        return normalized switch
+        {
+            SortItemOption.Name => OrderByMany(query, [(i => i.Name)], descending),
+            SortItemOption.Category => OrderByMany(query, [(i => i.Categories.FirstOrDefault()!), (i => i.Name)], descending),
+            SortItemOption.Value => OrderByMany(query, [(i => i.Value!), (i => i.Name)], descending),
+            SortItemOption.Weight => OrderByMany(query, [(i => i.Weight!), (i => i.Name)], descending),
+            SortItemOption.Rarity => OrderByMany(query, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
+            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
+        };
     }
 }
 

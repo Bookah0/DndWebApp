@@ -1,5 +1,5 @@
 using Api.Models.Characters;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
@@ -225,10 +225,10 @@ public partial class CharacterService(
 
     public ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false)
     {
-        if(!TryResolveValue<SortCharacterOption>(sortFilter, out string? resolved))
+        if(!TryNormalizeValue<SortCharacterOption>(sortFilter, out string? normalized))
             return characters;
 
-        return resolved switch
+        return normalized switch
         {
             SortCharacterOption.Name => OrderByMany(characters, [(c => c.Name)], descending),
             SortCharacterOption.Level => OrderByMany(characters, [(c => c.Level), (c => c.Name)], descending),

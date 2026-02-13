@@ -1,4 +1,6 @@
+using Api.Models.DTOs.Items;
 using Api.Models.DTOs.RequestDtos.Inventory;
+using Api.Models.DTOs.ResponseDtos;
 using Api.Models.Items;
 
 namespace Api.Services.Interfaces.Items;
@@ -12,5 +14,5 @@ public interface IToolService
     Task<ICollection<Tool>> GetAllAsync();
     Task<Tool> GetByIdAsync(int id);
     Task<Tool> UpdateAsync(UpdateToolRequestDto dto, int id);
-    ICollection<Tool> SortBy(ICollection<Tool> tools, string sortFilter, bool descending = false);
+    Task<(int, ICollection<Tool>)> GetFilteredAsync(ToolFilterDto filter, PaginationRequestDto pagination);
 }

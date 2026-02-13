@@ -79,7 +79,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
         var itemCategory = eArmor.EquipmentCategory is null 
             ? ItemCategory.Miscellaneous 
-            : ResolveValueOrEmpty<ItemCategory>(eArmor.EquipmentCategory.Name);
+            : NormalizeValueOrEmpty<ItemCategory>(eArmor.EquipmentCategory.Name);
 
         return new Armor
         {
@@ -90,7 +90,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Weight = eArmor.Weight,
             Value = GetConvertedValue(eArmor.Cost.Quantity, eArmor.Cost.Unit),
             Quantity = eArmor.Cost.Quantity,
-            ArmorCategory = ResolveValueOrThrow<ArmorCategory>(eArmor.ArmorCategory),
+            ArmorCategory = NormalizeValueOrThrow<ArmorCategory>(eArmor.ArmorCategory),
             BaseArmorClass = eArmor.ArmorClass.BaseArmorClass,
             PlusDexMod = eArmor.ArmorClass.DexBonus,
             ModCap = eArmor.ArmorClass.MaxBonus,
@@ -112,19 +112,19 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
         var eDamagetype = eWeapon.Damage?.DamageType.Name
             ?? throw new InvalidOperationException($"Weapon {item.Name} missing damage object.");
-        var damageType = ResolveValueOrThrow<DamageType>(eDamagetype);
+        var damageType = NormalizeValueOrThrow<DamageType>(eDamagetype);
 
         var propertyNames = eWeapon.Properties?.Select(p => p.Name).ToList() ?? [];
-        var properties = ResolveValueOrThrow<WeaponProperty>(propertyNames);
+        var properties = NormalizeValueOrThrow<WeaponProperty>(propertyNames);
 
-        var category = ResolveValueOrThrow<WeaponCategory>(eWeapon.CategoryRange);
+        var category = NormalizeValueOrThrow<WeaponCategory>(eWeapon.CategoryRange);
 
         if(eWeapon.EquipmentCategory is null)
             logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eWeapon.Name);
 
         var itemCategory = eWeapon.EquipmentCategory is null 
             ? ItemCategory.Miscellaneous 
-            : ResolveValueOrEmpty<ItemCategory>(eWeapon.EquipmentCategory.Name);
+            : NormalizeValueOrEmpty<ItemCategory>(eWeapon.EquipmentCategory.Name);
        
         var weaponType = ParseWeaponType(eWeapon);
         return new Weapon
@@ -158,13 +158,13 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         var eTool = jsonDoc.RootElement.Deserialize<ECreateToolRequestDto>()
             ?? throw new InvalidOperationException($"Failed to deserialize tool: {item.Index}");
 
-        var category = ResolveValueOrThrow<ToolCategory>(eTool.ToolCategory);
+        var category = NormalizeValueOrThrow<ToolCategory>(eTool.ToolCategory);
         if(eTool.EquipmentCategory is null)
             logger.LogWarning("Item {ItemName} has null equipment category. Defaulting to Miscellaneous.", eTool.Name);
 
         var itemCategory = eTool.EquipmentCategory is null 
             ? ItemCategory.Miscellaneous 
-            : ResolveValueOrEmpty<ItemCategory>(eTool.EquipmentCategory.Name);
+            : NormalizeValueOrEmpty<ItemCategory>(eTool.EquipmentCategory.Name);
 
 
         return new Tool
@@ -227,7 +227,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
         var itemCategory = eItem.EquipmentCategory is null 
             ? ItemCategory.Miscellaneous 
-            : ResolveValueOrEmpty<ItemCategory>(eItem.EquipmentCategory.Name);
+            : NormalizeValueOrEmpty<ItemCategory>(eItem.EquipmentCategory.Name);
 
         return new Item
         {
@@ -255,7 +255,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
 
     private static string ParseWeaponType(ECreateWeaponRequestDto eWeapon)
     {
-        if (TryResolveValue<WeaponType>(eWeapon.Name, out var weaponType))
+        if (TryNormalizeValue<WeaponType>(eWeapon.Name, out var weaponType))
             return weaponType!;
 
         foreach (var allowed in WeaponType.AllowedValues)
@@ -274,9 +274,9 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
         if (value <= 0)
             return 0;
 
-        var resolvedUnit = ResolveValueOrThrow<CurrencyUnit>(unit);
+        var normalizedUnit = NormalizeValueOrThrow<CurrencyUnit>(unit);
 
-        return resolvedUnit switch
+        return normalizedUnit switch
         {
             CurrencyUnit.Copper => value,
             CurrencyUnit.Silver => value * 10,

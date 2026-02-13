@@ -2,7 +2,7 @@ using Api.Models.Characters;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 
 namespace Api.Services.Implemented.Classes;
 

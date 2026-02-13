@@ -2,12 +2,15 @@ using Api.Middlewares.ExceptionHandling;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
-using static Api.Services.Util.SortUtil;
+using static Api.Services.Util.QueryUtil;
 using static Api.Validation.AllowedValues.ValuesValidator;
 using Api.Services.Interfaces.Items;
 using Api.Services.Interfaces;
 using Api.Validation.AllowedValues.Items;
 using Api.Validation.AllowedValues;
+using Api.Models.DTOs.Items;
+using Api.Services.Util;
+using Api.Models.DTOs.ResponseDtos;
 
 namespace Api.Services.Implemented.Items;
 
@@ -15,8 +18,8 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 {
     public async Task<Tool> CreateAsync(CreateToolRequestDto dto)
     {
-        var dtoToolCategory = ResolveValueOrThrow<ToolCategory>(dto.ToolCategory);
-        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoToolCategory = NormalizeValueOrThrow<ToolCategory>(dto.ToolCategory);
+        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         logger.LogInformation("Creating tool, Name: {ToolName}", dto.Name);
         
@@ -75,8 +78,8 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Tool> UpdateAsync(UpdateToolRequestDto dto, int id)
     {
-        var dtoToolCategory = dto.ToolCategory is not null ? ResolveValueOrThrow<ToolCategory>(dto.ToolCategory) : null;
-        var dtoRarity = dto.Rarity is not null ? ResolveValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoToolCategory = dto.ToolCategory is not null ? NormalizeValueOrThrow<ToolCategory>(dto.ToolCategory) : null;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
         var tool = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating tool, Name: {ToolName}, ID: {ToolId}", dto.Name, id);
@@ -98,19 +101,64 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
         return tool;
     }
 
-    // TODO replace with database level sorting
-    public ICollection<Tool> SortBy(ICollection<Tool> tools, string sortFilter, bool descending = false)
+    public async Task<Tool> UpdateAsync(UpdateItemRequestDto dto, int id)
     {
-        if(!TryResolveValue<SortToolOption>(sortFilter, out string? resolved))
-            return tools;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
 
-        return resolved switch
-        {
-            SortToolOption.Name => OrderByMany(tools, [(i => i.Name)], descending),
-            SortToolOption.Category => OrderByMany(tools, [(i => i.ToolCategory), (i => i.Name)], descending),
-            SortToolOption.Value => OrderByMany(tools, [(i => i.Value!), (i => i.Name)], descending),
-            SortToolOption.Rarity => OrderByMany(tools, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
+        var item = await repo.GetByIdAsync(id);
+        logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
+
+        item.Name = dto.Name ?? item.Name;
+        item.Description = dto.Description ?? item.Description;
+        item.Value = dto.Value ?? item.Value;
+        item.Rarity = dtoRarity ?? item.Rarity;
+        item.RequiresAttunement = dto.RequiresAttunement ?? item.RequiresAttunement;
+        item.Weight = dto.Weight ?? item.Weight;
+        item.Quantity = dto.Quantity ?? item.Quantity;
+
+        item.IsPublic = dto.IsPublic ?? item.IsPublic;
+        item.CloningAllowed = dto.CloningAllowed ?? item.CloningAllowed;
+        item.UpdatedAt = DateTime.UtcNow;
+        
+        await repo.UpdateAsync(item);
+        logger.LogInformation("Successfully updated item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
+        return item;
+    }
+
+    public async Task<(int, ICollection<Tool>)> GetFilteredAsync(ToolFilterDto filter, PaginationRequestDto pagination) 
+    {
+        ValidateFilterAsync(filter);
+        var (count, filtered) = await repo.GetFilteredAsync(filter, pagination);
+
+        if(!filtered.HasContent() && count > 0)
+            throw new ValidationException("Page does not contain any elements");
+
+        return (count, filtered);
+    }
+
+    public void ValidateFilterAsync(ToolFilterDto dto)
+    {
+        if (dto.MinValue is not null && dto.MaxValue is not null && dto.MinValue > dto.MaxValue)
+            throw new ValidationException("Maximum value must be greater than or equal to minimum value");
+        if (dto.MinValue is not null && dto.MinValue < 0)
+            throw new ValidationException("Minimum value must be greater than or equal to zero");
+        if (dto.MaxValue is not null && dto.MaxValue < 0)
+            throw new ValidationException("Maximum value must be greater than or equal to zero");
+        
+        if (dto.MinWeight is not null && dto.MaxWeight is not null && dto.MinWeight > dto.MaxWeight)
+            throw new ValidationException("Maximum weight must be greater than or equal to minimum weight");
+        if (dto.MinWeight is not null && dto.MinWeight < 0)
+            throw new ValidationException("Minimum weight must be greater than or equal to zero");
+        if (dto.MaxWeight is not null && dto.MaxWeight < 0)
+            throw new ValidationException("Maximum weight must be greater than or equal to zero");
+        
+        if (dto.Name is not null)
+            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
+        if(dto.Rarity != null)
+            dto.Rarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
+        if(dto.ToolCategory != null)    
+            dto.ToolCategory = NormalizeValueOrThrow<ToolCategory>(dto.ToolCategory);
+            
+        dto.Category = NormalizeValueOrThrow<ItemCategory>(dto.Category);
     }
 }

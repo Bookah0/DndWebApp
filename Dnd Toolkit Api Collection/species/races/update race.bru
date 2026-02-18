@@ -1,0 +1,25 @@
+meta {
+  name: update race
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ENV}}/api/races/{{raceId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {}
+}
+
+vars:pre-request {
+  spellId: 51
+  raceId: 3
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

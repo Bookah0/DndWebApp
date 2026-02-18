@@ -1,0 +1,16 @@
+meta {
+  name: delete background feature
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{ENV}}/api/backgrounds/{{backgroundId}}/features/{{featureId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

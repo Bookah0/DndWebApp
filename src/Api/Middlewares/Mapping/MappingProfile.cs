@@ -33,6 +33,7 @@ public class MappingProfile : Profile
         CreateMap<Language, UpdateLanguageRequestDto>();
         CreateMap<Spell, CreateSpellRequestDto>();
         CreateMap<Spell, UpdateSpellRequestDto>();
+        CreateMap<SpeciesInfo, SpeciesInfoDto>();
         
         CreateMap<Trait, CreateTraitRequestDto>();
         CreateMap<Trait, UpdateTraitRequestDto>();

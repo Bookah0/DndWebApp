@@ -1,0 +1,36 @@
+meta {
+  name: update subclass
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Oath of Devotion",
+    "description": "Paladins who follow the Oath of Devotion hold to the highest ideals.",
+    "hitDie": 10,
+    "spellcastingAbilityId": 4,
+    "newParentClassId": 2,
+    "isPublic": true,
+    "cloningAllowed": true
+  }
+}
+
+vars:pre-request {
+  spellId: 51
+  raceId: 3
+  subraceId: 5
+  subclassId: 4
+  classId: 3
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

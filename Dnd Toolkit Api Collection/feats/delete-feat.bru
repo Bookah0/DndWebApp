@@ -1,0 +1,16 @@
+meta {
+  name: delete feat
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{ENV}}/api/feats/{{featId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

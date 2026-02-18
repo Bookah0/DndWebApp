@@ -1,0 +1,16 @@
+meta {
+  name: create subrace trait
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ENV}}/api/races/{{raceId}}/subraces/{{subraceId}}/traits
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,23 @@
+meta {
+  name: create race
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ENV}}/api/races
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Speedster",
+    "info": {}
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

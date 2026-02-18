@@ -1,0 +1,16 @@
+meta {
+  name: delete class level feature
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{ENV}}/api/classes/{{classId}}/levels/{{levelId}}/features/{{featureId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

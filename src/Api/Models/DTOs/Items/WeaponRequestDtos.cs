@@ -4,21 +4,17 @@ namespace Api.Models.DTOs.RequestDtos.Inventory;
 
 public class CreateWeaponRequestDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(1000)]
     public required string Description { get; set; }
 
-    [Required]
     [Range(0, int.MaxValue)]
     public int? Value { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(50)]
     public required string Rarity { get; set; }
@@ -28,17 +24,14 @@ public class CreateWeaponRequestDto
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string WeaponCategory { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string WeaponType { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Slot { get; set; }
@@ -47,7 +40,6 @@ public class CreateWeaponRequestDto
     [MaxLength(50)]
     public required string DamageDice { get; set; }
 
-    [Required]
     [Range(1, int.MaxValue)]
     public required int Range { get; set; }
 

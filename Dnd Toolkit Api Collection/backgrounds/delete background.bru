@@ -1,0 +1,20 @@
+meta {
+  name: delete background
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{ENV}}/api/backgrounds/{{backgroundId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  spellId: 51
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

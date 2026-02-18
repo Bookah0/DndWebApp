@@ -20,11 +20,11 @@ public class SubraceService(
 
         var raceDescription = new SpeciesInfo
         {
-            General = dto.Info?.GeneralDescription ?? "",
-            Aging = dto.Info?.AgingDescription ?? "",
-            CommonAlignment = dto.Info?.AlignmentDescription ?? "",
-            Size = dto.Info?.SizesDescription ?? "",
-            Languages = dto.Info?.LanguagesDescription ?? ""
+            General = dto.Info?.General ?? "",
+            Aging = dto.Info?.Aging ?? "",
+            CommonAlignment = dto.Info?.CommonAlignment ?? "",
+            Size = dto.Info?.Size ?? "",
+            Languages = dto.Info?.Languages ?? ""
         };
 
         var parentRace = await parentRaceRepo.GetByIdAsync(dto.ParentRaceId);
@@ -72,11 +72,11 @@ public class SubraceService(
         subrace.Speed = dto.Speed ?? subrace.Speed;
         subrace.Size = dto.Size ?? subrace.Size;
 
-        subrace.Info.General = dto.Info?.GeneralDescription ?? subrace.Info.General;
-        subrace.Info.Aging = dto.Info?.AgingDescription ?? subrace.Info.Aging;
-        subrace.Info.CommonAlignment = dto.Info?.AlignmentDescription ?? subrace.Info.CommonAlignment;
-        subrace.Info.Size = dto.Info?.SizesDescription ?? subrace.Info.Size;
-        subrace.Info.Languages = dto.Info?.LanguagesDescription ?? subrace.Info.Languages;
+        subrace.Info.General = dto.Info?.General ?? subrace.Info.General;
+        subrace.Info.Aging = dto.Info?.Aging ?? subrace.Info.Aging;
+        subrace.Info.CommonAlignment = dto.Info?.CommonAlignment ?? subrace.Info.CommonAlignment;
+        subrace.Info.Size = dto.Info?.Size ?? subrace.Info.Size;
+        subrace.Info.Languages = dto.Info?.Languages ?? subrace.Info.Languages;
 
         if(dto.NewParentRaceId is not null)
         {

@@ -1,0 +1,16 @@
+meta {
+  name: update background feature
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{ENV}}/api/backgrounds/{{backgroundId}}/features/{{featureId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

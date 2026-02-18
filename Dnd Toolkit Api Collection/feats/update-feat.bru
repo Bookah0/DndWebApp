@@ -1,0 +1,26 @@
+meta {
+  name: update feat
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ENV}}/api/feats/{{featId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "newFromType": "BackgroundType"
+  }
+}
+
+vars:pre-request {
+  featId: 55
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

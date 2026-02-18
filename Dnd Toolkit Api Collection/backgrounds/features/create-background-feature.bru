@@ -1,0 +1,28 @@
+meta {
+  name: create background feature
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ENV}}/api/backgrounds/{{backgroundId}}/features
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Shelter of the Faithful",
+    "description": "As an acolyte, you command the respect of those who share your faith.",
+    "backgroundId": 1
+  }
+}
+
+vars:pre-request {
+  backgroundId: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

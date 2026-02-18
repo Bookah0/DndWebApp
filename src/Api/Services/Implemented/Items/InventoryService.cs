@@ -1,19 +1,25 @@
 using Api.Middlewares.ExceptionHandling;
 using Api.Models.Characters;
 using Api.Models.DTOs.RequestDtos.Inventory;
+using Api.Models.DTOs.ResponseDtos;
 using Api.Models.Items;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces.Items;
 using Api.Services.Util;
 using Api.Services.Util.Interfaces;
 using Api.Validation.AllowedValues.Items;
+using AutoMapper;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Api.Validation.AllowedValues.ValuesValidator;
 
 namespace Api.Services.Implemented.Items;
 
 public class InventoryService(
     IItemRepository itemRepo,
+    IWeaponRepository weaponRepo,
+    IArmorRepository armorRepo,
     ICharacterRepository characterRepo,
+    IMapper mapper,
     ILogger<InventoryService> logger) : IInventoryService
 {
     public async Task<Inventory> CreateAsync(CreateInventoryDto dto)
@@ -248,5 +254,31 @@ public class InventoryService(
     {
         var character = await characterRepo.GetByIdAsync(characterId);
         return character.Inventory;
+    }
+
+    public async Task<ICollection<EquippedItemDto>> GetAllEquippedItemsAsync(Character character, string? slot)
+    {
+        List<EquippedItemDto> result = [];
+        var targetSlots = slot is null 
+            ? character.Inventory.EquippedItems 
+            : character.Inventory.EquippedItems.Where(e => e.Slot == NormalizeValueOrThrow<EquipSlot>(slot)); 
+
+        foreach (var equippedSlot in targetSlots)
+        {
+            if (equippedSlot.EquipmentId is null) 
+                continue;
+
+            var dto = equippedSlot.Slot switch
+            {
+                EquipSlot.MainHand or EquipSlot.OffHand or EquipSlot.Ranged =>
+                    mapper.Map<EquippedItemDto>(await weaponRepo.GetByIdAsync(equippedSlot.EquipmentId.Value)),
+                EquipSlot.Armor or EquipSlot.Head or EquipSlot.Waist or EquipSlot.Hands or EquipSlot.Feet =>
+                    mapper.Map<EquippedItemDto>(await armorRepo.GetByIdAsync(equippedSlot.EquipmentId.Value)),
+                _ =>
+                    mapper.Map<EquippedItemDto>(await itemRepo.GetByIdAsync(equippedSlot.EquipmentId.Value)),
+            };
+            result.Add(dto);
+        }
+        return result;
     }
 }

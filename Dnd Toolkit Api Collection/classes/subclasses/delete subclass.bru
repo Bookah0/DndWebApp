@@ -1,0 +1,20 @@
+meta {
+  name: delete subclass
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  spellId: 51
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

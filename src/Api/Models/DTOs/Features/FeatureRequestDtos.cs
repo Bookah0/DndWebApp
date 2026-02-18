@@ -6,12 +6,10 @@ namespace Api.Models.DTOs.Features;
 
 public abstract class CreateFeatureRequestDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(1000)]
     public required string Description { get; set; }
@@ -61,7 +59,6 @@ public class UpdateFeatRequestDto : UpdateFeatureRequestDto
 
 public class CreateBackgroundFeatureRequestDto : CreateFeatureRequestDto
 {
-    [Required]
     [Range(1, int.MaxValue)]
     public required int BackgroundId { get; set; }
 }
@@ -74,11 +71,9 @@ public class UpdateBackgroundFeatureRequestDto : UpdateFeatureRequestDto
 
 public class CreateClassFeatureRequestDto : CreateFeatureRequestDto
 {
-    [Required]
     [Range(1, int.MaxValue)]
     public required int LevelId { get; set; }
 
-    [Required]
     [Range(1, int.MaxValue)]
     public required int ClassId { get; set; }
 }
@@ -94,7 +89,6 @@ public class UpdateClassFeatureRequestDto : UpdateFeatureRequestDto
 
 public class CreateTraitRequestDto : CreateFeatureRequestDto
 {
-    [Required]
     [Range(1, int.MaxValue)]
     public required int RaceId { get; set; }
 }

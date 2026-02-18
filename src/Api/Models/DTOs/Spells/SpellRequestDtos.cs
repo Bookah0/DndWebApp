@@ -4,24 +4,20 @@ namespace Api.Models.DTOs.Spells;
 
 public class CreateSpellRequestDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(2000)]
     public required string Description { get; set; }
 
-    [Required]
     [Range(0, 9)]
     public required int Level { get; set; }
 
     [MaxLength(1000)]
     public string EffectsAtHigherLevels { get; set; } = "";
 
-    [Required]
     [MinLength(1)]
     [MaxLength(200)]
     public required string Duration { get; set; }
@@ -29,7 +25,6 @@ public class CreateSpellRequestDto
     [Range(0, int.MaxValue)]
     public int? DurationValue { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(200)]
     public required string CastingTime { get; set; }
@@ -48,7 +43,6 @@ public class CreateSpellRequestDto
     public string DamageRoll { get; set; } = "";
     public List<string> DamageTypes { get; set; } = [];
 
-    [Required]
     public required CreateSpellTargetingDto TargetingDto { get; set; }
     public CreateCastingRequirementsDto CastRequirementsDto { get; set; } = new();
 }
@@ -93,12 +87,10 @@ public class UpdateSpellRequestDto
 
 public class CreateSpellTargetingDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string TargetType { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Range { get; set; }

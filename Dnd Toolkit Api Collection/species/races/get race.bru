@@ -1,0 +1,20 @@
+meta {
+  name: get race
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ENV}}/api/races/{{raceId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  spellId: 51
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

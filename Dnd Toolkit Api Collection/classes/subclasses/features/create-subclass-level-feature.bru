@@ -1,0 +1,16 @@
+meta {
+  name: create subclass level feature
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}/levels/{{levelId}}/features
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

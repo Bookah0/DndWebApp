@@ -5,6 +5,8 @@ using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Services.Interfaces.Items;
 using System.ComponentModel.DataAnnotations;
 using Api.Services.Interfaces;
+using static Api.Validation.AllowedValues.ValuesValidator;
+using Api.Validation.AllowedValues.Items;
 
 namespace Api.Controllers.Items;
 
@@ -34,6 +36,13 @@ public class InventoryController(IInventoryService service, ICharacterService ch
         var character = await characterService.GetByIdAsync(characterId);
         await service.DiscardItemAsync(character, itemId);
         return Ok();
+    }
+
+    [HttpGet("/equipment")]
+    public async Task<ActionResult<ICollection<EquippedItemDto>>> GetEquippedItems(int characterId, [FromQuery] string? slot)
+    {
+        var character = await characterService.GetByIdAsync(characterId);
+        return Ok(await service.GetAllEquippedItemsAsync(character, slot));
     }
 
     [HttpPatch("/equipment/{itemId}/{slot}")]

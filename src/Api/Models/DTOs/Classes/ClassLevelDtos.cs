@@ -5,14 +5,11 @@ namespace Api.Models.DTOs.RequestDtos.Character;
 
 public class CreateClassLevelRequestDto
 {
-    [Required]
     [Range(1, int.MaxValue)]
     public required int ClassId { get; set; }
 
-    [Required]
     public required bool IsSubclassLevel { get; set; }
 
-    [Required]
     [Range(1, 20)]
     public required int Level { get; set; }
 
@@ -46,12 +43,10 @@ public class UpdateClassLevelRequestDto
 
 public class ClassSlotRequestDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [Required]
     [Range(1, int.MaxValue)]
     public required int Quantity { get; set; }
 }

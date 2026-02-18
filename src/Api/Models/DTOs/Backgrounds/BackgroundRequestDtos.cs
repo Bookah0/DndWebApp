@@ -5,17 +5,14 @@ namespace Api.Models.DTOs.RequestDtos.Character;
 
 public class CreateBackgroundRequestDto
 {  
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(2000)]
     public required string Description { get; set; }
     
-    [Required]
     public required CurrencyDto StartingCurrency { get; set; }
 }
 
@@ -35,11 +32,9 @@ public class UpdateBackgroundRequestDto
 
 public class StartingItemOptionDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(500)]
     public required string Description { get; set; }
 
-    [Required]
     public required ICollection<int> ItemOptionIds { get; set; }
 }

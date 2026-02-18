@@ -5,21 +5,17 @@ namespace Api.Models.DTOs.RequestDtos.Inventory;
 
 public class CreateItemRequestDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(1000)]
     public required string Description { get; set; }
 
-    [Required]
     [Range(0, int.MaxValue)]
     public int? Value { get; set; }
 
-    [Required]
     public required ICollection<string> Categories { get; set; } 
 
     [MinLength(1)]

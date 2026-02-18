@@ -16,12 +16,10 @@ public class ProficienciesRequestDto
 
 public class ProficiencyRequestDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Type { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Value { get; set; }

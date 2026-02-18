@@ -31,7 +31,6 @@ public class Character : CreatableEntity
 
     // Inventory
     public required Inventory Inventory { get; set; }
-    public required int InventoryId { get; set; }
 
     // Abilities & Combat
     public required ICollection<AbilityValue> AbilityScores { get; set; }

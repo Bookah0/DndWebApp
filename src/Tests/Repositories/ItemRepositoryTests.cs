@@ -3,7 +3,8 @@ using Api.Data;
 using Api.Models.Items;
 using Api.Repositories.Implemented.Items;
 using Api.Repositories.Implemented;
-using Api.Models.Items.Constants;
+using Api.Validation.AllowedValues.Items;
+using Api.Validation.AllowedValues;
 
 namespace Tests.Repositories;
 

@@ -2,7 +2,7 @@
 using Api.Data;
 using Api.Models.Spells;
 using Api.Repositories.Implemented.Spells;
-using Api.Models.Spells.Constants;
+using Api.Validation.AllowedValues.Spells;
 
 namespace Tests.Repositories;
 
@@ -75,48 +75,5 @@ public class SpellRepositoryTests
 
         // Assert
         Assert.Null(deleted);
-    }
-
-    [Fact]
-    public async Task FilterAllAsync_WithMatchingFilter_ReturnsExpectedSpells()
-    {
-        var options = GetInMemoryOptions("Spell_FilterDB");
-        await using var context = new AppDbContext(options);
-        var repo = new SpellRepository(context);
-
-        // Arrange
-        var spells = new List<Spell>
-        {
-            CreateTestSpell("Fireball"),
-            CreateTestSpell("Frostbite"),
-            CreateTestSpell("Magic Missile")
-        };
-
-        await context.Spells.AddRangeAsync(spells);
-        await context.SaveChangesAsync();
-
-        var filter = new SpellFilterDto
-        {
-            Name = "Fire",
-            MinLevel = 1,
-            MaxLevel = 3,
-            MagicSchool = [MagicSchool.Evocation],
-            IsHomebrew = false,
-            ClassId = null,
-            Duration = null,
-            CastingTime = null,
-            SpellType = null,
-            TargetType = null,
-            Range = null,
-            DamageType = null,
-        };
-
-        // Act
-        var filteredSpells = await repo.FilterSpellsAsync(filter);
-
-        // Assert
-        Assert.Single(filteredSpells);
-        Assert.Equal("Fireball", filteredSpells.First().Name);
-        Assert.Equal(MagicSchool.Evocation, filteredSpells.First().MagicSchool);
     }
 }

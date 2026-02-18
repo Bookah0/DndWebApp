@@ -1,0 +1,16 @@
+meta {
+  name: get all characters
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ENV}}/api/characters
+  body: json
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

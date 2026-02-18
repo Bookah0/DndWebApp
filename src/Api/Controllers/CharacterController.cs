@@ -17,14 +17,13 @@ namespace Api.Controllers.Characters;
 public class CharactersController(ICharacterService service, IMapper mapper) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult<CharacterResponseDto>> CreateCharacter(int userId, [FromBody] CreateCharacterRequestDto dto)
+    public async Task<ActionResult<CharacterResponseDto>> CreateCharacter(Guid userId, [FromBody] CreateCharacterRequestDto dto)
     {
-        /*
-        if(userId != dto.UserId)
-            throw new ValidationException($"User id in dto {dto.UserId} does not match user id in route {userId}");
-        */
-
         var character = await service.CreateAsync(dto);
+
+        if(userId != character.CreatedBy)
+            throw new ValidationException($"User id from character {character.CreatedBy} does not match user id in route {userId}");
+
         return Ok(mapper.Map<CharacterResponseDto>(character));
     }
 

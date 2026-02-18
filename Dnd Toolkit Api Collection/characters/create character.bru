@@ -1,0 +1,39 @@
+meta {
+  name: create character
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ENV}}/api/users/{{userId}}/characters
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Test char",
+    "level": 3,
+    "RaceId": 1,
+    "ClassId": 1,
+    "BackgroundId": 1,
+    "AbilityScores": {
+      "Str": 12,
+      "Dex": 8,
+      "Con": 12,
+      "Int": 10,
+      "Wis": 17,
+      "Cha": 16
+    }
+  }
+  
+}
+
+vars:pre-request {
+  userId: 019c5dd2-ca50-75a1-9d05-aba64c0295eb
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

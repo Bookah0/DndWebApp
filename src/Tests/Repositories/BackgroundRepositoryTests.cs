@@ -1,7 +1,7 @@
 using static Tests.Repositories.TestObjectFactory;
 using Api.Data;
 using Api.Repositories.Implemented;
-using Api.Models.Items.Constants;
+using Api.Validation.AllowedValues.Items;
 
 namespace Tests.Repositories;
 

@@ -1,0 +1,37 @@
+meta {
+  name: update character
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ENV}}/api/characters/{{characterId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Fireball (Enhanced)",
+    "description": "A bright streak flashes from your pointing finger to a point of your choice within range and then blossoms with a powerful roar into an explosion of flame.",
+    "level": 4,
+    "magicSchool": "Evocation",
+    "damageRoll": "9d6",
+    "targetingDto": {
+      "rangeValue": 200,
+      "shapeWidth": "25"
+    },
+    "castRequirementsDto": {
+      "materialCost": 50
+    }
+  }
+}
+
+vars:pre-request {
+  spellId: 51
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

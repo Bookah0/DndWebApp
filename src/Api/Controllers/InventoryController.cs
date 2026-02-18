@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Api.Models.DTOs.RequestDtos.Inventory;
 using Api.Services.Interfaces.Items;
 using System.ComponentModel.DataAnnotations;
+using Api.Services.Interfaces;
 
 namespace Api.Controllers.Items;
 
 [ApiController]
 [Route("api/users/{userId}/characters/{characterId}/inventory")]
-public class InventoryController(IInventoryService service, IMapper mapper) : ControllerBase
+public class InventoryController(IInventoryService service, ICharacterService characterService, IMapper mapper) : ControllerBase
 {
-
     [HttpGet]
     public async Task<ActionResult<InventoryResponseDto>> GetInventory(int characterId)
     {
@@ -19,11 +19,11 @@ public class InventoryController(IInventoryService service, IMapper mapper) : Co
         return Ok(mapper.Map<InventoryResponseDto>(inventory));
     }
 
-    [HttpPost("{itemId}")]
+    [HttpPatch("{itemId}")]
     public async Task<ActionResult<InventoryResponseDto>> AddItem(int itemId, int characterId)
     {
-        var inventory = await service.GetByCharacterIdAsync(characterId);
-        var updatedInventory = await service.AddItem(inventory, itemId);
+        var character = await characterService.GetByIdAsync(characterId);
+        var updatedInventory = await service.AddItemAsync(character, itemId);
         return Ok(mapper.Map<InventoryResponseDto>(updatedInventory));
     }
 
@@ -31,32 +31,32 @@ public class InventoryController(IInventoryService service, IMapper mapper) : Co
     [HttpDelete("{itemId}")]
     public async Task<ActionResult> RemoveItem(int itemId, int characterId)
     {
-        var inventory = await service.GetByCharacterIdAsync(characterId);
-        await service.DiscardItem(inventory, itemId);
+        var character = await characterService.GetByIdAsync(characterId);
+        await service.DiscardItemAsync(character, itemId);
         return Ok();
     }
 
     [HttpPatch("/equipment/{itemId}/{slot}")]
     public async Task<ActionResult<InventoryResponseDto>> EquipItem(int itemId, int characterId, string slot)
     {
-        var inventory = await service.GetByCharacterIdAsync(characterId);
-        var updatedInventory = await service.Equip(inventory, itemId, slot);
+        var character = await characterService.GetByIdAsync(characterId);
+        var updatedInventory = await service.EquipAsync(character, itemId, slot);
         return Ok(mapper.Map<InventoryResponseDto>(updatedInventory));
     }
 
     [HttpPatch("/equipment/{itemId}")]
     public async Task<ActionResult<InventoryResponseDto>> EquipItem(int itemId, int characterId)
     {
-        var inventory = await service.GetByCharacterIdAsync(characterId);
-        var updatedInventory = await service.Equip(inventory, itemId);
+        var character = await characterService.GetByIdAsync(characterId);
+        var updatedInventory = await service.EquipAsync(character, itemId);
         return Ok(mapper.Map<InventoryResponseDto>(updatedInventory));
     }
 
     [HttpDelete("/equipment/{itemId}")]
     public async Task<ActionResult> UnequipItem(int itemId, int characterId)
     {
-        var inventory = await service.GetByCharacterIdAsync(characterId);
-        await service.UnEquip(inventory, itemId);
+        var character = await characterService.GetByIdAsync(characterId);
+        await service.UnEquipAsync(character, itemId);
         return Ok();
     }
 }

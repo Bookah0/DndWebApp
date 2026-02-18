@@ -6,6 +6,7 @@ using Api.Services.Interfaces;
 using Api.Middlewares.ExceptionHandling;
 using Api.Controllers.Characters;
 using Api.Validation.AllowedValues;
+using Api.Services.Interfaces.Items;
 
 namespace Api.Services.Implemented;
 
@@ -18,6 +19,7 @@ public partial class CharacterService(
     IClassLevelRepository levelRepo,
     IBackgroundRepository backgroundRepo,
     IAbilityRepository abilityRepo,
+    IInventoryService inventoryService,
     ICurrentUserService currentUserService,
     ILogger<CharacterService> logger) : ICharacterService
 {

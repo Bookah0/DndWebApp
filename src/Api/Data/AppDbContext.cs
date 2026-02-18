@@ -15,8 +15,6 @@ namespace Api.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<Character> Characters { get; set; }
-    public DbSet<Inventory> Inventories { get; set; }
-
     public DbSet<Ability> AbilityScores { get; set; }
     public DbSet<AbilityValue> AbilityValues { get; set; }
     public DbSet<Skill> Skills { get; set; }

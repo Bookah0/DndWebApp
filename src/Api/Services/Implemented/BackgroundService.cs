@@ -57,6 +57,7 @@ public class BackgroundService(
     public async Task<Background> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
     public async Task<Background> GetWithAllDataAsync(int id) => await repo.GetWithAllDataAsync(id);
     public async Task<Background> GetWithFeaturesAsync(int id) => await repo.GetWithFeaturesAsync(id);
+    public async Task<ICollection<Background>> GetAllWithAllDataAsync() => await repo.GetAllWithAllDataAsync();
 
     public async Task<Background> UpdateAsync(int id, UpdateBackgroundRequestDto dto)
     {

@@ -4,10 +4,25 @@ meta {
   seq: 4
 }
 
-put {
+patch {
   url: {{ENV}}/api/races/{{raceId}}/traits/{{traitId}}
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "name": "Superior Darkvision",
+    "description": "You can see in dim light within 120 feet as if it were bright light.",
+    "newRaceId": 2,
+    "isPublic": true,
+    "cloningAllowed": false
+  }
+}
+
+vars:pre-request {
+  raceId: 1
+  traitId: 62
 }
 
 settings {

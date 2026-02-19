@@ -7,24 +7,30 @@ using Api.Models.Features;
 using Api.Services.Interfaces.Features;
 using Microsoft.AspNetCore.Mvc;
 using Dndtoolkit.Api.Models.DTOs.RequestDtos.Features;
+using Api.Services.Interfaces.Species;
 
 namespace Api.Controllers.Features;
 
 [ApiController]
 [Route("api/races/{raceId}/traits")]
-public class RaceTraitController(IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto> service, IMapper mapper) : ControllerBase
+public class RaceTraitController(IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto> service, IRaceService raceService, IMapper mapper) : ControllerBase
 {
     
     [HttpGet]
-    public Task<ActionResult<ICollection<TraitResponseDto>>> GetTraits(int raceId, [FromQuery] string? sort = null, [FromQuery] string? order = null)
+    public async Task<ActionResult<ICollection<TraitResponseDto>>> GetTraits(int raceId, [FromQuery] string? sort = null, [FromQuery] string? order = null)
     {
-        throw new NotImplementedException();
+        var race = await raceService.GetWithTraitsAsync(raceId);
+        return Ok(mapper.Map<ICollection<TraitResponseDto>>(race.Traits));
     }
 
     [HttpGet("{traitId}")]
     public async Task<ActionResult<TraitResponseDto>> GetTrait(int raceId, int traitId)
     {
-        var trait = await ValidateAndGetTrait(raceId, traitId);
+        var trait = await service.GetByIdAsync(traitId);
+
+        if(trait.RaceId != raceId)
+            throw new ValidationException($"Trait with id {trait.Id} does not belong to race with id {raceId}");
+
         return Ok(mapper.Map<TraitResponseDto>(trait));
     }
 
@@ -107,15 +113,6 @@ public class RaceTraitController(IFeatureService<Trait, CreateTraitRequestDto, U
     }
 
     //Helpers
-    private async Task<Trait> ValidateAndGetTrait(int raceId, int traitId)
-    {
-        var trait = await service.GetByIdAsync(traitId);
-
-        if(trait.RaceId != raceId)
-            throw new ValidationException($"Trait with id {trait.Id} does not belong to race with id {raceId}");
-        return trait;
-    }
-
     private async Task EnsureTraitBelongsToRace(int raceId, int traitId)
     {
         var trait = await service.GetByIdAsync(traitId);

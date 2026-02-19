@@ -45,8 +45,10 @@ public partial class BaseClassService(
     }
 
     public async Task<ICollection<BaseClass>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<ICollection<BaseClass>> GetAllWithLevelFeaturesAsync() => await repo.GetAllWithLevelFeaturesAsync();
+    public async Task<BaseClass> GetWithStartingEquipmentAsync(int id) => await repo.GetWithStartingEquipmentAsync(id);
     public async Task<BaseClass> GetWithLevelsAsync(int id) => await repo.GetWithLevelsAsync(id);
-    public async Task<BaseClass> GetWithFeaturesAsync(int id) => await repo.GetWithClassLevelFeaturesAsync(id);
+    public async Task<BaseClass> GetWithFeaturesAsync(int id) => await repo.GetWithLevelFeaturesAsync(id);
     public async Task<BaseClass> GetWithSubclassesAsync(int id) => await repo.GetWithSubclassesAsync(id);
     public async Task<BaseClass> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 

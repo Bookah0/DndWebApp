@@ -49,12 +49,14 @@ public class UpdateFeatRequestDto : UpdateFeatureRequestDto
     [MaxLength(500)]
     public string? Prerequisite { get; set; }
 
-    [MinLength(1)]
-    [MaxLength(10)]
-    public string? NewFromType { get; set; }
+    [Range(1, int.MaxValue)]
+    public int? NewFromRaceId { get; set; }
 
     [Range(1, int.MaxValue)]
-    public int? NewFromId { get; set; }
+    public int? NewFromBackgroundId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? NewFromClassId { get; set; }
 }
 
 public class CreateBackgroundFeatureRequestDto : CreateFeatureRequestDto

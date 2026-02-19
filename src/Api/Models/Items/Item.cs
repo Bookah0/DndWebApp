@@ -19,6 +19,8 @@ public class Item : CreatableEntity
     public int? Value { get; set; }
     public int Quantity { get; set; } = 1;
     public bool Stackable { get; set; } = false;
+    public string? EquipSlot { get; set; }
+    public string? SecondaryEquipSlot { get; set; }
 }
 
 

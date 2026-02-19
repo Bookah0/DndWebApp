@@ -15,7 +15,7 @@ public partial class CharacterService : ICharacterService
     public async Task<Character> CreateAsync(CreateCharacterRequestDto dto)
     {
         var race = await raceRepo.GetWithTraitsAsync(dto.RaceId);
-        var clss = await classRepo.GetWithClassLevelFeaturesAsync(dto.ClassId);
+        var clss = await classRepo.GetWithLevelFeaturesAsync(dto.ClassId);
         var background = await backgroundRepo.GetWithFeaturesAsync(dto.BackgroundId);
 
         var subrace = dto.SubraceId is not null 
@@ -23,7 +23,7 @@ public partial class CharacterService : ICharacterService
             : null;
 
         var subclass = dto.SubClassId is not null
-            ? await subclassRepo.GetWithClassLevelFeaturesAsync((int)dto.SubClassId!) 
+            ? await subclassRepo.GetWithLevelFeaturesAsync((int)dto.SubClassId!) 
             : null;
 
         logger.LogInformation("Creating character, Name: {CharacterName}, ClassId: {ClassId}, RaceId: {RaceId}", dto.Name, dto.ClassId, dto.RaceId);

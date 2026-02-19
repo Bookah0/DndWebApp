@@ -12,16 +12,16 @@ public class BackgroundsController(IBackgroundService service, IMapper mapper) :
     {
 
     [HttpGet]
-    public async Task<ActionResult<ICollection<BackgroundResponseDto>>> GetBackgrounds()
+    public async Task<ActionResult<ICollection<BackgroundResponseDto>>> GetAllBackgrounds()
     {
-        var backgrounds = await service.GetAllAsync();
+        var backgrounds = await service.GetAllWithAllDataAsync();
         return Ok(mapper.Map<ICollection<BackgroundResponseDto>>(backgrounds));
     }
 
     [HttpGet("{backgroundId}")]
     public async Task<ActionResult<BackgroundResponseDto>> GetBackground(int backgroundId)
     {
-        var background = await service.GetByIdAsync(backgroundId);
+        var background = await service.GetWithFeaturesAsync(backgroundId);
         return Ok(mapper.Map<BackgroundResponseDto>(background));
     }
 

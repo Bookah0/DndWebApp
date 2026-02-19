@@ -1,0 +1,16 @@
+meta {
+  name: get items in slot
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{ENV}}/api/users/{{userId}}/characters/{{characterId}}/equipment/{{slot}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

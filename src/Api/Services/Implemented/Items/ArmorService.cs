@@ -39,6 +39,7 @@ public class ArmorService(IArmorRepository repo, ICurrentUserService currentUser
             Rarity = dtoRarity ?? ItemRarity.Common,
             RequiresAttunement = dto.RequiresAttunement,
             Categories = [ItemCategory.Armor],
+            EquipSlot = dtoCategory.Equals(ArmorCategory.Shield) ? EquipSlot.OffHand : EquipSlot.Armor,
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
@@ -79,7 +80,13 @@ public class ArmorService(IArmorRepository repo, ICurrentUserService currentUser
         armor.StrengthScoreRequired = dto.StrengthScoreRequired ?? armor.StrengthScoreRequired;
         armor.Rarity = dtoRarity ?? armor.Rarity;
         armor.RequiresAttunement = dto.RequiresAttunement ?? armor.RequiresAttunement;
-        
+       
+        armor.EquipSlot = dtoCategory is not null 
+            ? dtoCategory.Equals(ArmorCategory.Shield) 
+            ? EquipSlot.OffHand 
+            : EquipSlot.Armor 
+            : armor.EquipSlot;
+
         armor.IsPublic = dto.IsPublic ?? armor.IsPublic;
         armor.CloningAllowed = dto.CloningAllowed ?? armor.CloningAllowed;
         armor.UpdatedAt = DateTime.UtcNow;

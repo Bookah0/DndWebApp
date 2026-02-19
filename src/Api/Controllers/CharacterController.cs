@@ -36,7 +36,7 @@ public class CharactersController(ICharacterService service, IMapper mapper) : C
     }
 
     [HttpGet]
-    public async Task<ActionResult<ICollection<CharacterResponseDto>>> GetCharacters(Guid userId)
+    public async Task<ActionResult<ICollection<CharacterResponseDto>>> GetAllCharacters(Guid userId)
     {
         var characters =  await service.GetAllByUserIdAsync(userId);
         return Ok(mapper.Map<ICollection<CharacterResponseDto>>(characters));
@@ -67,12 +67,11 @@ public class CharactersController(ICharacterService service, IMapper mapper) : C
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 
-    [HttpPatch("{characterId}/description")]
-    public async Task<ActionResult<CharacterResponseDto>> EditCharacterInfo(int characterId, Guid userId, [FromBody] CharacterInfoRequestDto edited)
+    [HttpPatch("{characterId}")]
+    public async Task<ActionResult<CharacterResponseDto>> UpdateCharacter(int characterId, Guid userId, [FromBody] UpdateCharacterRequestDto request)
     {
         await EnsureCharacterBelongsToUser(userId, characterId);
-        var characterDescription = mapper.Map<CharacterInfo>(edited);
-        var updatedCharacter = await service.EditCharacterInfoAsync(characterDescription, characterId);
+        var updatedCharacter = await service.UpdateAsync(request, characterId);
         return Ok(mapper.Map<CharacterResponseDto>(updatedCharacter));
     }
 

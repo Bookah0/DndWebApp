@@ -138,7 +138,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Quantity = eWeapon.Cost.Quantity,
             WeaponCategory = category,
             WeaponType = weaponType,
-            Slot = GetDefaultWeaponMainSlot(weaponType),
+            EquipSlot = GetDefaultWeaponMainSlot(weaponType),
             Properties = properties ?? [],
             DamageTypes = [damageType],
             DamageDice = eWeapon.Damage?.DamageDice ?? "",
@@ -177,7 +177,7 @@ public class ExternalItemService(IItemRepository repo, ILogger<ExternalItemServi
             Value = GetConvertedValue(eTool.Cost.Quantity, eTool.Cost.Unit),
             Quantity = eTool.Cost.Quantity,
             ToolCategory = category,
-            Properties = [],
+            ToolProperties = [],
 
             CreatedAt = DateTime.UtcNow,
             CreatedBy = null,

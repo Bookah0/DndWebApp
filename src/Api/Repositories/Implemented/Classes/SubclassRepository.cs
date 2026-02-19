@@ -11,14 +11,14 @@ public class SubclassRepository(AppDbContext context) : ISubclassRepository
         await context.Subclasses.FirstOrDefaultAsync(c => c.Id == id) 
             ?? throw new Exception($"Subclass with id {id} could not be found");
 
-    public async Task<Subclass> GetWithClassLevelsAsync(int id) => 
+    public async Task<Subclass> GetWithLevelsAsync(int id) => 
         await context.Subclasses
             .AsSplitQuery()
             .Include(b => b.ClassLevels)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Subclass with id {id} could not be found");
 
-    public async Task<Subclass> GetWithClassLevelFeaturesAsync(int id) => 
+    public async Task<Subclass> GetWithLevelFeaturesAsync(int id) => 
         await context.Subclasses
             .AsSplitQuery()
             .Include(b => b.ClassLevels)

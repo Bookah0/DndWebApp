@@ -6,8 +6,20 @@ meta {
 
 post {
   url: {{ENV}}/api/races/{{raceId}}/traits
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "name": "Darkvision",
+    "description": "You can see in dim light within 60 feet as if it were bright light.",
+    "raceId": 1
+  }
+}
+
+vars:pre-request {
+  raceId: 1
 }
 
 settings {

@@ -56,6 +56,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
         modelBuilder.Entity<Feature>().ConfigureProficiencyChoices();
         modelBuilder.Entity<Character>().ConfigureProficiencies();
+            
+        modelBuilder.Entity<Weapon>().ToTable("Weapons");
+        modelBuilder.Entity<Armor>().ToTable("Armors");
+        modelBuilder.Entity<Tool>().ToTable("Tools");
 
         modelBuilder.Entity<ClassLevel>()
             .OwnsMany(c => c.ClassSlotsAtLevel, slot =>
@@ -79,7 +83,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             });
 
         modelBuilder.Entity<Tool>().OwnsMany(t => t.Activities);
-        modelBuilder.Entity<Tool>().OwnsMany(t => t.Properties);
+        modelBuilder.Entity<Tool>().OwnsMany(t => t.ToolProperties);
 
         modelBuilder.Entity<Spell>()
             .HasMany(s => s.Classes)

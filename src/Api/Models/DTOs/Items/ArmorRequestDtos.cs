@@ -42,11 +42,9 @@ public class CreateArmorRequestDto
 
 public class UpdateArmorRequestDto
 {
-    [MinLength(1)]
     [MaxLength(100)]
     public string? Name { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string? Description { get; set; }
 
@@ -56,7 +54,6 @@ public class UpdateArmorRequestDto
     [Range(0, int.MaxValue)]
     public int? Value { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? Category { get; set; }
 

@@ -1,11 +1,11 @@
 meta {
   name: delete class level feature
   type: http
-  seq: 6
+  seq: 5
 }
 
 delete {
-  url: {{ENV}}/api/classes/{{classId}}/levels/{{levelId}}/features/{{featureId}}
+  url: {{ENV}}/api/classes/{{classId}}/features/{{featureId}}
   body: none
   auth: inherit
 }

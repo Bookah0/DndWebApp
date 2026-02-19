@@ -12,25 +12,44 @@ post {
 
 body:json {
   {
-    "Name": "Test char",
-    "level": 3,
-    "RaceId": 1,
-    "ClassId": 1,
-    "BackgroundId": 1,
-    "AbilityScores": {
-      "Str": 12,
-      "Dex": 8,
-      "Con": 12,
-      "Int": 10,
-      "Wis": 17,
-      "Cha": 16
+    "name": "Arial Romanio",
+    "level": 1,
+    "experience": 6500,
+    "playerName": "John",
+    "raceId": 1,
+    "subraceId": 7,
+    "classId": 2,
+    "subClassId": 4,
+    "backgroundId": 2,
+    "abilityScores": {
+      "str": 10,
+      "dex": 18,
+      "con": 12,
+      "int": 14,
+      "wis": 13,
+      "cha": 16
+    },
+    "characterInfo": {
+      "alignmentId": 3,
+      "personalityTraits": "I always have a plan for when things go wrong.",
+      "ideals": "Freedom. Chains are meant to be broken.",
+      "bonds": "I protect those who cannot protect themselves.",
+      "flaws": "I have trouble trusting anyone but myself.",
+      "age": 127,
+      "height": 165,
+      "weight": 55,
+      "eyes": "Silver",
+      "skin": "Pale",
+      "hair": "White",
+      "alliesAndOrganizations": "The Harpers",
+      "backstory": "Born in the forest of Cormanthor, Aria left her home after...",
+      "characterPictureUrl": "https://example.com/aria.png"
     }
   }
-  
 }
 
 vars:pre-request {
-  userId: 019c5dd2-ca50-75a1-9d05-aba64c0295eb
+  userId: 019c75a9-07c4-7da9-9a16-ec3a8b73a006
 }
 
 settings {

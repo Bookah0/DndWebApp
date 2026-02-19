@@ -1,0 +1,22 @@
+meta {
+  name: equip item
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{ENV}}/api/users/{{userId}}/characters/{{characterId}}/equipment/{{itemId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  itemId: 45
+  userId: 019c75a9-07c4-7da9-9a16-ec3a8b73a006
+  characterId: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

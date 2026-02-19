@@ -29,22 +29,25 @@ public class CreateItemRequestDto
 
     [Range(1, int.MaxValue)]
     public int Quantity { get; set; } = 1;
+
+    [MaxLength(50)]
+    public string? EquipSlot { get; set; }
+    
+    [MaxLength(50)]
+    public string? SecondaryEquipSlot { get; set; }
 }
 
 public class UpdateItemRequestDto
 {
-    [MinLength(1)]
     [MaxLength(100)]
     public string? Name { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string? Description { get; set; }
 
     [Range(0, int.MaxValue)]
     public int? Value { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? Rarity { get; set; }
 
@@ -57,4 +60,10 @@ public class UpdateItemRequestDto
     public int? Quantity { get; set; }
     public bool? IsPublic { get; set; }
     public bool? CloningAllowed { get; set; }
+
+    [MaxLength(50)]
+    public string? EquipSlot { get; set; }
+    
+    [MaxLength(50)]
+    public string? SecondaryEquipSlot { get; set; }
 }

@@ -15,10 +15,10 @@ public interface IInventoryService
     Task<Inventory> AddItemAsync(Character character, int itemId, int quantity = 1);
     Task<Inventory> DiscardItemAsync(int characterId, int itemId, int quantity = 1) ;
     Task<Inventory> DiscardItemAsync(Character character, int itemId, int quantity = 1);
-    
-    Task<ICollection<EquippedItemDto>> GetAllEquippedItemsAsync(Character character, string? slot);
-    Task UnEquipAsync(Character character, int itemId);
-    Task UnEquipAsync(Character character, string slot);
-    Task<Inventory> EquipAsync(Character character, int itemId, string slot);
-    Task<Inventory> EquipAsync(Character character, int itemId);
+
+    Task<ICollection<Item>> GetStoredItemsAsync(Inventory inventory);
+
+    Task<ICollection<EquippedItemDto>> GetEquippedItemsAsync(Character character, string? slot = null);
+    Task UnEquipAsync(Character character, int? itemId = null, string? slot = null);
+    Task<Inventory> EquipAsync(Character character, int itemId, string? slot = null);
 }

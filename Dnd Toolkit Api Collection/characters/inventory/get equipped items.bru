@@ -1,0 +1,16 @@
+meta {
+  name: get equipped items
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{ENV}}/api/users/{{userId}}/characters/{{characterId}}/inventory
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

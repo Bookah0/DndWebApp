@@ -4,10 +4,21 @@ meta {
   seq: 4
 }
 
-put {
+patch {
   url: {{ENV}}/api/backgrounds/{{backgroundId}}/features/{{featureId}}
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "newBackgroundId": 0
+  }
+}
+
+vars:pre-request {
+  backgroundId: 2
+  featureId: 60
 }
 
 settings {

@@ -8,7 +8,7 @@ public class CreateClassLevelRequestDto
     [Range(1, int.MaxValue)]
     public required int ClassId { get; set; }
 
-    public required bool IsSubclassLevel { get; set; }
+    public bool IsSubclassLevel { get; set; }
 
     [Range(1, 20)]
     public required int Level { get; set; }

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Classes;
 
 [ApiController]
-[Route("api/[controller]/{classId}/levels")]
+[Route("api/classes/{classId}/levels")]
 public class ClassLevelController(IBaseClassService service, IClassLevelService levelService, IMapper mapper) : ControllerBase
     {
     [HttpGet]
@@ -33,6 +33,7 @@ public class ClassLevelController(IBaseClassService service, IClassLevelService 
         if(dto.ClassId != classId)
             throw new ValidationException($"Class id in dto {dto.ClassId} does not match class id in route {classId}");
 
+        dto.IsSubclassLevel = false;
         var classLevel = await levelService.CreateAsync(dto);
         return Ok(mapper.Map<ClassLevelResponseDto>(classLevel));
     }

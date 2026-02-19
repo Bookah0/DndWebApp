@@ -5,9 +5,23 @@ meta {
 }
 
 post {
-  url: {{ENV}}/api/classes/{{classId}}/levels/{{levelId}}/features
-  body: none
+  url: {{ENV}}/api/classes/{{classId}}/features
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "name": "Action Surge",
+    "description": "You can push yourself beyond your normal limits for a moment.",
+    "levelId": 1,
+    "classId": 1
+  }
+}
+
+vars:pre-request {
+  classId: 1
+  levelId: 1
 }
 
 settings {

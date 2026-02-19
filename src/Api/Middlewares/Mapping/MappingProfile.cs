@@ -21,6 +21,8 @@ public class MappingProfile : Profile
         // Entity to Request DTO
         CreateMap<Character, CreateCharacterRequestDto>();
         CreateMap<Character, UpdateCharacterRequestDto>();
+        CreateMap<CharacterInfo, CharacterInfoRequestDto>();
+        CreateMap<Currency, CurrencyDto>();
         CreateMap<Inventory, CreateInventoryDto>();
         CreateMap<Background, CreateBackgroundRequestDto>();
         CreateMap<Background, UpdateBackgroundRequestDto>();
@@ -59,6 +61,7 @@ public class MappingProfile : Profile
         CreateMap<Weapon, CreateWeaponRequestDto>();
         CreateMap<Armor, CreateArmorRequestDto>();
         CreateMap<Tool, CreateToolRequestDto>();
+        CreateMap<InventoryItem, InventoryItemResponseDto>();
 
         CreateMap<SkillProficiencyChoice, SkillProficiencyChoiceDto>();
         CreateMap<LanguageChoice, LanguageProficiencyChoiceDto>();
@@ -70,7 +73,11 @@ public class MappingProfile : Profile
 
         // Entity to Response DTO
         CreateMap<Character, CharacterResponseDto>();
+        CreateMap<CombatStats, CombatStatsResponseDto>();
+        CreateMap<CharacterInfo, CharacterInfoResponseDto>();
+        CreateMap<EquipmentSlot, EquipmentSlotDto>();
         CreateMap<Inventory, InventoryResponseDto>();
+        CreateMap<EquipmentSlot, EquippedItemDto>();
         CreateMap<Background, BackgroundResponseDto>();
         CreateMap<Alignment, AlignmentResponseDto>();
         CreateMap<Ability, AbilityResponseDto>();
@@ -90,7 +97,7 @@ public class MappingProfile : Profile
         CreateMap<Race, RaceResponseDto>();
         CreateMap<Subrace, SubraceResponseDto>();
 
-        CreateMap<Item, ItemResponseDto>();
+        CreateMap<Item, ItemResponseDto>().IncludeAllDerived();
         CreateMap<Weapon, WeaponResponseDto>();
         CreateMap<Armor, ArmorResponseDto>();
         CreateMap<Tool, ToolResponseDto>();
@@ -114,6 +121,7 @@ public class MappingProfile : Profile
         // Request DTO to Response DTO
         CreateMap<CreateCharacterRequestDto, CharacterResponseDto>();
         CreateMap<UpdateCharacterRequestDto, CharacterResponseDto>();
+        CreateMap<CharacterInfoRequestDto, CharacterInfoResponseDto>();
         CreateMap<CreateInventoryDto, InventoryResponseDto>();
         CreateMap<CreateBackgroundRequestDto, BackgroundResponseDto>();
         CreateMap<UpdateBackgroundRequestDto, BackgroundResponseDto>();

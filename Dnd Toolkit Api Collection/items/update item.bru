@@ -6,8 +6,18 @@ meta {
 
 patch {
   url: http://localhost:5432/items/{{itemId}}
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "EquipSlot": "Armor"
+  }
+}
+
+vars:pre-request {
+  itemId: 38
 }
 
 settings {

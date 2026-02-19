@@ -14,6 +14,8 @@ public class ItemResponseDto
     public int Weight { get; set; }
     public int Value { get; set; }
     public int Quantity { get; set; }
+    public string? EquipSlot { get; set; }
+    public string? SecondaryEquipSlot { get; set; }
 }
 
 public class WeaponResponseDto : ItemResponseDto

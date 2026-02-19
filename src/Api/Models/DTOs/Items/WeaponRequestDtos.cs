@@ -56,18 +56,15 @@ public class CreateWeaponRequestDto
 
 public class UpdateWeaponRequestDto
 {
-    [MinLength(1)]
     [MaxLength(100)]
     public string? Name { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string? Description { get; set; }
 
     [Range(0, int.MaxValue)]
     public int? Value { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? Rarity { get; set; }
 
@@ -76,26 +73,21 @@ public class UpdateWeaponRequestDto
     [Range(0, int.MaxValue)]
     public int? Weight { get; set; }
 
-    [MinLength(1)]
     [MaxLength(100)]
     public string? WeaponCategory { get; set; }
 
-    [MinLength(1)]
     [MaxLength(100)]
     public string? WeaponType { get; set; }
 
-    [MinLength(1)]
     [MaxLength(100)]
     public string? Slot { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? DamageDice { get; set; }
 
     [Range(1, int.MaxValue)]
     public int? Range { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? VersitileDamageDice { get; set; }
 

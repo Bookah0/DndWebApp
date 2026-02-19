@@ -72,7 +72,7 @@ public static class TestObjectFactory
             ClassId = cls.Id,
             Background = background,
             BackgroundId = background.Id,
-            Inventory = new Inventory { Currency = new(), EquippedItems = [] },
+            Inventory = new Inventory { Currency = new(), EquipmentSlots = [] },
             AbilityScores = [new AbilityValue() { Ability = str, AbilityId = str.Id, Value = 10 }],
             CombatStats = new CombatStats
             {
@@ -176,7 +176,7 @@ public static class TestObjectFactory
         Categories = [ItemCategory.Weapon],
         WeaponCategory = WeaponCategory.SimpleRanged,
         WeaponType = WeaponType.Shortbow,
-        Slot = EquipSlot.TwoHand,
+        EquipSlot = EquipSlot.TwoHand,
         Properties = [WeaponProperty.TwoHanded],
         DamageTypes = [DamageType.Piercing],
         DamageDice = "1d6",
@@ -218,7 +218,7 @@ public static class TestObjectFactory
         Categories = [ItemCategory.Tools],
         ToolCategory = ToolCategory.ThievesTools,
         Activities = [],
-        Properties = [],
+        ToolProperties = [],
         CreatedAt = DateTime.UtcNow,
         CreatedBy = Guid.NewGuid()
     };

@@ -57,7 +57,7 @@ public class WeaponRepository(AppDbContext context) : IWeaponRepository
            
             .WhereIf(filter.WeaponCategory, w => filter.WeaponCategory!.Contains(w.WeaponCategory))
             .WhereIf(filter.WeaponType, w => filter.WeaponType!.Contains(w.WeaponType))
-            .WhereIf(filter.Slot, w => filter.Slot!.Contains(w.Slot))
+            .WhereIf(filter.Slot, w => filter.Slot!.Contains(w.EquipSlot))
             .WhereIf(filter.Property, w => w.Properties.Any(p => filter.Property!.Contains(p)))
             .WhereIf(filter.DamageType, w => w.DamageTypes.Any(d => filter.DamageType!.Contains(d)))
 

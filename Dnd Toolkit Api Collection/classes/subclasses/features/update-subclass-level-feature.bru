@@ -1,11 +1,11 @@
 meta {
   name: update subclass level feature
   type: http
-  seq: 5
+  seq: 4
 }
 
-put {
-  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}/levels/{{levelId}}/features/{{featureId}}
+patch {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}/features/{{featureId}}
   body: none
   auth: inherit
 }

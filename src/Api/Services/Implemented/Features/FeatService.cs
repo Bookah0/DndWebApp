@@ -21,8 +21,13 @@ public class FeatService(
 {
     public async override Task<Feat> CreateAsync(CreateFeatRequestDto dto)
     {
-        logger.LogInformation("Creating feat, Name: {FeatName}", dto.Name);
+        ICollection<int?> fromIds = [dto.FromClassId, dto.FromBackgroundId, dto.FromRaceId];
+        
+        if (fromIds.Count(id => id is not null) > 1)
+            throw new ValidationException("Feat can't have more than one source");
 
+        logger.LogInformation("Creating feat, Name: {FeatName}", dto.Name);
+        
         var feat = await repo.CreateAsync(new Feat
         {
             Name = dto.Name,
@@ -54,26 +59,14 @@ public class FeatService(
     public async override Task<Feat> UpdateAsync(UpdateFeatRequestDto dto, int id)
     {
         var feat = await repo.GetByIdAsync(id);
+        
         logger.LogInformation("Updating feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
 
         feat.Name = dto.Name ?? feat.Name;
         feat.Description = dto.Description ?? feat.Description;
         feat.Prerequisite = dto.Prerequisite ?? feat.Prerequisite;
-
-        if(dto.NewFromId is not null)
-        {
-            if(dto.NewFromType is null)
-                throw new ValidationException("NewFromType must be provided when NewFromId is provided.");
-
-            var normalizedSourceType = NormalizeValueOrThrow<FeatSource>(dto.NewFromType);
-            feat.FromRaceId = normalizedSourceType == FeatSource.Race || normalizedSourceType == FeatSource.Subrace ? dto.NewFromId : null;
-            feat.FromBackgroundId = normalizedSourceType == FeatSource.Background ? dto.NewFromId : null;
-            feat.FromClassId = normalizedSourceType == FeatSource.Class || normalizedSourceType == FeatSource.Subclass ? dto.NewFromId : null;
-
-            if(feat.FromRaceId is null && feat.FromBackgroundId is null && feat.FromClassId is null)
-                throw new ValidationException("Invalid NewFromType provided.");
-        }
-
+        UpdateFeatSource(feat, dto);
+        
         feat.IsPublic = dto.IsPublic ?? feat.IsPublic;
         feat.CloningAllowed = dto.CloningAllowed ?? feat.CloningAllowed;
         feat.UpdatedAt = DateTime.UtcNow;
@@ -87,5 +80,21 @@ public class FeatService(
     public ICollection<Feat> SortBy(ICollection<Feat> feats, bool descending = false)
     {
         return OrderByMany(feats, [(f => f.Name)], descending);
+    }
+
+    private static void UpdateFeatSource(Feat feat, UpdateFeatRequestDto dto)
+    {
+        ICollection<int?> fromIds = [dto.NewFromClassId, dto.NewFromBackgroundId, dto.NewFromRaceId];
+        var fromIdsCount = fromIds.Count(id => id is not null);
+        
+        if (fromIdsCount > 1)
+            throw new ValidationException("Feat can't have more than one source");
+
+        if(fromIdsCount == 1)
+        {
+            feat.FromBackgroundId = dto.NewFromBackgroundId is not null ? dto.NewFromBackgroundId : null;
+            feat.FromClassId = dto.NewFromClassId is not null ? dto.NewFromClassId : null;
+            feat.FromRaceId = dto.NewFromRaceId is not null ? dto.NewFromRaceId : null;
+        }
     }
 }

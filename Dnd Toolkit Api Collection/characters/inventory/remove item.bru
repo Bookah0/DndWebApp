@@ -1,0 +1,16 @@
+meta {
+  name: remove item
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{ENV}}/api/users/{{userId}}/characters/{{characterId}}/inventory/{{itemId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,21 @@
+meta {
+  name: get class
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ENV}}/api/classes/{{classId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  spellId: 51
+  classId: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

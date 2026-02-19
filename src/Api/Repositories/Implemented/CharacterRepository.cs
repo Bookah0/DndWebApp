@@ -10,7 +10,18 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
 {
     public async Task<Character> GetByIdAsync(int id) =>
         await context.Characters.FindAsync(id)
-        ?? throw new Exception($"Character with id {id} could not be found");
+            ?? throw new Exception($"Character with id {id} could not be found");
+
+    public async Task<Character> GetWithInventoryAsync(int id) =>
+        await context.Characters
+            .Include(c => c.Inventory)
+                .ThenInclude(i => i.StoredItems)
+                .ThenInclude(i => i.Item)
+            .Include(c => c.Inventory)
+                .ThenInclude(i => i.EquipmentSlots)
+                .ThenInclude(i => i.Equipment)
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new Exception($"Character with id {id} could not be found");
 
     public async Task<CharacterInfo> GetCharacterInfoAsync(int id) =>
         await context.Characters

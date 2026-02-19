@@ -1,0 +1,27 @@
+meta {
+  name: update background feature
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ENV}}/api/backgrounds/{{backgroundId}}/features/{{featureId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "newBackgroundId": 0
+  }
+}
+
+vars:pre-request {
+  backgroundId: 2
+  featureId: 60
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

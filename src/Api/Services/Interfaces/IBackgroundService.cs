@@ -8,6 +8,7 @@ public interface IBackgroundService
     Task<Background> CreateAsync(CreateBackgroundRequestDto dto);
     Task DeleteAsync(int id);
     Task<ICollection<Background>> GetAllAsync();
+    Task<ICollection<Background>> GetAllWithAllDataAsync();
     Task<Background> GetByIdAsync(int id);
     Task<Background> GetWithFeaturesAsync(int id);
     Task<Background> UpdateAsync(int id, UpdateBackgroundRequestDto dto);

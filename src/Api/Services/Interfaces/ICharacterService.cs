@@ -7,12 +7,13 @@ namespace Api.Services.Interfaces;
 public interface ICharacterService
 {
     Task<Character> CreateAsync(CreateCharacterRequestDto dto);
+    Task<Character> UpdateAsync(UpdateCharacterRequestDto dto, int id);
     Task DeleteAsync(int id);
     Task<ICollection<Character>> GetAllAsync();
     Task<Character> GetByIdAsync(int id);
+    Task<Character> GetWithInventoryAsync(int id);
     Task<Character> LevelUpAsync(LevelUpDto dto, int characterId);
     Task<Character> ChangeClassAsync(int subclassId, int characterId);
-    Task<Character> EditCharacterInfoAsync(CharacterInfo edited, int characterId);
     Task<Character> SpendHitDiceAsync(int nDice, int characterId);
     Task<Character> LongRestAsync(int characterId);
     Task<Character> TakeDamageAsync(int characterId, int change);

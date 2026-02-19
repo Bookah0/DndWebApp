@@ -1,0 +1,30 @@
+meta {
+  name: update character
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ENV}}/api/users/{{userId}}/characters/{{characterId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "characterInfo": {
+      "alignmentId": 0
+    }
+  }
+}
+
+vars:pre-request {
+  spellId: 51
+  characterId: 12
+  userId: 019c75a9-07c4-7da9-9a16-ec3a8b73a006
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

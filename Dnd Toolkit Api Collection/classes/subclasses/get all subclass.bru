@@ -1,0 +1,21 @@
+meta {
+  name: get all subclass
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses
+  body: json
+  auth: inherit
+}
+
+vars:pre-request {
+  raceId: 1
+  classId: 2
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

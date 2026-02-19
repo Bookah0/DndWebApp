@@ -55,7 +55,6 @@ builder.Services.AddScoped<IFeatureRepository<Feat>, FeatRepository>();
 builder.Services.AddScoped<IFeatureRepository<BackgroundFeature>, BackgroundFeatureRepository>();
 builder.Services.AddScoped<IFeatureRepository<Trait>, TraitRepository>();
 
-builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IToolRepository, ToolRepository>();
 builder.Services.AddScoped<IArmorRepository, ArmorRepository>();

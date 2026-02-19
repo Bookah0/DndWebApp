@@ -1,4 +1,5 @@
 using Api.Models.DTOs.RequestDtos.Inventory;
+using Api.Models.Items;
 
 namespace Api.Models.DTOs.ResponseDtos;
 
@@ -10,12 +11,18 @@ public int Id { get; set; }
     public int TotalWeight { get; set; }
     public int MaxWeight { get; set; }
     public int AttunedItems { get; set; } = 0;
-    public ICollection<ItemResponseDto> StoredItems { get; set; } = [];
-    public ICollection<EquipmentSlotDto> EquippedItems { get; set; } = [];
+    public ICollection<InventoryItemResponseDto> StoredItems { get; set; } = [];
+    public ICollection<EquipmentSlotDto> EquipmentSlots { get; set; } = [];
 }
 
 public class EquipmentSlotDto
 {
-    public int? EquipmentId { get; set; }
+    public required Item Equipment { get; set; }
     public required string Slot { get; set; }
+}
+
+public class InventoryItemResponseDto
+{
+    public required int Quantity { get; set; }
+    public required ItemResponseDto Item { get; set; }
 }

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Classes;
 
 [ApiController]
-[Route("api/classes/{classId}/[controller]/{subclassId}/levels")]
+[Route("api/classes/{classId}/subclasses/{subclassId}/levels")]
 public class SubclassLevelController(ISubclassService service, IBaseClassService classService, IClassLevelService levelService, IMapper mapper) : ControllerBase
 {
     [HttpGet]
@@ -36,6 +36,7 @@ public class SubclassLevelController(ISubclassService service, IBaseClassService
     public async Task<ActionResult<ClassLevelResponseDto>> CreateClassLevel(int subclassId, int classId, [FromBody] CreateClassLevelRequestDto dto)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
+        dto.IsSubclassLevel = true;
         var classLevel = await levelService.CreateAsync(dto);
         return Ok(mapper.Map<ClassLevelResponseDto>(classLevel));
     }

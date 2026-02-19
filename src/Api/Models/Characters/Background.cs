@@ -11,7 +11,7 @@ public class Background : CreatableEntity
     public required string Name { get; set; }
     public required string Description { get; set; }
 
-    public ICollection<Feature> Features { get; set; } = [];
+    public ICollection<BackgroundFeature> Features { get; set; } = [];
     public ICollection<Item> StartingItems { get; set; } = [];
     public ICollection<StartingItemOption> StartingItemsOptions { get; set; } = [];
     public required Currency StartingCurrency { get; set; }

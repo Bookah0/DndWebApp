@@ -52,17 +52,9 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         logger.LogInformation("Successfully deleted item, Name: {ItemName}, ID: {ItemId}", item.Name, id);
     }
 
-    public async Task<ICollection<Item>> GetAllAsync()
-    {
-        var items = await repo.GetAllAsync();
-        return items;
-    }
+    public async Task<ICollection<Item>> GetAllAsync()  => await repo.GetAllAsync();
 
-    public async Task<Item> GetByIdAsync(int id)
-    {
-        var item = await repo.GetByIdAsync(id);
-        return item;
-    }
+    public async Task<Item> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Item> UpdateAsync(UpdateItemRequestDto dto, int id)
     {

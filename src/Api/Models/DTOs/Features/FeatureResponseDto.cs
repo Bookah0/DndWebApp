@@ -26,7 +26,8 @@ public class BackgroundFeatureResponseDto : FeatureResponseDto
 
 public class ClassFeatureResponseDto : FeatureResponseDto
 {
-    public required int ClassLevelId { get; set; }
+    public required int ClassId { get; set; }
+    public required int LevelId { get; set; }
 }
 
 public class TraitResponseDto : FeatureResponseDto
@@ -36,6 +37,6 @@ public class TraitResponseDto : FeatureResponseDto
 
 public class AbilityValueResponseDto
 {
-    public required string AbilityType { get; set; }
-    public required int Increase { get; set; }
+    public required int AbilityId { get; set; }
+    public required int Value { get; set; }
 }

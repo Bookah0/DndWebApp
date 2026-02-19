@@ -15,8 +15,6 @@ namespace Api.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<Character> Characters { get; set; }
-    public DbSet<Inventory> Inventories { get; set; }
-
     public DbSet<Ability> AbilityScores { get; set; }
     public DbSet<AbilityValue> AbilityValues { get; set; }
     public DbSet<Skill> Skills { get; set; }
@@ -58,6 +56,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
         modelBuilder.Entity<Feature>().ConfigureProficiencyChoices();
         modelBuilder.Entity<Character>().ConfigureProficiencies();
+            
+        modelBuilder.Entity<Weapon>().ToTable("Weapons");
+        modelBuilder.Entity<Armor>().ToTable("Armors");
+        modelBuilder.Entity<Tool>().ToTable("Tools");
 
         modelBuilder.Entity<ClassLevel>()
             .OwnsMany(c => c.ClassSlotsAtLevel, slot =>
@@ -81,7 +83,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             });
 
         modelBuilder.Entity<Tool>().OwnsMany(t => t.Activities);
-        modelBuilder.Entity<Tool>().OwnsMany(t => t.Properties);
+        modelBuilder.Entity<Tool>().OwnsMany(t => t.ToolProperties);
 
         modelBuilder.Entity<Spell>()
             .HasMany(s => s.Classes)

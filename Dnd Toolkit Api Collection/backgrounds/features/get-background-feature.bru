@@ -1,0 +1,21 @@
+meta {
+  name: get background feature
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ENV}}/api/backgrounds/{{backgroundId}}/features/{{featureId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  featureId: 60
+  backgroundId: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

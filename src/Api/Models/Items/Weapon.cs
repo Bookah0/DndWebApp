@@ -3,13 +3,10 @@ using Api.Validation.AllowedValues.Items;
 
 namespace Api.Models.Items;
 
-public class Weapon : Item, IEquippable
+public class Weapon : Item
 {
     public required string WeaponCategory { get; set; }
     public required string WeaponType { get; set; }
-    public required string Slot { get; set; }
-    public string MainSlot => Slot;
-    public string? SecondarySlot => Slot == EquipSlot.MainHand ? EquipSlot.OffHand : null;
     public required ICollection<string> Properties { get; set; }
     public required ICollection<string> DamageTypes { get; set; }
     public required string DamageDice { get; set; }

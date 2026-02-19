@@ -1,5 +1,7 @@
 
+using Api.Models.Characters;
 using Api.Models.DTOs.RequestDtos.Inventory;
+using Api.Models.DTOs.ResponseDtos;
 using Api.Models.Items;
 
 namespace Api.Services.Interfaces.Items;
@@ -7,11 +9,16 @@ namespace Api.Services.Interfaces.Items;
 public interface IInventoryService
 {
     Task<Inventory> CreateAsync(CreateInventoryDto dto);
-    Task<Inventory> AddItem(Inventory inventory, int itemId);
-    Task DiscardItem(Inventory inventory, int itemId);
-    Task<Inventory> Equip(Inventory inventory, int itemId, string slot);
-    Task<Inventory> Equip(Inventory inventory, int itemId);
-    Task UnEquip(Inventory inventory, int itemId);
-    Task UnEquip(Inventory inventory, string slot);
     Task<Inventory> GetByCharacterIdAsync(int characterId);
+
+    Task<Inventory> AddItemAsync(int characterId, int itemId, int quantity = 1) ;
+    Task<Inventory> AddItemAsync(Character character, int itemId, int quantity = 1);
+    Task<Inventory> DiscardItemAsync(int characterId, int itemId, int quantity = 1) ;
+    Task<Inventory> DiscardItemAsync(Character character, int itemId, int quantity = 1);
+
+    Task<ICollection<Item>> GetStoredItemsAsync(Inventory inventory);
+
+    Task<ICollection<EquippedItemDto>> GetEquippedItemsAsync(Character character, string? slot = null);
+    Task UnEquipAsync(Character character, int? itemId = null, string? slot = null);
+    Task<Inventory> EquipAsync(Character character, int itemId, string? slot = null);
 }

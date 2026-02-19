@@ -4,6 +4,6 @@ namespace Api.Repositories.Interfaces;
 
 public interface ISubclassRepository : IRepository<Subclass>
 {
-    Task<Subclass> GetWithClassLevelFeaturesAsync(int id);
-    Task<Subclass> GetWithClassLevelsAsync(int id);
+    Task<Subclass> GetWithLevelFeaturesAsync(int id);
+    Task<Subclass> GetWithLevelsAsync(int id);
 }

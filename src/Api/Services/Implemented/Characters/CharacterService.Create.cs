@@ -5,6 +5,8 @@ using Api.Services.Interfaces;
 using Api.Models.DTOs.RequestDtos.Character;
 using Api.Services.Util;
 using Api.Validation.AllowedValues;
+using Api.Services.Implemented.Items;
+using Api.Models.DTOs.RequestDtos.Inventory;
 
 namespace Api.Services.Implemented;
 
@@ -13,7 +15,7 @@ public partial class CharacterService : ICharacterService
     public async Task<Character> CreateAsync(CreateCharacterRequestDto dto)
     {
         var race = await raceRepo.GetWithTraitsAsync(dto.RaceId);
-        var clss = await classRepo.GetWithClassLevelFeaturesAsync(dto.ClassId);
+        var clss = await classRepo.GetWithLevelFeaturesAsync(dto.ClassId);
         var background = await backgroundRepo.GetWithFeaturesAsync(dto.BackgroundId);
 
         var subrace = dto.SubraceId is not null 
@@ -21,7 +23,7 @@ public partial class CharacterService : ICharacterService
             : null;
 
         var subclass = dto.SubClassId is not null
-            ? await subclassRepo.GetWithClassLevelFeaturesAsync((int)dto.SubClassId!) 
+            ? await subclassRepo.GetWithLevelFeaturesAsync((int)dto.SubClassId!) 
             : null;
 
         logger.LogInformation("Creating character, Name: {CharacterName}, ClassId: {ClassId}, RaceId: {RaceId}", dto.Name, dto.ClassId, dto.RaceId);
@@ -43,12 +45,11 @@ public partial class CharacterService : ICharacterService
             CurrentHitDice = dto.Level,
         };
 
-        var inventory = new Inventory()
+        var inventory = await inventoryService.CreateAsync(new CreateInventoryDto
         {
-            Currency = background.StartingCurrency,
-            StoredItems = [.. background.StartingItems, .. clss.StartingEquipment],
-            EquippedItems = []
-        };
+            Currency = CurrencyUtil.ConvertCurrency(background.StartingCurrency),
+            ItemIds = [.. background.StartingItems.Select(i => i.Id), .. clss.StartingEquipment.Select(i => i.Id)],
+        });
 
         var character = new Character()
         {
@@ -58,6 +59,8 @@ public partial class CharacterService : ICharacterService
             PlayerName = dto.PlayerName ?? "",
             CreatedAt = DateTime.UtcNow,
             CreatedBy = currentUserService.GetCurrentUserId(),
+
+            Inventory = inventory,
 
             Race = race,
             RaceId = dto.RaceId,
@@ -72,9 +75,6 @@ public partial class CharacterService : ICharacterService
             Background = background,
             BackgroundId = dto.BackgroundId,
             Info = GetCharacterInfo(dto) ?? new(),
-
-            Inventory = inventory,
-            InventoryId = inventory.Id,
 
             AbilityScores = abilityScores,
             CombatStats = characterStats,

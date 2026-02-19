@@ -46,7 +46,7 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
     {
         var tool = await repo.GetWithAllDataAsync(toolId) ;
         logger.LogInformation("Adding property to tool, ToolId: {ToolId}, PropertyTitle: {PropertyTitle}", toolId, dto.Title);
-        tool.Properties.Add(new ToolProperty { Title = dto.Title, Description = dto.Description });
+        tool.ToolProperties.Add(new ToolProperty { Title = dto.Title, Description = dto.Description });
 
         await repo.UpdateAsync(tool);
         logger.LogInformation("Successfully added property to tool, ToolId: {ToolId}, PropertyTitle: {PropertyTitle}", toolId, dto.Title);

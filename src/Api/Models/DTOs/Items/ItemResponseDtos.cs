@@ -14,6 +14,8 @@ public class ItemResponseDto
     public int Weight { get; set; }
     public int Value { get; set; }
     public int Quantity { get; set; }
+    public string? EquipSlot { get; set; }
+    public string? SecondaryEquipSlot { get; set; }
 }
 
 public class WeaponResponseDto : ItemResponseDto
@@ -45,3 +47,20 @@ public class ToolResponseDto : ItemResponseDto
     public ICollection<ToolActivityDto> Activities { get; set; } = [];
 }
 
+public class EquippedItemDto : ItemResponseDto
+{
+    public string? WeaponCategory { get; set; }
+    public string? WeaponType { get; set; }
+    public ICollection<string>? Properties { get; set; }
+    public ICollection<string>? DamageTypes { get; set; }
+    public string? DamageDice { get; set; }
+    public int? Range { get; set; }
+    public string? VersitileDamageDice { get; set; }
+    public int? LongRange { get; set; }
+    public string? ArmorCategory { get; set; }
+    public int? BaseArmorClass { get; set; }
+    public bool? PlusDexMod { get; set; }
+    public int? ModCap { get; set; }
+    public int? StrengthScoreRequired { get; set; }
+    public bool? StealthDisadvantage { get; set; }
+}

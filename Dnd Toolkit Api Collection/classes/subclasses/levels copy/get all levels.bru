@@ -1,0 +1,16 @@
+meta {
+  name: get all levels
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}/levels
+  body: json
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

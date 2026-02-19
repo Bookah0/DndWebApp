@@ -1,0 +1,20 @@
+meta {
+  name: get all characters
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ENV}}/api/users/{{userId}}/characters
+  body: json
+  auth: inherit
+}
+
+vars:pre-request {
+  userId: 019c75a9-07c4-7da9-9a16-ec3a8b73a006
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,22 @@
+meta {
+  name: create class
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ENV}}/api/classes
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "hitDie": 10
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

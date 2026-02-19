@@ -31,7 +31,6 @@ public class Character : CreatableEntity
 
     // Inventory
     public required Inventory Inventory { get; set; }
-    public required int InventoryId { get; set; }
 
     // Abilities & Combat
     public required ICollection<AbilityValue> AbilityScores { get; set; }
@@ -70,18 +69,18 @@ public class CombatStats
 public class CharacterInfo
 {
     public int? AlignmentId { get; set; }
-    public string PersonalityTraits { get; set; } = "";
-    public string Ideals { get; set; } = "";
-    public string Bonds { get; set; } = "";
-    public string Flaws { get; set; } = "";
+    public string? PersonalityTraits { get; set; }
+    public string? Ideals { get; set; }
+    public string? Bonds { get; set; }
+    public string? Flaws { get; set; }
     public int? Age { get; set; }
     public int? Height { get; set; }
     public int? Weight { get; set; }
-    public string Eyes { get; set; } = "";
-    public string Skin { get; set; } = "";
-    public string Hair { get; set; } = "";
-    public string AlliesAndOrganizations { get; set; } = "";
-    public string Backstory { get; set; } = "";
+    public string? Eyes { get; set; }
+    public string? Skin { get; set; }
+    public string? Hair { get; set; }
+    public string? AlliesAndOrganizations { get; set; }
+    public string? Backstory { get; set; }
     public string? CharacterPictureUrl { get; set; }
 }
 

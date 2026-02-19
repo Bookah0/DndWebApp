@@ -29,6 +29,14 @@ public class BackgroundRepository(AppDbContext context) : IBackgroundRepository
             ?? throw new Exception($"Background with id {id} could not be found");
 
     public async Task<ICollection<Background>> GetAllAsync() => await context.Backgrounds.ToListAsync();
+
+    public async Task<ICollection<Background>> GetAllWithAllDataAsync() =>
+        await context.Backgrounds
+            .AsSplitQuery()
+            .Include(b => b.Features)
+            .Include(b => b.StartingItems)
+            .Include(b => b.StartingItemsOptions)
+            .ToListAsync();
     
     public async Task<Background> CreateAsync(Background entity)
     {

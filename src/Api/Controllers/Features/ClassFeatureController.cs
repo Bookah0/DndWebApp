@@ -18,7 +18,7 @@ public class ClassFeatureController(IFeatureService<ClassFeature, CreateClassFea
 {
     
     [HttpGet]
-    public async Task<ActionResult<ICollection<ClassFeatureResponseDto>>> GetClassFeatures(int classId)
+    public async Task<ActionResult<ICollection<ClassFeatureResponseDto>>> GetAllClassFeatures(int classId)
     {
         var clss = await classService.GetWithFeaturesAsync(classId);
         var allFeatures = clss.ClassLevels.SelectMany(cl => cl.NewFeatures).ToList();

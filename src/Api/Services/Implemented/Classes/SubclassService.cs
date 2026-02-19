@@ -72,8 +72,8 @@ public partial class SubclassService(
         return subclass;
     }
 
-    public async Task<Subclass> GetWithLevelsAsync(int id) => await repo.GetWithClassLevelsAsync(id);
-    public async Task<Subclass> GetWithFeaturesAsync(int id) => await repo.GetWithClassLevelFeaturesAsync(id);
+    public async Task<Subclass> GetWithLevelsAsync(int id) => await repo.GetWithLevelsAsync(id);
+    public async Task<Subclass> GetWithFeaturesAsync(int id) => await repo.GetWithLevelFeaturesAsync(id);
     
 
     public ICollection<Subclass> SortBy(ICollection<Subclass> subclasses, bool descending = false)

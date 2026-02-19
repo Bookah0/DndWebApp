@@ -32,7 +32,7 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
             Value = dto.Value ?? 0,
             WeaponCategory = dtoCategory,
             WeaponType = dtoWeaponType,
-            Slot = GetDefaultWeaponMainSlot(dtoWeaponType),
+            EquipSlot = GetDefaultWeaponMainSlot(dtoWeaponType),
             DamageDice = dto.DamageDice,
             Range = dto.Range,
             Properties = dtoProperties ?? [],
@@ -78,7 +78,7 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
         weapon.WeaponCategory = dtoCategory ?? weapon.WeaponCategory;
         weapon.WeaponType = dtoWeaponType ?? weapon.WeaponType;
         weapon.Rarity = dtoRarity ?? weapon.Rarity;
-        weapon.Slot = dtoSlot ?? weapon.Slot;
+        weapon.EquipSlot = dtoSlot ?? weapon.EquipSlot;
         
         weapon.Name = dto.Name ?? weapon.Name;
         weapon.Description = dto.Description ?? weapon.Description;

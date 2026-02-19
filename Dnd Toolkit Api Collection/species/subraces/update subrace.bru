@@ -1,0 +1,39 @@
+meta {
+  name: update subrace
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ENV}}/api/races/{{raceId}}/subraces/{{subraceId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Drow",
+    "speed": 30,
+    "size": "Medium",
+    "isPublic": false,
+    "cloningAllowed": true,
+    "info": {
+      "generalDescription": "Drow are a dark-skinned subrace of elves.",
+      "agingDescription": "Similar lifespan to other elves.",
+      "alignmentDescription": "Often chaotic evil, though exceptions exist.",
+      "sizesDescription": "Same height range as other elves.",
+      "languagesDescription": "Speak Common, Elvish, and Undercommon."
+    }
+  }
+}
+
+vars:pre-request {
+  spellId: 51
+  raceId: 3
+  subraceId: 5
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

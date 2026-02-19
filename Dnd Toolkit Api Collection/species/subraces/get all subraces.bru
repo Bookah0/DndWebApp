@@ -1,0 +1,27 @@
+meta {
+  name: get all subraces
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ENV}}/api/races/{{raceId}}/subraces
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Spyro",
+    "parentRace": 1
+  }
+}
+
+vars:pre-request {
+  raceId: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

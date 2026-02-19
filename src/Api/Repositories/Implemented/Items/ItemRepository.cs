@@ -15,9 +15,9 @@ namespace Api.Repositories.Implemented.Items;
 public class ItemRepository(AppDbContext context) : IItemRepository
 {
     public async Task<Item> GetByIdAsync(int id) => 
-        await context.Items.FirstOrDefaultAsync(i => i.Id == id) 
-            ?? throw new Exception($"Item with id {id} could not be found");
-    
+       await context.Items.FirstOrDefaultAsync(i => i.Id == id) 
+          ?? throw new Exception($"Item with id {id} could not be found");
+
     public async Task<Item> GetByNameAsync(string name) => 
         await context.Items.FirstOrDefaultAsync(i => i.Name == name)
             ?? throw new Exception($"Item with name {name} could not be found");

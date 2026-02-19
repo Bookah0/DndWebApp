@@ -1,0 +1,22 @@
+meta {
+  name: add item
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{ENV}}/api/users/{{userId}}/characters/{{characterId}}/inventory/{{itemId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  userId: 019c75a9-07c4-7da9-9a16-ec3a8b73a006
+  characterId: 1
+  itemId: 45
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

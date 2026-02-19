@@ -6,6 +6,8 @@ using Api.Services.Interfaces;
 using Api.Middlewares.ExceptionHandling;
 using Api.Controllers.Characters;
 using Api.Validation.AllowedValues;
+using Api.Services.Interfaces.Items;
+using Api.Models.DTOs.RequestDtos.Character;
 
 namespace Api.Services.Implemented;
 
@@ -18,17 +20,51 @@ public partial class CharacterService(
     IClassLevelRepository levelRepo,
     IBackgroundRepository backgroundRepo,
     IAbilityRepository abilityRepo,
+    IInventoryService inventoryService,
     ICurrentUserService currentUserService,
     ILogger<CharacterService> logger) : ICharacterService
 {
     public async Task<ICollection<Character>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Character> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+    public async Task<Character> GetWithInventoryAsync(int id) => await repo.GetWithInventoryAsync(id);
     public async Task<ICollection<Character>> GetAllByUserIdAsync(Guid userId)
     {
         var allCharacters = await repo.GetAllAsync();
         return [.. allCharacters.Where(c => c.CreatedBy == userId)];
     }
     public async Task<ICollection<Character>> GetAllByCurrentUserAsync() => await GetAllByUserIdAsync(currentUserService.GetCurrentUserId());
+
+    public async Task<Character> UpdateAsync(UpdateCharacterRequestDto dto, int id)
+    {
+        var character = await repo.GetByIdAsync(id);
+        logger.LogInformation("Updating character, Name: {CharacterName}, ID: {CharacterId}", character.Name, id);
+
+        character.Name = dto.Name ?? character.Name;
+        character.PlayerName = dto.PlayerName ?? character.PlayerName;
+        character.Experience = dto.Experience ?? character.Experience;
+        
+        character.Info.AlignmentId = dto.CharacterInfo.AlignmentId ?? character.Info.AlignmentId;
+        character.Info.Age = dto.CharacterInfo.Age ?? character.Info.Age;
+        character.Info.Height = dto.CharacterInfo.Height ?? character.Info.Height;
+        character.Info.Weight = dto.CharacterInfo.Weight ?? character.Info.Weight;
+        character.Info.Hair = dto.CharacterInfo.Hair ?? character.Info.Hair;
+        character.Info.Eyes = dto.CharacterInfo.Eyes ?? character.Info.Eyes;
+        character.Info.Skin = dto.CharacterInfo.Skin ?? character.Info.Skin;
+        character.Info.PersonalityTraits = dto.CharacterInfo.PersonalityTraits ?? character.Info.PersonalityTraits;
+        character.Info.Ideals = dto.CharacterInfo.Ideals ?? character.Info.Ideals;
+        character.Info.Bonds = dto.CharacterInfo.Bonds ?? character.Info.Bonds;
+        character.Info.Flaws = dto.CharacterInfo.Flaws ?? character.Info.Flaws;
+        character.Info.AlliesAndOrganizations = dto.CharacterInfo.AlliesAndOrganizations ?? character.Info.AlliesAndOrganizations;
+        character.Info.Backstory = dto.CharacterInfo.Backstory ?? character.Info.Backstory;
+        character.Info.CharacterPictureUrl = dto.CharacterInfo.CharacterPictureUrl ?? character.Info.CharacterPictureUrl;
+
+        character.IsPublic = dto.IsPublic ?? character.IsPublic;
+        character.CloningAllowed = dto.CloningAllowed ?? character.CloningAllowed;
+        character = await repo.UpdateAsync(character);
+
+        logger.LogInformation("Successfully updated character, Name: {CharacterName}, ID: {CharacterId}", character.Name, id);
+        return character;
+    }
 
     public async Task DeleteAsync(int id)
     {
@@ -73,7 +109,7 @@ public partial class CharacterService(
 
         if(character.SubClassId is not null)
         {
-            var subclass = await subclassRepo.GetWithClassLevelFeaturesAsync((int)character.SubClassId);
+            var subclass = await subclassRepo.GetWithLevelFeaturesAsync((int)character.SubClassId);
 
             foreach (var feature in subclass.ClassLevels.SelectMany(cl => cl.NewFeatures))
             {
@@ -81,7 +117,7 @@ public partial class CharacterService(
             }
         }
         
-        var newSubclass = await subclassRepo.GetWithClassLevelFeaturesAsync(newSubclassId);
+        var newSubclass = await subclassRepo.GetWithLevelFeaturesAsync(newSubclassId);
 
         logger.LogInformation("Changing subclass, CharacterName: {CharacterName}, CharacterId: {CharacterId}, SubclassId: {SubclassId}", character.Name, characterId, newSubclassId);
         character.SubClassId = newSubclassId;
@@ -111,16 +147,6 @@ public partial class CharacterService(
         character.Class = newClass;
         character = await repo.UpdateAsync(character);
         logger.LogInformation("Successfully changed class, CharacterName: {CharacterName}, CharacterId: {CharacterId}, NewClassId: {NewClassId}", character.Name, characterId, newClassId);
-        return character;
-    }
-
-    public async Task<Character> EditCharacterInfoAsync(CharacterInfo edited, int characterId)
-    {
-        var character = await repo.GetByIdAsync(characterId);
-        logger.LogInformation("Updating character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
-        character.Info = edited;
-        character = await repo.UpdateAsync(character);
-        logger.LogInformation("Successfully updated character description, Name: {CharacterName}, ID: {CharacterId}", character.Name, characterId);
         return character;
     }
 

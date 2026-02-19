@@ -1,0 +1,30 @@
+meta {
+  name: create subclass
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Champion",
+    "description": "An archetype focused on raw physical power.",
+    "hitDie": 10,
+    "spellcastingAbilityId": 1
+  }
+}
+
+vars:pre-request {
+  raceId: 1
+  classId: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

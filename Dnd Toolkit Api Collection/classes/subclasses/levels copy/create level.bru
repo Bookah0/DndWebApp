@@ -1,0 +1,30 @@
+meta {
+  name: create level
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}/levels
+  body: json
+  auth: inherit
+}
+
+body:json {
+  
+  {
+      "ClassId": 4,
+      "Level": 1
+  }
+  
+}
+
+vars:pre-request {
+  classId: 2
+  subclassId: 4
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

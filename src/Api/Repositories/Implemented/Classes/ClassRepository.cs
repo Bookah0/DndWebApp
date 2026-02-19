@@ -32,7 +32,7 @@ public class ClassRepository(AppDbContext context) : IBaseClassRepository
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Class with id {id} could not be found");
 
-    public async Task<BaseClass> GetWithClassLevelFeaturesAsync(int id) =>
+    public async Task<BaseClass> GetWithLevelFeaturesAsync(int id) =>
         await context.Classes
             .Include(c => c.ClassLevels)
                 .ThenInclude(l => l.NewFeatures)
@@ -48,6 +48,12 @@ public class ClassRepository(AppDbContext context) : IBaseClassRepository
 
     public async Task<ICollection<BaseClass>> GetAllAsync() => await context.Classes.ToListAsync();
     
+    public async Task<ICollection<BaseClass>> GetAllWithLevelFeaturesAsync() =>
+        await context.Classes
+            .Include(c => c.ClassLevels)
+                .ThenInclude(l => l.NewFeatures)
+            .ToListAsync();
+
     public async Task<ICollection<BaseClass>> GetAllWithAllDataAsync() =>
         await context.Classes
             .Include(c => c.Subclasses)

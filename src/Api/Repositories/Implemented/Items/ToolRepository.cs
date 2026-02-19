@@ -19,7 +19,7 @@ public class ToolRepository(AppDbContext context) : IToolRepository
 
     public async Task<Tool> GetWithAllDataAsync(int id) => 
         await context.Tools
-            .Include(t => t.Properties)
+            .Include(t => t.ToolProperties)
             .Include(t => t.Activities)
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Tool with id {id} could not be found");
@@ -28,7 +28,7 @@ public class ToolRepository(AppDbContext context) : IToolRepository
 
     public async Task<ICollection<Tool>> GetAllWithAllDataAsync() => 
         await context.Tools
-            .Include(t => t.Properties)
+            .Include(t => t.ToolProperties)
             .Include(t => t.Activities)
             .ToListAsync();
 

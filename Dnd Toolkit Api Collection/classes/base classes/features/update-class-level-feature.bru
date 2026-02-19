@@ -1,0 +1,30 @@
+meta {
+  name: update class level feature
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ENV}}/api/classes/{{classId}}/features/{{featureId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Improved Action Surge",
+    "description": "An improved version of Action Surge.",
+    "isPublic": false,
+    "cloningAllowed": true
+  }
+}
+
+vars:pre-request {
+  classId: 1
+  featureId: 61
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

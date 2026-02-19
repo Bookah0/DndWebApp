@@ -1,0 +1,20 @@
+meta {
+  name: get subrace
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ENV}}/api/races/{{raceId}}/subraces/{{subraceId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  spellId: 51
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

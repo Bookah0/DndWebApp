@@ -1,0 +1,16 @@
+meta {
+  name: get feat
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ENV}}/api/feats/{{featId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

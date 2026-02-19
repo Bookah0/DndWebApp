@@ -176,12 +176,6 @@ namespace Api.Migrations
                     b.Property<int?>("Experience")
                         .HasColumnType("integer");
 
-                    b.Property<int>("InventoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("InventoryId1")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsHomebrew")
                         .HasColumnType("boolean");
 
@@ -219,8 +213,6 @@ namespace Api.Migrations
                     b.HasIndex("BackgroundId");
 
                     b.HasIndex("ClassId");
-
-                    b.HasIndex("InventoryId1");
 
                     b.HasIndex("RaceId");
 
@@ -561,9 +553,6 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("text[]");
 
-                    b.Property<int?>("BackgroundId")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("CloningAllowed")
                         .HasColumnType("boolean");
 
@@ -620,8 +609,6 @@ namespace Api.Migrations
                         .HasColumnType("text[]");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BackgroundId");
 
                     b.ToTable("Feature");
 
@@ -752,31 +739,6 @@ namespace Api.Migrations
                     b.ToTable("WeaponTypeProficiencyChoices");
                 });
 
-            modelBuilder.Entity("Api.Models.Items.Inventory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AttunedItems")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MaxWeight")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TotalWeight")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Inventories");
-                });
-
             modelBuilder.Entity("Api.Models.Items.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -808,13 +770,8 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
-
-                    b.Property<int?>("InventoryId")
-                        .HasColumnType("integer");
+                    b.Property<string>("EquipSlot")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsHomebrew")
                         .HasColumnType("boolean");
@@ -836,6 +793,12 @@ namespace Api.Migrations
                     b.Property<bool>("RequiresAttunement")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("SecondaryEquipSlot")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Stackable")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -851,13 +814,9 @@ namespace Api.Migrations
 
                     b.HasIndex("BaseClassId");
 
-                    b.HasIndex("InventoryId");
-
                     b.ToTable("Items");
 
-                    b.HasDiscriminator().HasValue("Item");
-
-                    b.UseTphMappingStrategy();
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("Api.Models.Spells.Spell", b =>
@@ -1033,21 +992,6 @@ namespace Api.Migrations
                     b.ToTable("Alignments");
                 });
 
-            modelBuilder.Entity("BaseClassSpell", b =>
-                {
-                    b.Property<int>("ClassesId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SpellId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ClassesId", "SpellId");
-
-                    b.HasIndex("SpellId");
-
-                    b.ToTable("SpellClasses", (string)null);
-                });
-
             modelBuilder.Entity("CharacterSpell", b =>
                 {
                     b.Property<int>("CharacterId")
@@ -1061,6 +1005,21 @@ namespace Api.Migrations
                     b.HasIndex("ReadySpellsId");
 
                     b.ToTable("CharacterSpells", (string)null);
+                });
+
+            modelBuilder.Entity("ClassSpell", b =>
+                {
+                    b.Property<int>("ClassesId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SpellId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ClassesId", "SpellId");
+
+                    b.HasIndex("SpellId");
+
+                    b.ToTable("SpellClasses", (string)null);
                 });
 
             modelBuilder.Entity("FeatureSpell", b =>
@@ -1250,10 +1209,10 @@ namespace Api.Migrations
                 {
                     b.HasBaseType("Api.Models.Features.Feature");
 
-                    b.Property<int>("BackgroundId1")
+                    b.Property<int>("BackgroundId")
                         .HasColumnType("integer");
 
-                    b.HasIndex("BackgroundId1");
+                    b.HasIndex("BackgroundId");
 
                     b.HasDiscriminator().HasValue("BackgroundFeature");
                 });
@@ -1348,7 +1307,7 @@ namespace Api.Migrations
                     b.Property<int?>("StrengthScoreRequired")
                         .HasColumnType("integer");
 
-                    b.HasDiscriminator().HasValue("Armor");
+                    b.ToTable("Armors", (string)null);
                 });
 
             modelBuilder.Entity("Api.Models.Items.Tool", b =>
@@ -1359,7 +1318,7 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasDiscriminator().HasValue("Tool");
+                    b.ToTable("Tools", (string)null);
                 });
 
             modelBuilder.Entity("Api.Models.Items.Weapon", b =>
@@ -1384,10 +1343,6 @@ namespace Api.Migrations
                     b.Property<int>("Range")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Slot")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("VersatileDamageDice")
                         .HasColumnType("text");
 
@@ -1399,7 +1354,7 @@ namespace Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasDiscriminator().HasValue("Weapon");
+                    b.ToTable("Weapons", (string)null);
                 });
 
             modelBuilder.Entity("AbilityValueCharacter", b =>
@@ -1563,12 +1518,6 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Api.Models.Items.Inventory", "Inventory")
-                        .WithMany()
-                        .HasForeignKey("InventoryId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Api.Models.Characters.Race", "Race")
                         .WithMany()
                         .HasForeignKey("RaceId")
@@ -1672,45 +1621,36 @@ namespace Api.Migrations
                                 .HasColumnType("integer");
 
                             b1.Property<string>("AlliesAndOrganizations")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("Backstory")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("Bonds")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("CharacterPictureUrl")
                                 .HasColumnType("text");
 
                             b1.Property<string>("Eyes")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("Flaws")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("Hair")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<int?>("Height")
                                 .HasColumnType("integer");
 
                             b1.Property<string>("Ideals")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("PersonalityTraits")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<string>("Skin")
-                                .IsRequired()
                                 .HasColumnType("text");
 
                             b1.Property<int?>("Weight")
@@ -1947,6 +1887,135 @@ namespace Api.Migrations
                                 .HasForeignKey("CharacterId");
                         });
 
+                    b.OwnsOne("Api.Models.Items.Inventory", "Inventory", b1 =>
+                        {
+                            b1.Property<int>("CharacterId")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("AttunedItems")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("MaxWeight")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("TotalWeight")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("CharacterId");
+
+                            b1.ToTable("Characters");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CharacterId");
+
+                            b1.OwnsMany("Api.Models.Items.EquipmentSlot", "EquipmentSlots", b2 =>
+                                {
+                                    b2.Property<int>("InventoryCharacterId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("integer");
+
+                                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<int?>("EquipmentId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<string>("Slot")
+                                        .IsRequired()
+                                        .HasColumnType("text");
+
+                                    b2.HasKey("InventoryCharacterId", "Id");
+
+                                    b2.HasIndex("EquipmentId");
+
+                                    b2.ToTable("EquipmentSlot");
+
+                                    b2.HasOne("Api.Models.Items.Item", "Equipment")
+                                        .WithMany()
+                                        .HasForeignKey("EquipmentId");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("InventoryCharacterId");
+
+                                    b2.Navigation("Equipment");
+                                });
+
+                            b1.OwnsOne("Api.Models.Items.Currency", "Currency", b2 =>
+                                {
+                                    b2.Property<int>("InventoryCharacterId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Brass")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Copper")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Electrum")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Gold")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Platinum")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Silver")
+                                        .HasColumnType("integer");
+
+                                    b2.HasKey("InventoryCharacterId");
+
+                                    b2.ToTable("Characters");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("InventoryCharacterId");
+                                });
+
+                            b1.OwnsMany("Api.Models.Items.InventoryItem", "StoredItems", b2 =>
+                                {
+                                    b2.Property<int>("InventoryCharacterId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("integer");
+
+                                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<int>("ItemId")
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Quantity")
+                                        .HasColumnType("integer");
+
+                                    b2.HasKey("InventoryCharacterId", "Id");
+
+                                    b2.HasIndex("ItemId");
+
+                                    b2.ToTable("InventoryItem");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("InventoryCharacterId");
+
+                                    b2.HasOne("Api.Models.Items.Item", "Item")
+                                        .WithMany()
+                                        .HasForeignKey("ItemId")
+                                        .OnDelete(DeleteBehavior.Cascade)
+                                        .IsRequired();
+
+                                    b2.Navigation("Item");
+                                });
+
+                            b1.Navigation("Currency")
+                                .IsRequired();
+
+                            b1.Navigation("EquipmentSlots");
+
+                            b1.Navigation("StoredItems");
+                        });
+
                     b.Navigation("ArmorProficiencies");
 
                     b.Navigation("Background");
@@ -1965,7 +2034,8 @@ namespace Api.Migrations
                     b.Navigation("Info")
                         .IsRequired();
 
-                    b.Navigation("Inventory");
+                    b.Navigation("Inventory")
+                        .IsRequired();
 
                     b.Navigation("Languages");
 
@@ -2254,10 +2324,6 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Features.Feature", b =>
                 {
-                    b.HasOne("Api.Models.Characters.Background", null)
-                        .WithMany("Features")
-                        .HasForeignKey("BackgroundId");
-
                     b.OwnsMany("Api.Models.CloneEvent", "CloningHistory", b1 =>
                         {
                             b1.Property<int>("FeatureId")
@@ -2331,71 +2397,6 @@ namespace Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Api.Models.Items.Inventory", b =>
-                {
-                    b.OwnsMany("Api.Models.Items.EquipmentSlot", "EquippedItems", b1 =>
-                        {
-                            b1.Property<int>("InventoryId")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
-
-                            b1.Property<int?>("EquipmentId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Slot")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("InventoryId", "Id");
-
-                            b1.ToTable("EquipmentSlot");
-
-                            b1.WithOwner()
-                                .HasForeignKey("InventoryId");
-                        });
-
-                    b.OwnsOne("Api.Models.Items.Currency", "Currency", b1 =>
-                        {
-                            b1.Property<int>("InventoryId")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Brass")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Copper")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Electrum")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Gold")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Platinum")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Silver")
-                                .HasColumnType("integer");
-
-                            b1.HasKey("InventoryId");
-
-                            b1.ToTable("Inventories");
-
-                            b1.WithOwner()
-                                .HasForeignKey("InventoryId");
-                        });
-
-                    b.Navigation("Currency")
-                        .IsRequired();
-
-                    b.Navigation("EquippedItems");
-                });
-
             modelBuilder.Entity("Api.Models.Items.Item", b =>
                 {
                     b.HasOne("Api.Models.Characters.Background", null)
@@ -2405,10 +2406,6 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Characters.BaseClass", null)
                         .WithMany("StartingEquipment")
                         .HasForeignKey("BaseClassId");
-
-                    b.HasOne("Api.Models.Items.Inventory", null)
-                        .WithMany("StoredItems")
-                        .HasForeignKey("InventoryId");
 
                     b.OwnsMany("Api.Models.CloneEvent", "CloningHistory", b1 =>
                         {
@@ -2536,21 +2533,6 @@ namespace Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BaseClassSpell", b =>
-                {
-                    b.HasOne("Api.Models.Characters.BaseClass", null)
-                        .WithMany()
-                        .HasForeignKey("ClassesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.Models.Spells.Spell", null)
-                        .WithMany()
-                        .HasForeignKey("SpellId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CharacterSpell", b =>
                 {
                     b.HasOne("Api.Models.Characters.Character", null)
@@ -2562,6 +2544,21 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Spells.Spell", null)
                         .WithMany()
                         .HasForeignKey("ReadySpellsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ClassSpell", b =>
+                {
+                    b.HasOne("Api.Models.Characters.Class", null)
+                        .WithMany()
+                        .HasForeignKey("ClassesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.Models.Spells.Spell", null)
+                        .WithMany()
+                        .HasForeignKey("SpellId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2734,8 +2731,8 @@ namespace Api.Migrations
             modelBuilder.Entity("Api.Models.Features.BackgroundFeature", b =>
                 {
                     b.HasOne("Api.Models.Characters.Background", "Background")
-                        .WithMany()
-                        .HasForeignKey("BackgroundId1")
+                        .WithMany("Features")
+                        .HasForeignKey("BackgroundId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2789,8 +2786,23 @@ namespace Api.Migrations
                     b.Navigation("FromRace");
                 });
 
+            modelBuilder.Entity("Api.Models.Items.Armor", b =>
+                {
+                    b.HasOne("Api.Models.Items.Item", null)
+                        .WithOne()
+                        .HasForeignKey("Api.Models.Items.Armor", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Api.Models.Items.Tool", b =>
                 {
+                    b.HasOne("Api.Models.Items.Item", null)
+                        .WithOne()
+                        .HasForeignKey("Api.Models.Items.Tool", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsMany("Api.Models.Items.ToolActivity", "Activities", b1 =>
                         {
                             b1.Property<int>("ToolId")
@@ -2824,7 +2836,7 @@ namespace Api.Migrations
                                 .HasForeignKey("ToolId");
                         });
 
-                    b.OwnsMany("Api.Models.Items.ToolProperty", "Properties", b1 =>
+                    b.OwnsMany("Api.Models.Items.ToolProperty", "ToolProperties", b1 =>
                         {
                             b1.Property<int>("ToolId")
                                 .HasColumnType("integer");
@@ -2853,7 +2865,16 @@ namespace Api.Migrations
 
                     b.Navigation("Activities");
 
-                    b.Navigation("Properties");
+                    b.Navigation("ToolProperties");
+                });
+
+            modelBuilder.Entity("Api.Models.Items.Weapon", b =>
+                {
+                    b.HasOne("Api.Models.Items.Item", null)
+                        .WithOne()
+                        .HasForeignKey("Api.Models.Items.Weapon", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Api.Models.Characters.Ability", b =>
@@ -2924,11 +2945,6 @@ namespace Api.Migrations
             modelBuilder.Entity("Api.Models.Features.SkillProficiencyChoice", b =>
                 {
                     b.Navigation("Options");
-                });
-
-            modelBuilder.Entity("Api.Models.Items.Inventory", b =>
-                {
-                    b.Navigation("StoredItems");
                 });
 
             modelBuilder.Entity("Api.Models.Characters.BaseClass", b =>

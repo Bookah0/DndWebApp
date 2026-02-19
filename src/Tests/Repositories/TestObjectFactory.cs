@@ -2,9 +2,10 @@ using Api.Data;
 using Api.Models.Characters;
 using Api.Models.Features;
 using Api.Models.Items;
-using Api.Models.Items.Constants;
 using Api.Models.Spells;
-using Api.Models.Spells.Constants;
+using Api.Validation.AllowedValues;
+using Api.Validation.AllowedValues.Items;
+using Api.Validation.AllowedValues.Spells;
 using Microsoft.EntityFrameworkCore;
 
 namespace Tests.Repositories;
@@ -71,8 +72,7 @@ public static class TestObjectFactory
             ClassId = cls.Id,
             Background = background,
             BackgroundId = background.Id,
-            Inventory = new Inventory { Currency = new(), Id = 10, EquippedItems = [] },
-            InventoryId = 10,
+            Inventory = new Inventory { Currency = new(), EquipmentSlots = [] },
             AbilityScores = [new AbilityValue() { Ability = str, AbilityId = str.Id, Value = 10 }],
             CombatStats = new CombatStats
             {
@@ -176,7 +176,7 @@ public static class TestObjectFactory
         Categories = [ItemCategory.Weapon],
         WeaponCategory = WeaponCategory.SimpleRanged,
         WeaponType = WeaponType.Shortbow,
-        Slot = EquipSlot.TwoHand,
+        EquipSlot = EquipSlot.TwoHand,
         Properties = [WeaponProperty.TwoHanded],
         DamageTypes = [DamageType.Piercing],
         DamageDice = "1d6",
@@ -187,10 +187,16 @@ public static class TestObjectFactory
 
     public static Inventory CreateTestInventory()
     {
+        List<Item> items = [ 
+            CreateTestArmor(),
+            CreateTestWeapon(),
+            CreateTestTool()
+        ];
+
         var inv = new Inventory
         {
             Currency = new(),
-            StoredItems = [CreateTestArmor(), CreateTestWeapon(), CreateTestTool()]
+            StoredItems = [.. items.Select(i => new InventoryItem { ItemId = i.Id, Quantity = 1 })],
         };
 
         return inv;
@@ -212,7 +218,7 @@ public static class TestObjectFactory
         Categories = [ItemCategory.Tools],
         ToolCategory = ToolCategory.ThievesTools,
         Activities = [],
-        Properties = [],
+        ToolProperties = [],
         CreatedAt = DateTime.UtcNow,
         CreatedBy = Guid.NewGuid()
     };
@@ -224,7 +230,7 @@ public static class TestObjectFactory
         Level = 1,
         Duration = SpellDuration.Instantaneous,
         CastingTime = CastingTime.Action,
-        SpellTargeting = new() { TargetType = SpellTargetType.Creature, Range = SpellRange.Feet, RangeValue = 20 },
+        SpellTargeting = new() { TargetType = TargetType.Creature, Range = SpellRange.Feet, RangeValue = 20 },
         MagicSchool = MagicSchool.Evocation,
         CreatedAt = DateTime.UtcNow,
         CreatedBy = Guid.NewGuid()

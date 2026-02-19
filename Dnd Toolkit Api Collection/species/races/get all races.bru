@@ -1,0 +1,16 @@
+meta {
+  name: get all races
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ENV}}/api/races
+  body: json
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

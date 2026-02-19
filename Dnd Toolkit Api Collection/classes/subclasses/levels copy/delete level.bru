@@ -1,0 +1,20 @@
+meta {
+  name: delete level
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}/levels/{{levelId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  spellId: 51
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

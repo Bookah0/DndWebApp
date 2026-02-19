@@ -4,12 +4,10 @@ namespace Api.Models.DTOs.RequestDtos.Character;
 
 public class CreateLanguageRequestDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Family { get; set; }

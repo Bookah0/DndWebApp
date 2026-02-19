@@ -8,6 +8,7 @@ public class CharacterResponseDto
     public int? Experience { get; set; }
     public string PlayerName { get; set; } = "";
     public required string TimeCreated { get; set; }
+    public required Guid CreatedBy { get; set; }
 
     // Races & Subraces
     public int RaceId { get; set; }
@@ -19,7 +20,7 @@ public class CharacterResponseDto
 
     // Background
     public required int BackgroundId { get; set; }
-    public CharacterInfoResponseDto CharacterInfo { get; set; } = new();
+    public required CharacterInfoResponseDto Info { get; set; }
 
     // Inventory
     public required int InventoryId { get; set; }
@@ -50,18 +51,18 @@ public class CombatStatsResponseDto
 
 public class CharacterInfoResponseDto
 {
-    public int? AlignmentId { get; set; }
-    public string PersonalityTraits { get; set; } = "";
-    public string Ideals { get; set; } = "";
-    public string Bonds { get; set; } = "";
-    public string Flaws { get; set; } = "";
-    public int? Age { get; set; }
-    public int? Height { get; set; }
-    public int? Weight { get; set; }
-    public string Eyes { get; set; } = "";
-    public string Skin { get; set; } = "";
-    public string Hair { get; set; } = "";
-    public string AlliesAndOrganizations { get; set; } = "";
-    public string Backstory { get; set; } = "";
-    public string? CharacterPictureUrl { get; set; }
+    public required int? AlignmentId { get; set; }
+    public required string PersonalityTraits { get; set; }
+    public required string Ideals { get; set; }
+    public required string Bonds { get; set; }
+    public required string Flaws { get; set; }
+    public required int? Age { get; set; }
+    public required int? Height { get; set; }
+    public required int? Weight { get; set; }
+    public required string Eyes { get; set; }
+    public required string Skin { get; set; }
+    public required string Hair { get; set; }
+    public required string AlliesAndOrganizations { get; set; }
+    public required string Backstory { get; set; }
+    public required string? CharacterPictureUrl { get; set; }
 }

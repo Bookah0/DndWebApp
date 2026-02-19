@@ -1,0 +1,16 @@
+meta {
+  name: update subclass level feature
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ENV}}/api/classes/{{classId}}/subclasses/{{subclassId}}/features/{{featureId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

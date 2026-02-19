@@ -20,8 +20,8 @@ public partial class ClassLevelService(
     public async Task<ClassLevel> CreateAsync(CreateClassLevelRequestDto dto)
     {
         Class clss = dto.IsSubclassLevel
-            ? await subclassRepo.GetByIdAsync(dto.ClassId)
-            : await classRepo.GetByIdAsync(dto.ClassId);
+            ? await subclassRepo.GetWithLevelsAsync(dto.ClassId)
+            : await classRepo.GetWithLevelsAsync(dto.ClassId);
  
         logger.LogInformation("Creating class level, Level: {ClassLevel}, ClassId: {ClassId}", dto.Level, dto.ClassId);
 

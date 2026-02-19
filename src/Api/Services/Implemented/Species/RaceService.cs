@@ -13,11 +13,11 @@ public class RaceService(IRaceRepository repo, ICurrentUserService currentUserSe
         logger.LogInformation("Creating race, Name: {RaceName}", dto.Name);
         var raceDescription = new SpeciesInfo
         {
-            General = dto.Info?.GeneralDescription ?? "",
-            Aging = dto.Info?.AgingDescription ?? "",
-            CommonAlignment = dto.Info?.AlignmentDescription ?? "",
-            Size = dto.Info?.SizesDescription ?? "",
-            Languages = dto.Info?.LanguagesDescription ?? ""
+            General = dto.Info?.General ?? "",
+            Aging = dto.Info?.Aging ?? "",
+            CommonAlignment = dto.Info?.CommonAlignment ?? "",
+            Size = dto.Info?.Size ?? "",
+            Languages = dto.Info?.Languages ?? ""
         };
         
         var race = await repo.CreateAsync(new()
@@ -59,11 +59,11 @@ public class RaceService(IRaceRepository repo, ICurrentUserService currentUserSe
         race.Speed = dto.Speed ?? race.Speed;
         race.Size = dto.Size ?? race.Size;
 
-        race.Info.General = dto.Info?.GeneralDescription ?? race.Info.General;
-        race.Info.Aging = dto.Info?.AgingDescription ?? race.Info.Aging;
-        race.Info.CommonAlignment = dto.Info?.AlignmentDescription ?? race.Info.CommonAlignment;
-        race.Info.Size = dto.Info?.SizesDescription ?? race.Info.Size;
-        race.Info.Languages = dto.Info?.LanguagesDescription ?? race.Info.Languages;
+        race.Info.General = dto.Info?.General ?? race.Info.General;
+        race.Info.Aging = dto.Info?.Aging ?? race.Info.Aging;
+        race.Info.CommonAlignment = dto.Info?.CommonAlignment ?? race.Info.CommonAlignment;
+        race.Info.Size = dto.Info?.Size ?? race.Info.Size;
+        race.Info.Languages = dto.Info?.Languages ?? race.Info.Languages;
 
         race.IsPublic = dto.IsPublic ?? race.IsPublic;
         race.CloningAllowed = dto.CloningAllowed ?? race.CloningAllowed;

@@ -3,7 +3,8 @@ using Api.Data;
 using Api.Models.Items;
 using Api.Repositories.Implemented.Items;
 using Api.Repositories.Implemented;
-using Api.Models.Items.Constants;
+using Api.Validation.AllowedValues.Items;
+using Api.Validation.AllowedValues;
 
 namespace Tests.Repositories;
 
@@ -229,8 +230,8 @@ public class ItemRepositoryTests
         tool.Activities.Add(activity2);
         var property1 = new ToolProperty { Title = "Components", Description = "Thieves' tools include a small file, a set of lock picks, a small mirror mounted on a metal handle, a set of narrow-bladed scissors, and a pair of pliers" };
         var property2 = new ToolProperty { Title = "History", Description = "Your knowledge of traps grants you insight when answering questions about locations that are renowned for their traps." };
-        tool.Properties.Add(property1);
-        tool.Properties.Add(property2);
+        tool.ToolProperties.Add(property1);
+        tool.ToolProperties.Add(property2);
 
         // Act
         await repo.CreateAsync(tool);
@@ -245,9 +246,9 @@ public class ItemRepositoryTests
         Assert.Contains(retrievedTool.Activities, a => a.Title == "Pick a lock");
         Assert.Contains(retrievedTool.Activities, a => a.Title == "Disable a trap");
 
-        Assert.NotNull(retrievedTool.Properties);
-        Assert.Equal(2, retrievedTool.Properties.Count);
-        Assert.Contains(retrievedTool.Properties, a => a.Title == "Components");
-        Assert.Contains(retrievedTool.Properties, a => a.Description == "Your knowledge of traps grants you insight when answering questions about locations that are renowned for their traps.");
+        Assert.NotNull(retrievedTool.ToolProperties);
+        Assert.Equal(2, retrievedTool.ToolProperties.Count);
+        Assert.Contains(retrievedTool.ToolProperties, a => a.Title == "Components");
+        Assert.Contains(retrievedTool.ToolProperties, a => a.Description == "Your knowledge of traps grants you insight when answering questions about locations that are renowned for their traps.");
     }
 }

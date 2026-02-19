@@ -5,7 +5,6 @@ namespace Api.Models.DTOs.RequestDtos.Inventory;
 
 public class CreateArmorRequestDto
 {
-    [Required]
     [MinLength(1)]
     [MaxLength(100)]
     public required string Name { get; set; }
@@ -19,16 +18,13 @@ public class CreateArmorRequestDto
     [Range(0, int.MaxValue)]
     public int? Value { get; set; }
 
-    [Required]
     [MinLength(1)]
     [MaxLength(50)]
     public required string Category { get; set; }
 
-    [Required]
     [Range(1, 30)]
     public required int BaseArmorClass { get; set; }
 
-    [Required]
     public required bool PlusDexMod { get; set; }
 
     [MaxLength(50)]
@@ -46,11 +42,9 @@ public class CreateArmorRequestDto
 
 public class UpdateArmorRequestDto
 {
-    [MinLength(1)]
     [MaxLength(100)]
     public string? Name { get; set; }
 
-    [MinLength(1)]
     [MaxLength(1000)]
     public string? Description { get; set; }
 
@@ -60,7 +54,6 @@ public class UpdateArmorRequestDto
     [Range(0, int.MaxValue)]
     public int? Value { get; set; }
 
-    [MinLength(1)]
     [MaxLength(50)]
     public string? Category { get; set; }
 

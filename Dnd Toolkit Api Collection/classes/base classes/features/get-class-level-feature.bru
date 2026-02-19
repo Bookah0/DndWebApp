@@ -1,0 +1,21 @@
+meta {
+  name: get class level feature
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ENV}}/api/classes/{{classId}}/features/{{featureId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  classId: 1
+  featureId: 61
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

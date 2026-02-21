@@ -1,0 +1,100 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Api.Domain.Shared.DTOs;
+
+public abstract class CreateFeatureRequestDto
+{
+    [MinLength(1)]
+    [MaxLength(100)]
+    public required string Name { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(1000)]
+    public required string Description { get; set; }
+}
+
+public abstract class UpdateFeatureRequestDto
+{
+    [MinLength(1)]
+    [MaxLength(100)]
+    public string? Name { get; set; }
+
+    [MinLength(1)]
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+    public bool? IsPublic { get; set; }
+    public bool? CloningAllowed { get; set; }
+}
+
+public class CreateFeatRequestDto : CreateFeatureRequestDto
+{
+    [MaxLength(500)]
+    public string Prerequisite { get; set; } = "";
+
+    [Range(1, int.MaxValue)]
+    public int? FromClassId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? FromRaceId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? FromBackgroundId { get; set; }
+}
+
+public class UpdateFeatRequestDto : UpdateFeatureRequestDto
+{
+    [MinLength(1)]
+    [MaxLength(500)]
+    public string? Prerequisite { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? NewFromRaceId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? NewFromBackgroundId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? NewFromClassId { get; set; }
+}
+
+public class CreateBackgroundFeatureRequestDto : CreateFeatureRequestDto
+{
+    [Range(1, int.MaxValue)]
+    public required int BackgroundId { get; set; }
+}
+
+public class UpdateBackgroundFeatureRequestDto : UpdateFeatureRequestDto
+{
+    [Range(1, int.MaxValue)]
+    public int? NewBackgroundId { get; set; }
+}
+
+public class CreateClassFeatureRequestDto : CreateFeatureRequestDto
+{
+    [Range(1, int.MaxValue)]
+    public required int LevelId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public required int ClassId { get; set; }
+}
+
+public class UpdateClassFeatureRequestDto : UpdateFeatureRequestDto
+{
+    [Range(1, int.MaxValue)]
+    public int? NewLevelId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? NewClassId { get; set; }
+}
+
+public class CreateTraitRequestDto : CreateFeatureRequestDto
+{
+    [Range(1, int.MaxValue)]
+    public required int RaceId { get; set; }
+}
+
+public class UpdateTraitRequestDto : UpdateFeatureRequestDto
+{
+    [Range(1, int.MaxValue)]
+    public int? NewRaceId { get; set; }
+}

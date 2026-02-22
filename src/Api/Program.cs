@@ -134,11 +134,22 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Dev", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionHandler>();
 app.UseHttpsRedirection();
+app.UseCors("Dev");
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())

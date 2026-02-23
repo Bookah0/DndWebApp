@@ -1,4 +1,5 @@
 using Api.Domain.Classes.Models;
+using Api.Domain.Shared.Enums;
 using Api.Domain.Shared.Repositories;
 using Api.Infrastructure.Data;
 using Api.Infrastructure.Middleware.ExceptionHandling;
@@ -67,4 +68,9 @@ public class ClassFeatureRepository(AppDbContext context) : IFeatureRepository<C
         return updatedEntity;
     }
 
+    private readonly Dictionary<string, IEnumerable<Func<ClassFeature, object>>> sortSelectorsMap = new()
+    {
+        { SortClassFeatureOption.Name, [(f => f.Name)] },
+        { SortClassFeatureOption.Class, [(f => f.Level!.Class.Name), (f => f.Name)] },
+    };
 }

@@ -85,17 +85,4 @@ public class ClassFeatureService(
         logger.LogInformation("Successfully updated class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
         return feature;
     }
-
-    public ICollection<ClassFeature> SortBy(ICollection<ClassFeature> features, string sortFilter, bool descending = false)
-    {
-        if(!ValuesValidator.TryNormalizeValue<SortClassFeatureOption>(sortFilter, out string? normalized))
-            return features;
-
-        return normalized switch
-        {
-            SortClassFeatureOption.Name => QueryUtil.OrderByMany(features, [(l => l.Name)], descending),
-            SortClassFeatureOption.Class => QueryUtil.OrderByMany(features, [(l => l.Level!.Class.Name), (l => l.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
 }

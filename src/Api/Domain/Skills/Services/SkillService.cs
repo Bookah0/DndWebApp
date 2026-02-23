@@ -1,4 +1,5 @@
 using Api.Domain.Abilities.Repositories;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Enums;
 using Api.Domain.Shared.Utils;
 using Api.Domain.Skills.DTOs;
@@ -49,6 +50,8 @@ public class SkillService(
         logger.LogInformation("Successfully deleted skill, Name: {SkillName}, ID: {SkillId}", skill.Name, skill.Id);
     }
 
+    public async Task<(int, ICollection<Skill>)> GetFilteredAsync(SkillFilterDto filter, PaginationRequestDto pagination)
+      => await repo.GetFilteredAsync(filter, pagination);      
     public async Task<ICollection<Skill>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<ICollection<Skill>> GetAllWithAbilityAsync() => await repo.GetAllWithAbilityAsync();
     public async Task<Skill> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
@@ -73,21 +76,5 @@ public class SkillService(
         await repo.UpdateAsync(skill);
         logger.LogInformation("Successfully updated skill, Name: {SkillName}, ID: {SkillId}", skill.Name, skill.Id);
         return skill;
-    }
-
-    // TODO move sorting logic to repository when implementing database level sorting
-    public ICollection<Skill> SortBy(ICollection<Skill> skills, string sortFilter, bool descending = false)
-    {
-        if(!ValuesValidator.TryNormalizeValue<SortSkillOption>(sortFilter, out string? normalized))
-            return skills;
-
-        var abilityOrder = QueryUtil.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
-
-        return normalized switch
-        {
-            SortSkillOption.Name => QueryUtil.OrderByMany(skills, [(s => s.Name)], descending),
-            SortSkillOption.Ability => QueryUtil.OrderByMany(skills, [(s => abilityOrder[s.Ability!.FullName]), (s => s.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}"),
-        };
     }
 }

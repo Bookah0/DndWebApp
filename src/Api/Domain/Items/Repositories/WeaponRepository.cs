@@ -7,6 +7,7 @@ using Api.Domain.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Api.Infrastructure.Validation;
 using Api.Infrastructure.Middleware.ExceptionHandling;
+using Api.Domain.Shared.Utils;
 
 namespace Api.Domain.Items.Repositories;
 
@@ -40,9 +41,11 @@ public class WeaponRepository(AppDbContext context) : IWeaponRepository
 
     public async Task<(int, ICollection<Weapon>)> GetFilteredAsync(WeaponFilterDto filter, PaginationRequestDto pagination)
     {      
+        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortWeaponOption>(filter.SortBy ?? SortWeaponOption.Default);
+
         var query = context.Weapons
             .AsQueryable()
-            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
+            .WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
             .WhereIf(filter.Name, w => w.Name.Contains(filter.Name!))
             .WhereIf(filter.Category, w => w.Categories.Any(c => filter.Category!.Contains(c)))
             .WhereIf(filter.Rarity, w => w.Rarity.Contains(filter.Rarity!)) 
@@ -64,10 +67,8 @@ public class WeaponRepository(AppDbContext context) : IWeaponRepository
             .WhereIf(filter.LongRange, w => w.LongRange.HasValue == filter.LongRange)
 
             .WhereIf(filter.IsHomebrew, w => w.IsHomebrew == filter.IsHomebrew)
-            .WhereIf(filter.CloningAllowed, w => w.CloningAllowed == filter.CloningAllowed);
-
-        if (filter.SortBy is not null)
-            query = SortBy(query, filter.SortBy, filter.SortDescending);
+            .WhereIf(filter.CloningAllowed, w => w.CloningAllowed == filter.CloningAllowed)
+            .SortBy(normalizedSortBy, sortSelectorsMap, SortWeaponOption.Default, filter.SortDescending); 
         
         var weaponCount = await query.CountAsync();
         var filteredWeapons = await query
@@ -78,20 +79,13 @@ public class WeaponRepository(AppDbContext context) : IWeaponRepository
         return (weaponCount, filteredWeapons);
     }
 
-    public IQueryable<Weapon> SortBy(IQueryable<Weapon> query, string sortFilter, bool descending = false)
+    private readonly Dictionary<string, IEnumerable<Func<Weapon, object>>> sortSelectorsMap = new()
     {
-        if(!ValuesValidator.TryNormalizeValue<SortWeaponOption>(sortFilter, out string? normalized))
-            return context.Weapons;
-
-        return normalized switch
-        {
-            SortWeaponOption.Name => OrderByMany(query, [(i => i.Name)], descending),
-            SortWeaponOption.Category => OrderByMany(query, [(i => i.WeaponCategory), (i => i.Name)], descending),
-            SortWeaponOption.Type => OrderByMany(query, [(i => i.WeaponType), (i => i.Name)], descending),
-            SortWeaponOption.Value => OrderByMany(query, [(i => i.Value!), (i => i.Name)], descending),
-            SortWeaponOption.Weight => OrderByMany(query, [(i => i.Weight!), (i => i.Name)], descending),
-            SortWeaponOption.Rarity => OrderByMany(query, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
+        { SortWeaponOption.Name, [(s => s.Name)] },
+        { SortWeaponOption.Category, [(s => s.WeaponCategory), (s => s.Name)] },
+        { SortWeaponOption.Type, [(s => s.WeaponType), (s => s.Name)] },
+        { SortWeaponOption.Value, [(s => s.Value!), (s => s.Name)] },
+        { SortWeaponOption.Weight, [(s => s.Weight!), (s => s.Name)] },
+        { SortWeaponOption.Rarity, [(s => s.Rarity == null), (s => s.Rarity!), (s => s.Name)] },
+    };
 }

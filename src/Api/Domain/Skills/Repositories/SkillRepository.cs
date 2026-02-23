@@ -1,5 +1,11 @@
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Enums;
+using Api.Domain.Shared.Utils;
+using Api.Domain.Skills.DTOs;
 using Api.Domain.Skills.Models;
 using Api.Infrastructure.Data;
+using Api.Infrastructure.Validation;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Domain.Skills.Repositories;
@@ -45,4 +51,36 @@ public class SkillRepository(AppDbContext context) : ISkillRepository
         await context.SaveChangesAsync();
         return updatedEntity;
     }
+
+    public async Task<(int, ICollection<Skill>)> GetFilteredAsync(SkillFilterDto filter, PaginationRequestDto pagination)
+    {
+        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortSkillOption>(filter.SortBy ?? SortSkillOption.Default);
+
+        var query = context.Skills
+            .AsQueryable()
+            .WhereIf(filter.CreatedBy, s => s.CreatedBy == filter.CreatedBy)
+            .WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
+            .WhereIf(filter.AbilityId, s => s.AbilityId == filter.AbilityId)
+
+            .WhereIf(filter.IsHomebrew, s => s.IsHomebrew == filter.IsHomebrew)
+            .WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed)
+            .SortBy(normalizedSortBy, sortSelectorsMap, SortSkillOption.Name, filter.SortDescending);
+        
+        var skillCount = await query.CountAsync();
+        var filteredSkills = await query
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToListAsync();
+
+        return (skillCount, filteredSkills);
+    }
+    
+    private readonly Dictionary<string, IEnumerable<Func<Skill, object>>> sortSelectorsMap = new()
+    {
+        { SortSkillOption.Name, [(s => s.Name)] },
+        { SortSkillOption.Ability, [(s => s.AbilityId), (s => s.Name)] },
+    };
+
 }
+
+

@@ -86,11 +86,6 @@ public partial class ClassLevelService(
         logger.LogInformation("Successfully deleted class level, Level: {ClassLevel}, ID: {ClassLevelId}", level.Level, id);
     }
 
-    public ICollection<ClassLevel> SortByLevel(ICollection<ClassLevel> levels, bool descending = false)
-    {
-        return QueryUtil.OrderByMany(levels, [(l => l.Level)], descending);
-    }
-
     public async Task<ClassLevel> AddFeatureAsync(int levelId, int featureId)
     {
         var level = await levelRepo.GetByIdAsync(levelId);

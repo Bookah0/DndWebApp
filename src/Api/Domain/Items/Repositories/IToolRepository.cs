@@ -9,5 +9,4 @@ public interface IToolRepository : IRepository<Tool>
 {
     Task<Tool> GetWithAllDataAsync(int id);
     Task<(int, ICollection<Tool>)> GetFilteredAsync(ToolFilterDto filter, PaginationRequestDto pagination);
-    IQueryable<Tool> SortBy(IQueryable<Tool> query, string sortFilter, bool descending = false);
 }

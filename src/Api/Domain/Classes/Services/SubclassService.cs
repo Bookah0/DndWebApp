@@ -1,6 +1,7 @@
 using Api.Domain.Classes.DTOs;
 using Api.Domain.Classes.Models;
 using Api.Domain.Classes.Repositories;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Utils;
 using Api.Domain.Users.Services;
 
@@ -40,12 +41,8 @@ public partial class SubclassService(
         logger.LogInformation("Successfully deleted subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
     }
 
-    public async Task<ICollection<Subclass>> GetAllAsync()
-    {
-        var subclasses = await repo.GetAllAsync();
-        return subclasses;
-    }
-
+    public async Task<(int, ICollection<Subclass>)> GetFilteredAsync(SubclassFilterDto filter, PaginationRequestDto pagination) => await repo.GetFilteredAsync(filter, pagination);
+    public async Task<ICollection<Subclass>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Subclass> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Subclass> UpdateAsync(int id, UpdateSubclassRequestDto dto)
@@ -74,10 +71,4 @@ public partial class SubclassService(
 
     public async Task<Subclass> GetWithLevelsAsync(int id) => await repo.GetWithLevelsAsync(id);
     public async Task<Subclass> GetWithFeaturesAsync(int id) => await repo.GetWithLevelFeaturesAsync(id);
-    
-
-    public ICollection<Subclass> SortBy(ICollection<Subclass> subclasses, bool descending = false)
-    {
-        return QueryUtil.OrderByMany(subclasses, [(c => c.Name)], descending);
-    }
 }

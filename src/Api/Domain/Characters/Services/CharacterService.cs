@@ -251,19 +251,4 @@ public partial class CharacterService(
         logger.LogInformation("Successfully updated spell slot, Name: {CharacterName}, ID: {CharacterId}, SlotLevel: {SlotLevel}, Change: {Change}", character.Name, characterId, slotLevel, change);
         return character;
     }
-    
-    public ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false)
-    {
-        if(!ValuesValidator.TryNormalizeValue<SortCharacterOption>(sortFilter, out string? normalized))
-            return characters;
-
-        return normalized switch
-        {
-            SortCharacterOption.Name => OrderByMany(characters, [(c => c.Name)], descending),
-            SortCharacterOption.Level => OrderByMany(characters, [(c => c.Level), (c => c.Name)], descending),
-            SortCharacterOption.TimeCreated => OrderByMany(characters, [(c => c.CreatedAt), (c => c.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
-
 }

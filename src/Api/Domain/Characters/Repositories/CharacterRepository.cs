@@ -1,4 +1,5 @@
 using Api.Domain.Characters.Models;
+using Api.Domain.Shared.Enums;
 using Api.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -128,4 +129,11 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
         await context.SaveChangesAsync();
         return updatedEntity;
     }
+
+    private readonly Dictionary<string, IEnumerable<Func<Character, object>>> sortSelectorsMap = new()
+    {
+        { SortCharacterOption.Name, [(c => c.Name)] },
+        { SortCharacterOption.Level, [(c => c.Level), (c => c.Name)] },
+        { SortCharacterOption.TimeCreated, [(c => c.CreatedAt), (c => c.Name)] },
+    };
 }

@@ -20,7 +20,6 @@ public interface ICharacterService
     Task<Character> HealDamageAsync(int characterId, int change);
     Task<Character> EditCurrentClassSlotAsync(string slotName, int change, int characterId);
     Task<Character> EditCurrentSpellSlotAsync(int slotLevel, int change, int characterId);
-    ICollection<Character> SortBy(ICollection<Character> characters, string sortFilter, bool descending = false);
     Task<ICollection<Character>> GetAllByUserIdAsync(Guid userId);
     Task<ICollection<Character>> GetAllByCurrentUserAsync();
 }

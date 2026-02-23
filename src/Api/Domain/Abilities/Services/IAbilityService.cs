@@ -1,5 +1,6 @@
 using Api.Domain.Abilities.DTOs;
 using Api.Domain.Abilities.Models;
+using Api.Domain.Shared.DTOs;
 
 namespace Api.Domain.Abilities.Services;
 
@@ -11,5 +12,5 @@ public interface IAbilityService
     Task<Ability> GetByIdAsync(int id);
     Task<Ability> UpdateAsync(int id, AbilityRequestDto dto);
     int GetModifier(AbilityValue val);
-    ICollection<Ability> SortBy(ICollection<Ability> abilities);
+    Task<(int, ICollection<Ability>)> GetFilteredAsync(string? nameFilter, PaginationRequestDto pagination);
 }

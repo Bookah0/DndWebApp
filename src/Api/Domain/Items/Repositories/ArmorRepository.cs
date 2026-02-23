@@ -7,6 +7,7 @@ using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Enums;
 using Api.Infrastructure.Middleware.ExceptionHandling;
 using static Api.Domain.Shared.Utils.QueryUtil;
+using Api.Domain.Shared.Utils;
 
 namespace Api.Domain.Items.Repositories;
 
@@ -40,9 +41,11 @@ public class ArmorRepository(AppDbContext context) : IArmorRepository
 
     public async Task<(int, ICollection<Armor>)> GetFilteredAsync(ArmorFilterDto filter, PaginationRequestDto pagination)
     {      
+        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortArmorOption>(filter.SortBy ?? SortArmorOption.Default);
+
         var query = context.Armor
             .AsQueryable()
-            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
+            .WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
             .WhereIf(filter.Name, w => w.Name.Contains(filter.Name!))
             .WhereIf(filter.Category, w => w.Categories.Any(c => filter.Category!.Contains(c)))
             .WhereIf(filter.Rarity, w => w.Rarity.Contains(filter.Rarity!)) 
@@ -60,10 +63,8 @@ public class ArmorRepository(AppDbContext context) : IArmorRepository
             .WhereIf(filter.StrengthScoreRequired, a => a.StrengthScoreRequired.HasValue)
             
             .WhereIf(filter.IsHomebrew, w => w.IsHomebrew == filter.IsHomebrew)
-            .WhereIf(filter.CloningAllowed, w => w.CloningAllowed == filter.CloningAllowed);
-
-        if (filter.SortBy is not null)
-            query = SortBy(query, filter.SortBy, filter.SortDescending);
+            .WhereIf(filter.CloningAllowed, w => w.CloningAllowed == filter.CloningAllowed)
+            .SortBy(normalizedSortBy, sortSelectorsMap, SortArmorOption.Default, filter.SortDescending);    
         
         var armorCount = await query.CountAsync();
         var filteredArmor = await query
@@ -73,21 +74,14 @@ public class ArmorRepository(AppDbContext context) : IArmorRepository
 
         return (armorCount, filteredArmor);
     }
-
-    public IQueryable<Armor> SortBy(IQueryable<Armor> query, string sortFilter, bool descending = false)
+    
+    private readonly Dictionary<string, IEnumerable<Func<Armor, object>>> sortSelectorsMap = new()
     {
-        if(!ValuesValidator.TryNormalizeValue<SortArmorOption>(sortFilter, out string? normalized))
-            return context.Armor;
-
-        return normalized switch
-        {
-            SortArmorOption.Name => OrderByMany(query, [(i => i.Name)], descending),
-            SortArmorOption.Category => OrderByMany(query, [(i => i.ArmorCategory), (i => i.Name)], descending),
-            SortArmorOption.AC => OrderByMany(query, [(i => i.BaseArmorClass), (i => i.Name)], descending),
-            SortArmorOption.Value => OrderByMany(query, [(i => i.Value!), (i => i.Name)], descending),
-            SortArmorOption.Weight => OrderByMany(query, [(i => i.Weight!), (i => i.Name)], descending),
-            SortArmorOption.Rarity => OrderByMany(query, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
+        { SortArmorOption.Name, [(s => s.Name)] },
+        { SortArmorOption.Category, [(s => s.ArmorCategory), (s => s.Name)] },
+        { SortArmorOption.AC, [(s => s.BaseArmorClass), (s => s.Name)] },
+        { SortArmorOption.Value, [(s => s.Value!), (s => s.Name)] },
+        { SortArmorOption.Weight, [(s => s.Weight!), (s => s.Name)] },
+        { SortArmorOption.Rarity, [(s => s.Rarity == null), (s => s.Rarity!), (s => s.Name)] },
+    };
 }

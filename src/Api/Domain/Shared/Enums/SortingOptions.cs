@@ -1,7 +1,5 @@
 namespace Api.Domain.Shared.Enums;
-
-// Might not be needed after db layer sorting is implemented
-public class SortArmorOption : IValuesProvider
+public class SortArmorOption : IValuesProvider, IHasDefault 
 {
     public const string Name = "Name";
     public const string Category = "Category";
@@ -9,6 +7,7 @@ public class SortArmorOption : IValuesProvider
     public const string Value = "Value";
     public const string Weight = "Weight";
     public const string Rarity = "Rarity";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -16,15 +15,17 @@ public class SortArmorOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortItemOption : IValuesProvider
+public class SortItemOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Category = "Category";
     public const string Value = "Value";
     public const string Weight = "Weight";
     public const string Rarity = "Rarity";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -32,14 +33,16 @@ public class SortItemOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortToolOption : IValuesProvider
+public class SortToolOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Category = "Category";
     public const string Value = "Value";
     public const string Rarity = "Rarity";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -47,9 +50,10 @@ public class SortToolOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortWeaponOption : IValuesProvider
+public class SortWeaponOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Category = "Category";
@@ -57,6 +61,7 @@ public class SortWeaponOption : IValuesProvider
     public const string Value = "Value";
     public const string Weight = "Weight";
     public const string Rarity = "Rarity";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -64,13 +69,15 @@ public class SortWeaponOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortCharacterOption : IValuesProvider
+public class SortCharacterOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string TimeCreated = "TimeCreated";
     public const string Level = "Level";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -78,26 +85,45 @@ public class SortCharacterOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortLanguageOption : IValuesProvider
+public class SortSubclassOption : IValuesProvider, IHasDefault
+{
+    public const string Name = "Name";
+    public const string ParentClass = "ParentClass";
+    public const string Default = Name;
+    
+    public static readonly IReadOnlySet<string> Values = new HashSet<string>
+    {
+        Name, ParentClass
+    };
+
+    static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
+}
+
+
+public class SortLanguageOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Family = "Family";
     public const string Script = "Script";
-    
+    public const string Default = Name;
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
         Name, Family, Script
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortSkillOption : IValuesProvider
+public class SortSkillOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Ability = "Ability";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -105,9 +131,10 @@ public class SortSkillOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortSpellOption : IValuesProvider
+public class SortSpellOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Level = "Level";
@@ -115,6 +142,7 @@ public class SortSpellOption : IValuesProvider
     public const string Duration = "Duration";
     public const string Target = "Target";
     public const string Range = "Range";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -122,12 +150,14 @@ public class SortSpellOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortClassFeatureOption : IValuesProvider
+public class SortClassFeatureOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Class = "Class";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -135,12 +165,14 @@ public class SortClassFeatureOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortTraitOption : IValuesProvider
+public class SortTraitOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Race = "Race";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -148,12 +180,14 @@ public class SortTraitOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }
 
-public class SortBackgroundFeatureOption : IValuesProvider
+public class SortBackgroundFeatureOption : IValuesProvider, IHasDefault
 {
     public const string Name = "Name";
     public const string Background = "Background";
+    public const string Default = Name;
     
     public static readonly IReadOnlySet<string> Values = new HashSet<string>
     {
@@ -161,4 +195,5 @@ public class SortBackgroundFeatureOption : IValuesProvider
     };
 
     static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
 }

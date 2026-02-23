@@ -1,22 +1,32 @@
 using Api.Domain.Classes.DTOs;
 using Api.Domain.Classes.Services;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Domain.Classes.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class ClassesController(IBaseClassService service, IMapper mapper) : ControllerBase
+[Route("api/classes")]
+public class ClassController(IBaseClassService service, IMapper mapper) : ControllerBase
 {
-
     [HttpGet]
-    public async Task<ActionResult<ICollection<ClassResponseDto>>> GetClasses()
+    public async Task<ActionResult<ICollection<ClassResponseDto>>> GetClasses([FromQuery] ClassFilterDto filter, [FromQuery] PaginationRequestDto pagination)
     {
-        var classes = await service.GetAllAsync();
-        return Ok(mapper.Map<ICollection<ClassResponseDto>>(classes));
+        var (totalCount, classes) = await service.GetFilteredAsync(filter, pagination);
+        
+        return Ok(new PaginationResponseDto<ClassResponseDto>
+        {
+            Items = mapper.Map<ICollection<ClassResponseDto>>(classes),
+            ItemCount = totalCount,
+            Page = pagination.Page,
+            PageSize = pagination.PageSize,
+            Next = PaginationUtil.GetNext(pagination, totalCount, "api/classes"),
+            Prev = PaginationUtil.GetPrev(pagination, "api/classes")
+        });
     }
-
+    
     [HttpGet("{classId}")]
     public async Task<ActionResult<ClassResponseDto>> GetClass(int classId)
     {

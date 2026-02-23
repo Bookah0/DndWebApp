@@ -78,18 +78,4 @@ public class TraitService(
         logger.LogInformation("Successfully updated trait, Name: {TraitName}, ID: {TraitId}", trait.Name, trait.Id);
         return trait;
     }
-
-    // TODO replace with database level sorting
-    public ICollection<Trait> SortBy(ICollection<Trait> traits, string sortFilter, bool descending = false)
-    {
-        if(!ValuesValidator.TryNormalizeValue<SortTraitOption>(sortFilter, out string? normalized))
-            return traits;
-
-        return normalized switch
-        {
-            SortTraitOption.Name => QueryUtil.OrderByMany(traits, [(t => t.Name)], descending),
-            SortTraitOption.Race => QueryUtil.OrderByMany(traits, [(t => t!.Name), (t => t.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
 }

@@ -1,4 +1,5 @@
 using Api.Domain.Backgrounds.Models;
+using Api.Domain.Shared.Enums;
 using Api.Domain.Shared.Repositories;
 using Api.Infrastructure.Data;
 using Api.Infrastructure.Middleware.ExceptionHandling;
@@ -66,4 +67,10 @@ public class BackgroundFeatureRepository(AppDbContext context) : IFeatureReposit
         await context.SaveChangesAsync();
         return updatedEntity;
     }
+
+    private readonly Dictionary<string, IEnumerable<Func<BackgroundFeature, object>>> sortSelectorsMap = new()
+    {
+        { SortBackgroundFeatureOption.Name, [(f => f.Name)] },
+        { SortBackgroundFeatureOption.Background, [(f => f.Background!.Name), (f => f.Name)] },
+    };
 }

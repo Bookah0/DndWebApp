@@ -1,3 +1,4 @@
+using Api.Domain.Shared.Enums;
 using Api.Domain.Shared.Repositories;
 using Api.Domain.Species.Models;
 using Api.Infrastructure.Data;
@@ -66,4 +67,10 @@ public class TraitRepository(AppDbContext context) : IFeatureRepository<Trait>
         await context.SaveChangesAsync();
         return updatedEntity;
     }
+
+    private readonly Dictionary<string, IEnumerable<Func<Trait, object>>> sortSelectorsMap = new()
+    {
+        { SortTraitOption.Name, [(t => t.Name)] },
+        { SortTraitOption.Race, [(t => t.FromRace!.Name), (t => t.Name)] },
+    };
 }

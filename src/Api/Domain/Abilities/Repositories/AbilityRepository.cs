@@ -1,4 +1,5 @@
 using Api.Domain.Abilities.Models;
+using Api.Domain.Shared.DTOs;
 using Api.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,4 +46,9 @@ public class AbilityRepository(AppDbContext context) : IAbilityRepository
         await context.SaveChangesAsync();
         return updatedEntity;
     }
+
+  public Task<(int, ICollection<Ability>)> GetFilteredAsync(string? nameFilter, PaginationRequestDto pagination)
+  {
+    throw new NotImplementedException();
+  }
 }

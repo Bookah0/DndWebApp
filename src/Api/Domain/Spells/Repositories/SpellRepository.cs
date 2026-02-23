@@ -7,6 +7,7 @@ using Api.Infrastructure.Data;
 using Api.Infrastructure.Middleware.ExceptionHandling;
 using Api.Infrastructure.Validation;
 using Microsoft.EntityFrameworkCore;
+using Api.Domain.Shared.Utils;
 
 namespace Api.Domain.Spells.Repositories;
 
@@ -53,7 +54,7 @@ public class SpellRepository(AppDbContext context) : ISpellRepository
     {      
         var query = context.Spells
             .AsQueryable()
-            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
+            .WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
             .WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
             .WhereIf(filter.MagicSchool, s => filter.MagicSchool!.Contains(s.MagicSchool))
             // .WhereIf(filter.ClassId, s => s.Classes.Any(c => filter.ClassId!.Contains(c.Id)))
@@ -71,10 +72,8 @@ public class SpellRepository(AppDbContext context) : ISpellRepository
             .WhereIf(filter.MaxRangeValue, s => s.SpellTargeting.RangeValue <= filter.MaxRangeValue)
 
             .WhereIf(filter.IsHomebrew, s => s.IsHomebrew == filter.IsHomebrew)
-            .WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed);
-
-        if (filter.SortBy is not null)
-            query = SortBy(query, filter.SortBy, filter.SortDescending);
+            .WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed)
+            .SortBy(filter.SortBy, sortSelectorsMap, SortSpellOption.Name, filter.SortDescending);
         
         var spellCount = await query.CountAsync();
         var filteredSpells = await query
@@ -85,20 +84,13 @@ public class SpellRepository(AppDbContext context) : ISpellRepository
         return (spellCount, filteredSpells);
     }
 
-    public IQueryable<Spell> SortBy(IQueryable<Spell> query, string sortFilter, bool descending = false)
+    private readonly Dictionary<string, IEnumerable<Func<Spell, object>>> sortSelectorsMap = new()
     {
-        if(!ValuesValidator.TryNormalizeValue<SortSpellOption>(sortFilter, out string? normalized))
-            return context.Spells;
-
-        return normalized switch
-        {
-            SortSpellOption.Name => OrderByMany(query, [(s => s.Name)], descending),
-            SortSpellOption.Level => OrderByMany(query, [(s => s.Level), (s => s.Name)], descending),
-            SortSpellOption.CastingTime => OrderByMany(query, [(s => s.CastingTime), (s => s.CastingTimeValue!), (s => s.Name)], descending),
-            SortSpellOption.Duration => OrderByMany(query, [(s => s.Duration), (s => s.DurationValue!), (s => s.Name)], descending),
-            SortSpellOption.Target => OrderByMany(query, [(s => s.SpellTargeting.TargetType), (s => s.Name)], descending),
-            SortSpellOption.Range => OrderByMany(query, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue!), (s => s.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
+        { SortSpellOption.Name, [(s => s.Name)] },
+        { SortSpellOption.Level, [(s => s.Level), (s => s.Name)] },
+        { SortSpellOption.CastingTime, [(s => s.CastingTime), (s => s.CastingTimeValue!), (s => s.Name)] },
+        { SortSpellOption.Duration, [(s => s.Duration), (s => s.DurationValue!), (s => s.Name)] },
+        { SortSpellOption.Target, [(s => s.SpellTargeting.TargetType), (s => s.Name)] },
+        { SortSpellOption.Range, [(s => s.SpellTargeting.Range), (s => s.SpellTargeting.RangeValue!), (s => s.Name)] },
+    };
 }

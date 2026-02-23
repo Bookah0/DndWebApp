@@ -1,5 +1,10 @@
+using Api.Domain.Languages.DTOs;
 using Api.Domain.Languages.Models;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Enums;
+using Api.Domain.Shared.Utils;
 using Api.Infrastructure.Data;
+using Api.Infrastructure.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Domain.Languages.Repositories;
@@ -35,4 +40,34 @@ public class LanguageRepository(AppDbContext context) : ILanguageRepository
         return updatedEntity;
     }
 
+    public async Task<(int, ICollection<Language>)> GetFilteredAsync(LanguageFilterDto filter, PaginationRequestDto pagination)
+    {
+        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortLanguageOption>(filter.SortBy ?? SortLanguageOption.Default);
+
+        var query = context.Languages
+            .AsQueryable()
+            .WhereIf(filter.CreatedBy, s => s.CreatedBy == filter.CreatedBy)
+            .WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
+            .WhereIf(filter.Family, s => s.Family == filter.Family)
+            .WhereIf(filter.Script, s => s.Script == filter.Script)
+
+            .WhereIf(filter.IsHomebrew, s => s.IsHomebrew == filter.IsHomebrew)
+            .WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed)
+            .SortBy(normalizedSortBy, sortSelectorsMap, SortLanguageOption.Default, filter.SortDescending);
+        
+        var languageCount = await query.CountAsync();
+        var filteredLanguages = await query
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToListAsync();
+
+        return (languageCount, filteredLanguages);
+    }
+    
+    private readonly Dictionary<string, IEnumerable<Func<Language, object>>> sortSelectorsMap = new()
+    {
+        { SortLanguageOption.Name, [(s => s.Name)] },
+        { SortLanguageOption.Family, [(s => s.Family), (s => s.Name)] },
+        { SortLanguageOption.Script, [(s => s.Script!), (s => s.Name)] },
+    };
 }

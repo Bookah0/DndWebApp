@@ -7,6 +7,7 @@ using Api.Domain.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Api.Infrastructure.Validation;
 using Api.Infrastructure.Middleware.ExceptionHandling;
+using Api.Domain.Shared.Utils;
 
 namespace Api.Domain.Items.Repositories;
 
@@ -51,9 +52,11 @@ public class ItemRepository(AppDbContext context) : IItemRepository
 
     public async Task<(int, ICollection<Item>)> GetFilteredAsync(ItemFilterDto filter, PaginationRequestDto pagination)
     {      
+        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortItemOption>(filter.SortBy ?? SortItemOption.Default);
+
         var query = context.Items
             .AsQueryable()
-            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
+            .WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
             .WhereIf(filter.Name, i => i.Name.Contains(filter.Name!))
             .WhereIf(filter.Category, i => i.Categories.Any(c => filter.Category!.Contains(c)))
             .WhereIf(filter.Rarity, i => i.Rarity.Contains(filter.Rarity!)) 
@@ -65,11 +68,9 @@ public class ItemRepository(AppDbContext context) : IItemRepository
             .WhereIf(filter.MaxValue, i => i.Value <= filter.MaxValue)
 
             .WhereIf(filter.IsHomebrew, i => i.IsHomebrew == filter.IsHomebrew)
-            .WhereIf(filter.CloningAllowed, i => i.CloningAllowed == filter.CloningAllowed);
+            .WhereIf(filter.CloningAllowed, i => i.CloningAllowed == filter.CloningAllowed)
+            .SortBy(normalizedSortBy, sortSelectorsMap, SortItemOption.Default, filter.SortDescending); 
 
-        if (filter.SortBy is not null)
-            query = SortBy(query, filter.SortBy, filter.SortDescending);
-        
         var itemCount = await query.CountAsync();
         var filteredItems = await query
             .Skip((pagination.Page - 1) * pagination.PageSize)
@@ -78,21 +79,14 @@ public class ItemRepository(AppDbContext context) : IItemRepository
 
         return (itemCount, filteredItems);
     }
-
-    public IQueryable<Item> SortBy(IQueryable<Item> query, string sortFilter, bool descending = false)
+    
+    private readonly Dictionary<string, IEnumerable<Func<Item, object>>> sortSelectorsMap = new()
     {
-        if(!ValuesValidator.TryNormalizeValue<SortItemOption>(sortFilter, out string? normalized))
-            return context.Items;
-
-        return normalized switch
-        {
-            SortItemOption.Name => OrderByMany(query, [(i => i.Name)], descending),
-            SortItemOption.Category => OrderByMany(query, [(i => i.Categories.FirstOrDefault()!), (i => i.Name)], descending),
-            SortItemOption.Value => OrderByMany(query, [(i => i.Value!), (i => i.Name)], descending),
-            SortItemOption.Weight => OrderByMany(query, [(i => i.Weight!), (i => i.Name)], descending),
-            SortItemOption.Rarity => OrderByMany(query, [(i => i.Rarity == null), (i => i.Rarity!), (i => i.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
+        { SortItemOption.Name, [(s => s.Name)] },
+        { SortItemOption.Category, [(s => s.Categories.FirstOrDefault()!), (s => s.Name)] },
+        { SortItemOption.Value, [(s => s.Value!), (s => s.Name)] },
+        { SortItemOption.Weight, [(s => s.Weight!), (s => s.Name)] },
+        { SortItemOption.Rarity, [(s => s.Rarity == null), (s => s.Rarity!), (s => s.Name)] },
+    };
 }
 

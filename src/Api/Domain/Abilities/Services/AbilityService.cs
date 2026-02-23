@@ -2,6 +2,7 @@ using static Api.Domain.Shared.Utils.QueryUtil;
 using Api.Domain.Abilities.DTOs;
 using Api.Domain.Abilities.Models;
 using Api.Domain.Abilities.Repositories;
+using Api.Domain.Shared.DTOs;
 
 namespace Api.Domain.Abilities.Services;
 
@@ -30,7 +31,9 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
         await repo.DeleteAsync(ability);
         logger.LogInformation("Successfully deleted ability, FullName: {AbilityFullName}, ID: {AbilityId}", ability.FullName, id);
     }
-
+    public async Task<(int, ICollection<Ability>)> GetFilteredAsync(string? nameFilter, PaginationRequestDto pagination)
+        => await repo.GetFilteredAsync(nameFilter, pagination);
+    
     public async Task<ICollection<Ability>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Ability> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
@@ -60,4 +63,6 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
 
         return [.. abilities.OrderBy(a => abilityOrder[a.FullName])];
     }
+
+
 }

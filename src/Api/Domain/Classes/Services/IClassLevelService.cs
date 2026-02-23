@@ -17,6 +17,4 @@ public interface IClassLevelService
 
     Task<ClassLevel> AddClassSlotAsync(int levelId, ClassSlotRequestDto slot);
     Task<ClassLevel> RemoveClassSlotByNameAsync(int levelId, string slotName);
-
-    ICollection<ClassLevel> SortByLevel(ICollection<ClassLevel> levels, bool descending = false);
 }

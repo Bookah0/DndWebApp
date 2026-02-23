@@ -1,4 +1,7 @@
+using Api.Domain.Classes.DTOs;
 using Api.Domain.Classes.Models;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
 using Api.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,5 +84,26 @@ public class ClassRepository(AppDbContext context) : IBaseClassRepository
         context.Classes.Update(updatedEntity);
         await context.SaveChangesAsync();
         return updatedEntity;
+    }
+
+    public async Task<(int, ICollection<BaseClass>)> GetFilteredAsync(ClassFilterDto filter, PaginationRequestDto pagination)
+    {      
+        var query = context.Classes
+            .AsQueryable()
+            .WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
+            .WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
+            .WhereIf(filter.IsSpellcaster, s => (bool)filter.IsSpellcaster! ? s.SpellcastingAbilityId != null : s.SpellcastingAbilityId == null)
+
+            .WhereIf(filter.IsHomebrew, s => s.IsHomebrew == filter.IsHomebrew)
+            .WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed)
+            .OrderBy(c => c.Name);
+
+        var classCount = await query.CountAsync();
+        var filteredClasses = await query
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToListAsync();
+
+        return (classCount, filteredClasses);
     }
 }

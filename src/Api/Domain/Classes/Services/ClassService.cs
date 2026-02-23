@@ -2,9 +2,11 @@ using Api.Domain.Classes.DTOs;
 using Api.Domain.Classes.Models;
 using Api.Domain.Classes.Repositories;
 using Api.Domain.Items.Repositories;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Utils;
 using Api.Domain.Users.Services;
 using Api.Infrastructure.Middleware.ExceptionHandling;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Api.Domain.Classes.Services;
 
@@ -45,6 +47,7 @@ public partial class BaseClassService(
         logger.LogInformation("Successfully deleted class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
     }
 
+    public async Task<(int, ICollection<BaseClass>)> GetFilteredAsync(ClassFilterDto filter, PaginationRequestDto pagination) => await repo.GetFilteredAsync(filter, pagination);
     public async Task<ICollection<BaseClass>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<ICollection<BaseClass>> GetAllWithLevelFeaturesAsync() => await repo.GetAllWithLevelFeaturesAsync();
     public async Task<BaseClass> GetWithStartingEquipmentAsync(int id) => await repo.GetWithStartingEquipmentAsync(id);
@@ -123,10 +126,5 @@ public partial class BaseClassService(
         await repo.UpdateAsync(clss);
         logger.LogInformation("Successfully removed starting equipment from class, ClassName: {ClassName}, ClassId: {ClassId}, EquipmentName: {EquipmentName}, EquipmentId: {EquipmentId}", clss.Name, id, equipment.Name, equipmentId);
         return clss;
-    }
-
-    public ICollection<BaseClass> SortBy(ICollection<BaseClass> classes, bool descending = false)
-    {
-        return QueryUtil.OrderByMany(classes, [(c => c.Name)], descending);
     }
 }

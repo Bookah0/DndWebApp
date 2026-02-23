@@ -1,5 +1,10 @@
+using Api.Domain.Classes.DTOs;
 using Api.Domain.Classes.Models;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Enums;
+using Api.Domain.Shared.Utils;
 using Api.Infrastructure.Data;
+using Api.Infrastructure.Middleware.ExceptionHandling;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Domain.Classes.Repositories;
@@ -46,4 +51,31 @@ public class SubclassRepository(AppDbContext context) : ISubclassRepository
         await context.SaveChangesAsync();
         return updatedEntity;
     }
+
+    public async Task<(int, ICollection<Subclass>)> GetFilteredAsync(SubclassFilterDto filter, PaginationRequestDto pagination)
+    {      
+        var query = context.Subclasses
+            .AsQueryable()
+            .WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
+            .WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
+            .WhereIf(filter.IsSpellcaster, s => (bool)filter.IsSpellcaster! ? s.SpellcastingAbilityId != null : s.SpellcastingAbilityId == null)
+
+            .WhereIf(filter.IsHomebrew, s => s.IsHomebrew == filter.IsHomebrew)
+            .WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed)
+            .SortBy(filter.SortBy, sortSelectorsMap, SortSubclassOption.Name, filter.SortDescending);
+        
+        var subclassCount = await query.CountAsync();
+        var filteredSubclasses = await query
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToListAsync();
+
+        return (subclassCount, filteredSubclasses);
+    }
+
+    private readonly Dictionary<string, IEnumerable<Func<Subclass, object>>> sortSelectorsMap = new()
+    {
+        { SortSubclassOption.Name, [(s => s.Name)] },
+        { SortSubclassOption.ParentClass, [(s => s.ParentClassId)] }
+    };
 }

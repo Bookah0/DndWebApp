@@ -1,15 +1,13 @@
 using Api.Domain.Languages.Models;
 using Api.Domain.Languages.DTOs;
-using Api.Domain.Shared.Utils;
 using Api.Domain.Users.Services;
 using Api.Infrastructure.Middleware.ExceptionHandling;
-using Api.Infrastructure.Validation;
-using Api.Domain.Shared.Repositories;
-using Api.Domain.Shared.Enums;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Languages.Repositories;
 
 namespace Api.Domain.Languages.Services;
 
-public class LanguageService(IRepository<Language> repo, ICurrentUserService currentUserService, ILogger<LanguageService> logger) : ILanguageService
+public class LanguageService(ILanguageRepository repo, ICurrentUserService currentUserService, ILogger<LanguageService> logger) : ILanguageService
 {
     public async Task<Language> CreateAsync(CreateLanguageRequestDto dto)
     {
@@ -41,17 +39,10 @@ public class LanguageService(IRepository<Language> repo, ICurrentUserService cur
         logger.LogInformation("Successfully deleted language, Name: {LanguageName}, ID: {LanguageId}", language.Name, id);
     }
 
-    public async Task<ICollection<Language>> GetAllAsync()
-    {
-        var languages = await repo.GetAllAsync();
-        return languages;
-    }
-
-    public async Task<Language> GetByIdAsync(int id)
-    {
-        var language = await repo.GetByIdAsync(id); 
-        return language;
-    }
+    public async Task<ICollection<Language>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<Language> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+    public Task<(int, ICollection<Language>)> GetFilteredAsync(LanguageFilterDto filter, PaginationRequestDto pagination)
+        => repo.GetFilteredAsync(filter, pagination);
 
     public async Task<Language> UpdateAsync(int id, UpdateLanguageRequestDto dto)
     {
@@ -70,19 +61,5 @@ public class LanguageService(IRepository<Language> repo, ICurrentUserService cur
         await repo.UpdateAsync(language);
         logger.LogInformation("Successfully updated language, Name: {LanguageName}, ID: {LanguageId}", language.Name, language.Id);
         return language;
-    }
-
-    public ICollection<Language> SortBy(ICollection<Language> languages, string sortFilter, bool descending = false)
-    {
-        if(!ValuesValidator.TryNormalizeValue<SortLanguageOption>(sortFilter, out string? normalized))
-            return languages;
-    
-        return normalized switch
-        {
-            SortLanguageOption.Name => QueryUtil.OrderByMany(languages, [(l => l.Name)], descending),
-            SortLanguageOption.Family => QueryUtil.OrderByMany(languages, [(l => l.Family), (l => l.Name)], descending),
-            SortLanguageOption.Script => QueryUtil.OrderByMany(languages, [(l => l.Script!), (l => l.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
     }
 }

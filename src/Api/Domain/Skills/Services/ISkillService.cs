@@ -1,3 +1,4 @@
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Skills.DTOs;
 using Api.Domain.Skills.Models;
 
@@ -11,5 +12,5 @@ public interface ISkillService
     Task<ICollection<Skill>> GetAllWithAbilityAsync();
     Task<Skill> GetByIdAsync(int id);
     Task<Skill> UpdateAsync(int id, UpdateSkillRequestDto dto); 
-    ICollection<Skill> SortBy(ICollection<Skill> skills, string sortFilter, bool descending = false);
+    Task<(int, ICollection<Skill>)> GetFilteredAsync(SkillFilterDto filter, PaginationRequestDto pagination);
 }

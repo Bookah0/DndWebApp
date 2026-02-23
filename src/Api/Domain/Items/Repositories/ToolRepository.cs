@@ -7,6 +7,7 @@ using Api.Domain.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Api.Infrastructure.Validation;
 using Api.Infrastructure.Middleware.ExceptionHandling;
+using Api.Domain.Shared.Utils;
 
 namespace Api.Domain.Items.Repositories;
 
@@ -53,9 +54,11 @@ public class ToolRepository(AppDbContext context) : IToolRepository
 
     public async Task<(int, ICollection<Tool>)> GetFilteredAsync(ToolFilterDto filter, PaginationRequestDto pagination)
     {      
+        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortToolOption>(filter.SortBy ?? SortToolOption.Default);
+
         var query = context.Tools
             .AsQueryable()
-            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
+            .WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
             .WhereIf(filter.Name, t => t.Name.Contains(filter.Name!))
             .WhereIf(filter.Category, t => t.Categories.Any(c => filter.Category!.Contains(c)))
             .WhereIf(filter.Rarity, t => t.Rarity.Contains(filter.Rarity!)) 
@@ -69,10 +72,8 @@ public class ToolRepository(AppDbContext context) : IToolRepository
             .WhereIf(filter.ToolCategory, t => t.ToolCategory.Contains(filter.ToolCategory!))
 
             .WhereIf(filter.IsHomebrew, t => t.IsHomebrew == filter.IsHomebrew)
-            .WhereIf(filter.CloningAllowed, t => t.CloningAllowed == filter.CloningAllowed);
-
-        if (filter.SortBy is not null)
-            query = SortBy(query, filter.SortBy, filter.SortDescending);
+            .WhereIf(filter.CloningAllowed, t => t.CloningAllowed == filter.CloningAllowed)
+            .SortBy(normalizedSortBy, sortSelectorsMap, SortToolOption.Default, filter.SortDescending); 
         
         var itemCount = await query.CountAsync();
         var filteredItems = await query
@@ -83,18 +84,11 @@ public class ToolRepository(AppDbContext context) : IToolRepository
         return (itemCount, filteredItems);
     }
 
-    public IQueryable<Tool> SortBy(IQueryable<Tool> query, string sortFilter, bool descending = false)
+    private readonly Dictionary<string, IEnumerable<Func<Tool, object>>> sortSelectorsMap = new()
     {
-        if(!ValuesValidator.TryNormalizeValue<SortToolOption>(sortFilter, out string? normalized))
-            return context.Tools;
-
-        return normalized switch
-        {
-            SortToolOption.Name => OrderByMany(query, [(t => t.Name)], descending),
-            SortToolOption.Category => OrderByMany(query, [(t => t.ToolCategory), (t => t.Name)], descending),
-            SortToolOption.Value => OrderByMany(query, [(t => t.Value!), (t => t.Name)], descending),
-            SortToolOption.Rarity => OrderByMany(query, [(t => t.Rarity == null), (t => t.Rarity!), (t => t.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
+        { SortToolOption.Name, [(s => s.Name)] },
+        { SortToolOption.Category, [(s => s.ToolCategory), (s => s.Name)] },
+        { SortToolOption.Value, [(s => s.Value!), (s => s.Name)] },
+        { SortToolOption.Rarity, [(s => s.Rarity == null), (s => s.Rarity!), (s => s.Name)] },
+    };
 }

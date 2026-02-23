@@ -81,17 +81,4 @@ public class BackgroundFeatureService(
         logger.LogInformation("Successfully updated background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, featureId);
         return feature;
     }
-
-    public ICollection<BackgroundFeature> SortBy(ICollection<BackgroundFeature> features, string sortFilter, bool descending = false)
-    {
-        if(!ValuesValidator.TryNormalizeValue<SortBackgroundFeatureOption>(sortFilter, out string? normalized))
-            return features;
-
-        return normalized switch
-        {
-            SortBackgroundFeatureOption.Name => QueryUtil.OrderByMany(features, [(l => l.Name)], descending),
-            SortBackgroundFeatureOption.Background => QueryUtil.OrderByMany(features, [(l => l.Background!.Name), (l => l.Name)], descending),
-            _ => throw new ValidationException($"Invalid sort option: {sortFilter}")
-        };
-    }
 }

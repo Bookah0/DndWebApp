@@ -76,13 +76,7 @@ public class FeatService(
         await repo.UpdateAsync(feat);
         logger.LogInformation("Successfully updated feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
         
-        // refetch to get updated navigation properties, otherwise bg/race/subrace/class/subclass repositories has to be injected into this service
-        return await repo.GetByIdAsync(id); 
-    }
-
-    public ICollection<Feat> SortBy(ICollection<Feat> feats, bool descending = false)
-    {
-        return QueryUtil.OrderByMany(feats, [(f => f.Name)], descending);
+       return await repo.GetByIdAsync(id); 
     }
 
     private static void UpdateFeatSource(Feat feat, UpdateFeatRequestDto dto)

@@ -1,5 +1,6 @@
 using Api.Domain.Classes.DTOs;
 using Api.Domain.Classes.Models;
+using Api.Domain.Shared.DTOs;
 
 namespace Api.Domain.Classes.Services;
 
@@ -8,6 +9,7 @@ public interface IBaseClassService
     Task<BaseClass> CreateAsync(CreateClassRequestDto dto);
     Task DeleteAsync(int id);
     Task<ICollection<BaseClass>> GetAllAsync();
+    Task<(int, ICollection<BaseClass>)> GetFilteredAsync(ClassFilterDto filter, PaginationRequestDto pagination);
     Task<BaseClass> GetByIdAsync(int id);
     Task<BaseClass> GetWithSubclassesAsync(int id);
     Task<BaseClass> GetWithLevelsAsync(int id);
@@ -19,5 +21,4 @@ public interface IBaseClassService
     Task<BaseClass> RemoveStartingEquipment(int id, int equipmentId);
     // Task<BaseClass> AddStartingEquipmentChoice(int id, int choiceId);
     // Task<BaseClass> RemoveStartingEquipmentChoice(int id, int choiceId);
-    ICollection<BaseClass> SortBy(ICollection<BaseClass> classes, bool descending = false);
 }

@@ -11,7 +11,7 @@ namespace Api.Domain.Users.Controllers;
 public class UsersController(IUserService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<GetUserResponseDto>>> GetAllUsers([FromQuery] string? sort = null, [FromQuery] string? order = null)
+    public async Task<ActionResult<ICollection<GetUserResponseDto>>> GetAllUsers()
     {
         var users = await service.GetAllAsync();
         return Ok(mapper.Map<ICollection<GetUserResponseDto>>(users));

@@ -42,6 +42,7 @@ public class WeaponRepository(AppDbContext context) : IWeaponRepository
     {      
         var query = context.Weapons
             .AsQueryable()
+            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
             .WhereIf(filter.Name, w => w.Name.Contains(filter.Name!))
             .WhereIf(filter.Category, w => w.Categories.Any(c => filter.Category!.Contains(c)))
             .WhereIf(filter.Rarity, w => w.Rarity.Contains(filter.Rarity!)) 

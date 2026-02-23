@@ -55,6 +55,7 @@ public class ToolRepository(AppDbContext context) : IToolRepository
     {      
         var query = context.Tools
             .AsQueryable()
+            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
             .WhereIf(filter.Name, t => t.Name.Contains(filter.Name!))
             .WhereIf(filter.Category, t => t.Categories.Any(c => filter.Category!.Contains(c)))
             .WhereIf(filter.Rarity, t => t.Rarity.Contains(filter.Rarity!)) 

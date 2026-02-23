@@ -53,6 +53,7 @@ public class ItemRepository(AppDbContext context) : IItemRepository
     {      
         var query = context.Items
             .AsQueryable()
+            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
             .WhereIf(filter.Name, i => i.Name.Contains(filter.Name!))
             .WhereIf(filter.Category, i => i.Categories.Any(c => filter.Category!.Contains(c)))
             .WhereIf(filter.Rarity, i => i.Rarity.Contains(filter.Rarity!)) 

@@ -3,6 +3,7 @@ namespace Api.Domain.Spells.DTOs;
 // TODO add more fields if needed
 public class SpellFilterDto
 {
+    public Guid? UserId { get; set; }
     public string? Name { get; set; }
     public int? MinLevel { get; set; }
     public int? MaxLevel { get; set; }

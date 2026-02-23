@@ -53,6 +53,7 @@ public class SpellRepository(AppDbContext context) : ISpellRepository
     {      
         var query = context.Spells
             .AsQueryable()
+            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
             .WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
             .WhereIf(filter.MagicSchool, s => filter.MagicSchool!.Contains(s.MagicSchool))
             // .WhereIf(filter.ClassId, s => s.Classes.Any(c => filter.ClassId!.Contains(c.Id)))

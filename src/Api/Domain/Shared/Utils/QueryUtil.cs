@@ -26,6 +26,9 @@ public static class QueryUtil
     public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, ICollection<int>? col, Expression<Func<T, bool>> predicate) 
         => col?.HasContent() == true ? query.Where(predicate) : query;
 
+    public static IQueryable<T> WhereIf<T>(this IQueryable<T> query, Guid? guid, Expression<Func<T, bool>> predicate) 
+      => guid is not null ? query.Where(predicate) : query;
+
     public static ICollection<T> OrderByMany<T>(ICollection<T> toOrder, IEnumerable<Func<T, object>> selectors, bool descending)
     {
         var selectorList = selectors.ToList();

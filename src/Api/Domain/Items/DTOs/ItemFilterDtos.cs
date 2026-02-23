@@ -28,6 +28,7 @@ public class ToolFilterDto : ItemFilterDto
 
 public class ItemFilterDto
 {
+    public Guid? UserId { get; set; }
     public string? Name { get; set; }
     public ICollection<string>? Category { get; set; }
     public string? Rarity { get; set; }

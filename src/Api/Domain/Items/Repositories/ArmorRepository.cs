@@ -42,6 +42,7 @@ public class ArmorRepository(AppDbContext context) : IArmorRepository
     {      
         var query = context.Armor
             .AsQueryable()
+            .WhereIf(filter.UserId, i => i.CreatedBy == filter.UserId)
             .WhereIf(filter.Name, w => w.Name.Contains(filter.Name!))
             .WhereIf(filter.Category, w => w.Categories.Any(c => filter.Category!.Contains(c)))
             .WhereIf(filter.Rarity, w => w.Rarity.Contains(filter.Rarity!)) 

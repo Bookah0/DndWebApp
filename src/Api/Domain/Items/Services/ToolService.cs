@@ -14,8 +14,8 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 {
     public async Task<Tool> CreateAsync(CreateToolRequestDto dto)
     {
-        var dtoToolCategory = NormalizeValueOrThrow<ToolCategory>(dto.ToolCategory);
-        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoToolCategory = NormalizeValue<ToolCategory>(dto.ToolCategory);
+        var dtoRarity = dto.Rarity is not null ? NormalizeValue<ItemRarity>(dto.Rarity) : null;
 
         logger.LogInformation("Creating tool, Name: {ToolName}", dto.Name);
         
@@ -74,8 +74,8 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Tool> UpdateAsync(UpdateToolRequestDto dto, int id)
     {
-        var dtoToolCategory = dto.ToolCategory is not null ? NormalizeValueOrThrow<ToolCategory>(dto.ToolCategory) : null;
-        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoToolCategory = dto.ToolCategory is not null ? NormalizeValue<ToolCategory>(dto.ToolCategory) : null;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValue<ItemRarity>(dto.Rarity) : null;
 
         var tool = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating tool, Name: {ToolName}, ID: {ToolId}", dto.Name, id);
@@ -99,7 +99,7 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Tool> UpdateAsync(UpdateItemRequestDto dto, int id)
     {
-        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValue<ItemRarity>(dto.Rarity) : null;
 
         var item = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
@@ -148,13 +148,11 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
         if (dto.MaxWeight is not null && dto.MaxWeight < 0)
             throw new ValidationException("Maximum weight must be greater than or equal to zero");
         
-        if (dto.Name is not null)
-            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
         if(dto.Rarity != null)
-            dto.Rarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
+            dto.Rarity = NormalizeValue<ItemRarity>(dto.Rarity);
         if(dto.ToolCategory != null)    
-            dto.ToolCategory = NormalizeValueOrThrow<ToolCategory>(dto.ToolCategory);
+            dto.ToolCategory = NormalizeValue<ToolCategory>(dto.ToolCategory);
             
-        dto.Category = NormalizeValueOrThrow<ItemCategory>(dto.Category);
+        dto.Category = NormalizeValue<ItemCategory>(dto.Category);
     }
 }

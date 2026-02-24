@@ -149,7 +149,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var normalizedCategory = ValuesValidator.NormalizeValueOrThrow<WeaponCategory>(category);
+            var normalizedCategory = ValuesValidator.NormalizeValue<WeaponCategory>(category);
             choice.Options.Add(normalizedCategory);
         }
         await weaponCategoryChoiceRepo.UpdateAsync(choice);
@@ -162,7 +162,7 @@ public class ChoiceService<T>
 
         foreach (var type in newTypes)
         {
-            var normalizedType = ValuesValidator.NormalizeValueOrThrow<WeaponType>(type);
+            var normalizedType = ValuesValidator.NormalizeValue<WeaponType>(type);
             choice.Options.Add(normalizedType);
         }
         await weaponTypeChoiceRepo.UpdateAsync(choice);
@@ -175,7 +175,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var normalizedCategory = ValuesValidator.NormalizeValueOrThrow<ToolCategory>(category);
+            var normalizedCategory = ValuesValidator.NormalizeValue<ToolCategory>(category);
             choice.Options.Add(normalizedCategory);
         }
         await toolChoiceRepo.UpdateAsync(choice);
@@ -188,7 +188,7 @@ public class ChoiceService<T>
 
         foreach (var category in newCategories)
         {
-            var normalizedCategory = ValuesValidator.NormalizeValueOrThrow<ArmorCategory>(category);
+            var normalizedCategory = ValuesValidator.NormalizeValue<ArmorCategory>(category);
             choice.Options.Add(normalizedCategory);
         }
         await armorChoiceRepo.UpdateAsync(choice);

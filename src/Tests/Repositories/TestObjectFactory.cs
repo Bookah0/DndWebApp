@@ -1,12 +1,18 @@
-using Api.Data;
-using Api.Models.Characters;
-using Api.Models.Features;
-using Api.Models.Items;
-using Api.Models.Spells;
-using Api.Validation.AllowedValues;
-using Api.Validation.AllowedValues.Items;
-using Api.Validation.AllowedValues.Spells;
+using Api.Domain.Abilities.Models;
+using Api.Domain.Backgrounds.Models;
+using Api.Domain.Items.Models;
+using Api.Domain.Shared.Enums.Items;
+using Api.Domain.Skills.Models;
+using Api.Infrastructure.Data;
+using Api.Domain.Characters.Models;
+using Api.Domain.Classes.Models;
+using Api.Domain.Feats.Models;
+using Api.Domain.Spells.Models;
+
 using Microsoft.EntityFrameworkCore;
+using Api.Domain.Species.Models;
+using Api.Domain.Shared.Enums.Damage;
+using Api.Domain.Shared.Enums.Spells;
 
 namespace Tests.Repositories;
 
@@ -196,7 +202,7 @@ public static class TestObjectFactory
         var inv = new Inventory
         {
             Currency = new(),
-            StoredItems = [.. items.Select(i => new InventoryItem { ItemId = i.Id, Quantity = 1 })],
+            StoredItems = [.. items.Select(i => new InventoryItem { ItemId = i.Id, Item = i, Quantity = 1 })],
         };
 
         return inv;

@@ -1,8 +1,6 @@
-﻿using static Tests.Repositories.TestObjectFactory;
-using Api.Data;
-using Api.Models.Spells;
-using Api.Repositories.Implemented.Spells;
-using Api.Validation.AllowedValues.Spells;
+﻿using Api.Domain.Spells.Repositories;
+using Api.Infrastructure.Data;
+using static Tests.Repositories.TestObjectFactory;
 
 namespace Tests.Repositories;
 

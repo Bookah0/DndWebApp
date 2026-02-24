@@ -52,7 +52,7 @@ public class ItemRepository(AppDbContext context) : IItemRepository
 
     public async Task<(int, ICollection<Item>)> GetFilteredAsync(ItemFilterDto filter, PaginationRequestDto pagination)
     {      
-        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortItemOption>(filter.SortBy ?? SortItemOption.Default);
+        var normalizedSortBy = ValuesValidator.NormalizeValue<SortItemOption>(filter.SortBy ?? SortItemOption.Default);
 
         var query = context.Items
             .AsQueryable()

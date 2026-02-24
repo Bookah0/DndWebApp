@@ -1,6 +1,6 @@
+using Api.Domain.Species.Repositories;
+using Api.Infrastructure.Data;
 using static Tests.Repositories.TestObjectFactory;
-using Api.Data;
-using Api.Repositories.Implemented.Species;
 
 namespace Tests.Repositories;
 

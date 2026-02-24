@@ -1,7 +1,6 @@
-﻿using static Tests.Repositories.TestObjectFactory;
-using Api.Data;
-using Api.Models.Characters;
-using Api.Repositories.Implemented;
+﻿using Api.Domain.Abilities.Repositories;
+using Api.Infrastructure.Data;
+using static Tests.Repositories.TestObjectFactory;
 
 namespace Tests.Repositories;
 

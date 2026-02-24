@@ -1,9 +1,9 @@
+using Api.Domain.Backgrounds.Repositories;
+using Api.Domain.Classes.Repositories;
+using Api.Domain.Feats.Repositories;
+using Api.Domain.Species.Repositories;
+using Api.Infrastructure.Data;
 using static Tests.Repositories.TestObjectFactory;
-using Api.Data;
-using Api.Models.Characters;
-using Api.Models.Features;
-using Api.Repositories;
-using Api.Repositories.Implemented.Features;
 
 namespace Tests.Repositories;
 

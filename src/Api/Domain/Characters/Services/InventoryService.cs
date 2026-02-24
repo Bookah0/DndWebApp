@@ -160,7 +160,7 @@ public class InventoryService(
 
     public async Task UnEquipAsync(Character character, string slot)
     {
-        var normalizedSlot = ValuesValidator.NormalizeValueOrThrow<EquipSlot>(slot);
+        var normalizedSlot = ValuesValidator.NormalizeValue<EquipSlot>(slot);
         var equippedSlot = character.Inventory.EquipmentSlots.FirstOrDefault(e => e.Slot == normalizedSlot)
             ?? throw new NotFoundException($"No slot {normalizedSlot} in {character.Name}'s inventory");
 
@@ -183,7 +183,7 @@ public class InventoryService(
             throw new ValidationException("Either itemId or slot must be provided");
 
         var equippedSlot = slot is not null
-            ? character.Inventory.EquipmentSlots.FirstOrDefault(e => e.Slot == ValuesValidator.NormalizeValueOrThrow<EquipSlot>(slot))
+            ? character.Inventory.EquipmentSlots.FirstOrDefault(e => e.Slot == ValuesValidator.NormalizeValue<EquipSlot>(slot))
                 ?? throw new NotFoundException($"No slot {slot} in {character.Name}'s inventory")
             : character.Inventory.EquipmentSlots.FirstOrDefault(e => e.EquipmentId == itemId)
                 ?? throw new NotFoundException($"Item with id {itemId} is not equipped in {character.Name}'s inventory");
@@ -210,7 +210,7 @@ public class InventoryService(
 
         if(slot is not null)
         {
-            var normalizedSlot = ValuesValidator.NormalizeValueOrThrow<EquipSlot>(slot);
+            var normalizedSlot = ValuesValidator.NormalizeValue<EquipSlot>(slot);
 
             if (item.EquipSlot != normalizedSlot && item.SecondaryEquipSlot != normalizedSlot)
                 throw new InvalidOperationException($"Item with id {itemId} cannot be equipped in slot {normalizedSlot}");
@@ -261,7 +261,7 @@ public class InventoryService(
         List<EquippedItemDto> result = [];
         var targetSlots = slot is null 
             ? character.Inventory.EquipmentSlots 
-            : character.Inventory.EquipmentSlots.Where(e => e.Slot == ValuesValidator.NormalizeValueOrThrow<EquipSlot>(slot)); 
+            : character.Inventory.EquipmentSlots.Where(e => e.Slot == ValuesValidator.NormalizeValue<EquipSlot>(slot)); 
 
         foreach (var equippedSlot in targetSlots)
         {

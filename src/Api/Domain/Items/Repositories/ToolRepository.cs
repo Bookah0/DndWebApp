@@ -54,7 +54,7 @@ public class ToolRepository(AppDbContext context) : IToolRepository
 
     public async Task<(int, ICollection<Tool>)> GetFilteredAsync(ToolFilterDto filter, PaginationRequestDto pagination)
     {      
-        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortToolOption>(filter.SortBy ?? SortToolOption.Default);
+        var normalizedSortBy = ValuesValidator.NormalizeValue<SortToolOption>(filter.SortBy ?? SortToolOption.Default);
 
         var query = context.Tools
             .AsQueryable()

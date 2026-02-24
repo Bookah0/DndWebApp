@@ -41,7 +41,7 @@ public class ArmorRepository(AppDbContext context) : IArmorRepository
 
     public async Task<(int, ICollection<Armor>)> GetFilteredAsync(ArmorFilterDto filter, PaginationRequestDto pagination)
     {      
-        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortArmorOption>(filter.SortBy ?? SortArmorOption.Default);
+        var normalizedSortBy = ValuesValidator.NormalizeValue<SortArmorOption>(filter.SortBy ?? SortArmorOption.Default);
 
         var query = context.Armor
             .AsQueryable()

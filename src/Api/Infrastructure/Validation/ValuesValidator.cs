@@ -7,47 +7,36 @@ using Api.Infrastructure.Middleware.ExceptionHandling;
 namespace Api.Infrastructure.Validation;
 public static class ValuesValidator
 {
-    public static ICollection<string>? NormalizeValueOrThrow<T>(ICollection<string>? values) where T : IValuesProvider
+    public static string NormalizeValue<T>(string val, bool throwOnError = true) where T : IValuesProvider
     {
-        if(values is null)
-            return null;
+        if (TryNormalizeValue<T>(val, out var normalized))
+            return normalized!;
+        
+        if (throwOnError)
+            throw new ValidationException($"{typeof(T).Name} {val} not recognized. Allowed values are: {GetAllowedAsString(T.Values, 20)}");
+
+        return "";
+    }
+
+    public static ICollection<string> NormalizeValue<T>(ICollection<string>? values, bool throwOnError = true) where T : IValuesProvider
+    {
+        if (!values.HasContent())
+            return [];
 
         ICollection<string> normalized = [];
 
-        foreach (var val in values)
+        foreach (var val in values!)
         {
             if (TryNormalizeValue<T>(val, out var normalizedOption))
             {
                 normalized.Add(normalizedOption!);
                 continue;
             }
-            throw new ValidationException($"{typeof(T).Name} {val} not recognized. Allowed values are: {GetAllowedAsString(T.Values, 20)}");
+            if (throwOnError)
+                throw new ValidationException($"{typeof(T).Name} {val} not recognized. Allowed values are: {GetAllowedAsString(T.Values, 20)}");
+            return [];
         }
         return normalized;
-    }
-
-    public static string NormalizeValueOrThrow<T>(string val) where T : IValuesProvider
-    {
-        if (TryNormalizeValue<T>(val, out var normalized))
-            return normalized!;
-        
-        throw new ValidationException($"{typeof(T).Name} {val} not recognized. Allowed values are: {GetAllowedAsString(T.Values, 20)}");
-    }
-
-    public static ICollection<string> NormalizeValueOrEmpty<T>(ICollection<string> values) where T : IValuesProvider
-    {
-        if (!values.HasContent())
-            return [];
-
-        return NormalizeValueOrThrow<T>(values)!;
-    }
-
-    public static string NormalizeValueOrEmpty<T>(string val) where T : IValuesProvider
-    {
-        if (string.IsNullOrWhiteSpace(val))
-            return "";
-
-        return NormalizeValueOrThrow<T>(val);
     }
 
     public static bool TryNormalizeValue<T>(string val, out string? normalized) where T : IValuesProvider

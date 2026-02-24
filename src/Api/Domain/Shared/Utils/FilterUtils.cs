@@ -5,8 +5,15 @@ using Api.Infrastructure.Validation;
 
 namespace Api.Domain.Shared.Utils;
 
-public static class SortUtils
+public static class FilterUtils
 {
+    public static Dictionary<T, int> CreateOrderLookup<T>(T[] fixedSortOrder) where T : notnull
+    {
+        return fixedSortOrder
+            .Select((name, index) => new { name, index })
+            .ToDictionary(x => x.name, x => x.index);
+    }
+
     public static IQueryable<T> SortBy<T>(
         this IQueryable<T> query, 
         string? sortBy, 

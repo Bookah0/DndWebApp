@@ -41,7 +41,7 @@ public class WeaponRepository(AppDbContext context) : IWeaponRepository
 
     public async Task<(int, ICollection<Weapon>)> GetFilteredAsync(WeaponFilterDto filter, PaginationRequestDto pagination)
     {      
-        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortWeaponOption>(filter.SortBy ?? SortWeaponOption.Default);
+        var normalizedSortBy = ValuesValidator.NormalizeValue<SortWeaponOption>(filter.SortBy ?? SortWeaponOption.Default);
 
         var query = context.Weapons
             .AsQueryable()

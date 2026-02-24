@@ -54,7 +54,7 @@ public class SkillRepository(AppDbContext context) : ISkillRepository
 
     public async Task<(int, ICollection<Skill>)> GetFilteredAsync(SkillFilterDto filter, PaginationRequestDto pagination)
     {
-        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortSkillOption>(filter.SortBy ?? SortSkillOption.Default);
+        var normalizedSortBy = ValuesValidator.NormalizeValue<SortSkillOption>(filter.SortBy ?? SortSkillOption.Default);
 
         var query = context.Skills
             .AsQueryable()

@@ -1,7 +1,8 @@
 using static Tests.Repositories.TestObjectFactory;
-using Api.Data;
-using Api.Repositories.Implemented;
-using Api.Validation.AllowedValues.Items;
+using Api.Domain.Shared.Enums.Items;
+using Api.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Api.Domain.Characters.Repositories;
 
 namespace Tests.Repositories;
 

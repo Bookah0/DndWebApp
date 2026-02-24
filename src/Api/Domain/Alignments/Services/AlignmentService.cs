@@ -1,7 +1,7 @@
 using Api.Domain.Alignments.DTOs;
 using Api.Domain.Alignments.Models;
 using Api.Domain.Shared.Repositories;
-using static Api.Domain.Shared.Utils.QueryUtil;
+using Api.Domain.Shared.Utils;
 
 namespace Api.Domain.Alignments.Services;
 
@@ -57,7 +57,7 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
             "Lawful Evil", "Neutral Evil", "Chaotic Evil"
         ];
 
-        var alignmentOrder = CreateOrderLookup(fixedSortOrder);
+        var alignmentOrder = FilterUtils.CreateOrderLookup(fixedSortOrder);
 
         return [.. alignments.OrderBy(a => alignmentOrder[a.Name])];
     }

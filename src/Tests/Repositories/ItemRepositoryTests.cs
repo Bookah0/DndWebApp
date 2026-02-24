@@ -1,10 +1,10 @@
+using Api.Domain.Items.Models;
+using Api.Domain.Items.Repositories;
+using Api.Domain.Shared.Enums.Damage;
+using Api.Domain.Shared.Enums.Items;
+using Api.Domain.Shared.Repositories;
+using Api.Infrastructure.Data;
 using static Tests.Repositories.TestObjectFactory;
-using Api.Data;
-using Api.Models.Items;
-using Api.Repositories.Implemented.Items;
-using Api.Repositories.Implemented;
-using Api.Validation.AllowedValues.Items;
-using Api.Validation.AllowedValues;
 
 namespace Tests.Repositories;
 

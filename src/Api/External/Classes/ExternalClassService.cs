@@ -277,10 +277,10 @@ public class ExternalClassService(
                         case "martial-melee-weapons":
                         case "simple-ranged-weapons":
                         case "martial-ranged-weapons":
-                            option.AnyOfWeaponCategory = ValuesValidator.NormalizeValueOrThrow<WeaponCategory>(categoryDto.Index);
+                            option.AnyOfWeaponCategory = ValuesValidator.NormalizeValue<WeaponCategory>(categoryDto.Index);
                             break;
                         default:
-                            option.AnyOfWeaponType = ValuesValidator.NormalizeValueOrThrow<WeaponType>(categoryDto.Index);
+                            option.AnyOfWeaponType = ValuesValidator.NormalizeValue<WeaponType>(categoryDto.Index);
                             break;
                     }
 

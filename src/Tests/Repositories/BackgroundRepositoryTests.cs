@@ -1,7 +1,7 @@
+using Api.Domain.Backgrounds.Repositories;
+using Api.Domain.Shared.Enums.Items;
+using Api.Infrastructure.Data;
 using static Tests.Repositories.TestObjectFactory;
-using Api.Data;
-using Api.Repositories.Implemented;
-using Api.Validation.AllowedValues.Items;
 
 namespace Tests.Repositories;
 

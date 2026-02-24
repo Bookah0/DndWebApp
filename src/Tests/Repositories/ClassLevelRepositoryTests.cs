@@ -1,8 +1,7 @@
 using static Tests.Repositories.TestObjectFactory;
-using Api.Data;
-using Api.Repositories;
-using Api.Models.Characters;
-using Api.Repositories.Implemented.Classes;
+using Api.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Api.Domain.Classes.Repositories;
 
 namespace Tests.Repositories;
 

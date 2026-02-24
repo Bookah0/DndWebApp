@@ -23,10 +23,10 @@ public class SpellService(
     {
         logger.LogInformation("Creating spell, Name: {SpellName}", dto.Name);
 
-        var dtoTargetType = NormalizeValueOrThrow<TargetType>(dto.TargetingDto.TargetType);
-        var dtoSpellRange = NormalizeValueOrThrow<SpellRange>(dto.TargetingDto.Range);
-        var dtoDuration = NormalizeValueOrThrow<SpellDuration>(dto.Duration);
-        var dtoCastTime = NormalizeValueOrThrow<CastingTime>(dto.CastingTime);
+        var dtoTargetType = NormalizeValue<TargetType>(dto.TargetingDto.TargetType);
+        var dtoSpellRange = NormalizeValue<SpellRange>(dto.TargetingDto.Range);
+        var dtoDuration = NormalizeValue<SpellDuration>(dto.Duration);
+        var dtoCastTime = NormalizeValue<CastingTime>(dto.CastingTime);
 
         if (dto.TargetingDto.RangeValue > 0 && dtoSpellRange != SpellRange.Feet && dtoSpellRange != SpellRange.Mile)
             throw new ValidationException($"Range value is set to {dto.TargetingDto.RangeValue} but spell is not of range type SpellRange.Feet or SpellRange.Mile.");
@@ -43,10 +43,10 @@ public class SpellService(
             DurationValue = dto.DurationValue,
             CastingTime = dtoCastTime,
             ReactionCondition = dto.ReactionCondition,
-            MagicSchool = NormalizeValueOrEmpty<MagicSchool>(dto.MagicSchool),
-            SpellTypes = NormalizeValueOrEmpty<SpellType>(dto.SpellTypes),
+            MagicSchool = NormalizeValue<MagicSchool>(dto.MagicSchool, throwOnError: false),
+            SpellTypes = NormalizeValue<SpellType>(dto.SpellTypes, throwOnError: false),
             DamageRoll = dto.DamageRoll,
-            DamageTypes = NormalizeValueOrEmpty<DamageType>(dto.DamageTypes),
+            DamageTypes = NormalizeValue<DamageType>(dto.DamageTypes, throwOnError: false),
             SpellTargeting = new SpellTargeting()
             {
                 TargetType = dtoTargetType,
@@ -113,19 +113,19 @@ public class SpellService(
         logger.LogInformation("Updating spell, Name: {SpellName} ID: {SpellId}", spell.Name, id);
 
         if(dto.MagicSchool is not null)
-            spell.MagicSchool = NormalizeValueOrEmpty<MagicSchool>(dto.MagicSchool);
+            spell.MagicSchool = NormalizeValue<MagicSchool>(dto.MagicSchool, throwOnError: false);
 
         if(dto.TargetingDto?.TargetType is not null)
-            spell.SpellTargeting.TargetType = NormalizeValueOrEmpty<TargetType>(dto.TargetingDto.TargetType);
+            spell.SpellTargeting.TargetType = NormalizeValue<TargetType>(dto.TargetingDto.TargetType, throwOnError: false);
 
         if(dto.TargetingDto?.Range is not null)
-            spell.SpellTargeting.Range = NormalizeValueOrEmpty<SpellRange>(dto.TargetingDto.Range);
+            spell.SpellTargeting.Range = NormalizeValue<SpellRange>(dto.TargetingDto.Range, throwOnError: false);
 
         if(dto.Duration is not null)
-            spell.Duration = NormalizeValueOrEmpty<SpellDuration>(dto.Duration);
+            spell.Duration = NormalizeValue<SpellDuration>(dto.Duration, throwOnError: false);
 
         if(dto.CastingTime is not null)
-            spell.CastingTime = NormalizeValueOrEmpty<CastingTime>(dto.CastingTime);
+            spell.CastingTime = NormalizeValue<CastingTime>(dto.CastingTime, throwOnError: false);
 
         spell.Name = dto.Name ?? spell.Name;
         spell.Description = dto.Description ?? spell.Description;
@@ -154,8 +154,6 @@ public class SpellService(
 
     public async Task ValidatieFilterAsync(SpellFilterDto dto)
     {
-        if (dto.Name is not null)
-            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
         if (dto.MinLevel is not null && dto.MaxLevel is not null && dto.MinLevel > dto.MaxLevel)
             throw new ValidationException("Maximum level must be greater than or equal to minimum level");
         if (dto.MinLevel is not null && dto.MinLevel < 0)
@@ -164,9 +162,6 @@ public class SpellService(
             throw new ValidationException("Maximum level must be greater than or equal to zero");
         if (dto.ClassId != null)
         {
-            if (dto.ClassId.HasDuplicates())
-                throw new ValidationException($"Duplicate class ids found in ClassIds.");
-    
             foreach (var id in dto.ClassId)
             {
                 if(!await classRepo.ExistsAsync(id))
@@ -174,12 +169,12 @@ public class SpellService(
             }
         }
 
-        dto.MagicSchool = NormalizeValueOrThrow<MagicSchool>(dto.MagicSchool);
-        dto.TargetType = NormalizeValueOrThrow<TargetType>(dto.TargetType);
-        dto.Range = NormalizeValueOrThrow<SpellRange>(dto.Range);
-        dto.Duration = NormalizeValueOrThrow<SpellDuration>(dto.Duration);
-        dto.CastingTime = NormalizeValueOrThrow<CastingTime>(dto.CastingTime);
-        dto.SpellType = NormalizeValueOrThrow<SpellType>(dto.SpellType);
-        dto.DamageType = NormalizeValueOrThrow<DamageType>(dto.DamageType);
+        dto.MagicSchool = NormalizeValue<MagicSchool>(dto.MagicSchool);
+        dto.TargetType = NormalizeValue<TargetType>(dto.TargetType);
+        dto.Range = NormalizeValue<SpellRange>(dto.Range);
+        dto.Duration = NormalizeValue<SpellDuration>(dto.Duration);
+        dto.CastingTime = NormalizeValue<CastingTime>(dto.CastingTime);
+        dto.SpellType = NormalizeValue<SpellType>(dto.SpellType);
+        dto.DamageType = NormalizeValue<DamageType>(dto.DamageType);
     }
 }

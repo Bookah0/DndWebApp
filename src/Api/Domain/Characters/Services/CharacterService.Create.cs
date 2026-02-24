@@ -247,47 +247,59 @@ public partial class CharacterService : ICharacterService
 
         foreach (var resistance in feature.DamageResistanceGained)
         {
-            character.DamageAffinities.RemoveFirst(da => da.DamageType == resistance && da.AffinityType == AffinityType.Resistant && da.FeatureId == feature.Id);
+            RemoveFirst(character.DamageAffinities, da => da.DamageType == resistance && da.AffinityType == AffinityType.Resistant && da.FeatureId == feature.Id);
         }
 
         foreach (var immunity in feature.DamageImmunityGained)
         {
-            character.DamageAffinities.RemoveFirst(da => da.DamageType == immunity && da.AffinityType == AffinityType.Immune && da.FeatureId == feature.Id);
+            RemoveFirst(character.DamageAffinities, da => da.DamageType == immunity && da.AffinityType == AffinityType.Immune && da.FeatureId == feature.Id);
         }
 
         foreach (var weakness in feature.DamageWeaknessGained)
         {
-            character.DamageAffinities.RemoveFirst(da => da.DamageType == weakness && da.AffinityType == AffinityType.Weakness && da.FeatureId == feature.Id);
+            RemoveFirst(character.DamageAffinities, da => da.DamageType == weakness && da.AffinityType == AffinityType.Weakness && da.FeatureId == feature.Id);
         }
 
         foreach (var category in feature.WeaponCategoryProficiencies)
         {
-            character.WeaponCategoryProficiencies.RemoveFirst(wcp => wcp.WeaponCategory == category && wcp.FeatureId == feature.Id);
+            RemoveFirst(character.WeaponCategoryProficiencies, wcp => wcp.WeaponCategory == category && wcp.FeatureId == feature.Id);
         }
 
         foreach (var type in feature.WeaponTypeProficiencies)
         {
-            character.WeaponTypeProficiencies.RemoveFirst(wtp => wtp.WeaponType == type && wtp.FeatureId == feature.Id);
+            RemoveFirst(character.WeaponTypeProficiencies, wtp => wtp.WeaponType == type && wtp.FeatureId == feature.Id);
         }
 
         foreach (var type in feature.ArmorProficiencies)
         {
-            character.ArmorProficiencies.RemoveFirst(ap => ap.ArmorType == type && ap.FeatureId == feature.Id);
+            RemoveFirst(character.ArmorProficiencies, ap => ap.ArmorType == type && ap.FeatureId == feature.Id);
         }
 
         foreach (var type in feature.ToolProficiencies)
         {
-            character.ToolProficiencies.RemoveFirst(tp => tp.ToolType == type && tp.FeatureId == feature.Id);
+            RemoveFirst(character.ToolProficiencies, tp => tp.ToolType == type && tp.FeatureId == feature.Id);
         }
 
         foreach (var ability in feature.SavingThrowProficiencies)
         {
-            character.SavingThrows.RemoveFirst(st => st.AbilityId == ability.Id && st.FeatureId == feature.Id);
+            RemoveFirst(character.SavingThrows, st => st.AbilityId == ability.Id && st.FeatureId == feature.Id);
         }
 
         foreach (var language in feature.Languages)
         {
-            character.Languages.RemoveFirst(lp => lp.LanguageId == language.Id && lp.FeatureId == feature.Id);
+            RemoveFirst(character.Languages, lp => lp.LanguageId == language.Id && lp.FeatureId == feature.Id);
+        }
+
+        static void RemoveFirst<T>(ICollection<T> collection, Func<T, bool> predicate)
+        {
+            foreach (var item in collection)
+            {
+                if (predicate(item))
+                {
+                    collection.Remove(item);
+                    return;
+                }
+            }
         }
     }
 

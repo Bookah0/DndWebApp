@@ -42,7 +42,7 @@ public class LanguageRepository(AppDbContext context) : ILanguageRepository
 
     public async Task<(int, ICollection<Language>)> GetFilteredAsync(LanguageFilterDto filter, PaginationRequestDto pagination)
     {
-        var normalizedSortBy = ValuesValidator.NormalizeValueOrThrow<SortLanguageOption>(filter.SortBy ?? SortLanguageOption.Default);
+        var normalizedSortBy = ValuesValidator.NormalizeValue<SortLanguageOption>(filter.SortBy ?? SortLanguageOption.Default);
 
         var query = context.Languages
             .AsQueryable()

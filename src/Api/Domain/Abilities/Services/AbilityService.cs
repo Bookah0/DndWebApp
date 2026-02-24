@@ -3,6 +3,7 @@ using Api.Domain.Abilities.DTOs;
 using Api.Domain.Abilities.Models;
 using Api.Domain.Abilities.Repositories;
 using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
 
 namespace Api.Domain.Abilities.Services;
 
@@ -59,7 +60,7 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
     // TODO Move to database level sorting
     public ICollection<Ability> SortBy(ICollection<Ability> abilities)
     {
-        var abilityOrder = CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
+        var abilityOrder = FilterUtils.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
 
         return [.. abilities.OrderBy(a => abilityOrder[a.FullName])];
     }

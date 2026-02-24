@@ -17,8 +17,8 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         if(dto.Categories == null || dto.Categories.Count < 1)
             throw new ValidationException("At least one category is required for an item.");
 
-        var dtoCategories = NormalizeValueOrThrow<ItemCategory>(dto.Categories);
-        var dtoRarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
+        var dtoCategories = NormalizeValue<ItemCategory>(dto.Categories);
+        var dtoRarity = NormalizeValue<ItemRarity>(dto.Rarity);
         
         logger.LogInformation("Creating item, Name: {ItemName}", dto.Name);
 
@@ -54,7 +54,7 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
 
     public async Task<Item> UpdateAsync(UpdateItemRequestDto dto, int id)
     {
-        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValue<ItemRarity>(dto.Rarity) : null;
 
         var item = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating item, Name: {ItemName}, ID: {ItemId}", item.Name, item.Id);
@@ -103,11 +103,9 @@ public class ItemService(IItemRepository repo, ICurrentUserService currentUserSe
         if (dto.MaxWeight is not null && dto.MaxWeight < 0)
             throw new ValidationException("Maximum weight must be greater than or equal to zero");
         
-        if (dto.Name is not null)
-            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
         if(dto.Rarity != null)
-            dto.Rarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
+            dto.Rarity = NormalizeValue<ItemRarity>(dto.Rarity);
 
-        dto.Category = NormalizeValueOrThrow<ItemCategory>(dto.Category);
+        dto.Category = NormalizeValue<ItemCategory>(dto.Category);
     }
 }

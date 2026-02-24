@@ -16,10 +16,10 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
     public async Task<Weapon> CreateAsync(CreateWeaponRequestDto dto)
     {
         logger.LogInformation("Creating weapon, Name: {WeaponName}", dto.Name);
-        var dtoCategory = NormalizeValueOrThrow<WeaponCategory>(dto.WeaponCategory);
-        var dtoWeaponType = NormalizeValueOrThrow<WeaponType>(dto.WeaponType);
-        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
-        var dtoProperties = NormalizeValueOrThrow<WeaponProperty>(dto.Properties);
+        var dtoCategory = NormalizeValue<WeaponCategory>(dto.WeaponCategory);
+        var dtoWeaponType = NormalizeValue<WeaponType>(dto.WeaponType);
+        var dtoRarity = dto.Rarity is not null ? NormalizeValue<ItemRarity>(dto.Rarity) : null;
+        var dtoProperties = NormalizeValue<WeaponProperty>(dto.Properties);
 
         Weapon weapon = await repo.CreateAsync(new()
         {
@@ -43,7 +43,7 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
             CreatedBy = currentUserService.GetCurrentUserId(),
 
             DamageTypes = dto.DamageTypes.HasContent()
-                ? NormalizeValueOrThrow<DamageType>(dto.DamageTypes)!
+                ? NormalizeValue<DamageType>(dto.DamageTypes)!
                 : GetDefaultWeaponDamageTypes(dto.WeaponType)
         });
 
@@ -67,10 +67,10 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
         logger.LogInformation("Updating weapon, Name: {WeaponName}, ID: {WeaponId}", dto.Name, id);
         var weapon = await repo.GetByIdAsync(id);
 
-        var dtoCategory = dto.WeaponCategory is not null ? NormalizeValueOrThrow<WeaponCategory>(dto.WeaponCategory) : null;
-        var dtoWeaponType = dto.WeaponType is not null ? NormalizeValueOrThrow<WeaponType>(dto.WeaponType) : null;
-        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
-        var dtoSlot = dto.Slot is not null ? NormalizeValueOrThrow<EquipSlot>(dto.Slot) : null;
+        var dtoCategory = dto.WeaponCategory is not null ? NormalizeValue<WeaponCategory>(dto.WeaponCategory) : null;
+        var dtoWeaponType = dto.WeaponType is not null ? NormalizeValue<WeaponType>(dto.WeaponType) : null;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValue<ItemRarity>(dto.Rarity) : null;
+        var dtoSlot = dto.Slot is not null ? NormalizeValue<EquipSlot>(dto.Slot) : null;
 
         weapon.WeaponCategory = dtoCategory ?? weapon.WeaponCategory;
         weapon.WeaponType = dtoWeaponType ?? weapon.WeaponType;
@@ -123,17 +123,15 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
         if (dto.MaxWeight is not null && dto.MaxWeight < 0)
             throw new ValidationException("Maximum weight must be greater than or equal to zero");
         
-        if (dto.Name is not null)
-            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
         if(dto.Rarity != null)
-            dto.Rarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
+            dto.Rarity = NormalizeValue<ItemRarity>(dto.Rarity);
         if(dto.WeaponCategory != null)
-            dto.WeaponCategory = NormalizeValueOrThrow<WeaponCategory>(dto.WeaponCategory);
+            dto.WeaponCategory = NormalizeValue<WeaponCategory>(dto.WeaponCategory);
         if(dto.WeaponType != null)
-            dto.WeaponType = NormalizeValueOrThrow<WeaponType>(dto.WeaponType);
+            dto.WeaponType = NormalizeValue<WeaponType>(dto.WeaponType);
         if(dto.Slot != null)
-            dto.Slot = NormalizeValueOrThrow<EquipSlot>(dto.Slot);
+            dto.Slot = NormalizeValue<EquipSlot>(dto.Slot);
             
-        dto.Category = NormalizeValueOrThrow<ItemCategory>(dto.Category);
+        dto.Category = NormalizeValue<ItemCategory>(dto.Category);
     }
 }

@@ -15,8 +15,8 @@ public class ArmorService(IArmorRepository repo, ICurrentUserService currentUser
 {
     public async Task<Armor> CreateAsync(CreateArmorRequestDto dto)
     {
-        var dtoCategory = NormalizeValueOrThrow<ArmorCategory>(dto.Category);
-        var dtoRarity = dto.Rarity != null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoCategory = NormalizeValue<ArmorCategory>(dto.Category);
+        var dtoRarity = dto.Rarity != null ? NormalizeValue<ItemRarity>(dto.Rarity) : null;
 
         logger.LogInformation("Creating armor, Name: {ArmorName}", dto.Name);
 
@@ -58,8 +58,8 @@ public class ArmorService(IArmorRepository repo, ICurrentUserService currentUser
 
     public async Task<Armor> UpdateAsync(UpdateArmorRequestDto dto, int id)
     {
-        var dtoCategory = dto.Category is not null ? NormalizeValueOrThrow<ArmorCategory>(dto.Category) : null;
-        var dtoRarity = dto.Rarity is not null ? NormalizeValueOrThrow<ItemRarity>(dto.Rarity) : null;
+        var dtoCategory = dto.Category is not null ? NormalizeValue<ArmorCategory>(dto.Category) : null;
+        var dtoRarity = dto.Rarity is not null ? NormalizeValue<ItemRarity>(dto.Rarity) : null;
 
         var armor = await repo.GetByIdAsync(id);
         logger.LogInformation("Updating armor, Name: {ArmorName}, ID: {ArmorId}", armor.Name, armor.Id);
@@ -126,13 +126,11 @@ public class ArmorService(IArmorRepository repo, ICurrentUserService currentUser
         if (dto.MaxAC is not null && dto.MaxAC < 0)
             throw new ValidationException("Maximum AC must be greater than or equal to zero");
         
-        if (dto.Name is not null)
-            dto.Name = NormalizationUtil.NormalizeWhiteSpace(dto.Name);
         if(dto.Rarity != null)
-            dto.Rarity = NormalizeValueOrThrow<ItemRarity>(dto.Rarity);
+            dto.Rarity = NormalizeValue<ItemRarity>(dto.Rarity);
         if(dto.ArmorCategory != null)
-            dto.ArmorCategory = NormalizeValueOrThrow<ArmorCategory>(dto.ArmorCategory);
+            dto.ArmorCategory = NormalizeValue<ArmorCategory>(dto.ArmorCategory);
             
-        dto.Category = NormalizeValueOrThrow<ItemCategory>(dto.Category);
+        dto.Category = NormalizeValue<ItemCategory>(dto.Category);
     }
 }

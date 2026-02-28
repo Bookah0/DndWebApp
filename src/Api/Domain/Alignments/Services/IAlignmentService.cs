@@ -8,8 +8,8 @@ public interface IAlignmentService
     Task<Alignment> CreateAsync(AlignmentRequestDto dto);
     Task DeleteAsync(int id);
     Task<ICollection<Alignment>> GetAllAsync();
+    Task<ICollection<Alignment>> GetAllAsync(AlignmentFilterDto? filter = null);
     Task<Alignment> GetByIdAsync(int id);
     Task<Alignment> UpdateAsync(int id, AlignmentRequestDto dto);
-    ICollection<Alignment> SortBy(ICollection<Alignment> alignments);
 
 }

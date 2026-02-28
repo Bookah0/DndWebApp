@@ -10,5 +10,5 @@ public interface ISubclassRepository : IRepository<Subclass>
 {
     Task<Subclass> GetWithLevelFeaturesAsync(int id);
     Task<Subclass> GetWithLevelsAsync(int id);
-    Task<(int, ICollection<Subclass>)> GetFilteredAsync(SubclassFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Subclass>> GetAllAsync(SubclassFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

@@ -7,5 +7,5 @@ namespace Api.Domain.Items.Repositories;
 
 public interface IArmorRepository : IRepository<Armor>
 {
-    Task<(int, ICollection<Armor>)> GetFilteredAsync(ArmorFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Armor>> GetAllAsync(ArmorFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

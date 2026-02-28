@@ -1,3 +1,4 @@
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Species.DTOs;
 using Api.Domain.Species.Models;
 using Api.Domain.Species.Repositories;
@@ -43,6 +44,7 @@ public class RaceService(IRaceRepository repo, ICurrentUserService currentUserSe
     }
 
     public async Task<ICollection<Race>> GetAllAsync() => await repo.GetAllAsync();
+	public async Task<ICollection<Race>> GetAllAsync(RaceFilterDto? filter = null, PaginationRequestDto? pagination = null) => await repo.GetAllAsync(filter, pagination);
     public async Task<Race> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
     public async Task<Race> GetWithAllDataAsync(int id) => await repo.GetWithAllDataAsync(id);
     public async Task<Race> GetWithTraitsAsync(int id) => await repo.GetWithTraitsAsync(id);

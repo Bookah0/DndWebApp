@@ -11,5 +11,5 @@ public interface IItemService
     Task<ICollection<Item>> GetAllAsync();
     Task<Item> GetByIdAsync(int id);
     Task<Item> UpdateAsync(UpdateItemRequestDto dto, int id);
-    Task<(int, ICollection<Item>)> GetFilteredAsync(ItemFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Item>> GetAllAsync(ItemFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

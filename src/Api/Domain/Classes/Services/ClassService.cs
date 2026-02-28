@@ -47,7 +47,7 @@ public partial class BaseClassService(
         logger.LogInformation("Successfully deleted class, Name: {ClassName}, ID: {ClassId}", clss.Name, id);
     }
 
-    public async Task<(int, ICollection<BaseClass>)> GetFilteredAsync(ClassFilterDto filter, PaginationRequestDto pagination) => await repo.GetFilteredAsync(filter, pagination);
+    public async Task<ICollection<BaseClass>> GetAllAsync(ClassFilterDto? filter = null, PaginationRequestDto? pagination = null) => await repo.GetAllAsync(filter, pagination);
     public async Task<ICollection<BaseClass>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<ICollection<BaseClass>> GetAllWithLevelFeaturesAsync() => await repo.GetAllWithLevelFeaturesAsync();
     public async Task<BaseClass> GetWithStartingEquipmentAsync(int id) => await repo.GetWithStartingEquipmentAsync(id);

@@ -14,19 +14,12 @@ namespace Api.Domain.Spells.Controllers;
 public class SpellsController(ISpellService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<SpellResponseDto>>> GetSpells([FromQuery] SpellFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
+    public async Task<ActionResult<ICollection<SpellResponseDto>>> GetSpells([FromQuery] SpellFilterDto? filterDto = null, [FromQuery] PaginationRequestDto? paginationDto = null)
     {
-        var (totalSpells, filteredSpells) = await service.GetFilteredAsync(filterDto, paginationDto);
-        
-        return Ok(new PaginationResponseDto<Spell>
-        {
-            Items = filteredSpells,
-            ItemCount = totalSpells,
-            Page = paginationDto.Page,
-            PageSize = paginationDto.PageSize,
-            Next = PaginationUtil.GetNext(paginationDto, totalSpells, "api/spells"),
-            Prev = PaginationUtil.GetPrev(paginationDto, "api/spells")
-        });
+        var filteredSpells = await service.GetAllAsync(filterDto, paginationDto);
+        var mappedSpells = mapper.Map<ICollection<SpellResponseDto>>(filteredSpells);
+
+        return Ok(PaginationUtil.BuildPaginationResponse(mappedSpells, paginationDto, "api/spells"));
     }
 
     [HttpGet("{spellId}")]

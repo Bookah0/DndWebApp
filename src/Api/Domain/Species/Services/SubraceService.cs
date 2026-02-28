@@ -1,3 +1,4 @@
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Enums.Character;
 using Api.Domain.Species.DTOs;
 using Api.Domain.Species.Models;
@@ -56,7 +57,8 @@ public class SubraceService(
         logger.LogInformation("Successfully deleted subrace, Name: {SubraceName}, ID: {SubraceId}", subrace.Name, id);
     }
 
-    public async Task<ICollection<Subrace>> GetAllAsync() => await repo.GetAllAsync();
+    public async Task<ICollection<Subrace>> GetAllAsync() => await repo.GetAllAsync(null, null);
+	public async Task<ICollection<Subrace>> GetAllAsync(SubraceFilterDto? filter = null, PaginationRequestDto? pagination = null) => await repo.GetAllAsync(filter, pagination);
     public async Task<Subrace> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
     public async Task<Subrace> GetWithAllDataAsync(int id) => await repo.GetWithAllDataAsync(id);
     public async Task<Subrace> GetWithTraitsAsync(int id) => await repo.GetWithTraitsAsync(id);

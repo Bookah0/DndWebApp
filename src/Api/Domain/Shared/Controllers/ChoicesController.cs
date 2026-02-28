@@ -13,47 +13,53 @@ namespace Api.Domain.Shared.Controllers;
 
 [ApiController]
 [Route("api/races/{raceId}/traits/{traitId}")]
-public class RaceTraitChoicesController : ChoicesControllerBase<Trait, CreateTraitRequestDto, UpdateTraitRequestDto>
-{
-    public RaceTraitChoicesController(IChoiceService<Trait> service, IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto> featureService) : base(service, featureService) { }
-}
+public class RaceTraitChoicesController(
+		IChoiceService<Trait> service,
+		IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto, TraitFilterDto> featureService) 
+		: ChoicesControllerBase<Trait, CreateTraitRequestDto, UpdateTraitRequestDto, TraitFilterDto>(service, featureService)
+{ }
 
 [ApiController]
 [Route("api/races/{raceId}/subraces/{subraceId}/traits/{traitId}")]
-public class SubraceTraitChoicesController : ChoicesControllerBase<Trait, CreateTraitRequestDto, UpdateTraitRequestDto>
-{
-    public SubraceTraitChoicesController(IChoiceService<Trait> service, IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto> featureService) : base(service, featureService) { }
-}
+public class SubraceTraitChoicesController(
+		IChoiceService<Trait> service,
+		IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto, TraitFilterDto> featureService) 
+		: ChoicesControllerBase<Trait, CreateTraitRequestDto, UpdateTraitRequestDto, TraitFilterDto>(service, featureService)
+{ }
 
 [ApiController]
 [Route("api/classes/{classId}/features/{featureId}")]
-public class ClassChoicesController : ChoicesControllerBase<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto>
-{
-    public ClassChoicesController(IChoiceService<ClassFeature> service, IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto> featureService) : base(service, featureService) { }
-}
+public class ClassChoicesController(
+		IChoiceService<ClassFeature> service,
+		IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto, ClassFeatureFilterDto> featureService) 
+		: ChoicesControllerBase<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto, ClassFeatureFilterDto>(service, featureService)
+{ }
 
 [ApiController]
 [Route("api/classes/{classId}/subclasses/{subclassId}/features/{featureId}")]
-public class SubclassClassChoicesController : ChoicesControllerBase<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto>
-{
-    public SubclassClassChoicesController(IChoiceService<ClassFeature> service, IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto> featureService) : base(service, featureService) { }
-}
+public class SubclassClassChoicesController(
+		IChoiceService<ClassFeature> service,
+		IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto, ClassFeatureFilterDto> featureService) 
+		: ChoicesControllerBase<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto, ClassFeatureFilterDto>(service, featureService)
+{ }
 
 [ApiController]
 [Route("api/backgrounds/{backgroundId}/features/{featureId}")]
-public class BackgroundChoicesController : ChoicesControllerBase<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto>
-{
-    public BackgroundChoicesController(IChoiceService<BackgroundFeature> service, IFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto> featureService) : base(service, featureService) { }
-}
+public class BackgroundChoicesController(
+		IChoiceService<BackgroundFeature> service,
+		IFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto, BackgroundFeatureFilterDto> featureService) 
+		: ChoicesControllerBase<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto, BackgroundFeatureFilterDto>(service, featureService)
+{ }
 
 [ApiController]
 [Route("api/feats/{featId}")]
-public class FeatChoicesController : ChoicesControllerBase<Feat, CreateFeatRequestDto, UpdateFeatRequestDto>
-{
-    public FeatChoicesController(IChoiceService<Feat> service, IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto> featureService) : base(service, featureService) { }
-}
+public class FeatChoicesController(
+		IChoiceService<Feat> service,
+		IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto, FeatFilterDto> featureService) 
+		: ChoicesControllerBase<Feat, CreateFeatRequestDto, UpdateFeatRequestDto, FeatFilterDto>(service, featureService)
+{ }
 
-public abstract class ChoicesControllerBase<F, CD, UD>(IChoiceService<F> choiceService, IFeatureService<F, CD, UD> featureService) : ControllerBase where F : Feature where CD : CreateFeatureRequestDto where UD : UpdateFeatureRequestDto
+public abstract class ChoicesControllerBase<F, CD, UD, FF>(IChoiceService<F> choiceService, IFeatureService<F, CD, UD, FF> featureService) : ControllerBase where F : Feature where CD : CreateFeatureRequestDto where UD : UpdateFeatureRequestDto where FF : FeatureFilterDto
 {
     [HttpPost("ability-increases/choices")] 
     public async Task<ActionResult> AddAbilityIncreaseChoice(int featureId, AbilityIncreaseChoiceDto dto)

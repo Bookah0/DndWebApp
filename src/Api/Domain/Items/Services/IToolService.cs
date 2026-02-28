@@ -13,5 +13,5 @@ public interface IToolService
     Task<ICollection<Tool>> GetAllAsync();
     Task<Tool> GetByIdAsync(int id);
     Task<Tool> UpdateAsync(UpdateToolRequestDto dto, int id);
-    Task<(int, ICollection<Tool>)> GetFilteredAsync(ToolFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Tool>> GetAllAsync(ToolFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

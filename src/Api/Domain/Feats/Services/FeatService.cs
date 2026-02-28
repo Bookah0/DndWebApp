@@ -1,26 +1,16 @@
-using Api.Domain.Abilities.Repositories;
 using Api.Domain.Feats.Models;
-using Api.Domain.Languages.Repositories;
 using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Repositories;
 using Api.Domain.Shared.Services;
-using Api.Domain.Shared.Utils;
-using Api.Domain.Skills.Repositories;
-using Api.Domain.Spells.Repositories;
-using Api.Domain.Users.Services;
 using Api.Infrastructure.Middleware.ExceptionHandling;
 
 namespace Api.Domain.Feats.Services;
 
 public class FeatService(
-    IFeatureRepository<Feat> repo,
-    ISpellRepository spellRepo,
-    ISkillRepository skillRepo,
-    IAbilityRepository abilityRepo,
-    ILanguageRepository languageRepo,
-    ICurrentUserService currentUserService,
+    IFeatureRepository<Feat, FeatFilterDto> repo,
+    FeatureServiceBaseDependencies dependencies,
     ILogger<FeatService> logger)
-    : FeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
+    : FeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto, FeatFilterDto>(repo, dependencies, logger)
 {
     public async override Task<Feat> CreateAsync(CreateFeatRequestDto dto)
     {
@@ -41,7 +31,7 @@ public class FeatService(
             FromBackgroundId = dto.FromBackgroundId,
 
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = currentUserService.GetCurrentUserId(),
+            CreatedBy = dependencies.CurrentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created feat, Name: {FeatName}, ID: {FeatId}", feat.Name, feat.Id);
@@ -56,7 +46,6 @@ public class FeatService(
         logger.LogInformation("Successfully deleted feat, Name: {FeatName}, ID: {FeatId}", feat.Name, id);
     }
 
-    public async override Task<ICollection<Feat>> GetAllAsync() => await repo.GetAllAsync();
     public async override Task<Feat> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async override Task<Feat> UpdateAsync(UpdateFeatRequestDto dto, int id)
@@ -94,4 +83,7 @@ public class FeatService(
             feat.FromRaceId = dto.NewFromRaceId is not null ? dto.NewFromRaceId : null;
         }
     }
+
+	public override Task<ICollection<Feat>> GetAllAsync(FeatFilterDto? filter = null, PaginationRequestDto? pagination = null) 
+		=> repo.GetAllAsync(filter, pagination);
 }

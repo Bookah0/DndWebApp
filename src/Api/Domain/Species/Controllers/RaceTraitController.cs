@@ -11,7 +11,7 @@ namespace Api.Domain.Species.Controllers;
 
 [ApiController]
 [Route("api/races/{raceId}/traits")]
-public class RaceTraitController(IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto> service, IRaceService raceService, IMapper mapper) : ControllerBase
+public class RaceTraitController(IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto, TraitFilterDto> service, IRaceService raceService, IMapper mapper) : ControllerBase
 {
     
     [HttpGet]

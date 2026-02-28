@@ -12,19 +12,12 @@ namespace Api.Domain.Classes.Controllers;
 public class ClassController(IBaseClassService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<ClassResponseDto>>> GetClasses([FromQuery] ClassFilterDto filter, [FromQuery] PaginationRequestDto pagination)
+    public async Task<ActionResult<PaginationResponseDto<ClassResponseDto>>> GetClasses([FromQuery] ClassFilterDto? filter, [FromQuery] PaginationRequestDto? pagination)
     {
-        var (totalCount, classes) = await service.GetFilteredAsync(filter, pagination);
+        var classes = await service.GetAllAsync(filter, pagination);
+        var mappedClasses = mapper.Map<ICollection<ClassResponseDto>>(classes);
         
-        return Ok(new PaginationResponseDto<ClassResponseDto>
-        {
-            Items = mapper.Map<ICollection<ClassResponseDto>>(classes),
-            ItemCount = totalCount,
-            Page = pagination.Page,
-            PageSize = pagination.PageSize,
-            Next = PaginationUtil.GetNext(pagination, totalCount, "api/classes"),
-            Prev = PaginationUtil.GetPrev(pagination, "api/classes")
-        });
+		return Ok(PaginationUtil.BuildPaginationResponse(mappedClasses, pagination, "api/classes"));
     }
     
     [HttpGet("{classId}")]

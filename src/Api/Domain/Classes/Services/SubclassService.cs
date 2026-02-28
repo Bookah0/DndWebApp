@@ -41,7 +41,7 @@ public partial class SubclassService(
         logger.LogInformation("Successfully deleted subclass, Name: {SubclassName}, ID: {SubclassId}", subclass.Name, id);
     }
 
-    public async Task<(int, ICollection<Subclass>)> GetFilteredAsync(SubclassFilterDto filter, PaginationRequestDto pagination) => await repo.GetFilteredAsync(filter, pagination);
+    public async Task<ICollection<Subclass>> GetAllAsync(SubclassFilterDto? filter = null, PaginationRequestDto? pagination = null) => await repo.GetAllAsync(filter, pagination);
     public async Task<ICollection<Subclass>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Subclass> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 

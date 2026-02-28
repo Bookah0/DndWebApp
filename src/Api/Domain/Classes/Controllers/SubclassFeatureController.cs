@@ -3,6 +3,7 @@ using Api.Domain.Classes.Models;
 using Api.Domain.Classes.Services;
 using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Services;
+using Api.Domain.Shared.Utils;
 using Api.Infrastructure.Middleware.ExceptionHandling;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -12,18 +13,22 @@ namespace Api.Domain.Classes.Controllers;
 [ApiController]
 [Route("api/classes/{classId}/subclasses/{subclassId}/features")]
 public class SubclassFeatureController(
-    IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto> service, 
+    IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto, ClassFeatureFilterDto> service, 
     ISubclassService subclassService, 
     IBaseClassService classService, 
     IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<ClassFeatureResponseDto>>> GetClassFeatures(int subclassId, int classId)
+    public async Task<ActionResult<ICollection<ClassFeatureResponseDto>>> GetClassFeatures(int subclassId, int classId, [FromQuery] ClassFeatureFilterDto? filter, [FromQuery] PaginationRequestDto? pagination)
     {
         await EnsureSubclassBelongsToParentClass(classId, subclassId);
-        var subclass =  await subclassService.GetWithFeaturesAsync(subclassId);
-        var allFeatures = subclass.ClassLevels.SelectMany(cl => cl.NewFeatures).ToList();
-        return Ok(mapper.Map<ICollection<ClassFeatureResponseDto>>(allFeatures));
+        filter ??= new();
+		filter.Class = subclassId;
+
+		var features = await service.GetAllAsync(filter, pagination);
+		var mappedFeatures = mapper.Map<ICollection<ClassFeatureResponseDto>>(features);
+		
+		return Ok(PaginationUtil.BuildPaginationResponse(mappedFeatures, pagination, $"api/classes/{classId}/subclasses/{subclassId}/features"));
     }
 
     [HttpGet("{featureId}")]

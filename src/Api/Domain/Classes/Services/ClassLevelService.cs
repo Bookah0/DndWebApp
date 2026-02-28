@@ -1,8 +1,8 @@
 using Api.Domain.Classes.DTOs;
 using Api.Domain.Classes.Models;
 using Api.Domain.Classes.Repositories;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Repositories;
-using Api.Domain.Shared.Utils;
 using Api.Domain.Users.Services;
 using Api.Infrastructure.Middleware.ExceptionHandling;
 
@@ -12,7 +12,7 @@ public partial class ClassLevelService(
     IBaseClassRepository classRepo,
     ISubclassRepository subclassRepo,
     IClassLevelRepository levelRepo,
-    IFeatureRepository<ClassFeature> featureRepo,
+    IFeatureRepository<ClassFeature, ClassFeatureFilterDto> featureRepo,
     ICurrentUserService currentUserService,
     ILogger<BaseClassService> logger) : IClassLevelService
 {

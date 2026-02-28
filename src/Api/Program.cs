@@ -71,10 +71,11 @@ builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
 builder.Services.AddScoped<ISkillRepository, SkillRepository>();
 builder.Services.AddScoped<ISpellRepository, SpellRepository>();
 
-builder.Services.AddScoped<IFeatureRepository<ClassFeature>, ClassFeatureRepository>();
-builder.Services.AddScoped<IFeatureRepository<Feat>, FeatRepository>();
-builder.Services.AddScoped<IFeatureRepository<BackgroundFeature>, BackgroundFeatureRepository>();
-builder.Services.AddScoped<IFeatureRepository<Trait>, TraitRepository>();
+builder.Services.AddScoped<IFeatureRepository<ClassFeature, ClassFeatureFilterDto>, ClassFeatureRepository>();
+builder.Services.AddScoped<IFeatureRepository<Feat, FeatFilterDto>, FeatRepository>();
+builder.Services.AddScoped<IFeatureRepository<BackgroundFeature, BackgroundFeatureFilterDto>, BackgroundFeatureRepository>();
+builder.Services.AddScoped<IFeatureRepository<Trait, TraitFilterDto>, TraitRepository>();
+builder.Services.AddScoped<FeatureServiceBaseDependencies>();
 
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IToolRepository, ToolRepository>();
@@ -106,10 +107,10 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Feature services
 //builder.Services.AddScoped(typeof(IBaseFeatureService<>), typeof(BaseFeatureService<>));
-builder.Services.AddScoped<IFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto>, BackgroundFeatureService>();
-builder.Services.AddScoped<IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto>, ClassFeatureService>();
-builder.Services.AddScoped<IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto>, FeatService>();
-builder.Services.AddScoped<IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto>, TraitService>();
+builder.Services.AddScoped<IFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto, BackgroundFeatureFilterDto>, BackgroundFeatureService>();
+builder.Services.AddScoped<IFeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto, ClassFeatureFilterDto>, ClassFeatureService>();
+builder.Services.AddScoped<IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto, FeatFilterDto>, FeatService>();
+builder.Services.AddScoped<IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto, TraitFilterDto>, TraitService>();
 
 // Item services
 builder.Services.AddScoped<IArmorService, ArmorService>();

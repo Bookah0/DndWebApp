@@ -12,5 +12,5 @@ public interface ISkillService
     Task<ICollection<Skill>> GetAllWithAbilityAsync();
     Task<Skill> GetByIdAsync(int id);
     Task<Skill> UpdateAsync(int id, UpdateSkillRequestDto dto); 
-    Task<(int, ICollection<Skill>)> GetFilteredAsync(SkillFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Skill>> GetAllAsync(SkillFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

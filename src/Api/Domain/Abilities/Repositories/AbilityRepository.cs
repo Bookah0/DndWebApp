@@ -1,5 +1,7 @@
+using Api.Domain.Abilities.DTOs;
 using Api.Domain.Abilities.Models;
 using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
 using Api.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +23,7 @@ public class AbilityRepository(AppDbContext context) : IAbilityRepository
             .FirstOrDefaultAsync(x => x.Id == id)
             ?? throw new Exception($"Ability with id {id} could not be found");
 
-    public async Task<ICollection<Ability>> GetAllAsync() => await context.AbilityScores.ToListAsync();
+    public async Task<ICollection<Ability>> GetAllAsync() => await GetAllAsync(null);
 
     public async Task<ICollection<Ability>> GetAllWithSkillsAsync() => 
         await context.AbilityScores
@@ -30,7 +32,7 @@ public class AbilityRepository(AppDbContext context) : IAbilityRepository
 
     public async Task<Ability> CreateAsync(Ability entity)
     {
-        await context.AbilityScores.AddAsync(entity!);
+        await context.AbilityScores.AddAsync(entity);
         await context.SaveChangesAsync();
         return entity;
     }
@@ -47,8 +49,19 @@ public class AbilityRepository(AppDbContext context) : IAbilityRepository
         return updatedEntity;
     }
 
-  public Task<(int, ICollection<Ability>)> GetFilteredAsync(string? nameFilter, PaginationRequestDto pagination)
-  {
-    throw new NotImplementedException();
-  }
+    public async Task<ICollection<Ability>> GetAllAsync(AbilityFilterDto? filter = null)
+    {
+        var query = context.AbilityScores.AsQueryable();
+
+		if(filter is not null) 
+			query = query.WhereIf(filter.Name, a => a.FullName.Contains(filter.Name!));
+
+		var abilities = await query.ToListAsync();
+        var defaultOrder = QueryExtensions.BuildSortOrder(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
+		
+		return abilities
+			.AsEnumerable()
+			.OrderByFixed(a => a.FullName, defaultOrder)
+			.ToList();
+    }
 }

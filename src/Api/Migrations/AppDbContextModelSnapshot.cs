@@ -1620,6 +1620,9 @@ namespace Api.Migrations
                             b1.Property<int?>("AlignmentId")
                                 .HasColumnType("integer");
 
+                            b1.Property<string>("AlignmentName")
+                                .HasColumnType("text");
+
                             b1.Property<string>("AlliesAndOrganizations")
                                 .HasColumnType("text");
 

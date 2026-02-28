@@ -11,5 +11,5 @@ public interface IWeaponService
     Task<ICollection<Weapon>> GetAllAsync();
     Task<Weapon> GetByIdAsync(int id);
     Task<Weapon> UpdateAsync(UpdateWeaponRequestDto dto, int id);
-    Task<(int, ICollection<Weapon>)> GetFilteredAsync(WeaponFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Weapon>> GetAllAsync(WeaponFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

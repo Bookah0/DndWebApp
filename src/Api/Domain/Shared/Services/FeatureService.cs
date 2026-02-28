@@ -7,32 +7,49 @@ using Api.Domain.Shared.Models;
 using Api.Domain.Shared.Repositories;
 using Api.Domain.Skills.Repositories;
 using Api.Domain.Spells.Repositories;
+using Api.Domain.Users.Services;
 using Api.Infrastructure.Middleware.ExceptionHandling;
 using static Api.Infrastructure.Validation.ValuesValidator;    
 
 namespace Api.Domain.Shared.Services;
 
-public abstract class FeatureService<T, CD, UD>(
-    IFeatureRepository<T> repo,
+public class FeatureServiceBaseDependencies(
     ISpellRepository spellRepo,
     ISkillRepository skillRepo,
     IAbilityRepository abilityRepo,
     ILanguageRepository languageRepo,
+    ICurrentUserService currentUserService)
+{
+    public ISpellRepository SpellRepo { get; } = spellRepo;
+    public ISkillRepository SkillRepo { get; } = skillRepo;
+    public IAbilityRepository AbilityRepo { get; } = abilityRepo;
+    public ILanguageRepository LanguageRepo { get; } = languageRepo;
+    public ICurrentUserService CurrentUserService { get; } = currentUserService;
+}
+
+public abstract class FeatureService<T, CD, UD, FF>(
+    IFeatureRepository<T, FF> repo,
+    FeatureServiceBaseDependencies dependencies,
     ILogger logger) 
-    : IFeatureService<T, CD, UD> where T : Feature where CD : CreateFeatureRequestDto where UD : UpdateFeatureRequestDto
+    : IFeatureService<T, CD, UD, FF> 
+		where T : Feature 
+		where CD : CreateFeatureRequestDto 
+		where UD : UpdateFeatureRequestDto 
+		where FF : FeatureFilterDto
 {
     public abstract Task<T> GetByIdAsync(int id);
-    public abstract Task<ICollection<T>> GetAllAsync();
     public abstract Task<T> CreateAsync(CD dto);
     public abstract Task<T> UpdateAsync(UD dto, int id);
     public abstract Task DeleteAsync(int id);
+	public abstract Task<ICollection<T>> GetAllAsync(FF? filter = null, PaginationRequestDto? pagination = null);
+    public async Task<ICollection<T>> GetAllAsync() => await repo.GetAllAsync();
 
     public Task<T> GetWithChoicesAsync(int id) => repo.GetWithChoicesAsync(id);
     public Task<T> GetWithProficienciesAsync(int id) => repo.GetWithProficienciesAsync(id);
 
     public async Task<T> AddSpell(int spellId, int featureId)
     {
-        var spell = await spellRepo.GetByIdAsync(spellId);
+        var spell = await dependencies.SpellRepo.GetByIdAsync(spellId);
         var feature = await repo.GetByIdAsync(featureId);
 
         logger.LogInformation("Adding spell with Name: {SpellName}, ID: {SpellId} to feature with Name: {FeatureName}, ID: {FeatureId}", spell.Name, spell.Id, feature.Name, feature.Id);
@@ -79,16 +96,16 @@ public abstract class FeatureService<T, CD, UD>(
                 feature.ToolProficiencies.Add(toolCategory);
                 break;
             case "Skill":
-                var skill = await GetProficiencyById(dto, skillRepo);
+                var skill = await GetProficiencyById(dto, dependencies.SkillRepo);
                 feature.SkillProficiencies.Add(skill);
                 break;
             case "Language":
-                var language = await GetProficiencyById(dto, languageRepo);
+                var language = await GetProficiencyById(dto, dependencies.LanguageRepo);
                 feature.Languages.Add(language);
                 break;
             case "SavingThrow":
             case "Ability":
-                var ability = await GetProficiencyById(dto, abilityRepo);
+                var ability = await GetProficiencyById(dto, dependencies.AbilityRepo);
                 feature.SavingThrowProficiencies.Add(ability);
                 break;
             case "Resistance":
@@ -172,7 +189,7 @@ public abstract class FeatureService<T, CD, UD>(
     public async Task<T> AddAbilityIncrease(int abilityId, int value, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId);
-        var ability = await abilityRepo.GetByIdAsync(abilityId);
+        var ability = await dependencies.AbilityRepo.GetByIdAsync(abilityId);
 
         logger.LogInformation("Adding ability increase of {IncreaseValue} to ability with Name: {AbilityName}, ID: {AbilityId} for feature with Name: {FeatureName}, ID: {FeatureId}", value, ability.FullName, ability.Id, feature.Name, feature.Id);
         feature.AbilityIncreases.Add(new() { Ability = ability, AbilityId = abilityId, Value = value });
@@ -194,7 +211,6 @@ public abstract class FeatureService<T, CD, UD>(
         logger.LogInformation("Successfully removed ability increase of {IncreaseValue} to ability with Name: {AbilityName}, ID: {AbilityId} for feature with Name: {FeatureName}, ID: {FeatureId}", abilityIncrease.Value, abilityIncrease.Ability.FullName, abilityIncrease.Ability.Id, feature.Name, feature.Id);
     }
 
-    // Helpers
     private static async Task<P> GetProficiencyById<P>(ProficiencyRequestDto dto, IRepository<P> repository) where P : class
     {
         if (!int.TryParse(dto.Value, out var id))

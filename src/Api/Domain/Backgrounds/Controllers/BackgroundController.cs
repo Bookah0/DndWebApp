@@ -1,5 +1,7 @@
 using Api.Domain.Backgrounds.DTOs;
 using Api.Domain.Backgrounds.Services;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +13,12 @@ public class BackgroundsController(IBackgroundService service, IMapper mapper) :
     {
 
     [HttpGet]
-    public async Task<ActionResult<ICollection<BackgroundResponseDto>>> GetAllBackgrounds()
+    public async Task<ActionResult<PaginationResponseDto<BackgroundResponseDto>>> GetAllBackgrounds([FromQuery] BackgroundFilterDto? filterDto = null, [FromQuery] PaginationRequestDto? paginationDto = null)
     {
-        var backgrounds = await service.GetAllWithAllDataAsync();
-        return Ok(mapper.Map<ICollection<BackgroundResponseDto>>(backgrounds));
+        var filteredBackgrounds = await service.GetAllAsync(filterDto, paginationDto);
+        var mappedBackgrounds = mapper.Map<ICollection<BackgroundResponseDto>>(filteredBackgrounds);
+
+		return Ok(PaginationUtil.BuildPaginationResponse(mappedBackgrounds, paginationDto, "api/backgrounds"));
     }
 
     [HttpGet("{backgroundId}")]

@@ -9,7 +9,7 @@ public interface ISpellService
     Task<Spell> CreateAsync(CreateSpellRequestDto dto);
     Task DeleteAsync(int id);
     Task<ICollection<Spell>> GetAllAsync();
-    Task<(int, ICollection<Spell>)> GetFilteredAsync(SpellFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Spell>> GetAllAsync(SpellFilterDto? filter = null, PaginationRequestDto? pagination = null);
     Task<Spell> GetByIdAsync(int id);
     Task<Spell> UpdateAsync(int id, UpdateSpellRequestDto dto);
 }

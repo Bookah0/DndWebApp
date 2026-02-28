@@ -5,12 +5,13 @@ using Api.Domain.Characters.DTOs;
 using Api.Domain.Characters.Models;
 using Api.Domain.Characters.Repositories;
 using Api.Domain.Classes.Repositories;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Enums;
 using Api.Domain.Species.Repositories;
 using Api.Domain.Users.Services;
 using Api.Infrastructure.Middleware.ExceptionHandling;
 using Api.Infrastructure.Validation;
-using static Api.Domain.Shared.Utils.QueryUtil;
+using static Api.Domain.Shared.Utils.QueryExtensions;
 
 namespace Api.Domain.Characters.Services;
 
@@ -27,8 +28,16 @@ public partial class CharacterService(
     ICurrentUserService currentUserService,
     ILogger<CharacterService> logger) : ICharacterService
 {
+	public async Task<ICollection<Character>> GetAllAsync(CharacterFilterDto? filter = null, PaginationRequestDto? pagination = null, Guid? userId = null)
+	{
+		if(userId is not null && userId != currentUserService.GetCurrentUserId())
+			throw new ValidationException("Logged in user id does not match the requested user id.");
+		
+		return await repo.GetAllAsync(filter, pagination, userId);
+	}
+
     public async Task<ICollection<Character>> GetAllAsync() => await repo.GetAllAsync();
-    public async Task<Character> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
+	public async Task<Character> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
     public async Task<Character> GetWithInventoryAsync(int id) => await repo.GetWithInventoryAsync(id);
     public async Task<ICollection<Character>> GetAllByUserIdAsync(Guid userId)
     {

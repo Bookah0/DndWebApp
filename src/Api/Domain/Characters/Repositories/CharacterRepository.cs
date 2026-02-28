@@ -1,7 +1,13 @@
+using System.Linq.Expressions;
+using Api.Domain.Characters.DTOs;
 using Api.Domain.Characters.Models;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Enums;
+using Api.Domain.Shared.Enums.Character;
 using Api.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using static Api.Domain.Shared.Utils.QueryExtensions;
+using static Api.Infrastructure.Validation.ValuesValidator;
 
 namespace Api.Domain.Characters.Repositories;
 
@@ -130,10 +136,51 @@ public class CharacterRepository(AppDbContext context) : ICharacterRepository
         return updatedEntity;
     }
 
-    private readonly Dictionary<string, IEnumerable<Func<Character, object>>> sortSelectorsMap = new()
+	public async Task<ICollection<Character>> GetAllAsync(CharacterFilterDto? filter = null, PaginationRequestDto? pagination = null, Guid? currentUserId = null)
+	{
+		var query = context.Characters.AsQueryable();
+
+		if (filter is not null)
+		{
+			filter.Size = NormalizeValue<CreatureSize>(filter.Size);
+			filter.Alignment = NormalizeValue<AlignmentType>(filter.Alignment);
+
+			query = query
+				.WhereIf(filter.Name, c => c.Name.Contains(filter.Name!))
+				.WhereIf(filter.Class, c => filter.Class!.Contains(c.ClassId))
+				.WhereIf(filter.Race, c => filter.Race!.Contains(c.RaceId))
+				.WhereIf(filter.Subrace, c => filter.Subrace!.Contains(c.SubraceId ?? 0))
+				.WhereIf(filter.Background, c => filter.Background!.Contains(c.BackgroundId))
+				.WhereIf(filter.Alignment, c => filter.Alignment.Contains(c.Info.AlignmentName ?? ""))
+				.WhereIf(filter.Size, c => filter.Size.Contains(c.Race.Size))
+
+				.WhereIf(filter.MinLevel, c => c.Level >= filter.MinLevel)
+				.WhereIf(filter.MaxLevel, c => c.Level <= filter.MaxLevel)
+
+				.WhereIf(filter.CreatedBy, c => c.CreatedBy == filter.CreatedBy)
+				.WhereIf(filter.IsHomebrew, c => c.IsHomebrew == filter.IsHomebrew)
+				.WhereIf(filter.CloningAllowed, c => c.CloningAllowed == filter.CloningAllowed)
+				.Where(c => c.IsPublic || c.CreatedBy == currentUserId);
+		}
+
+		var sortBy = NormalizeValue<SortCharacterOption>(filter?.SortBy ?? SortCharacterOption.Default);
+		query = query.OrderByMany(sortSelectorsMap[sortBy], filter?.SortDescending ?? true);
+
+		if(pagination is null)
+			return await query.ToListAsync();
+
+		var filteredCharacters = await query
+			.Skip((pagination.Page - 1) * pagination.PageSize)
+			.Take(pagination.PageSize)
+			.ToListAsync();
+
+		return filteredCharacters;
+	}
+
+	private readonly Dictionary<string, IEnumerable<Expression<Func<Character, object>>>> sortSelectorsMap = new()
     {
         { SortCharacterOption.Name, [(c => c.Name)] },
         { SortCharacterOption.Level, [(c => c.Level), (c => c.Name)] },
-        { SortCharacterOption.TimeCreated, [(c => c.CreatedAt), (c => c.Name)] },
+        { SortCharacterOption.TimeCreated, [(c => c.CreatedAt), (c => c.Name), (c => c.Level)] },
     };
 }

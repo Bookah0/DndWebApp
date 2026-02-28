@@ -2,7 +2,7 @@ using Api.Infrastructure.Middleware.ExceptionHandling;
 
 namespace Api.Domain.Shared.Utils;
 
-public static class CollectionUtil
+public static class CollectionExtensions
 {
     public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
     {

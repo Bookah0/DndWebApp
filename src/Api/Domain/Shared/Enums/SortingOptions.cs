@@ -197,3 +197,17 @@ public class SortBackgroundFeatureOption : IValuesProvider, IHasDefault
     static IReadOnlySet<string> IValuesProvider.Values => Values;
     static string IHasDefault.Default => Default;
 }
+
+public class SortBackgroundOption : IValuesProvider, IHasDefault
+{
+    public const string Name = "Name";
+    public const string Default = Name;
+    
+    public static readonly IReadOnlySet<string> Values = new HashSet<string>
+    {
+        Name
+    };
+
+    static IReadOnlySet<string> IValuesProvider.Values => Values;
+    static string IHasDefault.Default => Default;
+}

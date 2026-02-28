@@ -12,5 +12,5 @@ public interface IAbilityService
     Task<Ability> GetByIdAsync(int id);
     Task<Ability> UpdateAsync(int id, AbilityRequestDto dto);
     int GetModifier(AbilityValue val);
-    Task<(int, ICollection<Ability>)> GetFilteredAsync(string? nameFilter, PaginationRequestDto pagination);
+    Task<ICollection<Ability>> GetAllAsync(AbilityFilterDto? filter = null);
 }

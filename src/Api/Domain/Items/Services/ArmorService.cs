@@ -92,19 +92,21 @@ public class ArmorService(IArmorRepository repo, ICurrentUserService currentUser
         return armor;
     }
 
-    public async Task<(int, ICollection<Armor>)> GetFilteredAsync(ArmorFilterDto filter, PaginationRequestDto pagination) 
+    public async Task<ICollection<Armor>> GetAllAsync(ArmorFilterDto? filter = null, PaginationRequestDto? pagination = null) 
     {
         ValidateFilterAsync(filter);
-        var (count, filtered) = await repo.GetFilteredAsync(filter, pagination);
+        var filtered = await repo.GetAllAsync(filter, pagination);
 
-        if(!filtered.HasContent() && count > 0)
+        if(!filtered.HasContent() && filtered.Count > 0)
             throw new ValidationException("Page does not contain any elements");
 
-        return (count, filtered);
+        return filtered;
     }
 
-    public void ValidateFilterAsync(ArmorFilterDto dto)
+    public void ValidateFilterAsync(ArmorFilterDto? dto)
     {
+        if (dto is null) return;
+
         if (dto.MinValue is not null && dto.MaxValue is not null && dto.MinValue > dto.MaxValue)
             throw new ValidationException("Maximum value must be greater than or equal to minimum value");
         if (dto.MinValue is not null && dto.MinValue < 0)
@@ -130,7 +132,5 @@ public class ArmorService(IArmorRepository repo, ICurrentUserService currentUser
             dto.Rarity = NormalizeValue<ItemRarity>(dto.Rarity);
         if(dto.ArmorCategory != null)
             dto.ArmorCategory = NormalizeValue<ArmorCategory>(dto.ArmorCategory);
-            
-        dto.Category = NormalizeValue<ItemCategory>(dto.Category);
     }
 }

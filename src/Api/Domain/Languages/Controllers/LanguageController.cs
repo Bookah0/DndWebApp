@@ -1,5 +1,7 @@
 using Api.Domain.Languages.DTOs;
 using Api.Domain.Languages.Services;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +12,12 @@ namespace Api.Domain.Languages.Controllers;
 public class LanguagesController(ILanguageService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<LanguageResponseDto>>> GetLanguages()
+    public async Task<ActionResult<ICollection<LanguageResponseDto>>> GetLanguages([FromQuery] LanguageFilterDto? filter = null, [FromQuery] PaginationRequestDto? pagination = null)
     {
-        var languages = await service.GetAllAsync();
-        return Ok(mapper.Map<ICollection<LanguageResponseDto>>(languages));
+        var languages = await service.GetAllAsync(filter, pagination);
+		var mappedLanguages = mapper.Map<ICollection<LanguageResponseDto>>(languages);
+
+		return Ok(PaginationUtil.BuildPaginationResponse(mappedLanguages, pagination, "api/languages"));
     }
 
     [HttpGet("{languageId}")]

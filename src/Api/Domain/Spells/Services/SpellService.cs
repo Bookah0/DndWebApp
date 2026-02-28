@@ -87,15 +87,10 @@ public class SpellService(
         logger.LogInformation("Successfully deleted spell, Name: {SpellName} ID: {SpellId}", spellName, id);
     }
 
-    public async Task<(int, ICollection<Spell>)> GetFilteredAsync(SpellFilterDto filter, PaginationRequestDto pagination) 
+    public async Task<ICollection<Spell>> GetAllAsync(SpellFilterDto? filter = null, PaginationRequestDto? pagination = null) 
     {
         await ValidatieFilterAsync(filter);
-        var (count, filtered) = await repo.GetFilteredAsync(filter, pagination);
-
-        if(!filtered.HasContent() && count > 0)
-            throw new ValidationException("Page does not contain any elements");
-
-        return (count, filtered);
+        return await repo.GetAllAsync(filter, pagination);
     }
 
     public async Task<ICollection<Spell>> GetAllAsync() => await repo.GetAllAsync();
@@ -152,8 +147,10 @@ public class SpellService(
         return spell;
     }
 
-    public async Task ValidatieFilterAsync(SpellFilterDto dto)
+    public async Task ValidatieFilterAsync(SpellFilterDto? dto)
     {
+        if (dto is null) return;
+		
         if (dto.MinLevel is not null && dto.MaxLevel is not null && dto.MinLevel > dto.MaxLevel)
             throw new ValidationException("Maximum level must be greater than or equal to minimum level");
         if (dto.MinLevel is not null && dto.MinLevel < 0)

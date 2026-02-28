@@ -59,7 +59,7 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
         logger.LogInformation("Successfully deleted weapon, Name: {WeaponName}, ID: {WeaponId}", weapon.Name, id);
     }
 
-    public async Task<ICollection<Weapon>> GetAllAsync() =>await repo.GetAllAsync();
+    public async Task<ICollection<Weapon>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Weapon> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async Task<Weapon> UpdateAsync(UpdateWeaponRequestDto dto, int id)
@@ -96,19 +96,21 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
         return weapon;
     }
 
-    public async Task<(int, ICollection<Weapon>)> GetFilteredAsync(WeaponFilterDto filter, PaginationRequestDto pagination) 
+    public async Task<ICollection<Weapon>> GetAllAsync(WeaponFilterDto? filter = null, PaginationRequestDto? pagination = null) 
     {
         ValidateFilterAsync(filter);
-        var (count, filtered) = await repo.GetFilteredAsync(filter, pagination);
+        var filtered = await repo.GetAllAsync(filter, pagination);
 
-        if(!filtered.HasContent() && count > 0)
+        if(!filtered.HasContent() && filtered.Count > 0)
             throw new ValidationException("Page does not contain any elements");
 
-        return (count, filtered);
+        return filtered;
     }
 
-    public void ValidateFilterAsync(WeaponFilterDto dto)
+    public void ValidateFilterAsync(WeaponFilterDto? dto)
     {
+        if (dto is null) return;
+
         if (dto.MinValue is not null && dto.MaxValue is not null && dto.MinValue > dto.MaxValue)
             throw new ValidationException("Maximum value must be greater than or equal to minimum value");
         if (dto.MinValue is not null && dto.MinValue < 0)
@@ -131,7 +133,5 @@ public class WeaponService(IWeaponRepository repo, ICurrentUserService currentUs
             dto.WeaponType = NormalizeValue<WeaponType>(dto.WeaponType);
         if(dto.Slot != null)
             dto.Slot = NormalizeValue<EquipSlot>(dto.Slot);
-            
-        dto.Category = NormalizeValue<ItemCategory>(dto.Category);
     }
 }

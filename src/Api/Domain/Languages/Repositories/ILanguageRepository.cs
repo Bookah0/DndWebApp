@@ -8,5 +8,5 @@ namespace Api.Domain.Languages.Repositories;
 public interface ILanguageRepository : IRepository<Language>
 {
     Task<Language> GetByNameAsync(string name);
-    Task<(int, ICollection<Language>)> GetFilteredAsync(LanguageFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Language>> GetAllAsync(LanguageFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

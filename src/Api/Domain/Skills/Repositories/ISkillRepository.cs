@@ -10,5 +10,5 @@ public interface ISkillRepository : IRepository<Skill>
     Task<Skill> GetByNameAsync(string name);
     Task<Skill> GetWithAbilityAsync(int id);
     Task<ICollection<Skill>> GetAllWithAbilityAsync();
-    Task<(int, ICollection<Skill>)> GetFilteredAsync(SkillFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Skill>> GetAllAsync(SkillFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

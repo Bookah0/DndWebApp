@@ -41,8 +41,8 @@ public class LanguageService(ILanguageRepository repo, ICurrentUserService curre
 
     public async Task<ICollection<Language>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Language> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
-    public Task<(int, ICollection<Language>)> GetFilteredAsync(LanguageFilterDto filter, PaginationRequestDto pagination)
-        => repo.GetFilteredAsync(filter, pagination);
+    public async Task<ICollection<Language>> GetAllAsync(LanguageFilterDto? filter = null, PaginationRequestDto? pagination = null)
+        => await repo.GetAllAsync(filter, pagination);
 
     public async Task<Language> UpdateAsync(int id, UpdateLanguageRequestDto dto)
     {

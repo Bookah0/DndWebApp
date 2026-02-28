@@ -21,7 +21,7 @@ public class ChoiceService<T>
     IAbilityValueRepository abilityValueRepo,
     ILanguageRepository languageRepo,
     ISkillRepository skillRepo,
-    IFeatureService<T, CreateFeatureRequestDto, UpdateFeatureRequestDto> featureService,
+    IFeatureService<T, CreateFeatureRequestDto, UpdateFeatureRequestDto, FeatureFilterDto> featureService,
 
     IChoiceRepository<AbilityIncreaseChoice> abilityChoiceRepo,
     IChoiceRepository<SkillProficiencyChoice> skillChoiceRepo,

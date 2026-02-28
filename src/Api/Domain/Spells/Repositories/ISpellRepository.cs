@@ -9,5 +9,5 @@ public interface ISpellRepository : IRepository<Spell>
 {
     Task<Spell> GetWithClassesAsync(int id);
     Task<ICollection<Spell>> GetAllWithClassesAsync();
-    Task<(int, ICollection<Spell>)> GetFilteredAsync(SpellFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Spell>> GetAllAsync(SpellFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

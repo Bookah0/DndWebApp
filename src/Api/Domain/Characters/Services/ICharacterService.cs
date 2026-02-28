@@ -1,6 +1,7 @@
 using Api.Domain.Characters.Controllers;
 using Api.Domain.Characters.DTOs;
 using Api.Domain.Characters.Models;
+using Api.Domain.Shared.DTOs;
 
 namespace Api.Domain.Characters.Services;
 
@@ -10,6 +11,7 @@ public interface ICharacterService
     Task<Character> UpdateAsync(UpdateCharacterRequestDto dto, int id);
     Task DeleteAsync(int id);
     Task<ICollection<Character>> GetAllAsync();
+	Task<ICollection<Character>> GetAllAsync(CharacterFilterDto? filter = null, PaginationRequestDto? pagination = null, Guid? userId = null);
     Task<Character> GetByIdAsync(int id);
     Task<Character> GetWithInventoryAsync(int id);
     Task<Character> LevelUpAsync(LevelUpDto dto, int characterId);

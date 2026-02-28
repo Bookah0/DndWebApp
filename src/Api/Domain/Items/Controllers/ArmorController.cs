@@ -13,19 +13,12 @@ namespace Api.Domain.Items.Controllers;
 public class ArmorController(IArmorService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<ArmorResponseDto>>> GetAllArmor([FromQuery] ArmorFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
+    public async Task<ActionResult<ICollection<ArmorResponseDto>>> GetAllArmor([FromQuery] ArmorFilterDto? filterDto = null, [FromQuery] PaginationRequestDto? paginationDto = null)
     {
-        var (totalArmor, filteredArmor) = await service.GetFilteredAsync(filterDto, paginationDto);
-        
-        return Ok(new PaginationResponseDto<ArmorResponseDto>
-        {
-            Items = mapper.Map<ICollection<ArmorResponseDto>>(filteredArmor),
-            ItemCount = totalArmor,
-            Page = paginationDto.Page,
-            PageSize = paginationDto.PageSize,
-            Next = PaginationUtil.GetNext(paginationDto, totalArmor, "api/armor"),
-            Prev = PaginationUtil.GetPrev(paginationDto, "api/armor")
-        });
+        var filteredArmor = await service.GetAllAsync(filterDto, paginationDto);
+        var mappedArmor = mapper.Map<ICollection<ArmorResponseDto>>(filteredArmor);
+
+        return Ok(PaginationUtil.BuildPaginationResponse(mappedArmor, paginationDto, "api/armor"));
     }
 
     [HttpGet("{armorId}")]

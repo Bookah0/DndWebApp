@@ -1,6 +1,5 @@
 namespace Api.Domain.Spells.DTOs;
 
-// TODO add more fields if needed
 public class SpellFilterDto
 {
     public Guid? CreatedBy { get; set; }

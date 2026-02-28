@@ -1,11 +1,13 @@
 using Api.Domain.Alignments.DTOs;
 using Api.Domain.Alignments.Models;
+using Api.Domain.Alignments.Repositories;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Repositories;
 using Api.Domain.Shared.Utils;
 
 namespace Api.Domain.Alignments.Services;
 
-public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentService> logger) : IAlignmentService
+public class AlignmentService(IAlignmentRepository repo, ILogger<AlignmentService> logger) : IAlignmentService
 {
     public async Task<Alignment> CreateAsync(AlignmentRequestDto dto)
     {
@@ -30,6 +32,7 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
     }
 
     public async Task<ICollection<Alignment>> GetAllAsync() => await repo.GetAllAsync();
+	public async Task<ICollection<Alignment>> GetAllAsync(AlignmentFilterDto? filter = null) => await repo.GetAllAsync(filter);
     public async Task<Alignment> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
     
     public async Task<Alignment> UpdateAsync(int id, AlignmentRequestDto dto)
@@ -45,20 +48,5 @@ public class AlignmentService(IRepository<Alignment> repo, ILogger<AlignmentServ
         await repo.UpdateAsync(alignment);
         logger.LogInformation("Successfully updated alignment, Name: {AlignmentName}, ID: {AlignmentId}", alignment.Name, id);
         return alignment;
-    }
-
-    // TODO Move to database level sorting
-    public ICollection<Alignment> SortBy(ICollection<Alignment> alignments)
-    {
-        string[] fixedSortOrder =
-        [
-            "Lawful Good",  "Neutral Good", "Chaotic Good",
-            "Lawful Neutral", "True Neutral", "Chaotic Neutral",
-            "Lawful Evil", "Neutral Evil", "Chaotic Evil"
-        ];
-
-        var alignmentOrder = FilterUtils.CreateOrderLookup(fixedSortOrder);
-
-        return [.. alignments.OrderBy(a => alignmentOrder[a.Name])];
     }
 }

@@ -12,19 +12,12 @@ namespace Api.Domain.Items.Controllers;
 public class WeaponsController(IWeaponService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<WeaponResponseDto>>> GetAllWeapons([FromQuery] WeaponFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
+    public async Task<ActionResult<ICollection<WeaponResponseDto>>> GetAllWeapons([FromQuery] WeaponFilterDto? filterDto = null, [FromQuery] PaginationRequestDto? paginationDto = null)
     {
-        var (totalWeapons, filteredWeapons) = await service.GetFilteredAsync(filterDto, paginationDto);
-        
-        return Ok(new PaginationResponseDto<WeaponResponseDto>
-        {
-            Items = mapper.Map<ICollection<WeaponResponseDto>>(filteredWeapons),
-            ItemCount = totalWeapons,
-            Page = paginationDto.Page,
-            PageSize = paginationDto.PageSize,
-            Next = PaginationUtil.GetNext(paginationDto, totalWeapons, "api/weapons"),
-            Prev = PaginationUtil.GetPrev(paginationDto, "api/weapons")
-        });
+        var filteredWeapons = await service.GetAllAsync(filterDto, paginationDto);
+        var mappedWeapons = mapper.Map<ICollection<WeaponResponseDto>>(filteredWeapons);
+
+        return Ok(PaginationUtil.BuildPaginationResponse(mappedWeapons, paginationDto, "api/weapons"));
     }
 
     [HttpGet("{weaponId}")]

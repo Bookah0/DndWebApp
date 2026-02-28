@@ -12,19 +12,12 @@ namespace Api.Domain.Items.Controllers;
 public class ToolsController(IToolService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<ToolResponseDto>>> GetAllTools([FromQuery] ToolFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
+    public async Task<ActionResult<ICollection<ToolResponseDto>>> GetAllTools([FromQuery] ToolFilterDto? filterDto = null, [FromQuery] PaginationRequestDto? paginationDto = null)
     {
-        var (totalTools, filteredTools) = await service.GetFilteredAsync(filterDto, paginationDto);
-        
-        return Ok(new PaginationResponseDto<ToolResponseDto>
-        {
-            Items = mapper.Map<ICollection<ToolResponseDto>>(filteredTools),
-            ItemCount = totalTools,
-            Page = paginationDto.Page,
-            PageSize = paginationDto.PageSize,
-            Next = PaginationUtil.GetNext(paginationDto, totalTools, "api/tools"),
-            Prev = PaginationUtil.GetPrev(paginationDto, "api/tools")
-        });
+        var filteredTools = await service.GetAllAsync(filterDto, paginationDto);
+        var mappedTools = mapper.Map<ICollection<ToolResponseDto>>(filteredTools);
+
+        return Ok(PaginationUtil.BuildPaginationResponse(mappedTools, paginationDto, "api/tools"));
     }
 
     [HttpGet("{toolId}")]

@@ -1,30 +1,17 @@
-using Api.Domain.Abilities.Repositories;
-using Api.Domain.Languages.Repositories;
 using Api.Domain.Shared.DTOs;
-using Api.Domain.Shared.Enums;
 using Api.Domain.Shared.Repositories;
 using Api.Domain.Shared.Services;
-using Api.Domain.Shared.Utils;
-using Api.Domain.Skills.Repositories;
 using Api.Domain.Species.Models;
 using Api.Domain.Species.Repositories;
-using Api.Domain.Spells.Repositories;
-using Api.Domain.Users.Services;
-using Api.Infrastructure.Middleware.ExceptionHandling;
-using Api.Infrastructure.Validation;
 
 namespace Api.Domain.Species.Services;
 
 public class TraitService(
-    IFeatureRepository<Trait> repo,
+    IFeatureRepository<Trait, TraitFilterDto> repo,
+	FeatureServiceBaseDependencies dependencies,
     IRaceRepository raceRepo,
-    ISpellRepository spellRepo,
-    ISkillRepository skillRepo,
-    IAbilityRepository abilityRepo,
-    ILanguageRepository languageRepo,
-    ICurrentUserService currentUserService,
     ILogger<TraitService> logger)
-    : FeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
+    : FeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto, TraitFilterDto>(repo, dependencies, logger)
 {
     public async override Task<Trait> CreateAsync(CreateTraitRequestDto dto)
     {
@@ -39,7 +26,7 @@ public class TraitService(
             FromRace = race,
 
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = currentUserService.GetCurrentUserId()
+            CreatedBy = dependencies.CurrentUserService.GetCurrentUserId()
         });
 
         logger.LogInformation("Successfully created trait, Name: {TraitName}, ID: {TraitId}", trait.Name, trait.Id);
@@ -53,8 +40,8 @@ public class TraitService(
         await repo.DeleteAsync(trait);
         logger.LogInformation("Successfully deleted trait, Name: {TraitName}, ID: {TraitId}", trait.Name, traitId);
     }
-
-    public async override Task<ICollection<Trait>> GetAllAsync() => await repo.GetAllAsync();
+	 public async override Task<ICollection<Trait>> GetAllAsync(TraitFilterDto? filter = null, PaginationRequestDto? pagination = null)
+		=> await repo.GetAllAsync(filter, pagination);
     public async override Task<Trait> GetByIdAsync(int traitId) => await repo.GetByIdAsync(traitId);
 
     public async override Task<Trait> UpdateAsync(UpdateTraitRequestDto dto, int traitId)

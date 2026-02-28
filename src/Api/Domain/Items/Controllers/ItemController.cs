@@ -12,19 +12,12 @@ namespace Api.Domain.Items.Controllers;
 public class ItemsController(IItemService service, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<ItemResponseDto>>> GetAllItems([FromQuery] ItemFilterDto filterDto, [FromQuery] PaginationRequestDto paginationDto)
+    public async Task<ActionResult<ICollection<ItemResponseDto>>> GetAllItems([FromQuery] ItemFilterDto? filterDto = null, [FromQuery] PaginationRequestDto? paginationDto = null)
     {
-        var (totalItems, filteredItems) = await service.GetFilteredAsync(filterDto, paginationDto);
-        
-        return Ok(new PaginationResponseDto<ItemResponseDto>
-        {
-            Items = mapper.Map<ICollection<ItemResponseDto>>(filteredItems),
-            ItemCount = totalItems,
-            Page = paginationDto.Page,
-            PageSize = paginationDto.PageSize,
-            Next = PaginationUtil.GetNext(paginationDto, totalItems, "api/items"),
-            Prev = PaginationUtil.GetPrev(paginationDto, "api/items")
-        });
+        var filteredItems = await service.GetAllAsync(filterDto, paginationDto);
+        var mappedItems = mapper.Map<ICollection<ItemResponseDto>>(filteredItems);
+
+		return Ok(PaginationUtil.BuildPaginationResponse(mappedItems, paginationDto, "api/items"));
     }
 
     [HttpGet("{itemId}")]

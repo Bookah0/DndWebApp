@@ -1,3 +1,6 @@
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
+using Api.Domain.Species.DTOs;
 using Api.Domain.Species.Models;
 using Api.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -47,4 +50,31 @@ public class SubraceRepository(AppDbContext context) : ISubraceRepository
         await context.SaveChangesAsync();
         return updatedEntity;
     }
+
+	public async Task<ICollection<Subrace>> GetAllAsync(SubraceFilterDto? filter = null, PaginationRequestDto? pagination = null)
+	{
+		var query = context.Subraces.AsQueryable();
+
+		if (filter is not null)
+		{
+			query = query
+			.WhereIf(filter.Name, r => r.Name.Contains(filter.Name!))
+			.WhereIf(filter.ParentRace, r => r.ParentRaceId == filter.ParentRace)
+			.WhereIf(filter.CreatedBy, r => r.CreatedBy == filter.CreatedBy)
+			.WhereIf(filter.IsHomebrew, r => r.IsHomebrew == filter.IsHomebrew)
+			.WhereIf(filter.CloningAllowed, r => r.CloningAllowed == filter.CloningAllowed);
+		}
+
+		query = query.OrderByMany([(r => r.Name)], filter?.SortDescending ?? true);
+
+		if(pagination is null)
+			return await query.ToListAsync();	
+			
+		var subraces = await query
+			.Skip((pagination.Page - 1) * pagination.PageSize)
+			.Take(pagination.PageSize)
+			.ToListAsync();
+
+		return subraces;
+	}
 }

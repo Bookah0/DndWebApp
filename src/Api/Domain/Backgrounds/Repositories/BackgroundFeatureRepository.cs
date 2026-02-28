@@ -1,13 +1,15 @@
 using Api.Domain.Backgrounds.Models;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Enums;
 using Api.Domain.Shared.Repositories;
+using Api.Domain.Shared.Utils;
 using Api.Infrastructure.Data;
 using Api.Infrastructure.Middleware.ExceptionHandling;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Domain.Backgrounds.Repositories;
 
-public class BackgroundFeatureRepository(AppDbContext context) : IFeatureRepository<BackgroundFeature>
+public class BackgroundFeatureRepository(AppDbContext context) : IFeatureRepository<BackgroundFeature, BackgroundFeatureFilterDto>
 {
     public async Task<BackgroundFeature> GetByIdAsync(int id) =>
         await context.BackgroundFeatures.FirstOrDefaultAsync(f => f.Id == id)
@@ -68,9 +70,31 @@ public class BackgroundFeatureRepository(AppDbContext context) : IFeatureReposit
         return updatedEntity;
     }
 
-    private readonly Dictionary<string, IEnumerable<Func<BackgroundFeature, object>>> sortSelectorsMap = new()
-    {
-        { SortBackgroundFeatureOption.Name, [(f => f.Name)] },
-        { SortBackgroundFeatureOption.Background, [(f => f.Background!.Name), (f => f.Name)] },
-    };
+	public async Task<ICollection<BackgroundFeature>> GetAllAsync(BackgroundFeatureFilterDto? filter = null, PaginationRequestDto? pagination = null)
+	{
+		var query = context.BackgroundFeatures.AsQueryable();
+		
+		if (filter is not null)
+		{
+			query = query
+				.WhereIf(filter.Name, t => t.Name.Contains(filter.Name!))
+				.WhereIf(filter.Background, t => t.BackgroundId == filter.Background)
+
+				.WhereIf(filter.CreatedBy, t => t.CreatedBy == filter.CreatedBy)
+				.WhereIf(filter.IsHomebrew, t => t.IsHomebrew == filter.IsHomebrew)
+				.WhereIf(filter.CloningAllowed, t => t.CloningAllowed == filter.CloningAllowed);
+		}
+
+		query = query.OrderByMany([(f => f.Background!.Name), (f => f.Name)], filter?.SortDescending ?? false);
+		
+		if(pagination is null)
+			return await query.ToListAsync();
+			
+		var filteredFeatures = await query
+			.Skip((pagination.Page - 1) * pagination.PageSize)
+			.Take(pagination.PageSize)
+			.ToListAsync();
+
+		return filteredFeatures;
+	}
 }

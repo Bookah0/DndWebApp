@@ -4,6 +4,7 @@ using Api.Domain.Backgrounds.Models;
 using Api.Domain.Backgrounds.Services;
 using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Services;
+using Api.Domain.Shared.Utils;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,14 +12,21 @@ namespace Api.Domain.Backgrounds.Controllers;
 
 [ApiController]
 [Route("api/backgrounds/{backgroundId}/features")]
-public class BackgroundFeatureController(IFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto> service, IBackgroundService backgroundService, IMapper mapper) : ControllerBase
+public class BackgroundFeatureController(
+	IFeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto, BackgroundFeatureFilterDto> service, 
+	IMapper mapper
+	) : ControllerBase
 {   
     [HttpGet]
-    public async Task<ActionResult<ICollection<BackgroundFeatureResponseDto>>> GetBackgroundFeatures(int backgroundId)
+    public async Task<ActionResult<ICollection<BackgroundFeatureResponseDto>>> GetBackgroundFeatures(int backgroundId, [FromQuery] BackgroundFeatureFilterDto? filterDto = null, [FromQuery] PaginationRequestDto? paginationDto = null)
     {
-        var background = await backgroundService.GetWithFeaturesAsync(backgroundId);
-        var features = background.Features;
-        return Ok(mapper.Map<ICollection<BackgroundFeatureResponseDto>>(features));
+		filterDto ??= new();
+		filterDto.Background = backgroundId;
+
+		var filteredFeatures = await service.GetAllAsync(filterDto, paginationDto);
+        var mappedFeatures = mapper.Map<ICollection<BackgroundFeatureResponseDto>>(filteredFeatures);
+
+        return Ok(PaginationUtil.BuildPaginationResponse(mappedFeatures, paginationDto, $"api/backgrounds/{backgroundId}/features"));
     }
 
     [HttpGet("{featureId}")]

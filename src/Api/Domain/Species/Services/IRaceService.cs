@@ -1,3 +1,4 @@
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Species.DTOs;
 using Api.Domain.Species.Models;
 
@@ -7,6 +8,7 @@ public interface IRaceService
 {
     Task<Race> CreateAsync(CreateRaceRequestDto dto);
     Task DeleteAsync(int id);
+	Task<ICollection<Race>> GetAllAsync(RaceFilterDto? filter = null, PaginationRequestDto? pagination = null);
     Task<ICollection<Race>> GetAllAsync();
     Task<Race> GetByIdAsync(int id);
     Task<Race> GetWithSubracesAsync(int id);

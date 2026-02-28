@@ -9,7 +9,7 @@ public interface IBaseClassService
     Task<BaseClass> CreateAsync(CreateClassRequestDto dto);
     Task DeleteAsync(int id);
     Task<ICollection<BaseClass>> GetAllAsync();
-    Task<(int, ICollection<BaseClass>)> GetFilteredAsync(ClassFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<BaseClass>> GetAllAsync(ClassFilterDto? filter = null, PaginationRequestDto? pagination = null);
     Task<BaseClass> GetByIdAsync(int id);
     Task<BaseClass> GetWithSubclassesAsync(int id);
     Task<BaseClass> GetWithLevelsAsync(int id);

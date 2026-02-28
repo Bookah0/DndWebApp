@@ -3,6 +3,7 @@ using Api.Domain.Backgrounds.Models;
 using Api.Domain.Backgrounds.Repositories;
 using Api.Domain.Characters.Models;
 using Api.Domain.Items.Repositories;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Repositories;
 using Api.Domain.Users.Services;
 using Api.Infrastructure.Middleware.ExceptionHandling;
@@ -13,7 +14,7 @@ public class BackgroundService(
     IBackgroundRepository repo, 
     IItemRepository itemRepo, 
     ICurrentUserService currentUserService,
-    IFeatureRepository<BackgroundFeature> featureRepo,
+    IFeatureRepository<BackgroundFeature, BackgroundFeatureFilterDto> featureRepo,
     ILogger<BackgroundService> logger) 
     : IBackgroundService
 {
@@ -175,4 +176,7 @@ public class BackgroundService(
         await repo.UpdateAsync(background);
         logger.LogInformation("Successfully removed starting item option with ID: {OptionId} from background, Name: {BackgroundName}, ID: {BackgroundId}", optionId, background.Name, id);
     }
+
+	public Task<ICollection<Background>> GetAllAsync(BackgroundFilterDto? filter = null, PaginationRequestDto? pagination = null)
+		=> repo.GetAllAsync(filter, pagination);
 }

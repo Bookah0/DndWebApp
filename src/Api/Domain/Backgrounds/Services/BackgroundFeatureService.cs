@@ -1,30 +1,17 @@
-using Api.Domain.Abilities.Repositories;
 using Api.Domain.Backgrounds.Models;
 using Api.Domain.Backgrounds.Repositories;
-using Api.Domain.Languages.Repositories;
 using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Repositories;
 using Api.Domain.Shared.Services;
-using Api.Domain.Skills.Repositories;
-using Api.Domain.Spells.Repositories;
-using Api.Domain.Users.Services;
-using Api.Infrastructure.Middleware.ExceptionHandling;
-using Api.Infrastructure.Validation;
-using Api.Domain.Shared.Utils;
-using Api.Domain.Shared.Enums;
 
 namespace Api.Domain.Backgrounds.Services;
 
 public class BackgroundFeatureService(
-    IFeatureRepository<BackgroundFeature> repo,
+    IFeatureRepository<BackgroundFeature, BackgroundFeatureFilterDto> repo,
+    FeatureServiceBaseDependencies dependencies,
     IBackgroundRepository backgroundRepo,
-    ISpellRepository spellRepo,
-    ISkillRepository skillRepo,
-    IAbilityRepository abilityRepo,
-    ILanguageRepository languageRepo,
-    ICurrentUserService currentUserService,
     ILogger<BackgroundFeatureService> logger)
-    : FeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
+    : FeatureService<BackgroundFeature, CreateBackgroundFeatureRequestDto, UpdateBackgroundFeatureRequestDto, BackgroundFeatureFilterDto>(repo, dependencies, logger)
 {
     public async override Task<BackgroundFeature> CreateAsync(CreateBackgroundFeatureRequestDto dto)
     {
@@ -40,7 +27,7 @@ public class BackgroundFeatureService(
             Background = background,
 
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = currentUserService.GetCurrentUserId(),
+            CreatedBy = dependencies.CurrentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", bgFeature.Name, bgFeature.Id);
@@ -55,11 +42,10 @@ public class BackgroundFeatureService(
         logger.LogInformation("Successfully deleted background feature, Name: {BackgroundFeatureName}, ID: {BackgroundFeatureId}", feature.Name, id);
     }
 
-    public async override Task<ICollection<BackgroundFeature>> GetAllAsync() => await repo.GetAllAsync();
-
+	public async override Task<ICollection<BackgroundFeature>> GetAllAsync(BackgroundFeatureFilterDto? filter, PaginationRequestDto? pagination) => await repo.GetAllAsync(filter, pagination);
     public async override Task<BackgroundFeature> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
-    public async override Task<BackgroundFeature> UpdateAsync(UpdateBackgroundFeatureRequestDto dto, int featureId)
+	public async override Task<BackgroundFeature> UpdateAsync(UpdateBackgroundFeatureRequestDto dto, int featureId)
     {
         var feature = await repo.GetByIdAsync(featureId);
 

@@ -16,5 +16,5 @@ public interface IBaseClassRepository : IRepository<BaseClass>
     Task<BaseClass> GetWithStartingEquipmentAsync(int id);
     Task<BaseClass> GetWithSubclassesAsync(int id);
     Task<bool> ExistsAsync(int id);
-    Task<(int, ICollection<BaseClass>)> GetFilteredAsync(ClassFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<BaseClass>> GetAllAsync(ClassFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

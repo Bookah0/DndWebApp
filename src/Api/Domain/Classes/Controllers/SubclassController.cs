@@ -13,19 +13,12 @@ namespace Api.Domain.Classes.Controllers;
 public class SubclassController(ISubclassService service, IBaseClassService classService, IMapper mapper) : ControllerBase
 {
     [HttpGet("/api/subclasses")]
-    public async Task<ActionResult<ICollection<SubclassResponseDto>>> GetAllSubclasses([FromQuery] SubclassFilterDto filter, [FromQuery] PaginationRequestDto pagination)
+    public async Task<ActionResult<ICollection<SubclassResponseDto>>> GetAllSubclasses([FromQuery] SubclassFilterDto? filter, [FromQuery] PaginationRequestDto? pagination)
     {
-        var (totalCount, subclasses) = await service.GetFilteredAsync(filter, pagination);
-        
-        return Ok(new PaginationResponseDto<SubclassResponseDto>
-        {
-            Items = mapper.Map<ICollection<SubclassResponseDto>>(subclasses),
-            ItemCount = totalCount,
-            Page = pagination.Page,
-            PageSize = pagination.PageSize,
-            Next = PaginationUtil.GetNext(pagination, totalCount, "api/subclasses"),
-            Prev = PaginationUtil.GetPrev(pagination, "api/subclasses")
-        });
+        var subclasses = await service.GetAllAsync(filter, pagination);
+        var mappedSubclasses = mapper.Map<ICollection<SubclassResponseDto>>(subclasses);
+
+		return Ok(PaginationUtil.BuildPaginationResponse(mappedSubclasses, pagination, "api/subclasses"));
     }
 
     [HttpGet]

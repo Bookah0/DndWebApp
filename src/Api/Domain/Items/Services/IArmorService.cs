@@ -11,5 +11,5 @@ public interface IArmorService
     Task<ICollection<Armor>> GetAllAsync();
     Task<Armor> GetByIdAsync(int id);
     Task<Armor> UpdateAsync(UpdateArmorRequestDto dto, int id);
-    Task<(int, ICollection<Armor>)> GetFilteredAsync(ArmorFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Armor>> GetAllAsync(ArmorFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

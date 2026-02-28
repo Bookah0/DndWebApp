@@ -121,19 +121,21 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
         return item;
     }
 
-    public async Task<(int, ICollection<Tool>)> GetFilteredAsync(ToolFilterDto filter, PaginationRequestDto pagination) 
+    public async Task<ICollection<Tool>> GetAllAsync(ToolFilterDto? filter = null, PaginationRequestDto? pagination = null) 
     {
         ValidateFilterAsync(filter);
-        var (count, filtered) = await repo.GetFilteredAsync(filter, pagination);
+        var filtered = await repo.GetAllAsync(filter, pagination);
 
-        if(!filtered.HasContent() && count > 0)
+        if(!filtered.HasContent() && filtered.Count > 0)
             throw new ValidationException("Page does not contain any elements");
 
-        return (count, filtered);
+        return filtered;
     }
 
-    public void ValidateFilterAsync(ToolFilterDto dto)
+    public void ValidateFilterAsync(ToolFilterDto? dto)
     {
+        if (dto is null) return;
+
         if (dto.MinValue is not null && dto.MaxValue is not null && dto.MinValue > dto.MaxValue)
             throw new ValidationException("Maximum value must be greater than or equal to minimum value");
         if (dto.MinValue is not null && dto.MinValue < 0)
@@ -152,7 +154,5 @@ public class ToolService(IToolRepository repo, ICurrentUserService currentUserSe
             dto.Rarity = NormalizeValue<ItemRarity>(dto.Rarity);
         if(dto.ToolCategory != null)    
             dto.ToolCategory = NormalizeValue<ToolCategory>(dto.ToolCategory);
-            
-        dto.Category = NormalizeValue<ItemCategory>(dto.Category);
     }
 }

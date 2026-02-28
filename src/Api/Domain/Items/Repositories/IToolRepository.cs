@@ -8,5 +8,5 @@ namespace Api.Domain.Items.Repositories;
 public interface IToolRepository : IRepository<Tool>
 {
     Task<Tool> GetWithAllDataAsync(int id);
-    Task<(int, ICollection<Tool>)> GetFilteredAsync(ToolFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Tool>> GetAllAsync(ToolFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

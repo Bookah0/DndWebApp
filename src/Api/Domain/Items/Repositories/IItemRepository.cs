@@ -10,5 +10,5 @@ public interface IItemRepository : IRepository<Item>
     Task<bool> ExistsAsync(int itemId);
     Task<ICollection<Item>> GetAllMiscItemsAsync();
     Task<Item> GetByNameAsync(string name);
-    Task<(int, ICollection<Item>)> GetFilteredAsync(ItemFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Item>> GetAllAsync(ItemFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

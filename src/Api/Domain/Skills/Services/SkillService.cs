@@ -1,13 +1,10 @@
 using Api.Domain.Abilities.Repositories;
 using Api.Domain.Shared.DTOs;
-using Api.Domain.Shared.Enums;
-using Api.Domain.Shared.Utils;
 using Api.Domain.Skills.DTOs;
 using Api.Domain.Skills.Models;
 using Api.Domain.Skills.Repositories;
 using Api.Domain.Users.Services;
 using Api.Infrastructure.Middleware.ExceptionHandling;
-using Api.Infrastructure.Validation;
 
 namespace Api.Domain.Skills.Services;
 
@@ -50,8 +47,8 @@ public class SkillService(
         logger.LogInformation("Successfully deleted skill, Name: {SkillName}, ID: {SkillId}", skill.Name, skill.Id);
     }
 
-    public async Task<(int, ICollection<Skill>)> GetFilteredAsync(SkillFilterDto filter, PaginationRequestDto pagination)
-      => await repo.GetFilteredAsync(filter, pagination);      
+    public async Task<ICollection<Skill>> GetAllAsync(SkillFilterDto? filter = null, PaginationRequestDto? pagination = null)
+      => await repo.GetAllAsync(filter, pagination);      
     public async Task<ICollection<Skill>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<ICollection<Skill>> GetAllWithAbilityAsync() => await repo.GetAllWithAbilityAsync();
     public async Task<Skill> GetByIdAsync(int id) => await repo.GetByIdAsync(id);

@@ -1,30 +1,17 @@
-using Api.Domain.Abilities.Repositories;
 using Api.Domain.Classes.Models;
 using Api.Domain.Classes.Repositories;
-using Api.Domain.Languages.Repositories;
 using Api.Domain.Shared.DTOs;
-using Api.Domain.Shared.Enums;
 using Api.Domain.Shared.Repositories;
 using Api.Domain.Shared.Services;
-using Api.Domain.Shared.Utils;
-using Api.Domain.Skills.Repositories;
-using Api.Domain.Spells.Repositories;
-using Api.Domain.Users.Services;
-using Api.Infrastructure.Middleware.ExceptionHandling;
-using Api.Infrastructure.Validation;
 
 namespace Api.Domain.Classes.Services;
 
 public class ClassFeatureService(
-    IFeatureRepository<ClassFeature> repo,
-    IClassLevelRepository classLevelRepo,
-    ISpellRepository spellRepo,
-    ISkillRepository skillRepo,
-    IAbilityRepository abilityRepo,
-    ILanguageRepository languageRepo,
-    ICurrentUserService currentUserService,
+    IFeatureRepository<ClassFeature, ClassFeatureFilterDto> repo,
+    FeatureServiceBaseDependencies dependencies,
+	IClassLevelRepository classLevelRepo,
     ILogger<ClassFeatureService> logger)
-    : FeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto>(repo, spellRepo, skillRepo, abilityRepo, languageRepo, logger)
+    : FeatureService<ClassFeature, CreateClassFeatureRequestDto, UpdateClassFeatureRequestDto, ClassFeatureFilterDto>(repo, dependencies, logger)
 {
     public async override Task<ClassFeature> CreateAsync(CreateClassFeatureRequestDto dto)
     {
@@ -41,7 +28,7 @@ public class ClassFeatureService(
             ClassId = dto.ClassId,
 
             CreatedAt = DateTime.UtcNow,
-            CreatedBy = currentUserService.GetCurrentUserId(),
+            CreatedBy = dependencies.CurrentUserService.GetCurrentUserId(),
         });
 
         logger.LogInformation("Successfully created class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", classFeature.Name, classFeature.Id);
@@ -57,7 +44,7 @@ public class ClassFeatureService(
         logger.LogInformation("Successfully deleted class feature, Name: {ClassFeatureName}, ID: {ClassFeatureId}", feature.Name, id);
     }
 
-    public async override Task<ICollection<ClassFeature>> GetAllAsync() => await repo.GetAllAsync();
+	public async override Task<ICollection<ClassFeature>> GetAllAsync(ClassFeatureFilterDto? filter = null, PaginationRequestDto? pagination = null) => await repo.GetAllAsync(filter, pagination);
     public async override Task<ClassFeature> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
 
     public async override Task<ClassFeature> UpdateAsync(UpdateClassFeatureRequestDto dto, int id)

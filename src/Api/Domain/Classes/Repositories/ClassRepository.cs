@@ -86,24 +86,29 @@ public class ClassRepository(AppDbContext context) : IBaseClassRepository
         return updatedEntity;
     }
 
-    public async Task<(int, ICollection<BaseClass>)> GetFilteredAsync(ClassFilterDto filter, PaginationRequestDto pagination)
+    public async Task<ICollection<BaseClass>> GetAllAsync(ClassFilterDto? filter = null, PaginationRequestDto? pagination = null)
     {      
-        var query = context.Classes
-            .AsQueryable()
-            .WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
-            .WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
-            .WhereIf(filter.IsSpellcaster, s => (bool)filter.IsSpellcaster! ? s.SpellcastingAbilityId != null : s.SpellcastingAbilityId == null)
+        var query = context.Classes.AsQueryable();
 
-            .WhereIf(filter.IsHomebrew, s => s.IsHomebrew == filter.IsHomebrew)
-            .WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed)
-            .OrderBy(c => c.Name);
+		if(filter is not null)
+			query = query
+				.WhereIf(filter.Name, s => s.Name.Contains(filter.Name!))
+				.WhereIf(filter.IsSpellcaster, s => (bool)filter.IsSpellcaster! ? s.SpellcastingAbilityId != null : s.SpellcastingAbilityId == null)
 
-        var classCount = await query.CountAsync();
+				.WhereIf(filter.CreatedBy, i => i.CreatedBy == filter.CreatedBy)
+				.WhereIf(filter.IsHomebrew, s => s.IsHomebrew == filter.IsHomebrew)
+				.WhereIf(filter.CloningAllowed, s => s.CloningAllowed == filter.CloningAllowed);
+		
+		query = query.OrderByMany([c => c.Name], filter?.SortDescending ?? true);
+
+		if(pagination is null)
+			return await query.ToListAsync();
+
         var filteredClasses = await query
             .Skip((pagination.Page - 1) * pagination.PageSize)
             .Take(pagination.PageSize)
             .ToListAsync();
 
-        return (classCount, filteredClasses);
+        return filteredClasses;
     }
 }

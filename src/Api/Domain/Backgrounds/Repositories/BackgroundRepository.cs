@@ -1,4 +1,7 @@
+using Api.Domain.Backgrounds.DTOs;
 using Api.Domain.Backgrounds.Models;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
 using Api.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,4 +57,28 @@ public class BackgroundRepository(AppDbContext context) : IBackgroundRepository
         await context.SaveChangesAsync();
         return updatedEntity;
     }
+
+	public async Task<ICollection<Background>> GetAllAsync(BackgroundFilterDto? filter = null, PaginationRequestDto? pagination = null)
+	{
+		var query = context.Backgrounds.AsQueryable();
+
+		if(filter is not null)
+			query = query
+				.WhereIf(filter.Name, b => b.Name.Contains(filter.Name!))
+				.WhereIf(filter.CreatedBy, b => b.CreatedBy == filter.CreatedBy)
+				.WhereIf(filter.IsHomebrew, b => b.IsHomebrew == filter.IsHomebrew)
+				.WhereIf(filter.CloningAllowed, b => b.CloningAllowed == filter.CloningAllowed);
+		
+		query = query.OrderByMany([b => b.Name], filter?.SortDescending ?? true);
+		
+		if(pagination is null)
+			return await query.ToListAsync();
+
+        var filteredBackgrounds = await query
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToListAsync();
+
+        return filteredBackgrounds;
+	}
 }

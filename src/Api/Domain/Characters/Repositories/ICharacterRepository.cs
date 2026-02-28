@@ -1,4 +1,6 @@
+using Api.Domain.Characters.DTOs;
 using Api.Domain.Characters.Models;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Repositories;
 
 namespace Api.Domain.Characters.Repositories;
@@ -12,4 +14,5 @@ public interface ICharacterRepository : IRepository<Character>
     Task<Character> GetWithCharacterInfoAsync(int characterId);
     Task<Character> GetWithClassesAsync(int id);
     Task<Character> GetWithFeaturesAsync(int id);
+	Task<ICollection<Character>> GetAllAsync(CharacterFilterDto? filter = null, PaginationRequestDto? pagination = null, Guid? currentUserId = null);
 }

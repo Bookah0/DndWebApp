@@ -1,11 +1,12 @@
 using System.Text.Json;
 using Api.Domain.Feats.Models;
+using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Repositories;
 using Api.External.Shared;
 
 namespace Api.External.Feats;
 
-public class ExternalFeatService(IFeatureRepository<Feat> repo, ILogger<ExternalFeatService> logger) : IExternalFeatService
+public class ExternalFeatService(IFeatureRepository<Feat, FeatFilterDto> repo, ILogger<ExternalFeatService> logger) : IExternalFeatService
 {
     private readonly HttpClient client = new();
 

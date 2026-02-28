@@ -1,4 +1,4 @@
-using static Api.Domain.Shared.Utils.QueryUtil;
+using static Api.Domain.Shared.Utils.QueryExtensions;
 using Api.Domain.Abilities.DTOs;
 using Api.Domain.Abilities.Models;
 using Api.Domain.Abilities.Repositories;
@@ -32,8 +32,8 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
         await repo.DeleteAsync(ability);
         logger.LogInformation("Successfully deleted ability, FullName: {AbilityFullName}, ID: {AbilityId}", ability.FullName, id);
     }
-    public async Task<(int, ICollection<Ability>)> GetFilteredAsync(string? nameFilter, PaginationRequestDto pagination)
-        => await repo.GetFilteredAsync(nameFilter, pagination);
+    public async Task<ICollection<Ability>> GetAllAsync(AbilityFilterDto? filter = null)
+        => await repo.GetAllAsync(filter);
     
     public async Task<ICollection<Ability>> GetAllAsync() => await repo.GetAllAsync();
     public async Task<Ability> GetByIdAsync(int id) => await repo.GetByIdAsync(id);
@@ -56,14 +56,4 @@ public class AbilityService(IAbilityRepository repo, ILogger<AbilityService> log
     {
         return val.Value - 10 / 2;
     }
-
-    // TODO Move to database level sorting
-    public ICollection<Ability> SortBy(ICollection<Ability> abilities)
-    {
-        var abilityOrder = FilterUtils.CreateOrderLookup(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
-
-        return [.. abilities.OrderBy(a => abilityOrder[a.FullName])];
-    }
-
-
 }

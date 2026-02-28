@@ -72,6 +72,7 @@ public class CombatStats
 [Owned]
 public class CharacterInfo
 {
+    public string? AlignmentName { get; set; }
     public int? AlignmentId { get; set; }
     public string? PersonalityTraits { get; set; }
     public string? Ideals { get; set; }

@@ -48,9 +48,10 @@ public partial class CharacterService : ICharacterService
 
         var inventory = await inventoryService.CreateAsync(new CreateInventoryDto
         {
-            Currency = CurrencyUtil.ConvertCurrency(background.StartingCurrency),
+            Currency = background.StartingCurrency,
             ItemIds = [.. background.StartingItems.Select(i => i.Id), .. clss.StartingEquipment.Select(i => i.Id)],
         });
+		inventory.Currency.ConvertCurrency();
 
         var character = new Character()
         {

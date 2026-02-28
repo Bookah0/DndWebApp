@@ -11,5 +11,5 @@ public interface ILanguageService
     Task<ICollection<Language>> GetAllAsync(); 
     Task<Language> GetByIdAsync(int id); 
     Task<Language> UpdateAsync(int id, UpdateLanguageRequestDto dto); 
-    Task<(int, ICollection<Language>)> GetFilteredAsync(LanguageFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Language>> GetAllAsync(LanguageFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

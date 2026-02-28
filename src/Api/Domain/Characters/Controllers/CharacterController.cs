@@ -1,5 +1,7 @@
 using Api.Domain.Characters.DTOs;
 using Api.Domain.Characters.Services;
+using Api.Domain.Shared.DTOs;
+using Api.Domain.Shared.Utils;
 using Api.Domain.Spells.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -30,11 +32,22 @@ public class CharactersController(ICharacterService service, IMapper mapper) : C
         return Ok(mapper.Map<CharacterResponseDto>(character));
     }
 
-    [HttpGet]
-    public async Task<ActionResult<ICollection<CharacterResponseDto>>> GetAllCharacters(Guid userId)
+    [HttpGet("/api/characters")]
+    public async Task<ActionResult<PaginationResponseDto<CharacterResponseDto>>> GetAllCharacters([FromQuery] CharacterFilterDto? filter = null, [FromQuery] PaginationRequestDto? pagination = null)
     {
-        var characters =  await service.GetAllByUserIdAsync(userId);
-        return Ok(mapper.Map<ICollection<CharacterResponseDto>>(characters));
+        var characters =  await service.GetAllAsync(filter, pagination);
+		var mappedCharacters = mapper.Map<ICollection<CharacterResponseDto>>(characters);
+
+        return Ok(PaginationUtil.BuildPaginationResponse(mappedCharacters, pagination, $"api/characters"));
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<PaginationResponseDto<CharacterResponseDto>>> GetAllCharacters(Guid userId, [FromQuery] CharacterFilterDto? filter = null, [FromQuery] PaginationRequestDto? pagination = null)
+    {
+        var characters =  await service.GetAllAsync(filter, pagination, userId);
+		var mappedCharacters = mapper.Map<ICollection<CharacterResponseDto>>(characters);
+
+        return Ok(PaginationUtil.BuildPaginationResponse(mappedCharacters, pagination, $"api/characters"));
     }
 
     [HttpDelete("{characterId}")]

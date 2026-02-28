@@ -7,5 +7,5 @@ namespace Api.Domain.Items.Repositories;
 
 public interface IWeaponRepository : IRepository<Weapon>
 {
-    Task<(int, ICollection<Weapon>)> GetFilteredAsync(WeaponFilterDto filter, PaginationRequestDto pagination);
+    Task<ICollection<Weapon>> GetAllAsync(WeaponFilterDto? filter = null, PaginationRequestDto? pagination = null);
 }

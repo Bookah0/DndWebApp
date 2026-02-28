@@ -2,6 +2,7 @@ using Api.Domain.Abilities.DTOs;
 using Api.Domain.Feats.Models;
 using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Services;
+using Api.Domain.Shared.Utils;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,13 +10,18 @@ namespace Api.Domain.Feats.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FeatsController(IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto> service, IMapper mapper) : ControllerBase
+public class FeatsController(
+	IFeatureService<Feat, CreateFeatRequestDto, UpdateFeatRequestDto, FeatFilterDto> service, 
+	IMapper mapper) 
+	: ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<FeatResponseDto>>> GetFeats()
+    public async Task<ActionResult<ICollection<FeatResponseDto>>> GetFeats([FromQuery] FeatFilterDto? filter, [FromQuery] PaginationRequestDto? pagination)
     {
-        var feats = await service.GetAllAsync();
-        return Ok(mapper.Map<ICollection<FeatResponseDto>>(feats));
+        var feats = await service.GetAllAsync(filter, pagination);
+		var mappedFeats = mapper.Map<ICollection<FeatResponseDto>>(feats);
+
+        return Ok(PaginationUtil.BuildPaginationResponse(mappedFeats, pagination, "api/feats"));
     }
 
     [HttpGet("{featId}")]

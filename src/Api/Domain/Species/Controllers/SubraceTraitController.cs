@@ -11,7 +11,7 @@ namespace Api.Domain.Species.Controllers;
 
 [ApiController]
 [Route("api/races/{raceId}/subraces/{subraceId}/traits")]
-public class SubraceTraitController(IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto> service, ISubraceService subraceService, IRaceService raceService, IMapper mapper) : ControllerBase
+public class SubraceTraitController(IFeatureService<Trait, CreateTraitRequestDto, UpdateTraitRequestDto, TraitFilterDto> service, ISubraceService subraceService, IRaceService raceService, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ICollection<TraitResponseDto>>> GetTraits(int raceId, int subraceId)

@@ -136,3 +136,11 @@ C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\obj\Debug\net9.0\refin
 C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\obj\Debug\net9.0\Api.pdb
 C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\obj\Debug\net9.0\Api.genruntimeconfig.cache
 C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\obj\Debug\net9.0\ref\Api.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Antho\Documents\GitHub\Dndtoolkit-server\src\Api\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll

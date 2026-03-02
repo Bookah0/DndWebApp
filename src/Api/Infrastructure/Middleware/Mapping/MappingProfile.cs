@@ -116,7 +116,6 @@ public class MappingProfile : Profile
         CreateMap<Tool, ToolResponseDto>();
 
         CreateMap<User, GetUserResponseDto>();
-        CreateMap<User, RegisterUserResponseDto>();
         CreateMap<User, UpdateUserResponseDto>();
 
         CreateMap<SkillProficiencyChoice, SkillProficiencyChoiceResponseDto>();

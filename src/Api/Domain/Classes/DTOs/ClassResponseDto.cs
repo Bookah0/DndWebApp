@@ -1,8 +1,9 @@
+using Api.Domain.Shared.DTOs;
+
 namespace Api.Domain.Classes.DTOs;
 
-public class ClassResponseDto
+public class ClassResponseDto : CreatableEntityResponseDto
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required int HitDie { get; set; }

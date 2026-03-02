@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Domain.Classes.DTOs;
 
-public class CreateClassLevelRequestDto
+public class CreateClassLevelRequestDto 
 {
     [Range(1, int.MaxValue)]
     public required int ClassId { get; set; }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Domain.Shared.DTOs;
 
-public abstract class CreateFeatureRequestDto
+public abstract class CreateFeatureRequestDto : CreateableEntityRequestDto
 {
     [MinLength(1)]
     [MaxLength(100)]
@@ -13,7 +13,7 @@ public abstract class CreateFeatureRequestDto
     public required string Description { get; set; }
 }
 
-public abstract class UpdateFeatureRequestDto
+public abstract class UpdateFeatureRequestDto : CreateableEntityRequestDto
 {
     [MinLength(1)]
     [MaxLength(100)]
@@ -22,8 +22,6 @@ public abstract class UpdateFeatureRequestDto
     [MinLength(1)]
     [MaxLength(1000)]
     public string? Description { get; set; }
-    public bool? IsPublic { get; set; }
-    public bool? CloningAllowed { get; set; }
 }
 
 public class CreateFeatRequestDto : CreateFeatureRequestDto

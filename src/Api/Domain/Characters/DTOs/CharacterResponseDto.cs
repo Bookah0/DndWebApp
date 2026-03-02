@@ -5,15 +5,13 @@ using Api.Domain.Shared.DTOs;
 
 namespace Api.Domain.Characters.DTOs;
 
-public class CharacterResponseDto
+public class CharacterResponseDto : CreatableEntityResponseDto
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
     public required int Level { get; set; }
     public int? Experience { get; set; }
     public string PlayerName { get; set; } = "";
     public required string TimeCreated { get; set; }
-    public required Guid CreatedBy { get; set; }
 
     // Races & Subraces
     public int RaceId { get; set; }

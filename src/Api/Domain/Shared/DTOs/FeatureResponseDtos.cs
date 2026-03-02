@@ -1,11 +1,9 @@
 namespace Api.Domain.Shared.DTOs;
 
-public abstract class FeatureResponseDto
+public abstract class FeatureResponseDto : CreatableEntityResponseDto
 {
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public required bool IsPublic { get; set; }
-    public required bool CloningAllowed { get; set; }
 }
 
 public class FeatResponseDto : FeatureResponseDto

@@ -3,58 +3,18 @@ using Api.Domain.Shared.Enums.Items;
 
 namespace Api.Domain.Items.DTOs;
 
-public class CreateToolRequestDto
+public class CreateToolRequestDto : CreateItemRequestBaseDto
 {
-    [MinLength(1)]
-    [MaxLength(100)]
-    public required string Name { get; set; }
-
-    [MinLength(1)]
-    [MaxLength(1000)]
-    public required string Description { get; set; }
-
-    [Range(0, int.MaxValue)]
-    public int? Value { get; set; }
-
     [MinLength(1)]
     [MaxLength(100)]
     public required string ToolCategory { get; set; }
-
-    [MinLength(1)]
-    [MaxLength(50)]
-    public string Rarity { get; set; } = ItemRarity.Common;
-
-    [Range(0, int.MaxValue)]
-    public int? Weight { get; set; }
-    public bool RequiresAttunement { get; set; } = false;
 }
 
-public class UpdateToolRequestDto
+public class UpdateToolRequestDto : UpdateItemRequestBaseDto
 {
-    [MinLength(1)]
-    [MaxLength(100)]
-    public string? Name { get; set; }
-
-    [MinLength(1)]
-    [MaxLength(1000)]
-    public string? Description { get; set; }
-
-    [Range(0, int.MaxValue)]
-    public int? Value { get; set; }
-
-    [MinLength(1)]
+	[MinLength(1)]
     [MaxLength(100)]
     public string? ToolCategory { get; set; }
-
-    [MinLength(1)]
-    [MaxLength(50)]
-    public string? Rarity { get; set; }
-
-    [Range(0, int.MaxValue)]
-    public int? Weight { get; set; }
-    public bool? RequiresAttunement { get; set; }
-    public bool? IsPublic { get; set; }
-    public bool? CloningAllowed { get; set; }
 }
 
 public class ToolPropertyDto

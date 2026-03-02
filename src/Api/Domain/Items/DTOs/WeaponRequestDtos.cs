@@ -2,28 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Domain.Items.DTOs;
 
-public class CreateWeaponRequestDto
+public class CreateWeaponRequestDto : CreateItemRequestBaseDto
 {
-    [MinLength(1)]
-    [MaxLength(100)]
-    public required string Name { get; set; }
-
-    [MinLength(1)]
-    [MaxLength(1000)]
-    public required string Description { get; set; }
-
-    [Range(0, int.MaxValue)]
-    public int? Value { get; set; }
-
-    [MinLength(1)]
-    [MaxLength(50)]
-    public required string Rarity { get; set; }
-
-    public bool RequiresAttunement { get; set; } = false;
-
-    [Range(0, int.MaxValue)]
-    public int? Weight { get; set; }
-
     [MinLength(1)]
     [MaxLength(100)]
     public required string WeaponCategory { get; set; }
@@ -54,25 +34,8 @@ public class CreateWeaponRequestDto
     public int? LongRange { get; set; }
 }
 
-public class UpdateWeaponRequestDto
+public class UpdateWeaponRequestDto : UpdateItemRequestBaseDto
 {
-    [MaxLength(100)]
-    public string? Name { get; set; }
-
-    [MaxLength(1000)]
-    public string? Description { get; set; }
-
-    [Range(0, int.MaxValue)]
-    public int? Value { get; set; }
-
-    [MaxLength(50)]
-    public string? Rarity { get; set; }
-
-    public bool? RequiresAttunement { get; set; }
-
-    [Range(0, int.MaxValue)]
-    public int? Weight { get; set; }
-
     [MaxLength(100)]
     public string? WeaponCategory { get; set; }
 
@@ -93,6 +56,4 @@ public class UpdateWeaponRequestDto
 
     [Range(1, int.MaxValue)]
     public int? LongRange { get; set; }
-    public bool? IsPublic { get; set; }
-    public bool? CloningAllowed { get; set; }
 }

@@ -2,9 +2,8 @@ using Api.Domain.Shared.DTOs;
 
 namespace Api.Domain.Classes.DTOs;
 
-public class ClassLevelResponseDto
+public class ClassLevelResponseDto : CreatableEntityResponseDto
 {
-    public int Id { get; set; }
     public required int Level { get; set; }
     public required int ProficiencyBonus { get; set; }
     public ICollection<ClassFeatureResponseDto> LevelFeatures { get; set; } = [];

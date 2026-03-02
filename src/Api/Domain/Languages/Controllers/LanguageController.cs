@@ -3,6 +3,7 @@ using Api.Domain.Languages.Services;
 using Api.Domain.Shared.DTOs;
 using Api.Domain.Shared.Utils;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Domain.Languages.Controllers;
@@ -27,6 +28,7 @@ public class LanguagesController(ILanguageService service, IMapper mapper) : Con
         return Ok(mapper.Map<LanguageResponseDto>(language));
     }
 
+	[Authorize]
     [HttpPost]
     public async Task<ActionResult<LanguageResponseDto>> CreateLanguage([FromBody] CreateLanguageRequestDto dto)
     {

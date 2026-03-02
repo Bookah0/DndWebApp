@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Api.Domain.Shared.DTOs;
 
 namespace Api.Domain.Spells.DTOs;
 
-public class CreateSpellRequestDto
+public class CreateSpellRequestDto : CreateableEntityRequestDto
 {
     [MinLength(1)]
     [MaxLength(100)]
@@ -47,7 +48,7 @@ public class CreateSpellRequestDto
     public CreateCastingRequirementsDto CastRequirementsDto { get; set; } = new();
 }
 
-public class UpdateSpellRequestDto
+public class UpdateSpellRequestDto : CreateableEntityRequestDto
 {
     [MaxLength(100)]
     public string? Name { get; set; }

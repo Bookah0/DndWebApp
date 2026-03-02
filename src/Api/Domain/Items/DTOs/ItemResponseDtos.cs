@@ -1,16 +1,20 @@
+using Api.Domain.Shared.DTOs;
+
 namespace Api.Domain.Items.DTOs;
 
-public class ItemResponseDto
+public class ItemResponseBaseDto : CreatableEntityResponseDto
 {
-    public int Id { get; set; }
-    public required string Name { get; set; }
+	public required string Name { get; set; }
     public required string Description { get; set; }
-    public required ICollection<string> Categories { get; set; }
     public string? Rarity { get; set; }
-    public bool RequiresAttunement { get; set; }
     public int Weight { get; set; }
     public int Value { get; set; }
     public int Quantity { get; set; }
+    public bool RequiresAttunement { get; set; }
+}
+public class ItemResponseDto : CreatableEntityResponseDto
+{
+    public required ICollection<string> Categories { get; set; }
     public string? EquipSlot { get; set; }
     public string? SecondaryEquipSlot { get; set; }
 }

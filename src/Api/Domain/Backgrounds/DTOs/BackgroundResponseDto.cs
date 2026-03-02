@@ -2,9 +2,8 @@ using Api.Domain.Shared.DTOs;
 
 namespace Api.Domain.Backgrounds.DTOs;
 
-public class BackgroundResponseDto
+public class BackgroundResponseDto : CreatableEntityResponseDto
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required ICollection<BackgroundFeatureResponseDto> Features { get; set; }

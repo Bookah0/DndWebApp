@@ -1,8 +1,9 @@
 namespace Api.Domain.Characters.DTOs;
 
 using System.ComponentModel.DataAnnotations;
+using Api.Domain.Shared.DTOs;
 
-public class CreateCharacterRequestDto
+public class CreateCharacterRequestDto : CreateableEntityRequestDto
 { 
     [MinLength(1)]
     [MaxLength(100)]
@@ -35,7 +36,7 @@ public class CreateCharacterRequestDto
     public required BaseAbilityScoresDto AbilityScores { get; set; }
 }
 
-public class UpdateCharacterRequestDto
+public class UpdateCharacterRequestDto : CreateableEntityRequestDto
 { 
     [MaxLength(100)]
     public string? Name { get; set; }
@@ -46,8 +47,6 @@ public class UpdateCharacterRequestDto
     [MaxLength(100)]
     public string? PlayerName { get; set; }
     public CharacterInfoRequestDto CharacterInfo { get; set; } = new();
-    public bool? IsPublic { get; set; }
-    public bool? CloningAllowed { get; set; }
 }
 
 public class BaseAbilityScoresDto

@@ -46,6 +46,9 @@ using Api.Domain.Characters.Services;
 using Api.Domain.Languages.Services;
 using Api.Domain.Shared.DTOs;
 using Api.Domain.Feats.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -132,8 +135,30 @@ builder.Services.AddScoped<IExternalSpeciesService, ExternalSpeciesService>();
 builder.Services.AddScoped<IExternalSpellService, ExternalSpellService>();
 
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!))
+    };
+});
 
 builder.Services.AddCors(options =>
 {
@@ -146,11 +171,11 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+app.UseCors("Dev");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionHandler>();
 app.UseHttpsRedirection();
-app.UseCors("Dev");
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())

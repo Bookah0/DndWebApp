@@ -13,7 +13,6 @@ public interface IUserService
     Task<User> UpdateAsync(Guid userId, UpdateUserRequestDto requestDto);
     Task DeleteAsync(Guid id);
     Task<User> CheckPasswordAsync(Guid id, string password);
-    Task<User> CheckPasswordAsync(LoginUserRequestDto request);
-    Task<User> CheckPasswordAsync(User user, string password);
+    Task<User?> CheckPasswordAsync(LoginUserRequestDto request);
     Task InitRolesAsync();
 }
